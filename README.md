@@ -19,12 +19,12 @@ To get started you will need to run these commands in your terminal.
 *git init* \
 *git add --all* \
 *git commit -m "Initial Commit"* \
-*git remote add origin https://Noctis.LucisCaelum%40uantwerpen.be@imaginelab.club/se/bitbucket/scm/g3y1920/imagineframe.git* \
+*git remote add origin https://Noctis.LucisCaelum%40uantwerpen.be@imaginelab.club/se/bitbucket/scm/g3y1920/labplanner.git* \
 *git push -u origin master*
 
 **If your code is already tracked by Git then set this repository as your "origin" to push to.**
 
 *cd existing-project* \
-*git remote set-url origin https://Noctis.LucisCaelum%40uantwerpen.be@imaginelab.club/se/bitbucket/scm/g3y1920/imagineframe.git* \
+*git remote set-url origin https://Noctis.LucisCaelum%40uantwerpen.be@imaginelab.club/se/bitbucket/scm/g3y1920/labplanner.git* \
 *git push -u origin --all* \
 *git push origin --tags*
