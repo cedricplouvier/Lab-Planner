@@ -13,7 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>labplanner</name>
     <description>Labplanner Tool</description>
-
+    <!-- properties -->
     <properties>
         <java.version>1.8</java.version>
     </properties>
