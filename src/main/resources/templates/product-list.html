@@ -1,52 +1,51 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <!-- Import header -->
-<head th:replace="layout :: head (title='#{user.management}')"></head>
+<head th:replace="layout :: head (title='#{product.management}')"></head>
 <body onload="initPage()">
 <script type="text/javascript">
     function initPage() {
         var options = {
             valueNames: ['firstName', 'lastName']
         };
-        var userList = new List('user-list', options);
+        var productList = new List('product-list', options);
     }
 </script>
 <div class="container">
     <!-- Import menu bar -->
     <div th:replace="layout :: navbar"></div>
     <div class="content">
-        <div id="user-list">
+        <div id="product-list">
             <input class="search" placeholder="Search"/>
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th th:text="#{lastName}">Last Name</th>
-                    <th th:text="#{firstName}">First
-                        Name
+                    <th th:text="#{name}">Name</th>
+                    <th th:text="#{name}">Name
                     </th>
                     <th></th>
                 </tr>
                 </thead>
                 <!-- IMPORTANT, class="list" have to be at tbody -->
                 <tbody class="list">
-                <tr th:each="user : ${allUsers}">
-                    <td class="lastName" th:value="${lastName}"
-                        th:text="${user.lastName }">Last Name
+                <tr th:each="product : ${allProducts}">
+                    <td class="name" th:value="${name}"
+                        th:text="${product.name }">Product Name
                     </td>
-                    <td class="firstName" th:value="${firstName}"
-                        th:text="${user.firstName }">First Name
+                    <td class="description" th:value="${description}"
+                        th:text="${product.description }">Product Description
                     </td>
                     <td>
-                        <a th:href="@{/users/{id}/(id=${user.id})}"><span
+                        <a th:href="@{/product/{id}/(id=${product.id})}"><span
                                 class="glyphicon glyphicon-edit"></span></a>&nbsp;
-                        <a th:href="@{/users/{id}/delete(id=${user.id})}">
+                        <a th:href="@{/product/{id}/delete(id=${product.id})}">
                             <span class="glyphicon glyphicon-trash"></span></a>
                     </td>
                 </tr>
                 </tbody>
             </table>
-            <a href="/users/put" class="btn btn-primary"
-               th:text="#{create.user}">Create user</a>
+            <a href="/products/put" class="btn btn-primary"
+               th:text="#{create.product}">Create product</a>
         </div>
     </div>
 </div>
