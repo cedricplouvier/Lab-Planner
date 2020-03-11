@@ -25,30 +25,31 @@ public class StockController {
     @RequestMapping(value="/products", method= RequestMethod.GET)
     public String showProducts(final ModelMap model){
         model.addAttribute("allProducts",
-                productService.findAll()); return "product-list";
+                productService.findAll()); return "products-list";
     }
     @RequestMapping(value="/products/put", method= RequestMethod.GET)
     public String viewCreateProducts(final ModelMap model){
         model.addAttribute("allProducts", productService.findAll());
         model.addAttribute("product",new Product());
-        return "product-manage";
+        return "products-manage";
     }
-    @RequestMapping(value="/product/{id}", method= RequestMethod.GET)
+    @RequestMapping(value="/products/{id}", method= RequestMethod.GET)
     public String viewEditProduct(@PathVariable Long id, final ModelMap model){
         model.addAttribute("allProducts", productService.findAll());
-        model.addAttribute("product",productService.findById(id).orElse(null)); return "product-manage";
+        model.addAttribute("product",productService.findById(id).orElse(null)); return "products-manage";
     }
-    @RequestMapping(value={"/product/", "/product/{id}"},
+    @RequestMapping(value={"/products/", "/products/{id}"},
             method= RequestMethod.POST)
-    public String addUser(@Valid Product user, BindingResult result,
+    public String addProduct(@Valid Product product, BindingResult result,
                           final ModelMap model){
         if(result.hasErrors()){
             model.addAttribute("allTags", tagService.findAll());
-            return "product-manage";
+            return "products-manage";
         }
-        return "redirect:/product";
+        productService.save(product);
+        return "redirect:/products";
     }
-    @RequestMapping(value="/product/{id}/delete")
+    @RequestMapping(value="/products/{id}/delete")
     public String deleteProduct(@PathVariable Long id, final ModelMap
             model){ productService.deleteById(id);
         model.clear();
