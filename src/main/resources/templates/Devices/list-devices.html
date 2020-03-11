@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Import header -->
+<head th:replace="layout-partially :: head (title='#{devices}')"></head>
+<body onload="initPage()">
+<script type="text/javascript">
+    function initPage(){
+        var options = {
+            valueNames: [ 'deviceName', 'deviceType']
+        };
+        var deviceList = new List('devices', options);
+    }
+</script>
+<style>
+    .notfound{
+        display: none;
+    }
+</style>
+<script>
+    $(document).ready(function(){
+        // Search on name column only
+        $('#txt_name').keyup(function(){
+            // Search Text
+            var search = $(this).val();
+
+            // Hide all table tbody rows
+            $('table tbody tr').hide();
+
+            // Count total search result
+            var len = $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').length;
+
+            if(len > 0){
+                // Searching text in columns and show match row
+                $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').each(function(){
+                    $(this).closest('tr').show();
+                });
+            }else{
+                $('.notfound').show();
+            }
+
+        });
+
+    });
+
+    // Case-insensitive searching (Note - remove the below script for Case sensitive search )
+    $.expr[":"].contains = $.expr.createPseudo(function(arg) {
+        return function( elem ) {
+            return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+        };
+    });
+</script>
+<div class="container">
+    <!-- Import menu bar -->
+    <div th:replace="layout-partially :: navbar"></div>
+    <div class="content">
+        <div id="device-list">
+            <input type='text' id='txt_name' th:placeholder="#{device.search}">
+
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th th:text="#{device}">Device Name</th>
+                    <th th:text="#{device.type}">Device type</th> <th></th>
+                </tr>
+                </thead>
+                <!-- IMPORTANT, class="list" have to be at tbody -->
+                <tbody class="list">
+                <tr th:each="device : ${allDevices}">
+                    <td class='deviceName' th:value="${device.getDevicename()}"
+                        th:text="${device.devicename }" >Device Name</td>
+                    <td class="firstName" th:value="${device.getDeviceType()}"
+                        th:text="${device.deviceType.devicetypename }" >Device Type</td>
+                </tr>
+                <tr class='notfound'>
+                    <td colspan='4'>No record found</td>
+                </tr>
+                </tbody>
+            </table>
+            <a href="/devices/types" class="btn btn-primary" th:text="#{device.manage.types}"
+            >Manage device types</a>
+        </div>
+    </div>
+</div>
+    <div th:replace="layout-partially :: footer"></div>
+</body>
+</html>
