@@ -7,8 +7,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class HomeController {
     @RequestMapping({"/","/home"})
-    @ResponseBody
     public String showHomepage(){
         return "homepage";
+    }
+    @RequestMapping({"/usermanagement","/usermanagement"})
+    public String showUsermanagementPage(){
+        return "usermanagement";
+    }
+    @RequestMapping({"/stockmanagement","/stockmanagement"})
+    public String showStockmanagementPage(){
+        return "stockmanagement";
+    }
+    @RequestMapping({"/planingtool","/planningtool"})
+    public String showPlanningtoolPage(){
+        return "planningtool";
+    }
+    @RequestMapping({"/devicemanagement","/devicemanagement"})
+    public String showDevicemanagementPage(){
+        return "devicemanagement";
     }
 }
