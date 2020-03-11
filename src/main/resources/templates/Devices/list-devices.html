@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <!-- Import header -->
-<head th:replace="layout-partially :: head (title='#{devices}')"></head>
+<head th:replace="navbar :: head (title='#{devices}')"></head>
 <body onload="initPage()">
 <script type="text/javascript">
     function initPage(){
@@ -52,7 +52,7 @@
 </script>
 <div class="container">
     <!-- Import menu bar -->
-    <div th:replace="layout-partially :: navbar"></div>
+    <div th:replace="navbar :: navbar"></div>
     <div class="content">
         <div id="device-list">
             <input type='text' id='txt_name' th:placeholder="#{device.search}">
@@ -73,7 +73,7 @@
                         th:text="${device.deviceType.devicetypename }" >Device Type</td>
                 </tr>
                 <tr class='notfound'>
-                    <td colspan='4'>No record found</td>
+                    <td colspan='4' th:text="#{device.norecord}">No record found</td>
                 </tr>
                 </tbody>
             </table>
@@ -82,6 +82,6 @@
         </div>
     </div>
 </div>
-    <div th:replace="layout-partially :: footer"></div>
+    <div th:replace="footer :: footer"></div>
 </body>
 </html>

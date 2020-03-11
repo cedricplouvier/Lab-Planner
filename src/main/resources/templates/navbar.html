@@ -51,101 +51,94 @@
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/}">
-
                             <span class="sr-only">(homepage)</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/users}" th:text="#{layout.user}">
+                        <a class="nav-link" th:href="@{/usermanagement}" th:text="#{navbar.user}">
                             User Management
                             <span class="sr-only">(user management)</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/products}" th:text="#{layout.stock}">
+                        <a class="nav-link" th:href="@{/stockmanagement}" th:text="#{navbar.stock}">
                             Stock Management
                             <span class="sr-only">(stock management)</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/devices}" th:text="#{layout.equipment}">
-                            Equipment Management
-                            <span class="sr-only">(Equipment Management)</span>
+                        <a class="nav-link" th:href="@{/devicemanagement}" th:text="#{navbar.device}">
+                            Device Management
+                            <span class="sr-only">(Device Management)</span>
                         </a>
                     </li>
+                    <!--
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/experiments}" th:text="#{layout.experiment}">
+                        <a class="nav-link" th:href="@{/experiments}" th:text="#{navbar.experiment}">
                             experiment Management
                             <span class="sr-only">(experiment Management)</span>
                         </a>
                     </li>
+                    -->
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/calendar}" th:text="#{layout.calendar}">
-                            Calendar Management
-                            <span class="sr-only">(Calendar Management)</span>
+                        <a class="nav-link" th:href="@{/planningtool}" th:text="#{navbar.planningtool}">
+                            Planning Tool
+                            <span class="sr-only">(Planning Tool)</span>
                         </a>
                     </li>
+                    <!--
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/report}" th:text="#{layout.report}">
+                        <a class="nav-link" th:href="@{/report}" th:text="#{navbar.report}">
                             Report Management
                             <span class="sr-only">(Report Management)</span>
                         </a>
                     </li>
+                    -->
+                    <!--
                     <li class="nav-item">
-                        <a class="nav-link" href="#" th:text="#{layout.notification}">
+                        <a class="nav-link" href="#" th:text="#{navbar.notification}">
                             Notification Management
                             <span class="sr-only">(Notification Management)</span>
                         </a>
                     </li>
+                    -->
                 </ul>
+
                 <ul class="navbar-nav my-2 my-lg-0">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" th:text="#{layout.account}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" th:text="#{navbar.account}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Account
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <!--/*@thymesVar id="id" type=""*/-->
                             <!--/*@thymesVar id="user" type=""*/-->
+                            <a class="dropdown-item"
+                               th:text="#{navbar.settings}">Settings</a>
+                            <!-- th:href="@{/users/profile/{id}" (id=${#authentication.principal.user.id})}" -->
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/logout" th:text="#{layout.logout}">
+                            <a class="dropdown-item" href="/logout" th:text="#{navbar.logout}">
                                 Logout
                                 <span class="sr-only">(logout)</span>
                             </a>
                         </div>
                     </li>
                 </ul>
+
+                <ul class="navbar-nav my-2 my-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" th:text="#{navbar.language}" id="navbarLanguage" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Language
+                        </a>
+
+                        <div class="dropdown-menu" aria-labelledby="navbarLanguage">
+                            <a class="dropdown-item" th:href="@{?lang=en}">English</a>
+                            <a class="dropdown-item" th:href="@{?lang=nl}">Nederlands</a>
+                        </div>
+                    </li>
+                </ul>
+
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
     </nav>
-</div>
-
-<!-- Footer fragment -->
-<div th:fragment="footer">
-    <footer>
-        <!--<div class="container mt-5">-->
-        <p class="mt-5" align="center" >© 2019 Copyright: II-Software Engineering: Group 2</p>
-        <!--</div>-->
-    </footer>
-</div>
-
-<!-- Messages fragment (INFO, ERROR, SUCCESS)-->
-<div th:fragment="messages">
-    <div th:if="${messages}" >
-
-        <div th:if="${messages.success !=''}" class="alert alert-success">
-            <!--/*@thymesVar id="success" type=""*/-->
-            <p  class=".text-success" th:text="${messages.success}">This is the success text</p>
-        </div>
-
-        <div th:if="${messages.info !=''}" class="alert alert-info">
-            <!--/*@thymesVar id="info" type=""*/-->
-            <p  class=".text-success" th:text="${messages.info}">This is the success text</p>
-        </div>
-
-        <div th:if="${messages.error !=''}" class="alert alert-danger">
-            <!--/*@thymesVar id="error" type=""*/-->
-            <p  class=".text-success" th:text="${messages.error}">This is the success text</p>
-        </div>
-    </div>
 </div>
 </html>
