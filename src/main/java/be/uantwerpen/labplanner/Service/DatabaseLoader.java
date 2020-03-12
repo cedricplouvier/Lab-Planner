@@ -1,4 +1,4 @@
-package Service;
+package be.uantwerpen.labplanner.Service;
 
 
 import be.uantwerpen.labplanner.common.model.stock.Product;
