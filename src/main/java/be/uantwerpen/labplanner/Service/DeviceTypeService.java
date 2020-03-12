@@ -1,6 +1,5 @@
 package be.uantwerpen.labplanner.Service;
 
-import be.uantwerpen.labplanner.Model.Device;
 import be.uantwerpen.labplanner.Model.DeviceType;
 
 import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
@@ -26,7 +25,7 @@ public class DeviceTypeService {
         return this.deviceTypeRepository.findById(id);
     }
 
-    public DeviceType findByDevicetypeName(String deviceTypeName) {
+    public Optional<DeviceType> findByDevicetypeName(String deviceTypeName) {
         return this.deviceTypeRepository.findByDeviceTypeName(deviceTypeName);
     }
     public void saveSomeAttributes(DeviceType deviceType) {

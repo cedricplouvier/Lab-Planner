@@ -16,6 +16,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +50,7 @@ public class DatabaseLoader {
     }
 
     @PostConstruct
-    private void initDatabase() {
+    private void initDatabase() throws IOException {
 
         //Create all the privileges
         Privilege p1 = new Privilege("logon");
@@ -310,7 +315,17 @@ public class DatabaseLoader {
 
             devicetype.setDeviceInformation(deviceinformations);
         }
+        String fileName = "static/image/oven.jpg";
 
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+
+        File file = new File(classLoader.getResource(fileName).getFile());
+
+        BufferedImage bImage = ImageIO.read(file);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ImageIO.write(bImage, "jpg", bos );
+        byte [] data = bos.toByteArray();
+        t7.setDevicePicture(data);
         //Save all devicetypes
         deviceTypeRepository.save(t1);
         deviceTypeRepository.save(t2);
@@ -340,6 +355,7 @@ public class DatabaseLoader {
         Device d6 = new Device("Wheel Tracking Test 1",t14);
         deviceRepository.save(d6);
         Device d7 = new Device("Oven 1",t7);
+        d7.setComment("Perfect oven to bake a pizza in your spare times");
         deviceRepository.save(d7);
         Device d8 = new Device("Oven 2",t8);
         deviceRepository.save(d8);

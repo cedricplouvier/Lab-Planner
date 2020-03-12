@@ -27,7 +27,6 @@
             <div class="container">
                 <div class="row" >
                     <div class="col-3" >
-
                                     <table class="table table-condensed table-responsive table-user-information" style="margin-right: auto;margin-left: auto;display: table">
                                         <tbody>
                                         <tr>
@@ -44,7 +43,7 @@
                                         </tr>
                                         <tr>
                                             <td>Device Comment:</td>
-                                            <td></td>
+                                            <td th:text="${device.getComment()}"></td>
                                         </tr>
                                         <tr>
                                             <td></td>
@@ -56,9 +55,10 @@
                     </div>
                     <div class="col" >
                     </div>
-                    <div class="col" style="text-align: center;margin-left: 200px;margin-right: 200px;margin-top: auto;margin-bottom: auto" >
-<!--                        <span class="glyphicon glyphicon-picture" style="font-size:50px;"></span>-->
-                        <span class="fa fa-image" style="font-size:50px;"></span>
+                    <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+                        <img th:src="*{'data:image/jpg;base64,'+image}" alt="" />
+
+<!--                        <span class="fa fa-image" style="font-size:50px;"></span>-->
                     </div>
                 </div>
             </div>
