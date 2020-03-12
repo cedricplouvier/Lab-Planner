@@ -1,5 +1,6 @@
 package be.uantwerpen.labplanner.Model;
 
+import be.uantwerpen.labplanner.Repository.DeviceInformationRepository;
 import be.uantwerpen.labplanner.Repository.DeviceRepository;
 import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
@@ -30,14 +31,17 @@ public class DatabaseLoader {
     private final UserRepository userRepository;
     private final DeviceTypeRepository deviceTypeRepository;
     private final DeviceRepository deviceRepository;
+    private final DeviceInformationRepository deviceInformationRepository;
+
     @Autowired
-    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository) {
+    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository, DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository) {
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         //DeviceRepositories
         this.deviceTypeRepository = deviceTypeRepository;
         this.deviceRepository = deviceRepository;
+        this.deviceInformationRepository = deviceInformationRepository;
     }
 
     @PostConstruct
@@ -261,45 +265,67 @@ public class DatabaseLoader {
         userRepository.save(u9);
 
         //Create all Device Types
+        ArrayList<DeviceType> deviceTypes = new ArrayList<>();
         DeviceType t1 = new DeviceType("Autosaw",true);
-        deviceTypeRepository.save(t1);
+        deviceTypes.add(t1);
         DeviceType t2 = new DeviceType("Balance",false);
-        deviceTypeRepository.save(t2);
+        deviceTypes.add(t2);
         DeviceType t3 = new DeviceType("Big Mixer",true);
-        deviceTypeRepository.save(t3);
+        deviceTypes.add(t3);
         DeviceType t4 = new DeviceType("Caliper",true);
-        deviceTypeRepository.save(t4);
+        deviceTypes.add(t4);
         DeviceType t5 = new DeviceType("Cooling chamber",true);
-        deviceTypeRepository.save(t5);
+        deviceTypes.add(t5);
         DeviceType t6 = new DeviceType("Gyratory",false);
-        deviceTypeRepository.save(t6);
+        deviceTypes.add(t6);
         DeviceType t7 = new DeviceType("Oven",true);
-        deviceTypeRepository.save(t7);
+        deviceTypes.add(t7);
         DeviceType t8 = new DeviceType("Plate Compactor",false);
-        deviceTypeRepository.save(t8);
+        deviceTypes.add(t8);
         DeviceType t9 = new DeviceType("Small Mixer",true);
-        deviceTypeRepository.save(t9);
+        deviceTypes.add(t9);
         DeviceType t10 = new DeviceType("SVM Setup",false);
-        deviceTypeRepository.save(t10);
+        deviceTypes.add(t10);
         DeviceType t11 = new DeviceType("Uniframe",false);
-        deviceTypeRepository.save(t11);
+        deviceTypes.add(t11);
         DeviceType t12 = new DeviceType("Vacuum Setup",true);
-        deviceTypeRepository.save(t12);
+        deviceTypes.add(t12);
         DeviceType t13 = new DeviceType("Water Bath",false);
-        deviceTypeRepository.save(t13);
+        deviceTypes.add(t13);
         DeviceType t14 = new DeviceType("Wheel Tracking Test",true);
-        deviceTypeRepository.save(t14);
+        deviceTypes.add(t14);
 
         //Add random information for default information types
         //Lorem ipsum generator for random information blocks
         Lorem lorem = LoremIpsum.getInstance();
 
-        for (DeviceType devicetype : deviceTypeRepository.findAll()) {
-            for (int current = 0; current < devicetype.getDefaultInformationtypes().size(); current++) {
-                devicetype.addDeviceInformation(devicetype.getDefaultInformationtypes().get(current), lorem.getWords(20));
+        for (DeviceType devicetype : deviceTypes) {
+            List<DeviceInformation> deviceinformations = new ArrayList<DeviceInformation>();
+
+            for (int current = 0; current < DeviceType.getDefaultInformationtypes().size(); current++) {
+                DeviceInformation i = new DeviceInformation(DeviceType.getDefaultInformationtypes().get(current), lorem.getWords(20));
+                deviceinformations.add(i);
+                deviceInformationRepository.save(i);
             }
+
+            devicetype.setDeviceInformation(deviceinformations);
         }
 
+        //Save all devicetypes
+        deviceTypeRepository.save(t1);
+        deviceTypeRepository.save(t2);
+        deviceTypeRepository.save(t3);
+        deviceTypeRepository.save(t4);
+        deviceTypeRepository.save(t5);
+        deviceTypeRepository.save(t6);
+        deviceTypeRepository.save(t7);
+        deviceTypeRepository.save(t8);
+        deviceTypeRepository.save(t9);
+        deviceTypeRepository.save(t10);
+        deviceTypeRepository.save(t11);
+        deviceTypeRepository.save(t12);
+        deviceTypeRepository.save(t13);
+        deviceTypeRepository.save(t14);
         //Add devices for some device types
         Device d1 = new Device("Autosaw 1",t1);
         deviceRepository.save(d1);

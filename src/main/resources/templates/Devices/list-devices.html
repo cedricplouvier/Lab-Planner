@@ -70,7 +70,10 @@
                     <td class='deviceName' th:value="${device.getDevicename()}"
                         th:text="${device.devicename }" >Device Name</td>
                     <td class="firstName" th:value="${device.getDeviceType()}"
-                        th:text="${device.deviceType.devicetypename }" >Device Type</td>
+                        th:text="${device.deviceType.deviceTypeName }" >Device Type</td>
+                    <td >  <a th:href="@{/devices/info/{id}/(id=${device.id})}" class="btn btn-primary"
+                    >Info</a></td>
+                    <td>
                 </tr>
                 <tr class='notfound'>
                     <td colspan='4' th:text="#{device.norecord}">No record found</td>

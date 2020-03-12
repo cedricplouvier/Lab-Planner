@@ -1,89 +1,90 @@
 package be.uantwerpen.labplanner.Model;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 
 @Entity
-public class DeviceType extends AbstractPersistable<Long> {
+public class DeviceType extends AbstractPersistable<Long>{
     //Default Variables
-    private static String DEFAULT_DEVICTYPENAME = "default_devicetypename";
+    private static String DEFAULT_DEVICTYPENAME = "default_deviceTypeName";
     private static Boolean DEFAULT_OVERNIGHTUSE = false;
     private static List<String> DEFAULT_INFORMATIONTYPES = Arrays.asList(new String[]{"Manual","Maintenance", "Calibration","Safety instruction card"});
 
 
     //Variables
-    @Column(
-            name = "devicetypename",
-            unique = true,
-            nullable = false
-    )
-    private String devicetypename;
+    @Column
+    private String deviceTypeName;
     @Column
     private Boolean overnightuse;
 
-    @OneToMany(targetEntity=DeviceInformation.class, mappedBy="informationName", fetch=FetchType.EAGER)
-    private List<DeviceInformation> deviceInformation;
+    @Lob
+    @Column
+    private byte[] devicePicture;
+    @ManyToMany(
+            fetch = FetchType.EAGER
+    )
+    @JoinTable(
+            name = "DEVICE_TYPE_INFORMATION",
+            joinColumns = {@JoinColumn(
+                    name = "DEVICE_TYPE_ID",
+                    referencedColumnName = "ID"
+            )},
+            inverseJoinColumns = {@JoinColumn(
+                    name = "DEVICE_INFORMATION_ID",
+                    referencedColumnName = "ID"
+            )}
+    )
+    private List<DeviceInformation> deviceInformations;
+
+
 
     //Constructors
     public DeviceType() {
-        this.devicetypename = DEFAULT_DEVICTYPENAME;
+        this.deviceTypeName = DEFAULT_DEVICTYPENAME;
         this.overnightuse = DEFAULT_OVERNIGHTUSE;
     }
-    public DeviceType(String devicetypename,Boolean overnightuse) {
-        this.devicetypename = devicetypename;
+    public DeviceType(String deviceTypeName,Boolean overnightuse) {
+        this.deviceTypeName = deviceTypeName;
         this.overnightuse = overnightuse;
     }
 
     //Add
-    public void addDeviceInformation(String name,String information){
-        deviceInformation.add(new DeviceInformation(name,information));
-    }
+
 
     //Get and Set
-    public Boolean getOvernightuse() {
-        return overnightuse;
-    }
-
-    public void setOvernightuse(Boolean overnightuse) {
-        this.overnightuse = overnightuse;
-    }
-
-    public String getDevicetypename() {
-        return devicetypename;
-    }
-
-    public void setDevicetypename(String devicetypename) {
-        this.devicetypename = devicetypename;
-    }
-
-    public List<DeviceInformation> getDeviceInformation() {
-        return deviceInformation;
-    }
-
-    public void setDeviceInformation(List<DeviceInformation> deviceInformation) {
-        this.deviceInformation = deviceInformation;
-    }
-
+    public Boolean getOvernightuse() { return overnightuse; }
+    public void setOvernightuse(Boolean overnightuse) { this.overnightuse = overnightuse; }
     public static List<String> getDefaultInformationtypes() {
         return DEFAULT_INFORMATIONTYPES;
     }
-
+    public List<DeviceInformation> getDeviceInformation() { return deviceInformations; }
+    public void setDeviceInformation(List<DeviceInformation> deviceInformations) { this.deviceInformations = deviceInformations; }
+    public String getDeviceTypeName() { return deviceTypeName; }
+    public void setDeviceTypeName(String deviceTypeName) { this.deviceTypeName = deviceTypeName; }
     public static void setDefaultInformationtypes(List<String> defaultInformationtypes) {
         DEFAULT_INFORMATIONTYPES = defaultInformationtypes;
     }
 
-    @Override
-    public Long getId() {
-        return super.getId();
+    public byte[] getDevicePicture() {
+        return devicePicture;
     }
 
-    @Override
-    public void setId(Long id) {
-        super.setId(id);
+    public void setDevicePicture(byte[] devicePicture) {
+        this.devicePicture = devicePicture;
+    }
+
+    public List<DeviceInformation> getDeviceInformations() {
+        return deviceInformations;
+    }
+
+    public void setDeviceInformations(List<DeviceInformation> deviceInformations) {
+        this.deviceInformations = deviceInformations;
     }
 }

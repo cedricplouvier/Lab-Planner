@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Import header -->
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<head th:replace="navbar :: head (title='#{devices}')"></head>
+<body onload="initPage()">
+<script type="text/javascript">
+    function initPage(){
+        var options = {
+            valueNames: [ 'deviceName', 'deviceType']
+        };
+        var deviceList = new List('devices', options);
+    }
+</script>
+
+<div class="container">
+    <!-- Import menu bar -->
+    <div th:replace="navbar :: navbar"></div>
+    <div class="content">
+        <div id="device-list">
+
+            <h3>Device information</h3>
+            <hr class="my-4">
+            <h5>General information</h5>
+
+            <div class="container">
+                <div class="row" >
+                    <div class="col-3" >
+
+                                    <table class="table table-condensed table-responsive table-user-information" style="margin-right: auto;margin-left: auto;display: table">
+                                        <tbody>
+                                        <tr>
+                                            <td>Device name:</td>
+                                            <td th:text="${device.getDevicename()}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Device type:</td>
+                                            <td th:text="${device.deviceType.deviceTypeName}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>OvernightUse:</td>
+                                            <td th:text="${device.deviceType.overnightuse}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Device Comment:</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                    </div>
+                    <div class="col" >
+                    </div>
+                    <div class="col" style="text-align: center;margin-left: 200px;margin-right: 200px;margin-top: auto;margin-bottom: auto" >
+<!--                        <span class="glyphicon glyphicon-picture" style="font-size:50px;"></span>-->
+                        <span class="fa fa-image" style="font-size:50px;"></span>
+                    </div>
+                </div>
+            </div>
+            <h5>Other Information</h5>
+
+            <hr class="my-4">
+
+            <div class="container" th:each="deviceInfo : ${device.getDeviceType().getDeviceInformation()}">
+                <div class="card" style="margin: 10px">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${deviceInfo.getInformationName()}">Card title</h5>
+                        <p class="card-text" th:text="${deviceInfo.getInformation()}">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+
+            <a href="/devices" class="btn btn-primary">Back</a>
+        </div>
+    </div><i class="glyphicon glyphicon-search"></i>
+
+
+    <div th:replace="footer :: footer"></div>
+
+</div>
+</body>
+</html>
