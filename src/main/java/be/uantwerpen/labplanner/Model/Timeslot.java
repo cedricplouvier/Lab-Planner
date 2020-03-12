@@ -1,4 +1,4 @@
-package Model;
+package be.uantwerpen.labplanner.Model;
 
 
 public class Timeslot {

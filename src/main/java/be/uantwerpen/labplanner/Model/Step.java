@@ -1,4 +1,4 @@
-package Model;
+package be.uantwerpen.labplanner.Model;
 
 import be.uantwerpen.labplanner.common.model.users.User;
 

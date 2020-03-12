@@ -1,8 +1,9 @@
 package be.uantwerpen.labplanner.Controller;
 
-import Model.Step;
 import be.uantwerpen.labplanner.Model.Step;
+import be.uantwerpen.labplanner.Service.DeviceService;
 import be.uantwerpen.labplanner.Services.StepService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.validation.Valid;
 
 public class StepController {
+    @Autowired
+    private DeviceService deviceService;
+    @Autowired
+    private StepService stepService;
     @RequestMapping(value="/booking", method= RequestMethod.GET)
     public String showStepPage(final ModelMap model){
         model.addAttribute("allDevices", deviceService.findAll());
@@ -24,7 +29,7 @@ public class StepController {
             model.addAttribute("Step", step);
             return "step-timeslot";
         }
-        StepService.save(step);
+        stepService.save(step);
         return "redirect:/booking";
     }
     @RequestMapping(value="/", method= RequestMethod.POST)

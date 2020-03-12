@@ -1,6 +1,4 @@
-package Model;
-
-import java.sql.Time;
+package be.uantwerpen.labplanner.Model;
 
 public class TimePoint {
     private int year;
