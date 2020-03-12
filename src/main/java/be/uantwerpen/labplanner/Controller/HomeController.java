@@ -17,24 +17,24 @@ public class HomeController {
         logger.info("showHomepage");
         return "homepage";
     }
-    @RequestMapping({"/usermanagement","/usermanagement"})
+    @RequestMapping("/usermanagement")
     public String showUsermanagementPage(){
         logger.info("showUserManagementPage");
         return "usermanagement";
     }
-    @RequestMapping({"/stockmanagement","/stockmanagement"})
+    @RequestMapping("/stockmanagement")
     public String showStockmanagementPage(){
         logger.info("showStochmanagementPage");
         return "stockmanagement";
     }
-    @RequestMapping({"/planingtool","/planningtool"})
+    @RequestMapping("/planingtool")
     public String showPlanningtoolPage(){
         logger.info("showPlanningtoolPage");
         return "planningtool";
     }
-    @RequestMapping({"/devicemanagement","/devicemanagement"})
+    @RequestMapping("/devicemanagement")
     public String showDevicemanagementPage(){
         logger.info("showDevicemanagementPage");
-        return "devicemanagement";
+        return "redirect:/devices";
     }
 }
