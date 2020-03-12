@@ -1,5 +1,6 @@
 package be.uantwerpen.labplanner.Controller;
 
+import Model.Step;
 import be.uantwerpen.labplanner.Model.Step;
 import be.uantwerpen.labplanner.Services.StepService;
 import org.springframework.ui.ModelMap;
