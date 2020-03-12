@@ -4,10 +4,12 @@ package Controller;
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import be.uantwerpen.labplanner.common.service.stock.TagService;
+import net.bytebuddy.description.type.TypeList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,6 +24,14 @@ public class StockController {
     @Autowired
     private TagService tagService;
 
+    //Populate
+    @ModelAttribute("allProducts")
+    public Iterable<Product> populateProducts(){
+        return  this.productService.findAll();
+    }
+
+
+    //Mappings
     @RequestMapping(value="/products", method= RequestMethod.GET)
     public String showProducts(final ModelMap model){
         model.addAttribute("allProducts",
