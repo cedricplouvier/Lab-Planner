@@ -1,0 +1,144 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <!-- Create an import-block for other html pages -->
+    <th:block th:fragment="imports">
+
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!--&lt;!&ndash; Bootstrap CSS &ndash;&gt;-->
+        <link rel="stylesheet" media="screen" href="http://cdn.jsdelivr.net/webjars/bootstrap/4.3.0/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.3.0/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/footer.css}"/>
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script type="text/javascript" th:src="@{/js/list.min.js}"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <!--Font awesome -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+              integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+              crossorigin="anonymous">
+    </th:block>
+
+</head>
+
+<!-- NavBar fragment -->
+<div th:fragment="navbar">
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+
+            <!-- Brand in header -->
+            <div class="navbar-header">
+
+                <a class="navbar-brand" th:href="@{/}">
+                    <img alt="Brand" th:src="@{/images/logo.png}" style="max-width:50%;max-height:50%;"/>
+                </a>
+
+            </div>
+
+            <!-- Toggle button in header with redirection to MyNavBar-div-->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbar" aria-controls="myNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">
+                            <span class="sr-only">(homepage)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/usermanagement}" th:text="#{navbar.user}">
+                            User Management
+                            <span class="sr-only">(user management)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/stockmanagement}" th:text="#{navbar.stock}">
+                            Stock Management
+                            <span class="sr-only">(stock management)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/devicemanagement}" th:text="#{navbar.device}">
+                            Device Management
+                            <span class="sr-only">(Device Management)</span>
+                        </a>
+                    </li>
+                    <!--
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/experiments}" th:text="#{navbar.experiment}">
+                            experiment Management
+                            <span class="sr-only">(experiment Management)</span>
+                        </a>
+                    </li>
+                    -->
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/planningtool}" th:text="#{navbar.planningtool}">
+                            Planning Tool
+                            <span class="sr-only">(Planning Tool)</span>
+                        </a>
+                    </li>
+                    <!--
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/report}" th:text="#{navbar.report}">
+                            Report Management
+                            <span class="sr-only">(Report Management)</span>
+                        </a>
+                    </li>
+                    -->
+                    <!--
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" th:text="#{navbar.notification}">
+                            Notification Management
+                            <span class="sr-only">(Notification Management)</span>
+                        </a>
+                    </li>
+                    -->
+                </ul>
+
+                <ul class="navbar-nav my-2 my-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" th:text="#{navbar.account}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Account
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <!--/*@thymesVar id="id" type=""*/-->
+                            <!--/*@thymesVar id="user" type=""*/-->
+                            <a class="dropdown-item"
+                               th:text="#{navbar.settings}">Settings</a>
+                            <!-- th:href="@{/users/profile/{id}" (id=${#authentication.principal.user.id})}" -->
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/logout" th:text="#{navbar.logout}">
+                                Logout
+                                <span class="sr-only">(logout)</span>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav my-2 my-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" th:text="#{navbar.language}" id="navbarLanguage" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Language
+                        </a>
+
+                        <div class="dropdown-menu" aria-labelledby="navbarLanguage">
+                            <a class="dropdown-item" th:href="@{?lang=en}">English</a>
+                            <a class="dropdown-item" th:href="@{?lang=nl}">Nederlands</a>
+                        </div>
+                    </li>
+                </ul>
+
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+</div>
+</html>
