@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@Profile("default")
 
 public class DatabaseLoader {
 
