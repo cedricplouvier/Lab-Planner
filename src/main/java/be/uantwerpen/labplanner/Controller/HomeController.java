@@ -1,8 +1,11 @@
 package be.uantwerpen.labplanner.Controller;
 
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+
+
+
 
 @Controller
 public class HomeController {
@@ -10,20 +13,20 @@ public class HomeController {
     public String showHomepage(){
         return "homepage";
     }
-    @RequestMapping({"/usermanagement","/usermanagement"})
+    @RequestMapping("/usermanagement")
     public String showUsermanagementPage(){
         return "usermanagement";
     }
-    @RequestMapping({"/stockmanagement","/stockmanagement"})
+    @RequestMapping("/stockmanagement")
     public String showStockmanagementPage(){
         return "stockmanagement";
     }
-    @RequestMapping({"/planingtool","/planningtool"})
+    @RequestMapping("/planingtool")
     public String showPlanningtoolPage(){
         return "planningtool";
     }
-    @RequestMapping({"/devicemanagement","/devicemanagement"})
+    @RequestMapping("/devicemanagement")
     public String showDevicemanagementPage(){
-        return "devicemanagement";
+        return "redirect:/devices";
     }
 }
