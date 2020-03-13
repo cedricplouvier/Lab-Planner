@@ -50,7 +50,7 @@
         </logger>
     </springProfile>
     <!--################################################################################-->
-    <springProfile name="prod">
+    <springProfile name="default">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
                 <pattern>
