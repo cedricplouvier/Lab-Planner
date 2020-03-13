@@ -17,16 +17,13 @@ public class DeviceType extends AbstractPersistable<Long>{
     private static Boolean DEFAULT_OVERNIGHTUSE = false;
     private static List<String> DEFAULT_INFORMATIONTYPES = Arrays.asList(new String[]{"Manual","Maintenance", "Calibration","Safety instruction card"});
 
-
     //Variables
     @Column
     private String deviceTypeName;
     @Column
     private Boolean overnightuse;
-
-    @Lob
     @Column
-    private byte[] devicePicture;
+    private String devicePictureName;
     @ManyToMany(
             fetch = FetchType.EAGER
     )
@@ -72,12 +69,12 @@ public class DeviceType extends AbstractPersistable<Long>{
         DEFAULT_INFORMATIONTYPES = defaultInformationtypes;
     }
 
-    public byte[] getDevicePicture() {
-        return devicePicture;
+    public String getDevicePictureName() {
+        return devicePictureName;
     }
 
-    public void setDevicePicture(byte[] devicePicture) {
-        this.devicePicture = devicePicture;
+    public void setDevicePictureName(String devicePictureName) {
+        this.devicePictureName = devicePictureName;
     }
 
     public List<DeviceInformation> getDeviceInformations() {

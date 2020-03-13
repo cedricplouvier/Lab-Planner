@@ -4,6 +4,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
 import java.sql.Blob;
+import java.util.List;
 
 
 @Entity
@@ -14,7 +15,8 @@ public class DeviceInformation extends AbstractPersistable<Long> {
     private String informationName;
     @Column
     private String information;
-
+    @Column
+    private List<String> fileURLs;
 
     //Constructors
     public DeviceInformation(){

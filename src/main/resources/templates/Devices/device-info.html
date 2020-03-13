@@ -13,7 +13,30 @@
         var deviceList = new List('devices', options);
     }
 </script>
+<script>
+    $(document).ready(function(){
+        // Search on name column only
+        $(dev).keyup(function(){
+            // Search Text
+            var search = $(this).val();
 
+            // Hide all table tbody rows
+            $('table tbody tr').hide();
+
+            // Count total search result
+            var len = $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').length;
+
+            if(len > 0){
+                // Searching text in columns and show match row
+                $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').each(function(){
+                    $(this).closest('tr').show();
+                });
+            }else{
+                $('.notfound').show();
+            }
+        });
+    });
+</script>
 <div class="container">
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
@@ -56,9 +79,7 @@
                     <div class="col" >
                     </div>
                     <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
-                        <img th:src="*{'data:image/jpg;base64,'+image}" alt="" />
-
-<!--                        <span class="fa fa-image" style="font-size:50px;"></span>-->
+                        <img th:src="${(device.getDeviceType().getDevicePictureName() != null && !#strings.isEmpty(device.getDeviceType().getDevicePictureName())) ? '/images/'+device.getDeviceType().getDevicePictureName() : '/images/placeholder.jpg'}" />
                     </div>
                 </div>
             </div>
