@@ -112,9 +112,11 @@
             <systemPath>C:/Users/Dieter Balemans/IdeaProjects/common/target/common-0.0.1-SNAPSHOT.jar</systemPath>
         </dependency>
         -->
+
     </dependencies>
 
     <build>
+        <finalName>spring-mvc</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

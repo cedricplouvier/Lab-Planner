@@ -3,9 +3,12 @@
 <head th:replace="navbar :: head (title='#{homepage}')"></head>
 <body>
 
-<div th:replace="navbar :: navbar"></div>
+<div class ="container" >
+    <div th:replace="navbar :: navbar"></div>
 
-<h1>Homepage</h1>
+    <h1>Homepage</h1>
 
+    <div th:replace="footer :: footer"></div>
+</div>
 </body>
 </html>
