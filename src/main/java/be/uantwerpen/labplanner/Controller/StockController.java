@@ -1,6 +1,7 @@
 package be.uantwerpen.labplanner.Controller;
 
 
+import be.uantwerpen.labplanner.Service.ProductService2;
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.service.stock.ProductService;
@@ -20,7 +21,7 @@ import javax.validation.Valid;
 public class StockController {
 
     @Autowired
-    private ProductService productService;
+    private ProductService2 productService;
     @Autowired
     private TagService tagService;
 
@@ -59,7 +60,7 @@ public class StockController {
             model.addAttribute("allTags", tagService.findAll());
             return "Stock/products-manage";
         }
-        productService.save(product);
+        productService.saveSomeAttributes(product);
         return "redirect:/products";
     }
     @RequestMapping(value="/products/{id}/delete")
