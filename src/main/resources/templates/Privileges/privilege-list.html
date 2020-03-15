@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{Privilege Management}')"></head>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<body onload="initPage()">
+<script type="text/javascript">
+    function initPage(){
+        var options = {
+            valueNames: [ 'name', 'description']
+        };
+        var privilegeList = new List('privilege-list', options);
+    }
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $("#search").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#PrivilegeTable tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+<div class="container">
+    <!-- Import menu bar -->
+    <div th:replace="navbar :: navbar"></div>
+    <div class="content">
+        <div id="privilege-list">
+            <a href="/privileges/put" class="btn btn-primary"
+               th:text="#{privileges.create}"></a>
+
+            <!-- still problem when u want to delete a role when this role is in use. -->
+            <a href="/users" class="btn btn-outline-secondary"
+               th:text="#{users.page}"></a>
+            <a href="/roles" class="btn btn-outline-secondary"
+               th:text="#{roles.page}"></a>
+            <input class="float-right" id="search" placeholder="Search" />
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th th:text="#{privileges.id}"></th>
+                    <th th:text="#{privileges.name}"></th>
+                    <th th:text="#{privileges.description}"></th>
+                    <th></th>
+
+
+                </tr>
+                </thead>
+                <!-- IMPORTANT, class="list" have to be at tbody -->
+
+                <tbody class="list" id="PrivilegeTable">
+                <tr th:each="privilege : ${allPrivileges}">
+                    <td class="ID" th:value="${privilege.id}" th:text="${privilege.id }"></td>
+                    <td class="Name" th:value="${privilege.name}" th:text="${privilege.name }"></td>
+                    <td class="Description" th:value="${privilege.description}" th:text="${privilege.description }"></td>
+                    <td>
+                        <a th:href="@{/privileges/{id}/(id=${privilege.id})}"><span
+                                class="fas fa-edit"></span></a>&nbsp;
+                        <a th:href="@{/privileges/{id}/delete(id=${privilege.id})}">
+                            <span class="fas fa-trash"></span></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <br>
+
+
+    </div>
+    <div th:replace="footer :: footer"></div>
+</div>
+</div>
+</body>
+</html>

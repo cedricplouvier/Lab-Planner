@@ -216,15 +216,15 @@ public class DatabaseLoader {
         roleRepository.save(administrator);
 
 
-        User u1 = new User("Cedric","PW");
-        User u2 = new User("Ruben","PW");
-        User u3 = new User("Jaimie","PW");
-        User u4 = new User("Ali","PW");
-        User u5 = new User("Timo","PW");
-        User u6 = new User("Ondrej","PW");
-        User u7 = new User("Bachelor","PW");
-        User u8 = new User("Master","PW");
-        User u9 = new User("Researcher","PW");
+        User u1 = new User("Cedric","PW","","Cedric","Plouvier","20152267","","",null,null,null);
+        User u2 = new User("Ruben","PW","","Ruben","Joosen","20164473","","",null,null,null);
+        User u3 = new User("Jaimie","PW","","Jaimie","Vranckx","20155797","","",null,null,null);
+        User u4 = new User("Ali","PW","","Ali","Amir","20163446","","",null,null,null);
+        User u5 = new User("Timo","PW","","Timo","Nelen","S0162117","","",null,null,null);
+        User u6 = new User("Ondrej","PW","","Ondrej","Bures","20160002","","",null,null,null);
+        User u7 = new User("Bachelor","PW","","Bach","Student","20170001","","",null,null,null);
+        User u8 = new User("Master","PW","","Mas","Student","20160009","","",null,null,null);
+        User u9 = new User("Researcher","PW","","Researcher","Developper","20100001","","",null,null,null);
 
         Set<Role> roles = new HashSet<>();
         roles.add(administrator);

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{User Management}')"></head>
+<body onload = "initPage()">
+<script type="text/javascript">
+    function initPage(){
+        $('#roles').multiSelect({
+            selectableHeader: '<div class="custom-header" th:text="#{selectable.items}"></div>',
+            selectionHeader: '<div class="custom-header" th:text="#{selected.items}"></div>'
+        });
+    }
+</script>
+<div class = "container">
+<div th:replace="navbar :: navbar"></div>
+    <form action="#" th:action="@{/users/{id}(id=${user})}"
+          th:object="${user}" method="post">
+        <input th:type="hidden" th:field="*{id}"/>
+
+        <div class="form-group">
+            <label class="control-label" th:text="#{users.firstName}"></label>
+            <input class="form-control" type = text th:field="*{firstName}"/>
+
+        </div>
+        <div class="form-group">
+            <label class="control-label" th:text="#{users.lastName}"></label>
+            <input class="form-control" type = text th:field="*{lastName}"/>
+
+        </div>
+        <div class="form-group">
+            <label class="control-label" th:text="#{users.username}"></label>
+            <input class="form-control" type = text th:field="*{username}"/>
+
+        </div>
+        <div class="form-group">
+            <label class="control-label" th:text="#{users.password}"></label>
+            <input class="form-control" type = text th:field="*{password}"/>
+
+        </div>
+        <div class="form-group">
+            <label class="control-label" th:text="#{users.email}"></label>
+            <input class="form-control" type = text th:field="*{email}"/>
+
+        </div>
+        <div class="form-group">
+            <label class="control-label" th:text="#{users.uaNumber}"></label>
+            <input class="form-control" type = text th:field="*{uaNumber}"/>
+
+        </div>
+        <div class="form-group">
+            <label class="control-label" th:text="#{users.telephone}"></label>
+            <input class="form-control" type = text th:field="*{telephone}"/>
+
+        </div>
+        <div class="form-group">
+            <label class="control-label" th:text="#{users.location}"></label>
+            <input class="form-control" type = text th:field="*{location}"/>
+
+        </div>
+        <div> <label th:text="#{users.roles}"></label>
+            <tr></tr>
+            <select th:field="*{roles}" multiple="multiple" >
+                <option th:each="role : ${allRoles}"
+                        th:value="${{role}}"
+                        th:text="${role.name}">Wireframe</option>
+            </select>
+        </div>
+
+
+
+
+
+
+        <p>
+            <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
+            <a href="/users" th:text="#{close}" class="btn btn-secondary">Close</a>
+
+        </p>
+    </form>
+
+
+
+
+</div>
+</body>
+</html>

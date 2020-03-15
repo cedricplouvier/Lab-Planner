@@ -15,7 +15,7 @@ public class HomeController {
     }
     @RequestMapping("/usermanagement")
     public String showUsermanagementPage(){
-        return "usermanagement";
+        return "redirect:/users";
     }
     @RequestMapping("/stockmanagement")
     public String showStockmanagementPage(){
