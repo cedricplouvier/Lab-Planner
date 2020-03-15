@@ -25,7 +25,7 @@ public class HomeController {
     @RequestMapping("/stockmanagement")
     public String showStockmanagementPage(){
         logger.info("showStochmanagementPage");
-        return "stockmanagement";
+        return "redirect:/products";
     }
     @RequestMapping("/planningtool")
     public String showPlanningtoolPage(){
