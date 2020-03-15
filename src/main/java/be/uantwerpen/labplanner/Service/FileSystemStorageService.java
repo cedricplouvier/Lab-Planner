@@ -30,28 +30,29 @@ public class FileSystemStorageService implements StorageService {
 		this.rootLocation = Paths.get(properties.getLocation());
 	}
 
-	@Override
-	public void store(MultipartFile file) {
-		String filename = StringUtils.cleanPath(file.getOriginalFilename());
-		try {
-			if (file.isEmpty()) {
-				throw new StorageException("Failed to store empty file " + filename);
-			}
-			if (filename.contains("..")) {
-				// This is a security check
-				throw new StorageException(
-						"Cannot store file with relative path outside current directory "
-								+ filename);
-			}
-			try (InputStream inputStream = file.getInputStream()) {
-				Files.copy(inputStream, this.rootLocation.resolve(filename),
-					StandardCopyOption.REPLACE_EXISTING);
-			}
-		}
-		catch (IOException e) {
-			throw new StorageException("Failed to store file " + filename, e);
-		}
-	}
+//will be used in next story to upload files
+//	@Override
+//	public void store(MultipartFile file) {
+//		String filename = StringUtils.cleanPath(file.getOriginalFilename());
+//		try {
+//			if (file.isEmpty()) {
+//				throw new StorageException("Failed to store empty file " + filename);
+//			}
+//			if (filename.contains("..")) {
+//				// This is a security check
+//				throw new StorageException(
+//						"Cannot store file with relative path outside current directory "
+//								+ filename);
+//			}
+//			try (InputStream inputStream = file.getInputStream()) {
+//				Files.copy(inputStream, this.rootLocation.resolve(filename),
+//					StandardCopyOption.REPLACE_EXISTING);
+//			}
+//		}
+//		catch (IOException e) {
+//			throw new StorageException("Failed to store file " + filename, e);
+//		}
+//	}
 
 	@Override
 	public Stream<Path> loadDir(String fileLocation) {
@@ -67,17 +68,7 @@ public class FileSystemStorageService implements StorageService {
 		}
 	}
 
-	@Override
-	public Stream<Path> loadAll() {
-		try {
-			return Files.walk(this.rootLocation, 1)
-					.filter(path -> !path.equals(this.rootLocation))
-					.map(this.rootLocation::relativize);
-		}
-		catch (IOException e) {
-			throw new StorageException("Failed to read stored files", e);
-		}
-	}
+
 	@Override
 	public Path load(String filename) {
 		return rootLocation.resolve(filename);
@@ -101,9 +92,10 @@ public class FileSystemStorageService implements StorageService {
 		}
 	}
 
-	@Override
-	public void deleteAll() {
-		FileSystemUtils.deleteRecursively(rootLocation.toFile());
-	}
+	//will be used in next story to delete files
+//	@Override
+//	public void deleteAll() {
+//		FileSystemUtils.deleteRecursively(rootLocation.toFile());
+//	}
 
 }
