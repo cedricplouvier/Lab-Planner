@@ -65,8 +65,8 @@
                 <!-- IMPORTANT, class="list" have to be at tbody -->
                 <tbody class="list">
                 <tr th:each="deviceType : ${allDeviceTypes}">
-                    <td class='deviceTypeName' th:value="${deviceType.getDevicetypename()}"
-                        th:text="${deviceType.getDevicetypename() }" >Device Name</td>
+                    <td class='deviceTypeName' th:value="${deviceType.getDeviceTypeName()}"
+                        th:text="${deviceType.getDeviceTypeName() }" >Device Name</td>
                 </tr>
                 <tr class='notfound'>
                     <td colspan='4' th:text="#{device.norecord}">No record found</td>
