@@ -15,33 +15,50 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import java.util.Locale;
 
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
+
 @SpringBootApplication
-public class LabplannerApplication {
+public class LabplannerApplication extends WebMvcConfigurerAdapter {
 
     public static void main(String[] args) {
         SpringApplication.run(LabplannerApplication.class, args);
     }
 
-
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry)
+    {
+        if (!registry.hasMappingForPattern("/webjars/**")) {
+            registry.addResourceHandler("/webjars/**").addResourceLocations
+                    ( "classpath:/META-INF/resources/webjars/");
+        }
+    }
 
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale((Locale.ENGLISH));
+        slr.setDefaultLocale((Locale.US));
         return slr;
     }
+
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
         LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
         lci.setParamName("lang");
         return lci;
     }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(localeChangeInterceptor());
+    }
+
     @Order(Ordered.HIGHEST_PRECEDENCE)
     @Configuration
     protected static class AuthenticationSecurity extends
@@ -59,19 +76,4 @@ public class LabplannerApplication {
         return (NoOpPasswordEncoder)
                 NoOpPasswordEncoder.getInstance();
     }
-    @Configuration
-    @EnableWebSecurity
-    public class SecurityConfiguration  extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity http) throws Exception{
-            http.authorizeRequests().antMatchers("/").permitAll();
-        }
-    }
-
-
-
-
-
-
-
 }
