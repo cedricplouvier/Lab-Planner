@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"   xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css">
 
 <!-- Import header -->
@@ -62,7 +62,7 @@
                 <thead>
                 <tr>
                     <th th:text="#{product}">Product Name</th>
-                    <th th:text="#{product.left}">Amount left</th> <th></th>
+                    <th th:text="#{product.left}">Amount left</th>
                 </tr>
                 </thead>
                 <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -70,10 +70,11 @@
                 <tr th:each="product : ${allProducts}">
                     <td th:text="${product.name}"/>
                     <td th:text="${product.getStockLevel() + product.getUnits().getSIString()}"/>
-
-
-
                     <td>
+                        <a th:href="@{/products/{id}/(id=${product.id})}"  th:text="#{product.manage}"
+                                class="btn btn-primary"></a>&nbsp;
+                    </td>
+
 
                 </tr>
                 <tr class='notfound'>
@@ -83,9 +84,14 @@
             </table>
             <a href="tags" class="btn btn-primary" th:text="#{product.manage}"
             >Manage device types</a>
+
         </div>
     </div>
 </div>
+
+
+
 <div th:replace="footer :: footer"></div>
 </body>
 </html>
+
