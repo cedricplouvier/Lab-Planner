@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Import header -->
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<head th:replace="navbar :: head (title='#{devices}')"></head>
+<body onload="initPage()">
+<script type="text/javascript">
+    function initPage(){
+        var options = {
+            valueNames: [ 'deviceName', 'deviceType']
+        };
+        var deviceList = new List('devices', options);
+    }
+</script>
+<script>
+    $(document).ready(function(){
+        // Search on name column only
+        $(dev).keyup(function(){
+            // Search Text
+            var search = $(this).val();
+
+            // Hide all table tbody rows
+            $('table tbody tr').hide();
+
+            // Count total search result
+            var len = $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').length;
+
+            if(len > 0){
+                // Searching text in columns and show match row
+                $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').each(function(){
+                    $(this).closest('tr').show();
+                });
+            }else{
+                $('.notfound').show();
+            }
+        });
+    });
+</script>
+<div class="container">
+    <!-- Import menu bar -->
+    <div th:replace="navbar :: navbar"></div>
+    <div class="content">
+        <div id="device-list">
+
+            <h3 th:text="#{device.information}">Device information</h3>
+            <hr class="my-4">
+            <h5 th:text="#{device.general}">General information</h5>
+
+            <div class="container">
+                <div class="row" >
+                    <div class="col-3" >
+                                    <table class="table table-condensed table-responsive table-user-information" style="margin-right: auto;margin-left: auto;display: table">
+                                        <tbody>
+                                        <tr>
+                                            <td th:text="#{device.name}">Device name:</td>
+                                            <td th:text="${device.getDevicename()}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td th:text="#{device.type}">Device type:</td>
+                                            <td th:text="${device.deviceType.deviceTypeName}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td th:text="#{device.overnight}">OvernightUse:</td>
+                                            <td th:text="${device.deviceType.overnightuse}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td th:text="#{device.comment}">Device Comment:</td>
+                                            <td th:text="${device.getComment()}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                    </div>
+                    <div class="col" >
+                    </div>
+                    <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+                        <img th:src="${(device.getDeviceType().getDevicePictureName() != null && !#strings.isEmpty(device.getDeviceType().getDevicePictureName())) ? '/files/images/'+device.getDeviceType().getDevicePictureName() : '/images/placeholder.jpg'}" />
+                    </div>
+                </div>
+            </div>
+            <h5 th:text="#{device.other}">Other Information</h5>
+            <hr class="my-4">
+            <div class="container" th:each="deviceInfo : ${device.getDeviceType().getDeviceInformation()}">
+                <div class="card" style="margin: 10px">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${deviceInfo.getInformationName()}"></h5>
+                        <p class="card-text" th:text="${deviceInfo.getInformation()}"></p>
+                        <div>
+                            <ul>
+                                <div th:if="${files}!= null  or ${deviceInfo.getFiles().size()==0}"th:each="file : ${files}">
+                                    <li  th:if="${#strings.contains(file, filename)}" th:each="filename : ${deviceInfo.getFiles()}">
+                                        <a   th:href="${file}" th:text="${filename}"></a>
+                                    </li>
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <a href="/devices" class="btn btn-primary" th:text="#{device.back}"></a>
+        </div>
+    </div><i class="glyphicon glyphicon-search"></i>
+    <div th:replace="footer :: footer"></div>
+</div>
+</body>
+</html>

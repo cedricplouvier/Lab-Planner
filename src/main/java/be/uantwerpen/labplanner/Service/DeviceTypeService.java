@@ -1,6 +1,5 @@
 package be.uantwerpen.labplanner.Service;
 
-import be.uantwerpen.labplanner.Model.Device;
 import be.uantwerpen.labplanner.Model.DeviceType;
 
 import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
@@ -26,8 +25,8 @@ public class DeviceTypeService {
         return this.deviceTypeRepository.findById(id);
     }
 
-    public DeviceType findByDevicetypeName(String devicetypename) {
-        return this.deviceTypeRepository.findByDevicetypename(devicetypename);
+    public Optional<DeviceType> findByDevicetypeName(String deviceTypeName) {
+        return this.deviceTypeRepository.findByDeviceTypeName(deviceTypeName);
     }
     public void saveSomeAttributes(DeviceType deviceType) {
         DeviceType tempDeviceType = deviceType.getId() == null?null:
@@ -35,7 +34,7 @@ public class DeviceTypeService {
 
         if (tempDeviceType != null){
             tempDeviceType.setOvernightuse(deviceType.getOvernightuse());
-            tempDeviceType.setDevicetypename(deviceType.getDevicetypename());
+            tempDeviceType.setDeviceTypeName(deviceType.getDeviceTypeName());
             deviceTypeRepository.save(tempDeviceType);
         }
         else{
