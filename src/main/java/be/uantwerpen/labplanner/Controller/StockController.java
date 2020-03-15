@@ -47,6 +47,7 @@ public class StockController {
     @RequestMapping(value="/products/{id}", method= RequestMethod.GET)
     public String viewEditProduct(@PathVariable Long id, final ModelMap model){
         model.addAttribute("allProducts", productService.findAll());
+        model.addAttribute("allTags", tagService.findAll());
         model.addAttribute("product",productService.findById(id).orElse(null));
         return "/Stock/products-manage";
     }

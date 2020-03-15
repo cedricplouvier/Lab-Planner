@@ -71,8 +71,8 @@
                     <td th:text="${product.name}"/>
                     <td th:text="${product.getStockLevel() + product.getUnits().getSIString()}"/>
                     <td>
-                        <a th:href="@{/products/{id}/(id=${product.id})}"  th:text="#{product.manage}"
-                                class="btn btn-primary"></a>&nbsp;
+                        <a th:href="@{/products/{id}/(id=${product.id})}"  th:text="#{stock.manage}"
+                                class="btn btn-secondary btn-sm"></a>&nbsp;
                     </td>
 
 
