@@ -3,9 +3,14 @@ package be.uantwerpen.labplanner.Model;
 import be.uantwerpen.labplanner.Repository.DeviceInformationRepository;
 import be.uantwerpen.labplanner.Repository.DeviceRepository;
 import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
+import be.uantwerpen.labplanner.common.model.stock.Product;
+import be.uantwerpen.labplanner.common.model.stock.Tag;
+import be.uantwerpen.labplanner.common.model.stock.Unit;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
+import be.uantwerpen.labplanner.common.repository.stock.ProductRepository;
+import be.uantwerpen.labplanner.common.repository.stock.TagRepository;
 import be.uantwerpen.labplanner.common.repository.users.PrivilegeRepository;
 import be.uantwerpen.labplanner.common.repository.users.RoleRepository;
 import be.uantwerpen.labplanner.common.repository.users.UserRepository;
@@ -17,13 +22,13 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Service
-@Profile("default")
 
 public class DatabaseLoader {
 
@@ -33,9 +38,11 @@ public class DatabaseLoader {
     private final DeviceTypeRepository deviceTypeRepository;
     private final DeviceRepository deviceRepository;
     private final DeviceInformationRepository deviceInformationRepository;
+    private final ProductRepository productRepository;
+    private final TagRepository tagRepository;
 
     @Autowired
-    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository, DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository) {
+    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository) {
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
@@ -43,6 +50,10 @@ public class DatabaseLoader {
         this.deviceTypeRepository = deviceTypeRepository;
         this.deviceRepository = deviceRepository;
         this.deviceInformationRepository = deviceInformationRepository;
+        //ProductRepositories
+        this.productRepository = productRepository;
+        this.tagRepository = tagRepository;
+
     }
 
     @PostConstruct
@@ -368,5 +379,41 @@ public class DatabaseLoader {
         deviceRepository.save(d8);
         Device d9 = new Device("Oven 3",t7);
         deviceRepository.save(d9);
+
+
+
+        //create some products
+        Tag tag1 = new Tag("Beton");
+        List<Tag> tags1 = new ArrayList<>();
+        tags1.add(tag1);
+        tagRepository.save(tag1);
+        Tag tag2 = new Tag("Asfalt");
+        List<Tag> tags2 = new ArrayList<>();
+        tags2.add(tag2);
+        tagRepository.save(tag2);
+        //asfalt+beton
+        List<Tag> tags3 = new ArrayList<>();
+        tags3.add(tag1);
+        tags3.add(tag2);
+        Tag tag4 = new Tag("Bindmiddel");
+        List<Tag> tags4 = new ArrayList<>();
+        tags4.add(tag4);
+        tagRepository.save(tag4);
+        Product pr1 = new Product("Zand",lorem.getWords(20),1.0, 5.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        productRepository.save(pr1);
+        Product pr2 = new Product("Water",lorem.getWords(20),1.0, 99.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        productRepository.save(pr2);
+        Product pr3 = new Product("Kalk",lorem.getWords(20),1.0, 122.0, 1.0, 1.0, Unit.UNIT, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        productRepository.save(pr3);
+        Product pr4 = new Product("grind",lorem.getWords(20),1.0, 56.0, 1.0, 1.0, Unit.LITRE, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        productRepository.save(pr4);
+        Product pr5 = new Product("Bitumen",lorem.getWords(20),1.0, 12.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
+        productRepository.save(pr5);
+        Product pr6 = new Product("Klei",lorem.getWords(20),1.0, 1.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        productRepository.save(pr6);
+        Product pr7 = new Product("Leem",lorem.getWords(20),1.0, 1580.0, 1.0, 1.0, Unit.UNIT, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        productRepository.save(pr7);
+        Product pr8 = new Product("Mineralen",lorem.getWords(20),1.0, 90.0, 1.0, 1.0, Unit.LITRE, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        productRepository.save(pr8);
     }
 }

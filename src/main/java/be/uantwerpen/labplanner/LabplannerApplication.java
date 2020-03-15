@@ -3,10 +3,8 @@ package be.uantwerpen.labplanner;
 import be.uantwerpen.labplanner.Service.StorageService;
 import be.uantwerpen.labplanner.common.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +22,9 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import java.util.Locale;
+
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
+
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
 public class LabplannerApplication extends WebMvcConfigurerAdapter {
@@ -41,22 +41,26 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
                     ( "classpath:/META-INF/resources/webjars/");
         }
     }
+
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale((Locale.ENGLISH));
+        slr.setDefaultLocale((Locale.US));
         return slr;
     }
+
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
         LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
         lci.setParamName("lang");
         return lci;
     }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
     }
+
     @Order(Ordered.HIGHEST_PRECEDENCE)
     @Configuration
     protected static class AuthenticationSecurity extends

@@ -42,6 +42,17 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>3.3.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
@@ -125,9 +136,11 @@
             <systemPath>C:/Users/Dieter Balemans/IdeaProjects/common/target/common-0.0.1-SNAPSHOT.jar</systemPath>
         </dependency>
         -->
+
     </dependencies>
 
     <build>
+        <finalName>spring-mvc</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
