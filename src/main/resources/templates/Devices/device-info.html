@@ -79,31 +79,34 @@
                     <div class="col" >
                     </div>
                     <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
-                        <img th:src="${(device.getDeviceType().getDevicePictureName() != null && !#strings.isEmpty(device.getDeviceType().getDevicePictureName())) ? '/images/'+device.getDeviceType().getDevicePictureName() : '/images/placeholder.jpg'}" />
+                        <img th:src="${(device.getDeviceType().getDevicePictureName() != null && !#strings.isEmpty(device.getDeviceType().getDevicePictureName())) ? '/files/images/'+device.getDeviceType().getDevicePictureName() : '/images/placeholder.jpg'}" />
                     </div>
                 </div>
             </div>
             <h5>Other Information</h5>
-
             <hr class="my-4">
-
             <div class="container" th:each="deviceInfo : ${device.getDeviceType().getDeviceInformation()}">
                 <div class="card" style="margin: 10px">
                     <div class="card-body">
                         <h5 class="card-title" th:text="${deviceInfo.getInformationName()}">Card title</h5>
                         <p class="card-text" th:text="${deviceInfo.getInformation()}">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        <div>
+                            <ul>
+                                <div th:if="${files}!= null  or ${deviceInfo.getFiles().size()==0}"th:each="file : ${files}">
+                                    <li  th:if="${#strings.contains(file, filename)}" th:each="filename : ${deviceInfo.getFiles()}">
+                                        <a   th:href="${file}" th:text="${filename}"></a>
+                                    </li>
+                                </div>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
             <hr class="my-4">
-
             <a href="/devices" class="btn btn-primary">Back</a>
         </div>
     </div><i class="glyphicon glyphicon-search"></i>
-
-
     <div th:replace="footer :: footer"></div>
-
 </div>
 </body>
 </html>

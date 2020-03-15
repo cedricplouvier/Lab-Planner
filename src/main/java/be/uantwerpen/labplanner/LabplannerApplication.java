@@ -1,10 +1,13 @@
 package be.uantwerpen.labplanner;
 
+import be.uantwerpen.labplanner.Service.StorageService;
 import be.uantwerpen.labplanner.common.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -22,6 +25,7 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import java.util.Locale;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @SpringBootApplication
+@EnableConfigurationProperties(StorageProperties.class)
 public class LabplannerApplication extends WebMvcConfigurerAdapter {
 
     public static void main(String[] args) {
@@ -65,4 +69,5 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
         return (NoOpPasswordEncoder)
                 NoOpPasswordEncoder.getInstance();
     }
+
 }

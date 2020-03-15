@@ -1,10 +1,14 @@
 package be.uantwerpen.labplanner.Model;
 
+import be.uantwerpen.labplanner.Exception.StorageException;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,12 +50,28 @@ public class DeviceType extends AbstractPersistable<Long>{
     public DeviceType() {
         this.deviceTypeName = DEFAULT_DEVICTYPENAME;
         this.overnightuse = DEFAULT_OVERNIGHTUSE;
+        initDirectory();
     }
     public DeviceType(String deviceTypeName,Boolean overnightuse) {
         this.deviceTypeName = deviceTypeName;
         this.overnightuse = overnightuse;
+        initDirectory();
     }
 
+    private void initDirectory(){
+        try {
+            Files.createDirectories(Paths.get("upload-dir/" + deviceTypeName));
+        }
+        catch (IOException e) {
+            throw new StorageException("Could not initialize storage", e);
+        }
+        try {
+            Files.createDirectories(Paths.get("upload-dir/images"));
+        }
+        catch (IOException e) {
+            throw new StorageException("Could not initialize storage", e);
+        }
+    }
     //Add
 
 

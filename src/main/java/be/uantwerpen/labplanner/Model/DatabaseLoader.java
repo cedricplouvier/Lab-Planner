@@ -303,19 +303,36 @@ public class DatabaseLoader {
         for (DeviceType devicetype : deviceTypes) {
             List<DeviceInformation> deviceinformations = new ArrayList<DeviceInformation>();
 
+            //Add a new block for each default information type (Maintenance , Calibration ...)
             for (int current = 0; current < DeviceType.getDefaultInformationtypes().size(); current++) {
+                //Add new device information block
                 DeviceInformation i = new DeviceInformation(DeviceType.getDefaultInformationtypes().get(current), lorem.getWords(20));
+
+                //Adding some files for Oven type , files were already loaded into the correct directory
+                if(devicetype.getDeviceTypeName().equals("Oven")){
+                    if(current==0){
+                        i.addFile("placeholder.pdf");
+                    }else if(current==2){
+                        i.addFile("placeholder.xlsx");
+                        i.addFile("placeholder.jpg");
+                    }
+                }
                 deviceinformations.add(i);
                 deviceInformationRepository.save(i);
             }
 
-            devicetype.setDeviceInformation(deviceinformations);
+            //Add an extra block of info for oven to show full possibilities
+            if(devicetype.getDeviceTypeName().equals("Oven")) {
+                DeviceInformation i = new DeviceInformation("Other", lorem.getWords(10));
+                deviceinformations.add(i);
+                deviceInformationRepository.save(i);
+            }
+                devicetype.setDeviceInformation(deviceinformations);
         }
-        String fileName = "static/images/Oven.jpg";
 
-        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-
+        //Set the oven profile pic , the picture is already placed in the root directory /upload-dir/images where all device pictures are kept
         t7.setDevicePictureName("Oven.jpg");
+
         //Save all devicetypes
         deviceTypeRepository.save(t1);
         deviceTypeRepository.save(t2);

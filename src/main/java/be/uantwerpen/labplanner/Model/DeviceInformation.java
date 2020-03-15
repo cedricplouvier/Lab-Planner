@@ -3,7 +3,10 @@ package be.uantwerpen.labplanner.Model;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -15,8 +18,9 @@ public class DeviceInformation extends AbstractPersistable<Long> {
     private String informationName;
     @Column
     private String information;
-    @Column
-    private List<String> fileURLs;
+
+    @ElementCollection
+    private List<String> files = new ArrayList<String>();
 
     //Constructors
     public DeviceInformation(){
@@ -38,5 +42,17 @@ public class DeviceInformation extends AbstractPersistable<Long> {
 
     public void setInformation(String information) {
         this.information = information;
+    }
+
+    public void addFile(String file){
+        files.add(file);
+    }
+
+    public List<String> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<String> files) {
+        this.files = files;
     }
 }
