@@ -1,32 +1,41 @@
 package be.uantwerpen.labplanner.Controller;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-
-
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @Controller
 public class HomeController {
+
+    Logger logger = LoggerFactory.getLogger(HomeController.class);
+
     @RequestMapping({"/","/home"})
     public String showHomepage(){
+        logger.info("showHomepage");
         return "homepage";
     }
     @RequestMapping("/usermanagement")
     public String showUsermanagementPage(){
         return "redirect:/users";
+        logger.info("showUserManagementPage");
+        return "usermanagement";
     }
     @RequestMapping("/stockmanagement")
     public String showStockmanagementPage(){
-        return "stockmanagement";
+        logger.info("showStochmanagementPage");
+        return "redirect:/products";
     }
-    @RequestMapping("/planingtool")
+    @RequestMapping("/planningtool")
     public String showPlanningtoolPage(){
+        logger.info("showPlanningtoolPage");
         return "planningtool";
     }
     @RequestMapping("/devicemanagement")
     public String showDevicemanagementPage(){
+        logger.info("showDevicemanagementPage");
         return "redirect:/devices";
     }
 }

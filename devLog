@@ -1503,6 +1503,7 @@ org.springframework.expression.spel.SpelEvaluationException: EL1011E: Method cal
 2020-03-15 17:19:04,877 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-8080-exec-1] Initializing Servlet 'dispatcherServlet'
 2020-03-15 17:19:04,885 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-8080-exec-1] Completed initialization in 8 ms
 2020-03-15 17:19:08,546 INFO be.uantwerpen.labplanner.common.service.SecurityService [http-nio-8080-exec-3] User 35 logged in!
+<<<<<<< HEAD
 2020-03-15 21:32:42,859 INFO org.springframework.boot.StartupInfoLogger [main] Starting LabplannerApplication on RUBEN-LATITUDE with PID 11052 (C:\Users\ruben\OneDrive\Documenten\labplanner\target\classes started by ruben in C:\Users\ruben\OneDrive\Documenten\labplanner)
 2020-03-15 21:32:42,862 INFO org.springframework.boot.SpringApplication [main] The following profiles are active: dev
 2020-03-15 21:32:43,652 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
@@ -1549,3 +1550,5 @@ org.springframework.expression.spel.SpelEvaluationException: EL1011E: Method cal
 2020-03-15 21:33:38,615 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-6] showPlanningtoolPage
 2020-03-15 21:33:47,574 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-8] showUserManagementPage
 2020-03-15 21:33:47,574 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-8] showUserManagementPage
+=======
+>>>>>>> origin/release/sprint1

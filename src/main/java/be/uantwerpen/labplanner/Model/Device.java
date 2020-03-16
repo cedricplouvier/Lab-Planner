@@ -26,7 +26,8 @@ public class Device extends AbstractPersistable<Long> {
     @OneToOne
     @JoinColumn(name = "deviceType", nullable = false)
     private DeviceType deviceType;
-
+    @Column
+    private String Comment;
     @Column(
             name = "date_created",
             nullable = false,
@@ -100,5 +101,13 @@ public class Device extends AbstractPersistable<Long> {
 
     public void setUpdateDateTime(LocalDateTime updateDateTime) {
         this.updateDateTime = updateDateTime;
+    }
+
+    public String getComment() {
+        return Comment;
+    }
+
+    public void setComment(String comment) {
+        Comment = comment;
     }
 }

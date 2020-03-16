@@ -53,27 +53,52 @@
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
     <div class="content">
-        <div id="device-list">
-            <input type='text' id='txt_name' th:placeholder="#{device.type.search}">
+        <div id="tag-list">
+            <input type='text' id='txt_name' th:placeholder="#{product.tag.search}">
 
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th th:text="#{device.type}">Device Type Name</th>
+                    <th th:text="#{product.tag}">Product Tag Name</th>
                 </tr>
                 </thead>
                 <!-- IMPORTANT, class="list" have to be at tbody -->
                 <tbody class="list">
-                <tr th:each="deviceType : ${allDeviceTypes}">
-                    <td class='deviceTypeName' th:value="${deviceType.getDeviceTypeName()}"
-                        th:text="${deviceType.getDeviceTypeName() }" >Device Name</td>
+                <tr th:each="tag : ${allProductTags}">
+                    <td class='deviceTypeName' th:value="${tag.getName()}"
+                        th:text="${tag.name}" >Tag Name</td>
                 </tr>
                 <tr class='notfound'>
-                    <td colspan='4' th:text="#{device.norecord}">No record found</td>
+                    <td colspan='4' th:text="#{tag.norecord}">No record found</td>
                 </tr>
                 </tbody>
             </table>
-            <a href="/devices" class="btn btn-primary" th:text="#{device.return}" >Return to devices</a>
+            <a href="/products" class="btn btn-primary" th:text="#{product.return}" >Return to products</a>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" th:text="#{tag.create}">
+                Create new tag
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel" th:text="#{tag.create}">Modal title</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            ...
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{close}">Close</button>
+                            <button type="button" class="btn btn-primary" th:text="#{save}">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

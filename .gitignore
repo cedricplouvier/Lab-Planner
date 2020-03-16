@@ -1,2 +1,31 @@
+<<<<<<< HEAD
+/.idea/
+=======
 .idea/
+HELP.md
 target/
+>>>>>>> ca6696a5835792b0c395e839805e4a7bcf8ec831
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+
+.mvn
+*.mvn
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
