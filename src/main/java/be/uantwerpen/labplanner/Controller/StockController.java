@@ -57,7 +57,7 @@ public class StockController {
                           final ModelMap model){
         if(result.hasErrors()){
             model.addAttribute("allTags", tagService.findAll());
-            return "Stock/products-manage";
+            return "Stock/products-list";
         }
         productService.save(product);
         return "redirect:/products";
