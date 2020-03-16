@@ -19,8 +19,9 @@ public class HomeController {
     }
     @RequestMapping("/usermanagement")
     public String showUsermanagementPage(){
+
         logger.info("showUserManagementPage");
-        return "usermanagement";
+        return "redirect:/users";
     }
     @RequestMapping("/stockmanagement")
     public String showStockmanagementPage(){

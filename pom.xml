@@ -80,6 +80,8 @@
             <artifactId>bootstrap</artifactId>
             <version>4.3.0</version>
         </dependency>
+
+
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap-glyphicons</artifactId>
@@ -120,12 +122,14 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
-        <!-- If you use the Nexus Repo (use this one when in doubt) -->
         <dependency>
             <groupId>be.uantwerpen.labplanner</groupId>
             <artifactId>common</artifactId>
             <version>LATEST</version>
         </dependency>
+
+        <!-- If you use the Nexus Repo (use this one when in doubt) -->
+
 
         <!-- If you locally downloaded the library -->
         <!--
