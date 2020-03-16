@@ -1,31 +1,41 @@
 package be.uantwerpen.labplanner.Model;
 
 
-public class Timeslot {
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
-    private TimePoint start;
-    private TimePoint end;
+import javax.persistence.*;
+import java.util.Date;
+
+@Entity
+public class Timeslot extends AbstractPersistable<Long> {
+
+
+    @Temporal(TemporalType.DATE)
+    private Date start;
+    @Temporal(TemporalType.DATE)
+    private Date end;
+
 
     public Timeslot(){}
 
-    public Timeslot(TimePoint start, TimePoint end){
+    public Timeslot(Date start, Date end){
         this.start = start;
         this.end = end;
     }
 
-    public TimePoint getStart() {
+    public Date getStart() {
         return start;
     }
 
-    public void setStart(TimePoint start) {
+    public void setStart(Date start) {
         this.start = start;
     }
 
-    public TimePoint getEnd() {
+    public Date getEnd() {
         return end;
     }
 
-    public void setEnd(TimePoint end) {
+    public void setEnd(Date end) {
         this.end = end;
     }
 }

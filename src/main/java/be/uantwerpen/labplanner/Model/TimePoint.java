@@ -1,13 +1,24 @@
 package be.uantwerpen.labplanner.Model;
 
-public class TimePoint {
+import org.springframework.data.jpa.domain.AbstractPersistable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+
+@Entity
+public class TimePoint extends AbstractPersistable<Long> {
+    @Column(name = "year",nullable = false)
     private int year;
+    @Column(name = "month",nullable = false)
     private int month;
+    @Column(name = "day",nullable = false)
     private int day;
+    @Column(name = "hour",nullable = false)
     private int hour;
+    @Column(name = "min",nullable = false)
     private int min;
 
-    TimePoint(){}
+    public TimePoint(){}
 
     TimePoint(int year, int month, int day, int hour, int min){
         this.year = year;
