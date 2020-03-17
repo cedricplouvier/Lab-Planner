@@ -10,6 +10,19 @@
         });
     }
 </script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    function toggle(source) {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source)
+                checkboxes[i].checked = source.checked;
+        }
+    }
+</script>
+
 <div class = "container">
     <div th:replace="navbar :: navbar"></div>
     <form action="#" th:action="@{/usermanagement/roles/{id}(id=${role})}"
@@ -22,20 +35,19 @@
 
         </div>
 
-        <div> <label th:text="#{roles.privileges}"></label>
-            <tr></tr>
-            <select th:field="*{privileges}" multiple="multiple" >
-                <option th:each="privilege : ${allPrivileges}"
-                        th:value="${{privilege}}"
-                        th:text="${privilege.name}">Wireframe</option>
-            </select>
+        <div>
+            <label class="control-label" th:text="#{roles.privileges}"></label>
         </div>
+        <div>
+            <input type="checkbox" onclick="toggle(this);" /> <b>Check all?</b><br />
+        </div>
+        <div class="form-check">
 
-
-
-
-
-
+            <input th:field ="*{privileges}" class="form-check-input" type="checkbox"
+                   th:each="privilege : ${allPrivileges}"
+                   th:value="${{privilege}}"
+                   th:utext="${privilege.name} + '<br>'">
+        </div>
         <p>
             <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
             <a href="/usermanagement/roles" th:text="#{close}" class="btn btn-secondary">Close</a>

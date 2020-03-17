@@ -10,6 +10,19 @@
         });
     }
 </script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    function toggle(source) {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source)
+                checkboxes[i].checked = source.checked;
+        }
+    }
+</script>
 <div class = "container">
 <div th:replace="navbar :: navbar"></div>
     <form action="#" th:action="@{/usermanagement/users/{id}(id=${user})}"
@@ -36,6 +49,20 @@
             <input class="form-control" type = text th:field="*{password}"/>
 
         </div>
+
+        <div>
+            <label class="control-label" th:text="#{users.roles}"></label>
+        </div>
+        <div>
+            <input type="checkbox" onclick="toggle(this);" /> <b>Check all?</b><br />
+        </div>
+        <div class="form-check">
+            <input th:field ="*{roles}" class="form-check-input" type="checkbox"
+                   th:each="role : ${allRoles}"
+                   th:value="${{role}}"
+                   th:utext="${role.name} + '<br>'">
+        </div>
+
         <div class="form-group">
             <label class="control-label" th:text="#{users.email}"></label>
             <input class="form-control" type = text th:field="*{email}"/>
@@ -56,14 +83,8 @@
             <input class="form-control" type = text th:field="*{location}"/>
 
         </div>
-        <div> <label th:text="#{users.roles}"></label>
-            <tr></tr>
-            <select th:field="*{roles}" multiple="multiple" >
-                <option th:each="role : ${allRoles}"
-                        th:value="${{role}}"
-                        th:text="${role.name}">Wireframe</option>
-            </select>
-        </div>
+
+
 
 
 
