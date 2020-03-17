@@ -57,11 +57,14 @@
             <div class="col">
                 <div class="form-group">
                     <label for="exampleFormControlSelect1" th:text="#{product.unit}">Unit</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
-                        <option th:each="unit : ${units.values()}"
-                                th:value="${units.valueOf(unit)}"
-                                th:text="${product.units}">Wireframe</option>
+                    <select th:field="*{units}" class="form-control" id="exampleFormControlSelect1">
+                        <option th:each="unit : ${units}"
+                                th:value="${unit}"
+                                 th:text="${unit.getSIString()}">Wireframe</option>                        <
+
                     </select>
+
+
             </div>
         </div>
         </div>

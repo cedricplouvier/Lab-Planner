@@ -71,7 +71,7 @@
                 <tbody class="list">
                 <tr th:each="product : ${allProducts}">
                     <td th:text="${product.name}"/>
-                    <td th:text="${product.stockLevel}"/>
+                    <td th:text="${product.stockLevel} + ' '+${product.units.getSIString()}" />
                     <td class="Tags">
                         <a
                                 th:each="tag : ${product.tags}"
