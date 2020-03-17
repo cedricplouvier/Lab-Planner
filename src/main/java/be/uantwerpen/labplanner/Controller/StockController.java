@@ -58,8 +58,6 @@ public class StockController {
         }
 
 
-
-
         List<Product> products = productService.findAll();
         Iterator<Product> it = products.iterator();
         while (it.hasNext()) {
