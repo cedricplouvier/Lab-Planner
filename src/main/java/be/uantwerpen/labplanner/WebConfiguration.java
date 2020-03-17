@@ -30,7 +30,7 @@ class WebConfiguration extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests()
                 .antMatchers("/console/*").hasAuthority("Console Access")  //allow h2 console access to admins only
-                .antMatchers("/usermanagement/**","/users/**","/roles/**","/privilesges/**").hasAuthority("User Management")
+                .antMatchers("/usermanagement/**").hasAuthority("User Management")
                 .anyRequest().authenticated()   //all other urls can be access by any authenticated role
                 .and().formLogin().failureHandler(customAuthenticationFailureHandler());
         http.csrf().disable();
