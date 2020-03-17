@@ -14523,3 +14523,35 @@ org.springframework.expression.spel.SpelEvaluationException: EL1011E: Method cal
 2020-03-17 10:23:35,035 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-8080-exec-1] Completed initialization in 6 ms
 2020-03-17 10:23:38,165 INFO be.uantwerpen.labplanner.common.service.SecurityService [http-nio-8080-exec-3] User 35 logged in!
 2020-03-17 10:24:13,470 WARN org.springframework.web.servlet.mvc.method.annotation.ExtendedServletRequestDataBinder [http-nio-8080-exec-4] Skipping URI variable 'id' because request contains bind value with same name.
+2020-03-17 13:08:33,308 INFO be.uantwerpen.labplanner.common.service.SecurityService [http-nio-8080-exec-6] User 35 logged in!
+2020-03-17 14:09:58,426 INFO be.uantwerpen.labplanner.common.service.SecurityService [http-nio-8080-exec-9] User 35 logged in!
+2020-03-17 14:09:58,444 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-2] showUserManagementPage
+2020-03-17 14:09:58,444 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-2] showUserManagementPage
+2020-03-17 14:10:00,123 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-3] showStochmanagementPage
+2020-03-17 14:10:00,123 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-3] showStochmanagementPage
+2020-03-17 14:13:53,083 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-4] showDevicemanagementPage
+2020-03-17 14:13:53,083 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-4] showDevicemanagementPage
+2020-03-17 14:13:54,817 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-9] showStochmanagementPage
+2020-03-17 14:13:54,817 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-9] showStochmanagementPage
+2020-03-17 14:13:56,496 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-2] showUserManagementPage
+2020-03-17 14:13:56,496 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-2] showUserManagementPage
+2020-03-17 14:14:15,799 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-5] showUserManagementPage
+2020-03-17 14:14:15,799 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-5] showUserManagementPage
+2020-03-17 14:14:16,732 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-3] showPlanningtoolPage
+2020-03-17 14:14:16,732 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-3] showPlanningtoolPage
+2020-03-17 14:14:17,703 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-7] showDevicemanagementPage
+2020-03-17 14:14:17,703 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-7] showDevicemanagementPage
+2020-03-17 14:18:04,719 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-7] showDevicemanagementPage
+2020-03-17 14:18:04,719 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-7] showDevicemanagementPage
+2020-03-17 14:18:06,493 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-4] showStochmanagementPage
+2020-03-17 14:18:06,493 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-4] showStochmanagementPage
+2020-03-17 14:18:52,893 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-5] showStochmanagementPage
+2020-03-17 14:18:52,893 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-5] showStochmanagementPage
+2020-03-17 14:18:54,234 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-10] showUserManagementPage
+2020-03-17 14:18:54,234 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-10] showUserManagementPage
+2020-03-17 14:18:57,677 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-7] showUserManagementPage
+2020-03-17 14:18:57,677 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-7] showUserManagementPage
+2020-03-17 14:18:58,405 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-1] showDevicemanagementPage
+2020-03-17 14:18:58,405 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-1] showDevicemanagementPage
+2020-03-17 14:18:59,576 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-9] showPlanningtoolPage
+2020-03-17 14:18:59,576 INFO be.uantwerpen.labplanner.Controller.HomeController [http-nio-8080-exec-9] showPlanningtoolPage

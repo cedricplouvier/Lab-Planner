@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"   xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css">
 
 <!-- Import header -->
@@ -62,7 +62,7 @@
 
         </div>
     </div>
-    <div class="row">
+    <div sec:authorize="hasAuthority('Stock - Aggregates + Bitumen Read only - Advanced') or hasAuthority('Stock - Modify - All')" class="row">
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
             <div class="card" style="width: 18rem;">
                     <div class="card-header">

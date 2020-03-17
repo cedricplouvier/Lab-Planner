@@ -390,19 +390,19 @@ public class DatabaseLoader {
 
 
         //create some products
-        Tag tag1 = new Tag("Beton");
+        Tag tag1 = new Tag("Aggregates");
         List<Tag> tags1 = new ArrayList<>();
         tags1.add(tag1);
         tagRepository.save(tag1);
-        Tag tag2 = new Tag("Asfalt");
+        Tag tag2 = new Tag("Bitumen");
         List<Tag> tags2 = new ArrayList<>();
         tags2.add(tag2);
         tagRepository.save(tag2);
-        //asfalt+beton
+        Tag tag3 = new Tag("Consumables");
         List<Tag> tags3 = new ArrayList<>();
-        tags3.add(tag1);
-        tags3.add(tag2);
-        Tag tag4 = new Tag("Bindmiddel");
+        tags3.add(tag3);
+        tagRepository.save(tag3);
+        Tag tag4 = new Tag("Other");
         List<Tag> tags4 = new ArrayList<>();
         tags4.add(tag4);
         tagRepository.save(tag4);
