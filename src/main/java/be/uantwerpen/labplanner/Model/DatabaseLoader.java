@@ -399,21 +399,21 @@ public class DatabaseLoader {
         List<Tag> tags4 = new ArrayList<>();
         tags4.add(tag4);
         tagRepository.save(tag4);
-        Product pr1 = new Product("Zand",lorem.getWords(20),1.0, 5.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        Product pr1 = new Product("Zand",lorem.getWords(20),1.0, 5.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
         productRepository.save(pr1);
-        Product pr2 = new Product("Water",lorem.getWords(20),1.0, 99.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        Product pr2 = new Product("Water",lorem.getWords(20),1.0, 99.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
         productRepository.save(pr2);
-        Product pr3 = new Product("Kalk",lorem.getWords(20),1.0, 122.0, 1.0, 1.0, Unit.UNIT, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        Product pr3 = new Product("Kalk",lorem.getWords(20),1.0, 122.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
         productRepository.save(pr3);
-        Product pr4 = new Product("grind",lorem.getWords(20),1.0, 56.0, 1.0, 1.0, Unit.LITRE, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        Product pr4 = new Product("grind",lorem.getWords(20),1.0, 56.0, 1.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
         productRepository.save(pr4);
-        Product pr5 = new Product("Bitumen",lorem.getWords(20),1.0, 12.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
+        Product pr5 = new Product("Bitumen",lorem.getWords(20),1.0, 12.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
         productRepository.save(pr5);
-        Product pr6 = new Product("Klei",lorem.getWords(20),1.0, 1.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        Product pr6 = new Product("Klei",lorem.getWords(20),1.0, 1.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr6);
-        Product pr7 = new Product("Leem",lorem.getWords(20),1.0, 1580.0, 1.0, 1.0, Unit.UNIT, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        Product pr7 = new Product("Leem",lorem.getWords(20),1.0, 1580.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr7);
-        Product pr8 = new Product("Mineralen",lorem.getWords(20),1.0, 90.0, 1.0, 1.0, Unit.LITRE, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        Product pr8 = new Product("Mineralen",lorem.getWords(20),1.0, 90.0, 1.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr8);
     }
 }

@@ -44,7 +44,7 @@ public class StockController {
     public String viewCreateProducts(final ModelMap model){
         model.addAttribute("allProducts", productService.findAll());
         model.addAttribute("allTags", tagService.findAll());
-        model.addAttribute("product",new Product("Name","Description",0.0, 0.0, 0.0, 0.0, null, "URL", "properties", null,null, LocalDateTime.now(), LocalDateTime.now(), null));
+        model.addAttribute("product",new Product("","",0.0, 0.0, 0.0, 0.0, null, "URL", "", null,null, LocalDateTime.now(), LocalDateTime.now(), null));
         model.addAttribute("units",Unit.class);
         return "/Stock/products-manage";
     }
@@ -75,6 +75,16 @@ public class StockController {
         model.clear();
         return "redirect:/products";
     }
+
+    @RequestMapping(value ="/products/info/{id}", method= RequestMethod.GET)
+    public String viewProductInfo(@PathVariable Long id, final ModelMap model){
+        model.addAttribute("product",productService.findById(id).orElse(null));
+        model.addAttribute("allTags", tagService.findAll());
+        return "/Stock/products-info";
+    }
+
+
+
 
     @RequestMapping(value="/tags", method = RequestMethod.GET)
     public String showProductTags(final ModelMap model){

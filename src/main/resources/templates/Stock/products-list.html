@@ -80,10 +80,12 @@
                     </td>
 
                     <td>
-                        <a th:href="@{/products/{id}/(id=${product.id})}"><span
-                                class="fas fa-edit"></span></a>&nbsp;
+                        <a th:href="@{/products/{id}/(id=${product.id})}">
+                            <span class="fas fa-edit"></span></a>&nbsp;
                         <a th:href="@{/products/{id}/delete(id=${product.id})}">
                             <span class="fas fa-trash"></span></a>
+                        <a th:href="@{/products/info/{id}/(id=${product.id})}">
+                            <span class="fas fa-info"></span></a>
                     </td>
 
 

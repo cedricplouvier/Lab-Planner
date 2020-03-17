@@ -17,7 +17,15 @@
 <div class="container">
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
-    <h2 th:text="#{product.edit}">Edit material </h2>
+    <div class="row">
+        <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+            <a href="/products" th:text="#{close}" class="btn btn-primary">Close</a>
+        </div>
+        <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+            <h2 th:text="#{product.info}">Material Info </h2>
+
+        </div>
+    </div>
     <h4 th:text="${product.name}">Name</h4>
     <div class="row">
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
@@ -33,54 +41,45 @@
                     <a th:text="${product.description}">description</a>
                 </div>
             </div>
-        </div>
-    </div>
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"> Properties </h5>
 
-
-        <form action="#" th:action="@{/products/{id}(id=${product})}"
-              th:object="${product}" method="post">
-        <input th:type="hidden" th:field="*{id}"/>
-            <div class="form-row">
-                <div class="col">
-            <div class="form-group"
-                 th:classappend="${#fields.hasErrors('stockLevel')}?'has-error': ''">
-                <label class="control-label" th:text="#{product.left}" >Stocklevel</label>
-                <span class="control-label" th:if="${#fields.hasErrors('name')}"
-                      th:errors="*{stockLevel}">Stocklevel Error</span>
-                <input class="form-control" type="number" th:field="*{stockLevel}"
-                /> </div>
-                </div>
-                <div class="col">
-            <div class="form-group"
-                 th:classappend="${#fields.hasErrors('lowStockLevel')}?'has-error': ''">
-                <label class="control-label" th:text="#{product.lowStockLevel}">Low Stock Level</label>
-                <span class="control-label" th:if="${#fields.hasErrors('lowStockLevel')}"
-                      th:errors="*{lowStockLevel}">LowStocklevel Error</span>
-                <input class="form-control" type="number" th:field="*{lowStockLevel}"
-                /> </div>
-                </div>
-                <div class="col">
-            <div class="form-group"
-                 th:classappend="${#fields.hasErrors('reservedStockLevel')}?'has-error': ''">
-                <label class="control-label" th:text="#{product.reservedStockLevel}">Reserved Stock Level</label>
-                <span class="control-label" th:if="${#fields.hasErrors('reservedStockLevel')}"
-                      th:errors="*{reservedStockLevel}">Reserved Stock level Error</span>
-                <input class="form-control" type="number" th:field="*{reservedStockLevel}"
-                /> </div>
+                    <a th:text="${product.properties}">properties</a>
                 </div>
             </div>
-        <p> <label th:text="#{product.tag}">tags</label>
-            <select th:field="*{tags}" multiple="multiple">
-                <option th:each="tag : ${allTags}"
-                        th:value="${{tag}}"
-                        th:text="${tag.name}">Wireframe</option>
-            </select></span>
-        </p>
-        <p>
-            <a href="/products" th:text="#{close}" class="btn btn-primary">Close</a>
-            <button type="submit" th:text="#{save}" class="btn btnprimary">Save</button>
-        </p>
-    </form>
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"> Tags </h5>
+                    <a
+                            th:each="tag : ${product.tags}"
+                            th:text="${tag.name} + ' '">
+                    </a>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+            <div class="card" style="width: 18rem;">
+                    <div class="card-header">
+                        <h5 th:text="#{stock.info}">Stock Info</h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a th:text="#{product.left}+ ': '+${product.stockLevel} + ' '+${product.units.getSIString()}">description</a></li>
+                        <li class="list-group-item"><a th:text="#{product.lowStockLevel}+': '+${product.lowStockLevel}+ ' '+${product.units.getSIString()}">description</a></li>
+                        <li class="list-group-item"><a th:text="#{product.reservedStockLevel}+ ': '+${product.reservedStockLevel} + ' '+${product.units.getSIString()}">description</a></li>
+                    </ul>
+                </div>
+        </div>
+
+
+
+
 </div>
+
 </body>
 </html>
