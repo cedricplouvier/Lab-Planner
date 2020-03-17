@@ -1,6 +1,5 @@
 package be.uantwerpen.labplanner;
 
-import be.uantwerpen.labplanner.Service.MyUserDetailsService;
 import be.uantwerpen.labplanner.Service.StorageService;
 import be.uantwerpen.labplanner.common.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
