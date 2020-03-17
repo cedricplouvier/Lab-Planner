@@ -63,16 +63,27 @@
                 <tr>
                     <th th:text="#{product}">Product Name</th>
                     <th th:text="#{product.left}">Amount left</th>
+                    <th th:text="#{product.tag}">Tag Name</th>
+
                 </tr>
                 </thead>
                 <!-- IMPORTANT, class="list" have to be at tbody -->
                 <tbody class="list">
                 <tr th:each="product : ${allProducts}">
                     <td th:text="${product.name}"/>
-                    <td th:text="${product.getStockLevel() + product.getUnits().getSIString()}"/>
+                    <td th:text="${product.stockLevel}"/>
+                    <td class="Tags">
+                        <a
+                                th:each="tag : ${product.tags}"
+                                th:value="${tag.name}"
+                                th:text="${tag.name} + ' '"></a>
+                    </td>
+
                     <td>
-                        <a th:href="@{/products/{id}/(id=${product.id})}"  th:text="#{stock.manage}"
-                                class="btn btn-secondary btn-sm"></a>&nbsp;
+                        <a th:href="@{/products/{id}/(id=${product.id})}"><span
+                                class="fas fa-edit"></span></a>&nbsp;
+                        <a th:href="@{/products/{id}/delete(id=${product.id})}">
+                            <span class="fas fa-trash"></span></a>
                     </td>
 
 
@@ -82,7 +93,9 @@
                 </tr>
                 </tbody>
             </table>
-            <a href="tags" class="btn btn-primary" th:text="#{product.manage}"
+            <a href="tags" class="btn btn-primary" th:text="#{tag.manage}"
+            >Manage Materials</a>
+            <a href="/products/put" class="btn btn-outline-primary" th:text="#{product.new}"
             >Manage device types</a>
 
         </div>
