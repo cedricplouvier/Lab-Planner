@@ -46,12 +46,16 @@ public class StockController {
         List<Product> agg_bit = new ArrayList<>();
         //consumables + other
         List<Product> con_oth = new ArrayList<>();
-
+        Tag aggregateTag = null;
+        Tag bitumenTag = null;
         Optional<Tag> OptAggregateTag = tagService.findByName("Aggregates");
         Optional<Tag> optBitumenTag = tagService.findByName("Bitumen");
-
-        Tag aggregateTag = OptAggregateTag.get();
-        Tag bitumenTag = optBitumenTag.get();
+        if(OptAggregateTag.isPresent()){
+             aggregateTag = OptAggregateTag.get();
+        }
+        if(optBitumenTag.isPresent()){
+             bitumenTag = optBitumenTag.get();
+        }
 
 
 
