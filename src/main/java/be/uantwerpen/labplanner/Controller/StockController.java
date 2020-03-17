@@ -1,6 +1,10 @@
 package be.uantwerpen.labplanner.Controller;
 
 
+import be.uantwerpen.labplanner.Model.Composition;
+import be.uantwerpen.labplanner.Model.Mixture;
+import be.uantwerpen.labplanner.Service.CompositionService;
+import be.uantwerpen.labplanner.Service.MixtureService;
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.model.stock.Unit;
@@ -30,6 +34,10 @@ public class StockController {
     private ProductService productService;
     @Autowired
     private TagService tagService;
+    @Autowired
+    private MixtureService mixtureService;
+    @Autowired
+    private CompositionService compositionService;
 
     //Populate
     @ModelAttribute("allProducts")
@@ -173,9 +181,98 @@ public class StockController {
     }
 
     @RequestMapping(value="/mixtures", method= RequestMethod.GET)
-    public String viewMixtures(final ModelMap model){
-        model.addAttribute("allTags", tagService.findAll());
-        model.addAttribute("tag", new Tag(""));
+    public String viewMixturesList(final ModelMap model){
+        model.addAttribute("allMixtures", mixtureService.findAll());
         return "/Mixtures/mixtures-list";
     }
+
+    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @RequestMapping(value="/mixtures/{id}/delete",method = RequestMethod.GET)
+    public String deleteMixture(@PathVariable Long id, final ModelMap model){
+        mixtureService.deleteById(id);
+        model.clear();
+        String url = "redirect:/mixtures/";
+
+        return url;
+    }
+
+    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @RequestMapping(value="/mixtures/{id}", method= RequestMethod.GET)
+    public String viewEditMixture(@PathVariable Long id, final ModelMap model){
+        model.addAttribute("mixture",mixtureService.findById(id).orElse(null));
+        model.addAttribute("allProducts", productService.findAll());
+        return "/Mixtures/mixtures-manage";
+    }
+
+    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @RequestMapping(value={"/mixtures", "/mixtures/{id}"},
+            method= RequestMethod.POST)
+    public String addMixture(@Valid Mixture mixture, BindingResult result,
+                             final ModelMap model){
+        if(result.hasErrors()){
+            model.addAttribute("allMixtures", mixtureService.findAll());
+            model.addAttribute("allProducts", productService.findAll());
+
+            return "Mixtures/mixtures-manage";
+        }
+        mixtureService.save(mixture);
+        return "/Mixtures/mixtures-list";
+    }
+
+    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @RequestMapping(value="/mixtures/put", method= RequestMethod.GET)
+    public String viewCreateMixture(final ModelMap model){
+        model.addAttribute("allMixtures", mixtureService.findAll());
+        model.addAttribute("allProducts", productService.findAll());
+        model.addAttribute("mixture", new Mixture());
+
+        return "/Mixtures/mixtures-manage";
+    }
+
+    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @RequestMapping(value="/compositions/{id}/delete",method = RequestMethod.GET)
+    public String deleteIngredients(@PathVariable Long id, final ModelMap model){
+        List<Mixture> mixtures = mixtureService.findAll();
+        Composition compos = null;
+        Optional<Composition> tempCompos = compositionService.findById(id);
+        if(tempCompos.isPresent()){
+            compos = tempCompos.get();
+        }
+
+        Iterator<Mixture> it = mixtures.iterator();
+        while (it.hasNext()) {
+            Mixture temp = it.next();
+            if(temp.getCompositions().contains(compos)){
+                List<Composition> list = temp.getCompositions();
+                if(compos != null) {
+                    list.remove(compos);
+                    temp.setCompositions(list);
+                }
+            }
+        }
+        compositionService.deleteById(id);
+        model.clear();
+        String url = "redirect:/mixtures/";
+
+        return url;
+    }
+
+    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @RequestMapping(value={"/compositions", "/compositions/{id}/{mid}"},
+            method= RequestMethod.POST)
+    public String addComposition(@PathVariable("mid") Mixture mixture,@PathVariable("id") Composition composition, BindingResult result,
+                             final ModelMap model){
+        if(result.hasErrors()){
+            model.addAttribute("allMixtures", mixtureService.findAll());
+            model.addAttribute("allProducts", productService.findAll());
+            model.addAttribute("composition", new Composition());
+
+            return "Mixtures/mixtures-manage";
+        }
+        mixtureService.save(mixture);
+        compositionService.save(composition);
+        return "/Mixtures/mixtures-list";
+    }
+
+
 }

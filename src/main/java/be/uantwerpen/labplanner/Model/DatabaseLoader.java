@@ -1,8 +1,6 @@
 package be.uantwerpen.labplanner.Model;
 
-import be.uantwerpen.labplanner.Repository.DeviceInformationRepository;
-import be.uantwerpen.labplanner.Repository.DeviceRepository;
-import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
+import be.uantwerpen.labplanner.Repository.*;
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.model.stock.Unit;
@@ -40,9 +38,11 @@ public class DatabaseLoader {
     private final DeviceInformationRepository deviceInformationRepository;
     private final ProductRepository productRepository;
     private final TagRepository tagRepository;
+    private final CompositionRepository compositionRepository;
+    private final MixtureRepository mixtureRepository;
 
     @Autowired
-    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository) {
+    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository) {
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
@@ -53,6 +53,9 @@ public class DatabaseLoader {
         //ProductRepositories
         this.productRepository = productRepository;
         this.tagRepository = tagRepository;
+        //MixtureRepositories
+        this.mixtureRepository = mixtureRepository;
+        this.compositionRepository = compositionRepository;
 
     }
 
@@ -422,5 +425,42 @@ public class DatabaseLoader {
         productRepository.save(pr7);
         Product pr8 = new Product("Mineralen",lorem.getWords(20),1.0, 90.0, 1.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr8);
+
+        //Create compositions
+        Composition c1 = new Composition(5.0,pr8);
+        Composition c2 = new Composition(1.2, pr7);
+        Composition c3 = new Composition(5.2,pr2);
+        Composition c4 = new Composition(1.2, pr4);
+        Composition c5 = new Composition(12.0,pr1);
+        Composition c6 = new Composition(0.25, pr5);
+        compositionRepository.save(c1);
+        compositionRepository.save(c2);
+        compositionRepository.save(c3);
+        compositionRepository.save(c4);
+        compositionRepository.save(c5);
+        compositionRepository.save(c6);
+
+        //Create mixtures composition lists
+        List<Composition> mix1= new ArrayList<>();
+        mix1.add(c1);mix1.add(c2);mix1.add(c3);
+        List<Composition> mix2= new ArrayList<>();
+        mix2.add(c4);mix2.add(c5);mix2.add(c6);
+        List<Composition> mix3= new ArrayList<>();
+        mix3.add(c1);mix3.add(c3);mix3.add(c6);
+
+
+        //create mixtures and save them
+        Mixture m1 = new Mixture("Hele mooie mix", mix1);
+        mixtureRepository.save(m1);
+        Mixture m2 = new Mixture("gevaarlijk mengsel", mix2);
+        mixtureRepository.save(m2);
+        Mixture m3 = new Mixture("Elon Musk's Mengsel", mix3);
+        mixtureRepository.save(m3);
+
+
+
+
+
+
     }
 }

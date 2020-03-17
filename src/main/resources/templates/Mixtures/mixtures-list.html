@@ -1,10 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>mixtures</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Import header -->
+<head th:replace="navbar :: head (title='#{mixtures}')"></head>
+<body onload="initPage()">
+
+<style>
+    .notfound{
+        display: none;
+    }
+</style>
+<script>
+    $(document).ready(function(){
+        // Search on name column only
+        $('#txt_name').keyup(function(){
+            // Search Text
+            var search = $(this).val();
+
+            // Hide all table tbody rows
+            $('table tbody tr').hide();
+
+            // Count total search result
+            var len = $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').length;
+
+            if(len > 0){
+                // Searching text in columns and show match row
+                $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').each(function(){
+                    $(this).closest('tr').show();
+                });
+            }else{
+                $('.notfound').show();
+            }
+
+        });
+
+    });
+
+    // Case-insensitive searching (Note - remove the below script for Case sensitive search )
+    $.expr[":"].contains = $.expr.createPseudo(function(arg) {
+        return function( elem ) {
+            return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+        };
+    });
+</script>
+<div class="container">
+    <!-- Import menu bar -->
+    <div th:replace="navbar :: navbar"></div>
+    <div class="content">
+        <div id="mixture-list">
+            <input type='text' id='txt_name' th:placeholder="#{mixtures.search}">
+
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th th:text="#{mixtures.name}">Mixture Name</th>
+                    <th th:text="#{mixtures.ingredients}">Mixture Ingredients</th>
+
+                </tr>
+                </thead>
+                <!-- IMPORTANT, class="list" have to be at tbody -->
+                <tbody class="list">
+                <tr th:each="mixture : ${allMixtures}">
+                    <td class='mixtureName' th:value="${mixture.getName()}"
+                        th:text="${mixture.name}" >Mixture Name</td>
+                        <td class="ingredients">
+                            <a
+                                    th:each="ingred : ${mixture.compositions}"
+                                    th:value="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()}"
+                                    th:utext="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()} + '<br />'"></a>
+                        </td>
+                    <td>
+                        <a th:href="@{/mixtures/{id}/(id=${mixture.id})}"><span
+                                class="fas fa-edit"></span></a>&nbsp;
+                        <a th:href="@{/mixtures/{id}/delete(id=${mixture.id})}">
+                            <span class="fas fa-trash"></span></a>
+                    </td>
+                </tr>
+                <tr class='notfound'>
+                    <td colspan='4' th:text="#{tag.norecord}">No record found</td>
+                </tr>
+                </tbody>
+            </table>
+            <a href="/products" class="btn btn-primary" th:text="#{product.return}" >Return to products</a>
+            <a href="/mixtures/put" type="button" class="btn btn-outline-primary"th:text="#{mixture.create}">
+                Create new tag
+            </a>
+
+
+
+        </div>
+    </div>
+</div>
+<div th:replace="footer :: footer"></div>
 
 </body>
 </html>

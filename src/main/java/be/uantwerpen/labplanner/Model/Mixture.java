@@ -1,6 +1,7 @@
 package be.uantwerpen.labplanner.Model;
 
 import be.uantwerpen.labplanner.common.model.stock.Product;
+import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.model.users.User;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
@@ -16,11 +17,23 @@ public class Mixture extends AbstractPersistable<Long> {
     @Column
     private String name;
 
-    @OneToMany
+    @ManyToMany
+    @JoinTable(
+            name = "MIX_TAG",
+            joinColumns = {@JoinColumn(
+                    name = "MIX_ID",
+                    referencedColumnName = "ID"
+            )},
+            inverseJoinColumns = {@JoinColumn(
+                    name = "COM_ID",
+                    referencedColumnName = "ID"
+            )}
+    )
     private List<Composition> compositions;
 
-    Mixture(String name){
+    Mixture(String name, List<Composition> compositions){
         this.name = name;
+        this.compositions = compositions;
     }
 
     public Mixture(){}
