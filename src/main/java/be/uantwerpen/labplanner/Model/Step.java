@@ -20,10 +20,19 @@ public class Step extends AbstractPersistable<Long> {
     /*@OneToOne
         @Column(name="timeslot",nullable = false)
         private Timeslot timeslot;*/
-    @Temporal(TemporalType.DATE)
-    private Date start;
-    @Temporal(TemporalType.DATE)
-    private Date end;
+    @Column(name = "start",nullable = false)
+    private String start;
+    @Column(name = "end",nullable = false)
+    private String end;
+
+
+
+    @Column(name = "startHour", nullable = false)
+    private String startHour;
+    @Column(name = "endHour", nullable = false)
+    private String endHour;
+
+
 
     public Step(){
     }
@@ -67,19 +76,34 @@ public class Step extends AbstractPersistable<Long> {
         this.timeslot = timeslot;
     }*/
 
-    public Date getStart() {
+    public String getStart() {
         return start;
     }
 
-    public void setStart(Date start) {
+    public void setStart(String start) {
         this.start = start;
     }
 
-    public Date getEnd() {
+    public String getEnd() {
         return end;
     }
 
-    public void setEnd(Date end) {
+    public void setEnd(String end) {
         this.end = end;
+    }
+    public String getStartHour() {
+        return startHour;
+    }
+
+    public void setStartHour(String startHour) {
+        this.startHour = startHour;
+    }
+
+    public String getEndHour() {
+        return endHour;
+    }
+
+    public void setEndHour(String endHour) {
+        this.endHour = endHour;
     }
 }

@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 
 @Controller
@@ -47,25 +49,33 @@ public class StepController {
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
         model.addAttribute("Step", new Step());
+//        model.addAttribute("startformat", new String());
+//        model.addAttribute("endformat", new String());
         return "PlanningTool/planningtool";
     }
     @RequestMapping(value={"/planning" , "/planning/{id}"},method= RequestMethod.POST)
-    public String addStep(@Valid Step step, BindingResult result, final ModelMap model){
+    public String addStep(@Valid Step step,/*String startf,String endf,*/ BindingResult result, final ModelMap model) throws ParseException {
         User currentUser =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(result.hasErrors()){
             model.addAttribute("allDevices", deviceService.findAll());
             model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
             model.addAttribute("allSteps",stepService.findAll());
             model.addAttribute("Step", new Step());
-            return "PlanningTool/planningtool";
+            model.addAttribute("Status", "Error");
+            model.addAttribute("Message",result.getFieldError().toString());
+            return "redirect:/planning";
         }
+//        step.setStart(sdf.parse(step.getStart().toString()));
+//        step.setEnd(sdf.parse(step.getEnd().toString()));
         step.setUser(currentUser);
         stepService.save(step);
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
         model.addAttribute("allSteps",stepService.findAll());
         model.addAttribute("Step", new Step());
-        return "PlanningTool/planningtool";
+        model.addAttribute("Status", "Success");
+        model.addAttribute("Message", "New step has been added.");
+        return "redirect:/planning";
     }
     @RequestMapping(value="/", method= RequestMethod.POST)
     public String showTimeslot(Step step, final ModelMap model){
