@@ -12,7 +12,7 @@
 </script>
 <div class = "container">
 <div th:replace="navbar :: navbar"></div>
-    <form action="#" th:action="@{/users/{id}(id=${user})}"
+    <form action="#" th:action="@{/usermanagement/users/{id}(id=${user})}"
           th:object="${user}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
 
@@ -72,7 +72,7 @@
 
         <p>
             <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
-            <a href="/users" th:text="#{close}" class="btn btn-secondary">Close</a>
+            <a href="/usermanagement/users" th:text="#{close}" class="btn btn-secondary">Close</a>
 
         </p>
     </form>

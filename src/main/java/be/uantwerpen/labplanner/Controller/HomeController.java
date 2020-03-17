@@ -20,7 +20,7 @@ public class HomeController {
     //@PreAuthorize("hasAuthority('User Management')")
     @RequestMapping("/usermanagement")
     public String showUsermanagementPage(){
-        return "redirect:/users";
+        return "redirect:/usermanagement/users";
     }
     @RequestMapping("/stockmanagement")
     public String showStockmanagementPage(){
