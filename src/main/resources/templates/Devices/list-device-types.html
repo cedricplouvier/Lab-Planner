@@ -60,6 +60,7 @@
                 <thead>
                 <tr>
                     <th th:text="#{device.type}">Device Type Name</th>
+                    <th >Manage</th> <th></th>
                 </tr>
                 </thead>
                 <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -67,6 +68,10 @@
                 <tr th:each="deviceType : ${allDeviceTypes}">
                     <td class='deviceTypeName' th:value="${deviceType.getDeviceTypeName()}"
                         th:text="${deviceType.getDeviceTypeName() }" >Device Name</td>
+                    <td>
+                        <a th:href="@{/devices/types/{id}/(id=${deviceType.getId()})}" class="fa fa-edit">
+                        </a>
+                    </td>
                 </tr>
                 <tr class='notfound'>
                     <td colspan='4' th:text="#{device.norecord}">No record found</td>

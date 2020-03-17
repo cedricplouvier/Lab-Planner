@@ -29,8 +29,7 @@ public class DeviceTypeService {
         return this.deviceTypeRepository.findByDeviceTypeName(deviceTypeName);
     }
     public void saveSomeAttributes(DeviceType deviceType) {
-        DeviceType tempDeviceType = deviceType.getId() == null?null:
-                deviceTypeRepository.findById( deviceType.getId()).orElse(null);
+        DeviceType tempDeviceType = deviceType.getId() == null?null: deviceTypeRepository.findById( deviceType.getId()).orElse(null);
 
         if (tempDeviceType != null){
             tempDeviceType.setOvernightuse(deviceType.getOvernightuse());

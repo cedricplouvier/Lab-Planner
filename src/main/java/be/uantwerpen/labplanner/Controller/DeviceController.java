@@ -1,6 +1,7 @@
 package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Model.Device;
+import be.uantwerpen.labplanner.Model.DeviceInformation;
 import be.uantwerpen.labplanner.Model.DeviceType;
 import be.uantwerpen.labplanner.Service.DeviceService;
 import be.uantwerpen.labplanner.Service.DeviceTypeService;
@@ -8,10 +9,12 @@ import be.uantwerpen.labplanner.Service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import javax.imageio.ImageIO;
+import javax.validation.Valid;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Path;
@@ -61,4 +64,48 @@ public class DeviceController {
                 .collect(Collectors.toList()));
         return "/Devices/device-info";
     }
+    @RequestMapping(value="/devices/{id}", method= RequestMethod.GET)
+    public String viewEdiDevice(@PathVariable Long id, final ModelMap model){
+        model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+        model.addAttribute("device",deviceService.findById(id).orElse(null)); return "/Devices/device-manage";
+    }
+    @RequestMapping(value="/devices/types/{id}", method= RequestMethod.GET)
+    public String viewEdiDeviceType(@PathVariable Long id, final ModelMap model){
+        model.addAttribute("defaultInfo",new DeviceInformation());
+        model.addAttribute("deviceTypeObject",deviceTypeService.findById(id).orElse(null)); return "/Devices/device-type-manage";
+    }
+    @RequestMapping(value="/devices/put", method= RequestMethod.GET)
+    public String viewCreateDevice(final ModelMap model){
+        model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+        model.addAttribute("device",new Device("",deviceTypeService.findAll().get(0)));
+        return "/Devices/device-manage";
+    }
+    @RequestMapping(value={"/devices/", "/devices/{id}"}, method= RequestMethod.POST)
+    public String addDevice(@Valid Device device, BindingResult result, final ModelMap model){
+        if(result.hasErrors()){
+            model.addAttribute("deviceType", deviceTypeService.findAll());
+            return "/Devices/device-manage";
+        }
+        deviceService.saveSomeAttributes(device);
+        return "redirect:/devices";
+    }
+
+    @RequestMapping(value="/devices/{id}/delete")
+    public String deleteDevice(@PathVariable Long id, final ModelMap
+            model){ deviceService.delete(id);
+        model.clear();
+        return "redirect:/devices";
+    }
+
+    @RequestMapping(value={"/devices/types", "/devices/types/{id}"}, method= RequestMethod.POST)
+    public String addDeviceType(@Valid DeviceType deviceType, BindingResult result,
+                                final ModelMap model){
+        if(result.hasErrors()){
+            model.addAttribute("deviceType", deviceTypeService.findAll());
+            return "/Devices/device-type-manage";
+        }
+        deviceTypeService.saveSomeAttributes(deviceType);
+        return "redirect:/devices/types";
+    }
+
 }

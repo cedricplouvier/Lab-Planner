@@ -100,7 +100,15 @@ public class DeviceType extends AbstractPersistable<Long>{
     public List<DeviceInformation> getDeviceInformations() {
         return deviceInformations;
     }
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
 
+    @Override
+    public void setId(Long id) {
+        super.setId(id);
+    }
     public void setDeviceInformations(List<DeviceInformation> deviceInformations) {
         this.deviceInformations = deviceInformations;
     }

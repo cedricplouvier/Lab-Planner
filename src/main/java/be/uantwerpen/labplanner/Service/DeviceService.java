@@ -41,6 +41,8 @@ public class DeviceService {
         if (tempDevice != null){
             tempDevice.setDeviceType(device.getDeviceType());
             tempDevice.setDevicename(device.getDevicename());
+            tempDevice.setComment(device.getComment());
+
             deviceRepository.save(tempDevice);
         }
         else{

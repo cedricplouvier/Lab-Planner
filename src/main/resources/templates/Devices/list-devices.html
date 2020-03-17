@@ -65,7 +65,9 @@
                 <thead>
                 <tr>
                     <th th:text="#{device}">Device Name</th>
-                    <th th:text="#{device.type}">Device type</th> <th></th>
+                    <th th:text="#{device.type}">Device type</th>
+                    <th >Info</th> <th></th>
+                    <th >Manage</th> <th></th>
                 </tr>
                 </thead>
                 <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -75,9 +77,30 @@
                         th:text="${device.devicename }" >Device Name</td>
                     <td class="firstName" th:value="${device.getDeviceType()}"
                         th:text="${device.deviceType.deviceTypeName }" >Device Type</td>
-                    <td >  <a th:href="@{/devices/info/{id}/(id=${device.id})}" class="btn btn-primary"
-                    >Info</a></td>
+                    <td >  <a th:href="@{/devices/info/{id}/(id=${device.id})}" class="btn btn-primary">Info</a></td>
                     <td>
+                    <td>
+                    <a th:href="@{/devices/{id}/(id=${device.id})}" class="fa fa-edit">
+                    </a>
+                    <a th:href="@{/devices/{id}/delete(id=${device.id})}"  class="fa fa-trash" style="color: red" data-toggle="modal" data-target="#modal-warning"  th:attr="data-target='#modal-warning'+${device.id }">
+                              </a>
+                    </td>
+                    <div class="modal modal-warning fade" th:id="modal-warning+${device.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3 class="modal-title" id="exampleModalLabel">Delete device</h3>
+                                </div>
+                                <div class="modal-body">
+                                    <h5 th:text="'Are you sure want to delete '+${device.getDevicename()}+'?'">Are you sure want to delete this device?</h5>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <a type="button" class="btn btn-danger" th:href="@{/devices/{id}/delete(id=${device.id})}">Delete device</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </tr>
                 <tr class='notfound'>
                     <td colspan='4' th:text="#{device.norecord}">No record found</td>
@@ -89,6 +112,7 @@
         </div>
     </div>
 </div>
+
     <div th:replace="footer :: footer"></div>
 </body>
 </html>

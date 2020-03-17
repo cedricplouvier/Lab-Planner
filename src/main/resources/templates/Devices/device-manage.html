@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Import header -->
+<head th:replace="navbar :: head (title='#{device.management}')"></head>
+<body onload="initPage()">
+<script type="text/javascript">
+    function initPage(){
+        $('#roles').multiSelect({
+            selectableHeader: '<div class="custom-header"th:text="#{selectable.items}">Selectable items</div>',
+        selectionHeader: '<div class="custom-header"th:text="#{selected.items}">Selected items</div>'
+    });
+    }
+</script>
+<div class="container">
+    <!-- Import menu bar -->
+    <div th:replace="navbar :: navbar"></div>
+    <form action="#" th:action="@{/devices/{id}(id=${device})}"
+          th:object="${device}" method="post">
+        <input th:type="hidden" th:field="*{id}"/>
+        <div class="form-group"
+             th:classappend="${#fields.hasErrors('devicename')}?'has-error': ''">
+            <label class="control-label" >Name</label>
+            <span class="control-label" th:if="${#fields.hasErrors('devicename')}"
+                  th:errors="*{devicename}">Lastname Error</span>
+            <input class="form-control" type="text" th:field="*{devicename}"
+            /> </div>
+        <p> <label >Device Type</label>
+            <select class="custom-select" th:field="*{deviceType}">
+                <option th:each="deviceType : ${allDeviceTypes}"
+                        th:value="${{deviceType}}"
+                        th:text="${deviceType.getDeviceTypeName()}"></option>
+            </select>
+        </p>
+        <div class="form-group"
+             th:classappend="${#fields.hasErrors('comment')}?'has-error': ''">
+            <label class="control-label" >Comment</label>
+            <span class="control-label" th:if="${#fields.hasErrors('comment')}"
+                  th:errors="*{comment}">comment Error</span>
+            <textarea rows="5" class="form-control" type="text" th:field="*{comment}"
+            />
+        </div>
+        <p>
+            <a href="/devices"  class="btn btn-primary">Close</a>
+            <button type="submit"  class="btn btnprimary">Save</button>
+        </p>
+    </form>
+</div>
+</body>
+</html>
