@@ -112,6 +112,8 @@ public class DatabaseLoader {
         privilegeRepository.save(p25);
         Privilege p26 = new Privilege("Device - Modify - All");
         privilegeRepository.save(p26);
+        Privilege p27 = new Privilege("Console Access");
+        privilegeRepository.save(p27);
 
         //Create all the roles
         Role bachelorstudent = new Role("Bachelorstudent");
@@ -228,6 +230,9 @@ public class DatabaseLoader {
         // Device privileges
         privileges.add(p26);
 
+        //Console privilege
+        privileges.add(p27);
+
         administrator.setPrivileges(privileges);
         roleRepository.save(administrator);
 
@@ -242,8 +247,10 @@ public class DatabaseLoader {
         User u8 = new User("Master","PW","","Mas","Student","20160009","","",null,null,null);
         User u9 = new User("Researcher","PW","","Researcher","Developper","20100001","","",null,null,null);
 
+        //Set<Role> roles = new HashSet<>();
         Set<Role> roles = new HashSet<>();
         roles.add(administrator);
+
         //set 5 admins
         u1.setRoles(roles);
         userRepository.save(u1);
