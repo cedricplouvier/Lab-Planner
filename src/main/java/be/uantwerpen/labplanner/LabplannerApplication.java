@@ -1,5 +1,6 @@
 package be.uantwerpen.labplanner;
 
+import be.uantwerpen.labplanner.Service.MyUserDetailsService;
 import be.uantwerpen.labplanner.Service.StorageService;
 import be.uantwerpen.labplanner.common.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -23,10 +26,11 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import java.util.Locale;
 
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
+@EnableWebSecurity
 public class LabplannerApplication extends WebMvcConfigurerAdapter {
 
     public static void main(String[] args) {
@@ -67,9 +71,11 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
             GlobalAuthenticationConfigurerAdapter {
         @Autowired
         private SecurityService securityService;
+
         @Override
         public void init(AuthenticationManagerBuilder auth) throws Exception
-        { auth.userDetailsService(securityService);
+        {
+            auth.userDetailsService(securityService);
         }
     }
 
