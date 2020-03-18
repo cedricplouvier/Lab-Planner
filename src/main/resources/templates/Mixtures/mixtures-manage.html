@@ -5,51 +5,38 @@
 
 <div class = "container">
     <div th:replace="navbar :: navbar"></div>
-    <table class="table table-hover">
 
-    <thead>
-    <tr>
-        <th th:text="#{mixtures.ingredients}">Mixture Ingredients</th>
-        <th th:text="#{mixtures.amount}">Ingredients amount</th>
 
-    </tr>
-    </thead>
-    <!-- IMPORTANT, class="list" have to be at tbody -->
-    <tbody class="list">
-    <tr th:each="ingred : ${mixture.getCompositions()}">
-        <td class='ingredients' th:value="${ingred.getProduct().getName()}"
-            th:text="${ingred.getProduct().getName()}" >Ingredient Name</td>
-        <td class="amount" th:value="${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()}"
-                    th:text="${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()} "></a>
-        </td>
-        <td>
-            <a th:href="@{/compositions/{id}/delete(id=${ingred.id})}">
-                <span class="fas fa-trash"></span></a>
-        </td>
-    </tr>
-   </tbody>
-    </table>
-<!--
-    <form action="#" th:action="@{/compositions/{id}/{mid}(id=${composition}, mid=${mixture})}"
-          th:object="${composition}" method="post">
+    <h4 th:text="#{mixture.create}">New Mixture</h4>
+    <form action="#" th:action="@{/mixtures/{id}(id=${mixture})}"
+          th:object="${mixture}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
 
         <div class="form-group">
-            <label class="control-label" th:text="#{mixtures.ingredients}"></label>
-            <input class="form-control" type = text th:field="*{product}"/>
+            <label class="control-label" th:text="#{mixtures.name}"></label>
+            <input class="form-control" type = text th:field="*{name}"/>
+
         </div>
-        <div class="form-group">
-            <label class="control-label" th:text="#{mixtures.amount}"></label>
-            <input class="form-control" type = text th:field="*{amount}"/>
+        <div> <label th:text="#{mixtures.ingredients}"></label>
+            <tr></tr>
+            <select th:field="*{compositions}" multiple="multiple" >
+                <option th:each="ingred : ${allCompositions}"
+                        th:value="${{ingred}}"
+                        th:text="${ingred.getProduct().getName()} + ':   ' + ${ingred.amount} +' ' + ${ingred.getProduct().units.getSIString()}">Wireframe</option>
+            </select>
         </div>
+
 
             <p>
                 <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
-                <a href="/mixtures/mixture-list" th:text="#{close}" class="btn btn-secondary">Close</a>
+                <a href="/mixtures" th:text="#{close}" class="btn btn-secondary">Close</a>
 
             </p>
     </form>
--->
+
+
+
+
 
 
 

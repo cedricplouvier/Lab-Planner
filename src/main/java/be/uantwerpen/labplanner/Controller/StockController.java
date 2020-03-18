@@ -200,6 +200,7 @@ public class StockController {
     @RequestMapping(value="/mixtures/{id}", method= RequestMethod.GET)
     public String viewEditMixture(@PathVariable Long id, final ModelMap model){
         model.addAttribute("mixture",mixtureService.findById(id).orElse(null));
+        model.addAttribute("allCompositions", compositionService.findAll());
         model.addAttribute("allProducts", productService.findAll());
         return "/Mixtures/mixtures-manage";
     }
@@ -211,11 +212,10 @@ public class StockController {
                              final ModelMap model){
         if(result.hasErrors()){
             model.addAttribute("allMixtures", mixtureService.findAll());
-            model.addAttribute("allProducts", productService.findAll());
-
             return "Mixtures/mixtures-manage";
         }
         mixtureService.save(mixture);
+        model.addAttribute("allMixtures", mixtureService.findAll());
         return "/Mixtures/mixtures-list";
     }
 
@@ -224,6 +224,7 @@ public class StockController {
     public String viewCreateMixture(final ModelMap model){
         model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("allProducts", productService.findAll());
+        model.addAttribute("allCompositions", compositionService.findAll());
         model.addAttribute("mixture", new Mixture());
 
         return "/Mixtures/mixtures-manage";
@@ -257,21 +258,45 @@ public class StockController {
         return url;
     }
 
+    @RequestMapping(value="/compositions", method= RequestMethod.GET)
+    public String viewCompositionsList(final ModelMap model){
+        model.addAttribute("allCompositions", compositionService.findAll());
+        return "/Mixtures/compositions-list";
+    }
+
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
-    @RequestMapping(value={"/compositions", "/compositions/{id}/{mid}"},
+    @RequestMapping(value={"/compositions", "/compositions/{id}"},
             method= RequestMethod.POST)
-    public String addComposition(@PathVariable("mid") Mixture mixture,@PathVariable("id") Composition composition, BindingResult result,
+    public String addComposition(@Valid Composition composition, BindingResult result,
                              final ModelMap model){
         if(result.hasErrors()){
-            model.addAttribute("allMixtures", mixtureService.findAll());
             model.addAttribute("allProducts", productService.findAll());
             model.addAttribute("composition", new Composition());
 
-            return "Mixtures/mixtures-manage";
+            return "Mixtures/compositions-manage";
         }
-        mixtureService.save(mixture);
         compositionService.save(composition);
-        return "/Mixtures/mixtures-list";
+        model.addAttribute("allCompositions", compositionService.findAll());
+        return "/Mixtures/compositions-list";
+    }
+
+    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @RequestMapping(value="/compositions/{id}", method= RequestMethod.GET)
+    public String viewEditComposition(@PathVariable Long id, final ModelMap model){
+        model.addAttribute("allProducts", productService.findAll());
+        model.addAttribute("allCompositions", compositionService.findAll());
+        model.addAttribute("composition",compositionService.findById(id).orElse(null));
+        return "/Mixtures/compositions-manage";
+    }
+
+
+    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @RequestMapping(value="/compositions/put", method= RequestMethod.GET)
+    public String viewCreateComposition(final ModelMap model){
+        model.addAttribute("allCompositions", compositionService.findAll());
+        model.addAttribute("allProducts", productService.findAll());
+        model.addAttribute("composition", new Composition());
+        return "/Mixtures/compositions-manage";
     }
 
 

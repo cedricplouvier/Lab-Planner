@@ -36,7 +36,8 @@ public class Mixture extends AbstractPersistable<Long> {
         this.compositions = compositions;
     }
 
-    public Mixture(){}
+    public Mixture(){
+    }
 
     @Override
     public Long getId() {

@@ -6,7 +6,6 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 @Entity
@@ -23,7 +22,10 @@ public class Composition extends AbstractPersistable<Long> {
         this.product = prod;
     }
 
-    public  Composition(){}
+    public  Composition(){
+        this.amount = 0.0;
+        this.product = null;
+    }
 
     @Override
     public Long getId() {
