@@ -272,7 +272,6 @@ public class StockController {
         if(result.hasErrors()){
             model.addAttribute("allProducts", productService.findAll());
             model.addAttribute("composition", new Composition());
-
             return "Mixtures/compositions-manage";
         }
         compositionService.save(composition);
