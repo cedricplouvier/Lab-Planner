@@ -1,22 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <!-- Import header -->
-<head th:replace="navbar :: head (title='#{device.management}')"></head>
-<body onload="initPage()">
-<script type="text/javascript">
-    function initPage(){
-        $('#roles').multiSelect({
-            selectableHeader: '<div class="custom-header"th:text="#{selectable.items}">Selectable items</div>',
-            selectionHeader: '<div class="custom-header"th:text="#{selected.items}">Selected items</div>'
-        });
-    }
-</script>
+<head th:replace="navbar :: head (title='#{device.type.management}')"></head>
 <div class="container">
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
-    <button  th:action="${deviceTypeObject.deviceInformations.add(${defaultInfo})}" class="btn btnprimary">add info block</button>
-
-    <form action="#" th:action="@{/devices/types/{id}(id=${deviceType})}" th:object="${deviceType}" method="post">
+    <form action="#" th:action="@{/devices/types/{id}(id=${deviceTypeObject.id})}" th:object="${deviceTypeObject}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
         <div class="form-group"
              th:classappend="${#fields.hasErrors('deviceTypeName')}?'has-error': ''">
@@ -31,21 +20,23 @@
             </select>
         </p>
         <hr class="my-4">
-<!--            <div class="card" th:each="deviceInfo : ${deviceType.getDeviceInformation()}" style="margin-bottom: 15px">-->
-<!--                <div class="card-body">-->
-<!--                    <h5 class="card-title" th:text="${deviceInfo.getInformationName()}"></h5>-->
-<!--                    <p class="card-text" th:text="${deviceInfo.getInformation()}"></p>-->
-<!--                    <div>-->
-<!--                        <ul>-->
-<!--                            <div th:if="${files}!= null  or ${deviceInfo.getFiles().size()==0}"th:each="file : ${files}">-->
-<!--                                <li  th:if="${#strings.contains(file, filename)}" th:each="filename : ${deviceInfo.getFiles()}">-->
-<!--                                    <a   th:href="${file}" th:text="${filename}"></a>-->
-<!--                                </li>-->
-<!--                            </div>-->
-<!--                        </ul>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
+            <div class="card" th:each="deviceInfo : ${deviceTypeObject.getDeviceInformations()}" style="margin-bottom: 15px">
+
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${deviceInfo.getInformationName()}"></h5>
+                    <p class="card-text" th:text="${deviceInfo.getInformation()}"></p>
+                    <div>
+                        <ul>
+                            <div th:if="${files}!= null  or ${deviceInfo.getFiles().size()==0}"th:each="file : ${files}">
+                                <li  th:if="${#strings.contains(file, filename)}" th:each="filename : ${deviceInfo.getFiles()}">
+                                    <a   th:href="${file}" th:text="${filename}"></a>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                    <a type="button" class="btn btn-primary" th:href="@{/devices/info/{id}/{typeid}(id=${deviceInfo.getId()},typeid=${deviceTypeObject.getId()})}">Edit</a>
+                </div>
+            </div>
         <p>
             <a href="/devices/types"  class="btn btn-primary">Close</a>
             <button type="submit"  class="btn btnprimary">Save</button>

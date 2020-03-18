@@ -14,8 +14,7 @@
 <div class="container">
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
-    <form action="#" th:action="@{/devices/{id}(id=${device})}"
-          th:object="${device}" method="post">
+    <form action="#" th:action="@{/devices/{id}(id=${device})}" th:object="${device}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
         <div class="form-group"
              th:classappend="${#fields.hasErrors('devicename')}?'has-error': ''">

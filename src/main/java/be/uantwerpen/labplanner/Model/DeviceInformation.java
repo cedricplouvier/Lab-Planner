@@ -47,7 +47,15 @@ public class DeviceInformation extends AbstractPersistable<Long> {
     public void addFile(String file){
         files.add(file);
     }
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
 
+    @Override
+    public void setId(Long id) {
+        super.setId(id);
+    }
     public List<String> getFiles() {
         return files;
     }

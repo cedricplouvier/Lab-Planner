@@ -77,7 +77,7 @@
                         th:text="${device.devicename }" >Device Name</td>
                     <td class="firstName" th:value="${device.getDeviceType()}"
                         th:text="${device.deviceType.deviceTypeName }" >Device Type</td>
-                    <td >  <a th:href="@{/devices/info/{id}/(id=${device.id})}" class="btn btn-primary">Info</a></td>
+                    <td >  <a th:href="@{/device/info/{id}/(id=${device.id})}" class="btn btn-primary">Info</a></td>
                     <td>
                     <td>
                     <a th:href="@{/devices/{id}/(id=${device.id})}" class="fa fa-edit">

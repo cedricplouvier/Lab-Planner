@@ -1,7 +1,9 @@
 package be.uantwerpen.labplanner.Service;
 
+import be.uantwerpen.labplanner.Model.DeviceInformation;
 import be.uantwerpen.labplanner.Model.DeviceType;
 
+import be.uantwerpen.labplanner.Repository.DeviceInformationRepository;
 import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +15,8 @@ import java.util.Optional;
 public class DeviceTypeService {
     @Autowired
     private DeviceTypeRepository deviceTypeRepository;
-
+    @Autowired
+    private DeviceInformationRepository deviceInformationRepository;
     public DeviceTypeService() {
     }
 
@@ -34,6 +37,19 @@ public class DeviceTypeService {
         if (tempDeviceType != null){
             tempDeviceType.setOvernightuse(deviceType.getOvernightuse());
             tempDeviceType.setDeviceTypeName(deviceType.getDeviceTypeName());
+
+            if(deviceType.getDeviceInformations() !=null) {
+                for (DeviceInformation deviceInformation : deviceType.getDeviceInformations()) {
+                    DeviceInformation tempDeviceInformation = deviceInformation.getId() == null ? null : deviceInformationRepository.findById(deviceInformation.getId()).orElse(null);
+                    if (tempDeviceInformation != null) {
+                        tempDeviceInformation.setInformationName(deviceInformation.getInformationName());
+                        deviceInformationRepository.save(tempDeviceInformation);
+                    } else {
+                        System.out.println(tempDeviceType.getDeviceInformations().get(0).getId());
+                        deviceInformationRepository.save(deviceInformation);
+                    }
+                }
+            }
             deviceTypeRepository.save(tempDeviceType);
         }
         else{
