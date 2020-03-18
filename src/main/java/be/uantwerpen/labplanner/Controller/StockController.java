@@ -109,9 +109,27 @@ public class StockController {
             method= RequestMethod.POST)
     public String addProduct(@Valid Product product, BindingResult result,
                           final ModelMap model){
+        List<Product > products = productService.findAll();
+        Iterator<Product> it = products.iterator();
+        String NameIsUsed = null;
+        while (it.hasNext()) {
+            Product temp = it.next();
+            if(temp.getName().contains(product.getName())){
+                NameIsUsed = "There is already a product with the name " + product.getName();
+            }
+        }
+
+        if(NameIsUsed != null){
+            model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("NameIsUsed", NameIsUsed);
+            model.addAttribute("units", Unit.values());
+
+            return "/Stock/products-manage";
+        }
+
         if(result.hasErrors()){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("units",Unit.class);
+            model.addAttribute("units", Unit.values());
 
             return "/Stock/products-manage";
         }
@@ -184,6 +202,22 @@ public class StockController {
             method= RequestMethod.POST)
         public String addTag(@Valid Tag tag, BindingResult result,
                              final ModelMap model){
+        List<Tag > tags = tagService.findAll();
+        Iterator<Tag> it = tags.iterator();
+        String NameIsUsed = null;
+        while (it.hasNext()) {
+            Tag temp = it.next();
+            if(temp.getName().contains(tag.getName())){
+                 NameIsUsed = "There is already a tag with the name " + tag.getName();
+            }
+        }
+
+        if(NameIsUsed != null){
+            model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("NameIsUsed", NameIsUsed);
+            return "Tags/tags-manage";
+        }
+
         if(result.hasErrors()){
             model.addAttribute("allTags", tagService.findAll());
             return "Tags/tags-manage";
@@ -230,8 +264,29 @@ public class StockController {
             method= RequestMethod.POST)
     public String addMixture(@Valid Mixture mixture, BindingResult result,
                              final ModelMap model){
+
+        List<Mixture > mixtures = mixtureService.findAll();
+        Iterator<Mixture> it = mixtures.iterator();
+        String NameIsUsed = null;
+        while (it.hasNext()) {
+            Mixture temp = it.next();
+            if(temp.getName().contains(mixture.getName())){
+                NameIsUsed = "There is already a mixture with the name " + mixture.getName();
+            }
+        }
+
+        if(NameIsUsed != null){
+            model.addAttribute("allMixtures", tagService.findAll());
+            model.addAttribute("NameIsUsed", NameIsUsed);
+            model.addAttribute("allCompositions", compositionService.findAll());
+
+            return "/Mixtures/mixtures-manage";
+        }
+
         if(result.hasErrors()){
             model.addAttribute("allMixtures", mixtureService.findAll());
+            model.addAttribute("allCompositions", compositionService.findAll());
+
             return "Mixtures/mixtures-manage";
         }
         mixtureService.save(mixture);
@@ -289,11 +344,13 @@ public class StockController {
             method= RequestMethod.POST)
     public String addComposition(@Valid Composition composition, BindingResult result,
                              final ModelMap model){
+
         if(result.hasErrors()){
             model.addAttribute("allProducts", productService.findAll());
             model.addAttribute("composition", new Composition());
             return "Mixtures/compositions-manage";
         }
+
         compositionService.save(composition);
         model.addAttribute("allCompositions", compositionService.findAll());
         return "/Mixtures/compositions-list";
