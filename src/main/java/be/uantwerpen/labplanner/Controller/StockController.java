@@ -146,10 +146,30 @@ public class StockController {
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
     @RequestMapping(value="/tags/{id}/delete",method = RequestMethod.GET)
     public String deleteTag(@PathVariable Long id, final ModelMap model){
+        List<Product> products = productService.findAll();
+        Tag tag = null;
+        Optional<Tag> tempTag = tagService.findById(id);
+        if(tempTag.isPresent()){
+            tag = tempTag.get();
+        }
+
+        Iterator<Product> it = products.iterator();
+        while (it.hasNext()) {
+            Product temp = it.next();
+            if(temp.getTags().contains(tag)){
+                List<Tag> list = temp.getTags();
+                if(tag != null) {
+                    list.remove(tag);
+                    temp.setTags(list);
+                }
+            }
+        }
         tagService.deleteById(id);
         model.clear();
         return "redirect:/tags";
     }
+
+
 
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
     @RequestMapping(value="/tags/{id}", method= RequestMethod.GET)
