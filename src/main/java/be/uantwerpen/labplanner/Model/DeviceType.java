@@ -21,6 +21,7 @@ public class DeviceType extends AbstractPersistable<Long>{
     private static Boolean DEFAULT_OVERNIGHTUSE = false;
     private static List<String> DEFAULT_INFORMATIONTYPES = Arrays.asList(new String[]{"Manual","Maintenance", "Calibration","Safety instruction card"});
 
+
     //Variables
     @Column
     private String deviceTypeName;
@@ -111,5 +112,9 @@ public class DeviceType extends AbstractPersistable<Long>{
     }
     public void setDeviceInformations(List<DeviceInformation> deviceInformations) {
         this.deviceInformations = deviceInformations;
+    }
+
+    public static String getDefaultDevictypename() {
+        return DEFAULT_DEVICTYPENAME;
     }
 }

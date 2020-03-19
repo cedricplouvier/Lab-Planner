@@ -45,7 +45,7 @@ public class DeviceInformation extends AbstractPersistable<Long> {
     }
 
     public void addFile(String file){
-        files.add(file);
+        this.files.add(file);
     }
     @Override
     public Long getId() {
@@ -58,6 +58,10 @@ public class DeviceInformation extends AbstractPersistable<Long> {
     }
     public List<String> getFiles() {
         return files;
+    }
+
+    public static String getDefaultInformationName() {
+        return DEFAULT_INFORMATION_NAME;
     }
 
     public void setFiles(List<String> files) {

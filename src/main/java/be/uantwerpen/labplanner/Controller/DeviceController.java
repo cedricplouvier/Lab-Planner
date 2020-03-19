@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -76,8 +77,12 @@ public class DeviceController {
     }
     @RequestMapping(value="/devices/types/{id}", method= RequestMethod.GET)
     public String viewEdiDeviceType(@PathVariable Long id, final ModelMap model){
-        model.addAttribute("defaultInfo",new DeviceInformation());
         model.addAttribute("deviceTypeObject",deviceTypeService.findById(id).orElse(null));
+        model.addAttribute("files", storageService.loadDir(Objects.requireNonNull(deviceTypeService.findById(id).orElse(null)).getDeviceTypeName()).map(
+                path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
+                        "serveFile", new String[]{ path.getFileName().toString(),path.getParent().toString()}).build().toUri().toString())
+                .collect(Collectors.toList()));
+
         return "/Devices/device-type-manage";
     }
     @RequestMapping(value="/devices/info/{id}/{typeid}", method= RequestMethod.GET)
@@ -89,13 +94,32 @@ public class DeviceController {
     @RequestMapping(value="/devices/put", method= RequestMethod.GET)
     public String viewCreateDevice(final ModelMap model){
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
-        model.addAttribute("device",new Device("",deviceTypeService.findAll().get(0)));
+        model.addAttribute("device",new Device(Device.getDefaultDevicename(),deviceTypeService.findAll().get(0)));
         return "/Devices/device-manage";
+    }
+    @RequestMapping(value="/devices/types/put", method= RequestMethod.GET)
+    public String viewCreateDeviceType(final ModelMap model){
+        model.addAttribute("deviceTypeObject",new DeviceType(DeviceType.getDefaultDevictypename(),false));
+        model.addAttribute("files", null);
+        return "/Devices/device-type-manage";
+    }
+    @RequestMapping(value="/devices/info/put/{typeid}", method= RequestMethod.GET)
+    public String viewCreateDeviceInfo( @PathVariable Long typeid, final ModelMap model){
+        model.addAttribute("deviceInfoObject",new DeviceInformation(DeviceInformation.getDefaultInformationName(),""));
+        model.addAttribute("deviceTypeObject",deviceTypeService.findById(typeid).orElse(null));
+        return "/Devices/device-info-manage";
     }
     @RequestMapping(value={"/devices/", "/devices/{id}"}, method= RequestMethod.POST)
     public String addDevice(@Valid Device device, BindingResult result, final ModelMap model){
         if(result.hasErrors()){
             model.addAttribute("deviceType", deviceTypeService.findAll());
+            return "/Devices/device-manage";
+        }
+        Device tempDevice = deviceService.findByDevicename( device.getDevicename()).orElse(null);
+        if(tempDevice!=null&&device.getId()!=tempDevice.getId()){
+            model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+            model.addAttribute("device",device);
+            model.addAttribute("errormessage","The name "+device.getDevicename()+" is already used");
             return "/Devices/device-manage";
         }
         deviceService.saveSomeAttributes(device);
@@ -109,21 +133,41 @@ public class DeviceController {
         return "redirect:/devices";
     }
     @RequestMapping(value={"/devices/info","/devices/info/{id}/{typeid}"}, method= RequestMethod.POST)
-    public String addDeviceInfo(@Valid DeviceInformation deviceInformation, @PathVariable String typeid, BindingResult result, final ModelMap model){
+    public String addDeviceInfo(@Valid DeviceInformation deviceInformation, @PathVariable Long typeid, BindingResult result, final ModelMap model){
         if(result.hasErrors()){
             model.addAttribute("deviceInfoObject", deviceInformationService.findAll());
             return "/Devices/device-info-manage";
         }
-        deviceInformationService.saveSomeAttributes(deviceInformation);
+        deviceInformationService.saveSomeAttributes(deviceInformation,typeid);
         return "redirect:/devices/types/{typeid}";
     }
-
 
     @RequestMapping(value={"/devices/types", "/devices/types/{id}"}, method= RequestMethod.POST)
     public String addDeviceType(@Valid DeviceType deviceType, BindingResult result, final ModelMap model){
         if(result.hasErrors()){
             model.addAttribute("devicetypes", deviceTypeService.findAll());
             return "/Devices/device-type-manage";
+        }
+        if(deviceType.getId()==null){
+            if(deviceTypeService.findByDevicetypeName( deviceType.getDeviceTypeName()).orElse(null)!=null){
+                model.addAttribute("NameIsUsed","The name "+deviceType.getDeviceTypeName()+" is already used");
+                model.addAttribute("devicetypes", deviceTypeService.findAll());
+                model.addAttribute("deviceTypeObject",deviceType);
+                return "/Devices/device-type-manage";
+            }else{
+                deviceTypeService.saveSomeAttributes(deviceType);
+                return "redirect:/devices/types";
+            }
+        }
+        //Check if name is not already used else return to the edit page
+        DeviceType tempDeviceType = deviceTypeService.findById(deviceType.getId()).orElse(null);
+        if(!tempDeviceType.getDeviceTypeName().equals(deviceType.getDeviceTypeName())){
+            if(deviceTypeService.findByDevicetypeName( deviceType.getDeviceTypeName()).orElse(null)!=null){
+                model.addAttribute("NameIsUsed","The name "+deviceType.getDeviceTypeName()+" is already used");
+                model.addAttribute("devicetypes", deviceTypeService.findAll());
+                model.addAttribute("deviceTypeObject",tempDeviceType);
+                return "/Devices/device-type-manage";
+            }
         }
         deviceTypeService.saveSomeAttributes(deviceType);
         return "redirect:/devices/types";

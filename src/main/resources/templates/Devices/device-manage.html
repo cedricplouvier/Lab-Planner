@@ -16,6 +16,8 @@
     <div th:replace="navbar :: navbar"></div>
     <form action="#" th:action="@{/devices/{id}(id=${device})}" th:object="${device}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
+        <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>
+
         <div class="form-group"
              th:classappend="${#fields.hasErrors('devicename')}?'has-error': ''">
             <label class="control-label" >Name</label>

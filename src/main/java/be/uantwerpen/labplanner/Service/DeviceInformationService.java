@@ -2,7 +2,9 @@ package be.uantwerpen.labplanner.Service;
 
 import be.uantwerpen.labplanner.Model.Device;
 import be.uantwerpen.labplanner.Model.DeviceInformation;
+import be.uantwerpen.labplanner.Model.DeviceType;
 import be.uantwerpen.labplanner.Repository.DeviceInformationRepository;
+import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,8 @@ import java.util.Optional;
 public class DeviceInformationService {
     @Autowired
     private DeviceInformationRepository deviceInformationRepository;
-
+    @Autowired
+    private DeviceTypeRepository deviceTypeRepository;
     public DeviceInformationService() {
     }
 
@@ -40,7 +43,23 @@ public class DeviceInformationService {
             return false;
         }
     }
-    public void saveSomeAttributes(DeviceInformation deviceInformation) {
+    public void addFile(String filename,Long id){
+        DeviceInformation tempDeviceInformation = deviceInformationRepository.findById( id).orElse(null);
+        if (tempDeviceInformation != null){
+            tempDeviceInformation.addFile(filename);
+            deviceInformationRepository.save(tempDeviceInformation);
+        }
+    }
+    public void removeFile(String filename,Long id){
+        DeviceInformation tempDeviceInformation = deviceInformationRepository.findById( id).orElse(null);
+        if (tempDeviceInformation != null){
+            List<String> files = tempDeviceInformation.getFiles();
+            files.remove(filename);
+            tempDeviceInformation.setFiles(files);
+            deviceInformationRepository.save(tempDeviceInformation);
+        }
+    }
+    public void saveSomeAttributes(DeviceInformation deviceInformation,Long deviceTypeId) {
         DeviceInformation tempDeviceInformation = deviceInformation.getId() == null?null: deviceInformationRepository.findById( deviceInformation.getId()).orElse(null);
         if (tempDeviceInformation != null){
             tempDeviceInformation.setInformationName(deviceInformation.getInformationName());
@@ -49,7 +68,11 @@ public class DeviceInformationService {
             deviceInformationRepository.save(tempDeviceInformation);
         }
         else{
+            DeviceType tempDeviceType = deviceTypeRepository.findById( deviceTypeId).orElse(null);
+            List<DeviceInformation> info = tempDeviceType.getDeviceInformation();
+            info.add(deviceInformation);
             deviceInformationRepository.save(deviceInformation);
+            deviceTypeRepository.save(tempDeviceType);
         }
     }
     private boolean exists(Long id) {

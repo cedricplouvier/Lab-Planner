@@ -8,6 +8,7 @@ import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,8 +37,19 @@ public class DeviceTypeService {
 
         if (tempDeviceType != null){
             tempDeviceType.setOvernightuse(deviceType.getOvernightuse());
-            tempDeviceType.setDeviceTypeName(deviceType.getDeviceTypeName());
 
+            //Change updload dir name if the type name changes
+            if(!deviceType.getDeviceTypeName().equals(tempDeviceType.getDeviceTypeName())){
+                File dir = new File("upload-dir/"+tempDeviceType.getDeviceTypeName());
+                if (!dir.isDirectory()) {
+                    System.err.println("There is no directory @ given path");
+                } else {
+                    String newDirName = deviceType.getDeviceTypeName();
+                    File newDir = new File(dir.getParent() + "/" + newDirName);
+                    dir.renameTo(newDir);
+                }
+            }
+            tempDeviceType.setDeviceTypeName(deviceType.getDeviceTypeName());
             if(deviceType.getDeviceInformations() !=null) {
                 for (DeviceInformation deviceInformation : deviceType.getDeviceInformations()) {
                     DeviceInformation tempDeviceInformation = deviceInformation.getId() == null ? null : deviceInformationRepository.findById(deviceInformation.getId()).orElse(null);
@@ -45,7 +57,6 @@ public class DeviceTypeService {
                         tempDeviceInformation.setInformationName(deviceInformation.getInformationName());
                         deviceInformationRepository.save(tempDeviceInformation);
                     } else {
-                        System.out.println(tempDeviceType.getDeviceInformations().get(0).getId());
                         deviceInformationRepository.save(deviceInformation);
                     }
                 }
@@ -53,6 +64,7 @@ public class DeviceTypeService {
             deviceTypeRepository.save(tempDeviceType);
         }
         else{
+
             deviceTypeRepository.save(deviceType);
         }
     }

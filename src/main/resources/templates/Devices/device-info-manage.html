@@ -11,6 +11,7 @@
     });
     }
 </script>
+
 <div class="container">
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
@@ -23,11 +24,53 @@
                   th:errors="*{informationName}">Lastname Error</span>
             <input class="form-control" type="text" th:field="*{informationName}"
             /> </div>
+        <div class="form-group"
+             th:classappend="${#fields.hasErrors('information')}?'has-error': ''">
+            <label class="control-label" >Name</label>
+            <span class="control-label" th:if="${#fields.hasErrors('information')}"
+                  th:errors="*{information}">information Error</span>
+            <textarea rows="5" class="form-control" type="text" th:field="*{information}"/>
+        </div>
         <p>
             <a th:href="'/devices/types/'+${deviceTypeObject.id}"  class="btn btn-primary">Close</a>
-            <button type="submit"  class="btn btnprimary">Save</button>
+            <button type="submit"  class="btn btn-primary">Save</button>
         </p>
     </form>
+   
+
+    <form method="POST" enctype="multipart/form-data"  th:action="@{/upload/file/{typeid}/{id}(id=${deviceInfoObject.id},typeid=${deviceTypeObject.id})}">
+        <div class="input-group mb-3">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" name="file" id="inputGroupFile02"/>
+                <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+            </div>
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Upload</button>
+            </div>
+        </div>
+        <script>
+            $('#inputGroupFile02').on('change',function(){
+                //get the file name
+                var fileName = $(this).val();
+                //replace the "Choose a file" label
+                $(this).next('.custom-file-label').html(fileName);
+            })
+        </script>
+    </form>
+
+    </form>
+
+    <h5>Uploaded files</h5>
+        <div style="display: flex;margin-bottom: 5px"  th:if="${files}!= null  or ${deviceInfoObject.getFiles().size()==0}"th:each="file : ${files}">
+            <div style="flex: 1;display: flex" th:if="${#strings.contains(file, filename)}" th:each="filename : ${deviceInfoObject.getFiles()}" >
+                <form style="flex: 1;display: flex" method="Get" enctype="text/plain"  th:action="@{/file/delete/{typeid}/{infoid}/{file}(typeid=${deviceTypeObject.id},infoid=${deviceInfoObject.id},file=${filename})}">
+                    <div style="display: flex;flex: 1" class="btn-group" >
+                <a style="flex: 5"  role="button" class="btn btn-outline-primary btn-xs" id="label-btn" th:href="${file}" th:text="${filename}"  aria-disabled="true">T</a>
+                <button type="submit" style="flex: 1"  class="btn btn-danger btn-xs" aria-label="Import" data-toggle="tooltip" title="Import">
+            Delete
+                </button></div></form>
+    </div>
+        </div>
 </div>
 </body>
 </html>

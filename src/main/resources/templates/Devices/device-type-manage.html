@@ -7,21 +7,45 @@
     <div th:replace="navbar :: navbar"></div>
     <form action="#" th:action="@{/devices/types/{id}(id=${deviceTypeObject.id})}" th:object="${deviceTypeObject}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
+        <p>
         <div class="form-group"
              th:classappend="${#fields.hasErrors('deviceTypeName')}?'has-error': ''">
             <label class="control-label" >DeviceType name</label>
             <span class="control-label" th:if="${#fields.hasErrors('deviceTypeName')}" th:errors="*{deviceTypeName}">Devicetype name error Error</span>
             <input class="form-control" type="text" th:field="*{deviceTypeName}"/>
         </div>
-        <p> <label >Overnight use</label>
+         <label >Overnight use</label>
             <select class="custom-select" th:field="*{overnightuse}">
                 <option th:value="true" th:text="true"></option>
                 <option th:value="false" th:text="false"></option>
             </select>
         </p>
+        <form method="POST" enctype="multipart/form-data"  th:action="@{/upload/file/{typeid}/{id}(id=${deviceInfoObject.id},typeid=${deviceTypeObject.id})}">
+            <div class="input-group mb-3">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" name="file" id="inputGroupFile02"/>
+                    <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+                </div>
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Upload</button>
+                </div>
+            </div>
+            <script>
+                $('#inputGroupFile02').on('change',function(){
+                    //get the file name
+                    var fileName = $(this).val();
+                    //replace the "Choose a file" label
+                    $(this).next('.custom-file-label').html(fileName);
+                })
+            </script>
+        </form>
+        <div class="alert alert-danger" role="alert" th:if="${NameIsUsed}!=null" th:text="${NameIsUsed}"></div>
+        <p>
+            <a href="/devices/types"  class="btn btn-primary">Close</a>
+            <button type="submit"  class="btn btnprimary">Save</button>
+        </p>
         <hr class="my-4">
             <div class="card" th:each="deviceInfo : ${deviceTypeObject.getDeviceInformations()}" style="margin-bottom: 15px">
-
                 <div class="card-body">
                     <h5 class="card-title" th:text="${deviceInfo.getInformationName()}"></h5>
                     <p class="card-text" th:text="${deviceInfo.getInformation()}"></p>
@@ -37,13 +61,13 @@
                     <a type="button" class="btn btn-primary" th:href="@{/devices/info/{id}/{typeid}(id=${deviceInfo.getId()},typeid=${deviceTypeObject.getId()})}">Edit</a>
                 </div>
             </div>
-        <p>
-            <a href="/devices/types"  class="btn btn-primary">Close</a>
-            <button type="submit"  class="btn btnprimary">Save</button>
-        </p>
     </form>
+    <hr class="my-4">
+    <p>
+        <a href="/devices/types"  class="btn btn-primary">Close</a>
+        <a th:href="@{/devices/info/put/{typeid}(typeid=${deviceTypeObject.getId()})}"  class="btn btn-primary">Add information block</a>
+    </p>
 </div>
-</body>
 </html>
-</body>
-</html>
+
+

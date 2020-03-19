@@ -35,17 +35,13 @@ public class DeviceService {
         return (Device)this.deviceRepository.save(device);
     }
     public void saveSomeAttributes(Device device) {
-        Device tempDevice = device.getId() == null?null:
-                deviceRepository.findById( device.getId()).orElse(null);
-
+        Device tempDevice = device.getId() == null?null: deviceRepository.findById( device.getId()).orElse(null);
         if (tempDevice != null){
             tempDevice.setDeviceType(device.getDeviceType());
             tempDevice.setDevicename(device.getDevicename());
             tempDevice.setComment(device.getComment());
-
             deviceRepository.save(tempDevice);
-        }
-        else{
+        } else{
             deviceRepository.save(device);
         }
     }
@@ -59,7 +55,7 @@ public class DeviceService {
             return false;
         }
     }
- 
+
     private Boolean exists(Long id) {
         Device device = (Device)this.deviceRepository.findById(id).orElse((Device)null);
         return device != null;
