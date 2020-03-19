@@ -64,20 +64,20 @@
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th th:text="#{device}">Device Name</th>
-                    <th th:text="#{device.type}">Device type</th>
-                    <th >Info</th> <th></th>
-                    <th >Manage</th> <th></th>
+                    <th th:text="#{device}"></th>
+                    <th th:text="#{device.type}"></th>
+                    <th th:text="#{device.info}"></th> <th></th>
+                    <th th:text="#{device.manage}"></th> <th></th>
                 </tr>
                 </thead>
                 <!-- IMPORTANT, class="list" have to be at tbody -->
                 <tbody class="list">
                 <tr th:each="device : ${allDevices}">
                     <td class='deviceName' th:value="${device.getDevicename()}"
-                        th:text="${device.devicename }" >Device Name</td>
+                        th:text="${device.devicename }" ></td>
                     <td class="firstName" th:value="${device.getDeviceType()}"
-                        th:text="${device.deviceType.deviceTypeName }" >Device Type</td>
-                    <td >  <a th:href="@{/device/info/{id}/(id=${device.id})}" class="btn btn-primary">Info</a></td>
+                        th:text="${device.deviceType.deviceTypeName }" ></td>
+                    <td >  <a th:href="@{/device/info/{id}/(id=${device.id})}" th:text="#{device.info}" class="btn btn-primary"></a></td>
                     <td>
                     <td>
                     <a th:href="@{/devices/{id}/(id=${device.id})}" class="fa fa-edit">
@@ -89,29 +89,29 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h3 class="modal-title" id="exampleModalLabel">Delete device</h3>
+                                    <h3 class="modal-title" id="exampleModalLabel" th:text="#{device.delete}"></h3>
                                 </div>
                                 <div class="modal-body">
-                                    <h5 th:text="'Are you sure want to delete '+${device.getDevicename()}+'?'">Are you sure want to delete this device?</h5>
+                                    <h5 th:text="#{device.areyousure}+${device.getDevicename()}+'?'"></h5>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                    <a type="button" class="btn btn-danger" th:href="@{/devices/{id}/delete(id=${device.id})}">Delete device</a>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{device.cancel}"></button>
+                                    <a type="button" class="btn btn-danger" th:text="#{device.delete}" th:href="@{/devices/{id}/delete(id=${device.id})}"></a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </tr>
                 <tr class='notfound'>
-                    <td colspan='4' th:text="#{device.norecord}">No record found</td>
+                    <td colspan='4' th:text="#{device.norecord}"></td>
                 </tr>
                 </tbody>
             </table>
             <p>
                 <a href="/devices/types" class="btn btn-primary" th:text="#{device.manage.types}"
-                >Manage device types</a>
-                <a href="/devices/put" class="btn btn-primary"
-                >Add device</a>
+                ></a>
+                <a href="/devices/put" class="btn btn-primary"  th:text="#{device.add}"
+                ></a>
             </p>
 
         </div>

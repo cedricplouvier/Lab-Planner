@@ -5,6 +5,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -85,7 +86,27 @@ public class DeviceType extends AbstractPersistable<Long>{
     public List<DeviceInformation> getDeviceInformation() { return deviceInformations; }
     public void setDeviceInformation(List<DeviceInformation> deviceInformations) { this.deviceInformations = deviceInformations; }
     public String getDeviceTypeName() { return deviceTypeName; }
-    public void setDeviceTypeName(String deviceTypeName) { this.deviceTypeName = deviceTypeName; }
+    public void setDeviceTypeName(String deviceTypeName) {
+        //Change updload dir name if the type name changes
+        if(!this.deviceTypeName.equals(deviceTypeName)){
+            File dir = new File("upload-dir/"+this.deviceTypeName);
+            if (!dir.isDirectory()) {
+                System.err.println("There is no directory @ given path");
+            } else {
+                String newDirName = deviceTypeName;
+                File newDir = new File(dir.getParent() + "/" + newDirName);
+                dir.renameTo(newDir);
+            }
+            if (this.devicePictureName!=null){
+                String rootlocation = "upload-dir/images/";
+                File f1 = new File(rootlocation+this.devicePictureName);
+                File f2 = new File(rootlocation+deviceTypeName + "."+this.devicePictureName.substring(this.devicePictureName.lastIndexOf(".") + 1));
+                f1.renameTo(f2);
+                this.devicePictureName =deviceTypeName + "."+this.devicePictureName.substring(this.devicePictureName.lastIndexOf(".") + 1);
+            }
+        }
+        this.deviceTypeName = deviceTypeName;
+    }
     public static void setDefaultInformationtypes(List<String> defaultInformationtypes) {
         DEFAULT_INFORMATIONTYPES = defaultInformationtypes;
     }

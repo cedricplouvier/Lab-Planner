@@ -1,5 +1,6 @@
 package be.uantwerpen.labplanner.Service;
 
+import be.uantwerpen.labplanner.Model.Device;
 import be.uantwerpen.labplanner.Model.DeviceInformation;
 import be.uantwerpen.labplanner.Model.DeviceType;
 
@@ -38,17 +39,6 @@ public class DeviceTypeService {
         if (tempDeviceType != null){
             tempDeviceType.setOvernightuse(deviceType.getOvernightuse());
 
-            //Change updload dir name if the type name changes
-            if(!deviceType.getDeviceTypeName().equals(tempDeviceType.getDeviceTypeName())){
-                File dir = new File("upload-dir/"+tempDeviceType.getDeviceTypeName());
-                if (!dir.isDirectory()) {
-                    System.err.println("There is no directory @ given path");
-                } else {
-                    String newDirName = deviceType.getDeviceTypeName();
-                    File newDir = new File(dir.getParent() + "/" + newDirName);
-                    dir.renameTo(newDir);
-                }
-            }
             tempDeviceType.setDeviceTypeName(deviceType.getDeviceTypeName());
             if(deviceType.getDeviceInformations() !=null) {
                 for (DeviceInformation deviceInformation : deviceType.getDeviceInformations()) {

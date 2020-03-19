@@ -43,14 +43,22 @@ public class FileController {
 				"attachment; filename=\"" + file.getFilename() + "\"").body(file);
 	}
 
-	@PostMapping("/upload/TypeImage/{typeid}")
+	@PostMapping("/upload/typeimage/{typeid}")
 	public String handleTypeImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long typeid) {
 //		if(storageService.getFileExtension(file.getOriginalFilename()).equals("png"))
-		storageService.store(file,"images");
+		System.out.println("Failed to store image");
 		DeviceType tempDeviceType =  deviceTypeService.findById( typeid).orElse(null);
-		tempDeviceType.setDevicePictureName(file.getOriginalFilename());
-		deviceTypeService.saveSomeAttributes(tempDeviceType);
-		redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + file.getOriginalFilename() + "!");
+		if(tempDeviceType!=null) {
+			String filename = tempDeviceType.getDeviceTypeName()+"."+file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+			storageService.store(file,"images",filename);
+			tempDeviceType.setDevicePictureName(filename);
+			deviceTypeService.saveSomeAttributes(tempDeviceType);
+			System.out.println("Succesfully stored image");
+
+		}else{
+			System.out.println("Failed to store image");
+		}
+
 		return "redirect:/devices/types/"+typeid;
 	}
 
@@ -64,7 +72,7 @@ public class FileController {
 	}
 	@PostMapping("/upload/file/{typeid}/{infoid}")
 	public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable Long infoid, RedirectAttributes redirectAttributes, @PathVariable Long typeid) {
-		storageService.store(file,deviceTypeService.findById(typeid).orElse(null).getDeviceTypeName());
+		storageService.store(file,deviceTypeService.findById(typeid).orElse(null).getDeviceTypeName(),file.getOriginalFilename());
 		deviceInformationService.addFile(file.getOriginalFilename(),infoid);
 		redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + file.getOriginalFilename() + "!");
 		return "redirect:/devices/info/"+infoid+"/"+typeid;

@@ -8,15 +8,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface StorageService {
-	//will be used in next story to upload files
-	void store(MultipartFile file,String dir);
-	Optional<String> getFileExtension(String filename);
+	void store(MultipartFile file,String dir,String filename);
 	Stream<Path> loadDir(String fileLocation);
-	public void delete(String filename);
+	void delete(String filename);
 	Path load(String filename);
-
 	Resource loadAsResource(String filename);
-
-	//will be used in next story to delete files
-	//	public void deleteAll();
 }

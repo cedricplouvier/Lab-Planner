@@ -26,9 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileSystemStorageService implements StorageService {
 
 	private final Path rootLocation;
-	public Optional<String> getFileExtension(String filename){
-		return Optional.ofNullable(filename).filter(f -> f.contains(".")).map(f -> f.substring(filename.lastIndexOf(".") + 1));
-	}
+
 	@Autowired
 	public FileSystemStorageService(StorageProperties properties) {
 		this.rootLocation = Paths.get(properties.getLocation());
@@ -36,8 +34,8 @@ public class FileSystemStorageService implements StorageService {
 
 	//will be used in next story to upload files
 	@Override
-	public void store(MultipartFile file,String dir) {
-		String filename = StringUtils.cleanPath(file.getOriginalFilename());
+	public void store(MultipartFile file,String dir,String filename) {
+
 		Path finalPath = Paths.get(rootLocation.toString()+"/"+dir);
 		try {
 			if (file.isEmpty()) {

@@ -132,6 +132,25 @@ public class DeviceController {
         model.clear();
         return "redirect:/devices";
     }
+
+    @RequestMapping(value="/devices/types/{id}/delete")
+    public String deleteDeviceType(@PathVariable Long id, final ModelMap model){
+        List<Device> allDevices = deviceService.findAll();
+        Boolean isUsed = false;
+        for(Device currentDevice : allDevices){
+            if(currentDevice.getDeviceType().getId()==id){
+                isUsed = true;
+            }
+        }
+        if(isUsed){
+            model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+            model.addAttribute("errormessage", "There are devices of type "+deviceTypeService.findById(id).orElse(null).getDeviceTypeName());
+            return "/Devices/list-device-types";
+        }
+        deviceTypeService.delete(id);
+        model.clear();
+        return "redirect:/devices";
+    }
     @RequestMapping(value={"/devices/info","/devices/info/{id}/{typeid}"}, method= RequestMethod.POST)
     public String addDeviceInfo(@Valid DeviceInformation deviceInformation, @PathVariable Long typeid, BindingResult result, final ModelMap model){
         if(result.hasErrors()){

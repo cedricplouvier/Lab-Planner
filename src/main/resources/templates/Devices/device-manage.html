@@ -17,15 +17,14 @@
     <form action="#" th:action="@{/devices/{id}(id=${device})}" th:object="${device}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
         <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>
-
         <div class="form-group"
              th:classappend="${#fields.hasErrors('devicename')}?'has-error': ''">
-            <label class="control-label" >Name</label>
+            <label class="control-label" th:text="#{device.name}"></label>
             <span class="control-label" th:if="${#fields.hasErrors('devicename')}"
-                  th:errors="*{devicename}">Lastname Error</span>
+                  th:errors="*{devicename}"></span>
             <input class="form-control" type="text" th:field="*{devicename}"
             /> </div>
-        <p> <label >Device Type</label>
+        <p> <label th:text="#{device.type}"></label>
             <select class="custom-select" th:field="*{deviceType}">
                 <option th:each="deviceType : ${allDeviceTypes}"
                         th:value="${{deviceType}}"
@@ -34,15 +33,15 @@
         </p>
         <div class="form-group"
              th:classappend="${#fields.hasErrors('comment')}?'has-error': ''">
-            <label class="control-label" >Comment</label>
+            <label class="control-label" th:text="#{device.comment}">Comment</label>
             <span class="control-label" th:if="${#fields.hasErrors('comment')}"
                   th:errors="*{comment}">comment Error</span>
             <textarea rows="5" class="form-control" type="text" th:field="*{comment}"
             />
         </div>
         <p>
-            <a href="/devices"  class="btn btn-primary">Close</a>
-            <button type="submit"  class="btn btnprimary">Save</button>
+            <a href="/devices"  class="btn btn-primary" th:text="#{close}">Close</a>
+            <button type="submit"  class="btn btnprimary" th:text="#{save}">Save</button>
         </p>
     </form>
 </div>
