@@ -24,40 +24,40 @@ public class RoleController {
     @Autowired
     private PrivilegeService privilegeService;
 
-    @RequestMapping(value = "/roles",method = RequestMethod.GET)
+    @RequestMapping(value = "/usermanagement/roles",method = RequestMethod.GET)
     public String showRoles(final ModelMap model){
         model.addAttribute("allRoles",roleService.findAll());
         return "/Roles/role-list";
     }
 
-    @RequestMapping(value = "/roles/put", method = RequestMethod.GET)
+    @RequestMapping(value = "/usermanagement/roles/put", method = RequestMethod.GET)
     public String ViewCreateRole(final ModelMap model){
         model.addAttribute("allPrivileges",privilegeService.findAll());
         model.addAttribute(new Role(""));
         return "/Roles/role-manage";
     }
 
-    @RequestMapping(value = "/roles/{id}",method = RequestMethod.GET)
+    @RequestMapping(value = "/usermanagement/roles/{id}",method = RequestMethod.GET)
     public String viewEditRole(@PathVariable long id, final ModelMap model){
         model.addAttribute("allPrivileges",privilegeService.findAll());
         model.addAttribute("role",roleService.findById(id));
         return "/Roles/role-manage";
     }
 
-    @RequestMapping(value = {"/roles/","/roles/{id}"},method = RequestMethod.POST)
+    @RequestMapping(value = {"/usermanagement/roles/","/usermanagement/roles/{id}"},method = RequestMethod.POST)
     public String addRole(@Valid Role role, BindingResult result, final ModelMap model) {
         if (result.hasErrors()) {
             model.addAttribute("allPrivileges", privilegeService.findAll());
             return "/Roles/role-manage";
         }
         roleService.save(role);
-        return "redirect:/roles";
+        return "redirect:/usermanagement/roles";
     }
 
-    @RequestMapping(value = "/roles/{id}/delete",method = RequestMethod.GET)
+    @RequestMapping(value = "/usermanagement/roles/{id}/delete",method = RequestMethod.GET)
     public String deleteRole(@PathVariable long id, final ModelMap model){
         roleService.deleteById(id);
         model.clear();
-        return "redirect:/roles";
+        return "redirect:/usermanagement/roles";
     }
 }

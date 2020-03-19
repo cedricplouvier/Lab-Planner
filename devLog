@@ -1609,7 +1609,7 @@ org.springframework.expression.spel.SpelEvaluationException: EL1011E: Method cal
 2020-03-15 19:37:42,425 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown initiated...
 2020-03-15 19:37:42,426 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown completed.
 2020-03-15 19:37:42,428 INFO org.apache.juli.logging.DirectJDKLog [main] Stopping service [Tomcat]
-2020-03-15 19:37:42,437 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main] 
+2020-03-15 19:37:42,437 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main]
 
 Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
 2020-03-15 19:37:42,443 ERROR org.springframework.boot.SpringApplication [main] Application run failed
@@ -7249,10 +7249,10 @@ org.springframework.expression.spel.SpelEvaluationException: EL1008E: Property o
  java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1134)
  java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
  java.lang.Thread.run(Thread.java:748)
-2020-03-16 16:39:57,602 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main] 
+2020-03-16 16:39:57,602 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main]
 
 Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
-2020-03-16 16:39:57,606 ERROR org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter [main] 
+2020-03-16 16:39:57,606 ERROR org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter [main]
 
 ***************************
 APPLICATION FAILED TO START
