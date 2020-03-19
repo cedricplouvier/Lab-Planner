@@ -3,6 +3,7 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.stock.Tag;
+import be.uantwerpen.labplanner.common.model.stock.Unit;
 import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import be.uantwerpen.labplanner.common.service.stock.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 
 @Controller
 public class StockController {
@@ -41,13 +43,17 @@ public class StockController {
     @RequestMapping(value="/products/put", method= RequestMethod.GET)
     public String viewCreateProducts(final ModelMap model){
         model.addAttribute("allProducts", productService.findAll());
-        model.addAttribute("product",new Product());
+        model.addAttribute("allTags", tagService.findAll());
+        model.addAttribute("product",new Product("Name","Description",0.0, 0.0, 0.0, 0.0, null, "URL", "properties", null,null, LocalDateTime.now(), LocalDateTime.now(), null));
+        model.addAttribute("units",Unit.class);
         return "/Stock/products-manage";
     }
     @RequestMapping(value="/products/{id}", method= RequestMethod.GET)
     public String viewEditProduct(@PathVariable Long id, final ModelMap model){
         model.addAttribute("allProducts", productService.findAll());
+        model.addAttribute("allTags", tagService.findAll());
         model.addAttribute("product",productService.findById(id).orElse(null));
+        model.addAttribute("units",Unit.class);
         return "/Stock/products-manage";
     }
     @RequestMapping(value={"/products/", "/products/{id}"},
@@ -56,14 +62,16 @@ public class StockController {
                           final ModelMap model){
         if(result.hasErrors()){
             model.addAttribute("allTags", tagService.findAll());
-            return "Stock/products-manage";
+            model.addAttribute("units",Unit.class);
+
+            return "/Stock/products-manage";
         }
         productService.save(product);
         return "redirect:/products";
     }
-    @RequestMapping(value="/products/{id}/delete")
-    public String deleteProduct(@PathVariable Long id, final ModelMap
-            model){ productService.deleteById(id);
+    @RequestMapping(value="/products/{id}/delete",method = RequestMethod.GET)
+    public String deleteProduct(@PathVariable Long id, final ModelMap model){
+        productService.deleteById(id);
         model.clear();
         return "redirect:/products";
     }
@@ -71,14 +79,21 @@ public class StockController {
     @RequestMapping(value="/tags", method = RequestMethod.GET)
     public String showProductTags(final ModelMap model){
         model.addAttribute("allProductTags",tagService.findAll());
-        return "/Stock/tags-list";
+        return "/Tags/tags-list";
+    }
+
+    @RequestMapping(value="/tags/{id}/delete",method = RequestMethod.GET)
+    public String deleteTag(@PathVariable Long id, final ModelMap model){
+        tagService.deleteById(id);
+        model.clear();
+        return "redirect:/tags";
     }
 
     @RequestMapping(value="/tags/{id}", method= RequestMethod.GET)
     public String viewEditTag(@PathVariable Long id, final ModelMap model){
         model.addAttribute("allTags", tagService.findAll());
         model.addAttribute("tag",tagService.findById(id).orElse(null));
-        return "/Stock/tags-list";
+        return "/Tags/tags-manage";
     }
     @RequestMapping(value={"/tags", "/tags/{id}"},
             method= RequestMethod.POST)
@@ -86,9 +101,16 @@ public class StockController {
                              final ModelMap model){
         if(result.hasErrors()){
             model.addAttribute("allTags", tagService.findAll());
-            return "Stock/tags-list";
+            return "Tags/tags-manage";
         }
         tagService.save(tag);
-        return "redirect:/products";
+        return "redirect:/tags";
+    }
+
+    @RequestMapping(value="/tags/put", method= RequestMethod.GET)
+    public String viewCreateTags(final ModelMap model){
+        model.addAttribute("allTags", tagService.findAll());
+        model.addAttribute("tag", new Tag(""));
+        return "/Tags/tags-manage";
     }
 }

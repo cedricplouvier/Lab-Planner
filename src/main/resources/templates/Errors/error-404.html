@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
-<head th:replace="navbar :: head (title='#{stockmanagement}')"></head>
+<head th:replace="navbar :: head (title='#{error}')"></head>
 <body>
+
 <div class ="container" >
     <div th:replace="navbar :: navbar"></div>
 
-    <h1>Stock Management</h1>
+    <h1 th:text="#{error403}"> Path does not exist </h1>
+
+    <a href="/" th:text="#{homepage}" class="btn btn-outline-primary">Go home</a>
 
     <div th:replace="footer :: footer"></div>
 </div>
