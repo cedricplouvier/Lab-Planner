@@ -58,7 +58,7 @@ public class StepController {
     }
     @PreAuthorize("hasAuthority('Planning - Book step/experiment')")
     @RequestMapping(value={"/planning" , "/planning/{id}"},method= RequestMethod.POST)
-    public String addStep(@Valid Step step,/*String startf,String endf,*/ BindingResult result, final ModelMap model) throws ParseException {
+    public String addStep(@Valid Step step, BindingResult result, final ModelMap model) throws ParseException {
         User currentUser =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(result.hasErrors() || overlapCheck(step)){
             model.addAttribute("allDevices", deviceService.findAll());
@@ -107,22 +107,22 @@ public class StepController {
                     if(!thisStepDateStop.equals(thisStepDateStart) && !stopDate.equals(startDate)) // Maar eindigen beide niet op deze datum -> sws overlap
                         return true;
                     else {
-                        if (thisStepDateStop.equals(thisStepDateStart)) {  // Deze Step stopt ook op deze dag
+                        if (thisStepDateStop.equals(thisStepDateStart) && !stopDate.equals(startDate)) {  // Deze Step stopt ook op deze dag
                             if (Integer.parseInt(step.getEndHour())>Integer.parseInt(s.getStartHour()))
                             {
                                 return true;
                             }
                         }
-                        if (stopDate.equals(startDate)) {
+                        if (stopDate.equals(startDate) && !thisStepDateStop.equals(thisStepDateStart)) {
                             if (Integer.parseInt(s.getEndHour())>Integer.parseInt(step.getStartHour()))
                                 return true;
                         }
                         if(thisStepDateStop.equals(thisStepDateStart) && stopDate.equals(startDate))
                         {
-                            if ( (Integer.parseInt(s.getStartHour()) <= Integer.parseInt(step.getStartHour())) && (Integer.parseInt(step.getStartHour()) <= Integer.parseInt(s.getEndHour()))) {
+                            if ( (Integer.parseInt(s.getStartHour()) <= Integer.parseInt(step.getStartHour())) && (Integer.parseInt(step.getStartHour()) < Integer.parseInt(s.getEndHour()))) {
                                 return true;
                             }
-                            if ((Integer.parseInt(s.getStartHour()) <= Integer.parseInt(step.getEndHour())) && (Integer.parseInt(step.getEndHour()) <= Integer.parseInt(s.getEndHour())))
+                            if ((Integer.parseInt(s.getStartHour()) < Integer.parseInt(step.getEndHour())) && (Integer.parseInt(step.getEndHour()) <= Integer.parseInt(s.getEndHour())))
                                 return true;
                         }
                     }
