@@ -3,17 +3,6 @@
 <head th:replace="navbar :: head (title='#{usermanagement}')"></head>
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
-
-<!--
-<body>
-
-<div th:replace="navbar :: navbar"></div>
-
-<h1>User Management</h1>
-
-</body>
-
--->
 <body onload="initPage()">
 <script type="text/javascript">
     function initPage(){
@@ -36,13 +25,21 @@
         });
     });
 </script>
+<script>
+    function confirmation() {
+        var t = "#{users.uaNumber}";
+        confirm(messages.properties.);
+    }
+</script>
+
 <div class="container">
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
     <div class="content">
         <div id="user-list">
             <a href="/usermanagement/users/put" class="btn btn-primary"
-               th:text="#{users.create}">Create user</a>
+               th:text="#{users.create}">Create user
+            text   </a>
             <a href="/usermanagement/roles" class="btn btn-outline-secondary"
                th:text="#{roles.page}"></a>
             <a href="/usermanagement/privileges" class="btn btn-outline-secondary"
@@ -59,7 +56,7 @@
                     <th th:text="#{users.uaNumber}"></th>
 
                     <th th:text="#{users.roles}"></th>
-                    <th th:text="#{users.quickEdit}"></th>
+                    <th th:text="#{quickEdit}"></th>
 
 
                 </tr>
@@ -83,8 +80,8 @@
                     <td>
                         <a th:href="@{/usermanagement/users/{id}/(id=${user.id})}"><span
                                 class="fas fa-edit"></span></a>&nbsp;
-                        <a th:href="@{/usermanagement/users/{id}/delete(id=${user.id})}">
-                            <span class="fas fa-trash"></span></a>
+                        <a th:href="@{/usermanagement/users/{id}/delete(id=${user.id})}" onclick="return confirm('Are you sure you want to delete?')" >
+                            <span class="fas fa-trash"></span> </a>
                     </td>
                 </tr>
                 </tbody>

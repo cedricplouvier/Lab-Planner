@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/usermanagement/users/put",method = RequestMethod.GET)
-    public String viewCreateUser(final ModelMap model){
+    public String viewCreateUser(@org.jetbrains.annotations.NotNull final ModelMap model){
         model.addAttribute("allRoles",roleService.findAll());
         model.addAttribute(new User("","","","","","","","",null,null,null));
         return "/Users/user-manage";
@@ -55,7 +55,12 @@ public class UserController {
             model.addAttribute("allRoles",roleService.findAll());
             return "/Users/user-manage";
         }
-        userService.save(user);
+        //if the given username is unique, save the user in the database
+        if(!userService.findByUsername(user.getUsername()).isPresent()){
+            userService.save(user);
+
+        }
+
         return "redirect:/usermanagement/users";
     }
 
