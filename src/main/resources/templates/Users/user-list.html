@@ -25,12 +25,7 @@
         });
     });
 </script>
-<script>
-    function confirmation() {
-        var t = "#{users.uaNumber}";
-        confirm(messages.properties.);
-    }
-</script>
+
 
 <div class="container">
     <!-- Import menu bar -->
@@ -61,6 +56,7 @@
 
                 </tr>
                 </thead>
+
                 <!-- IMPORTANT, class="list" have to be at tbody -->
 
                 <tbody class="list" id="UserTable">
@@ -80,8 +76,8 @@
                     <td>
                         <a th:href="@{/usermanagement/users/{id}/(id=${user.id})}"><span
                                 class="fas fa-edit"></span></a>&nbsp;
-                        <a th:href="@{/usermanagement/users/{id}/delete(id=${user.id})}" onclick="return confirm('Are you sure you want to delete?')" >
-                            <span class="fas fa-trash"></span> </a>
+                        <a th:href="@{/usermanagement/users/{id}/delete(id=${user.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                            <span class="fas fa-trash" style="color: red" ></span> </a>
                     </td>
                 </tr>
                 </tbody>
