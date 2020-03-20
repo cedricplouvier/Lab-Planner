@@ -37,10 +37,13 @@ public class Step extends AbstractPersistable<Long> {
     public Step(){
     }
 
-    public Step(User user, Device device/*, Timeslot timeslot*/) {
+    public Step(User user, Device device, String start, String end, String startHour, String endHour) {
         this.user=  user;
         this.device = device;
-        //this.timeslot = timeslot;
+        this.start=start;
+        this.end=end;
+        this.startHour=startHour;
+        this.endHour=endHour;
     }
 
     @Override
