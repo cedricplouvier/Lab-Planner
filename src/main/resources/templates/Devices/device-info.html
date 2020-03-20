@@ -43,9 +43,9 @@
     <div class="content">
         <div id="device-list">
 
-            <h3 th:text="#{device.information}">Device information</h3>
+            <h3 th:text="#{device.information}" ></h3>
             <hr class="my-4">
-            <h5 th:text="#{device.general}">General information</h5>
+            <h5 th:text="#{device.general}" >General information</h5>
 
             <div class="container">
                 <div class="row" >
@@ -79,12 +79,14 @@
                     <div class="col" >
                     </div>
                     <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
-                        <img th:src="${(device.getDeviceType().getDevicePictureName() != null && !#strings.isEmpty(device.getDeviceType().getDevicePictureName())) ? '/files/images/'+device.getDeviceType().getDevicePictureName() : '/images/placeholder.jpg'}" />
+                        <img class="img-fluid" th:src="${(device.getDeviceType().getDevicePictureName() != null && !#strings.isEmpty(device.getDeviceType().getDevicePictureName())) ? '/files/images/'+device.getDeviceType().getDevicePictureName() : '/images/placeholder.jpg'}" />
                     </div>
                 </div>
             </div>
             <h5 th:text="#{device.other}">Other Information</h5>
             <hr class="my-4">
+            <div class="alert alert-info" role="alert" th:if="${device.getDeviceType().getDeviceInformations().size()}==0" th:text="#{device.noinfo}"></div>
+
             <div class="container" th:each="deviceInfo : ${device.getDeviceType().getDeviceInformation()}">
                 <div class="card" style="margin: 10px">
                     <div class="card-body">

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <!-- Import header -->
 <head th:replace="navbar :: head (title='#{deviceTypes}')"></head>
 <body onload="initPage()">
@@ -52,6 +52,8 @@
 <div class="container">
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
+    <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>
+
     <div class="content">
         <div id="device-list">
             <input type='text' id='txt_name' th:placeholder="#{device.type.search}">
@@ -59,25 +61,50 @@
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th th:text="#{device.type}">Device Type Name</th>
+                    <th th:text="#{device.type}"></th>
+                    <th sec:authorize="hasAuthority('Device - Modify - All')" th:text="#{device.manage}"></th> <th></th>
                 </tr>
                 </thead>
                 <!-- IMPORTANT, class="list" have to be at tbody -->
                 <tbody class="list">
                 <tr th:each="deviceType : ${allDeviceTypes}">
                     <td class='deviceTypeName' th:value="${deviceType.getDeviceTypeName()}"
-                        th:text="${deviceType.getDeviceTypeName() }" >Device Name</td>
+                        th:text="${deviceType.getDeviceTypeName() }" ></td>
+                    <td>
+                        <a sec:authorize="hasAuthority('Device - Modify - All')" th:href="@{/devices/types/{id}/(id=${deviceType.getId()})}" class="fa fa-edit">
+                        </a>
+                        <a sec:authorize="hasAuthority('Device - Modify - All')" th:href="@{/devices/{id}/delete(id=${deviceType.id})}"  class="fa fa-trash" style="color: red" data-toggle="modal" data-target="#modal-warning"  th:attr="data-target='#modal-warning'+${deviceType.id }">
+                        </a>
+                        <div class="modal modal-warning fade" th:id="modal-warning+${deviceType.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h3 class="modal-title" id="exampleModalLabel" th:text="#{delete}"></h3>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5 th:text="#{device.areyousure}+${deviceType.getDeviceTypeName()}+'?'"></h5>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                        <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/devices/types/{id}/delete(id=${deviceType.id})}"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
                 </tr>
                 <tr class='notfound'>
-                    <td colspan='4' th:text="#{device.norecord}">No record found</td>
+                    <td colspan='4' th:text="#{device.norecord}"></td>
                 </tr>
                 </tbody>
             </table>
-            <a href="/devices" class="btn btn-primary" th:text="#{device.return}" >Return to devices</a>
+            <p>
+                <a href="/devices" class="btn btn-primary" th:text="#{device.return}" ></a>
+                <a sec:authorize="hasAuthority('Device - Modify - All')" href="/devices/types/put" class="btn btn-primary" th:text="#{device.add.type}" ></a>
+            </p>
         </div>
     </div>
 </div>
 <div th:replace="footer :: footer"></div>
-
 </body>
 </html>

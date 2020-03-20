@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Import header -->
+<head th:replace="navbar :: head (title='#{device.management}')"></head>
+<body onload="initPage()">
+<script type="text/javascript">
+    function initPage(){
+        $('#roles').multiSelect({
+            selectableHeader: '<div class="custom-header"th:text="#{selectable.items}">Selectable items</div>',
+        selectionHeader: '<div class="custom-header"th:text="#{selected.items}">Selected items</div>'
+    });
+    }
+</script>
+
+<div class="container">
+    <!-- Import menu bar -->
+    <div th:replace="navbar :: navbar"></div>
+    <form action="#" th:action="@{/devices/info/{id}/{typeid}(id=${deviceInfoObject},typeid=${deviceTypeObject.id})}" th:object="${deviceInfoObject}" method="post">
+        <input th:type="hidden" th:field="*{id}"/>
+        <div class="form-group"
+             th:classappend="${#fields.hasErrors('informationName')}?'has-error': ''">
+            <label class="control-label" th:text="#{name}">Name</label>
+            <span class="control-label" th:if="${#fields.hasErrors('informationName')}"
+                  th:errors="*{informationName}"></span>
+            <input class="form-control" type="text" th:field="*{informationName}"
+            /> </div>
+        <div class="form-group"
+             th:classappend="${#fields.hasErrors('information')}?'has-error': ''">
+            <label class="control-label" th:text="#{name}"></label>
+            <span class="control-label" th:if="${#fields.hasErrors('information')}"
+                  th:errors="*{information}"></span>
+            <textarea rows="5" class="form-control" type="text" th:field="*{information}"/>
+        </div>
+        <p>
+            <a th:href="'/devices/types/'+${deviceTypeObject.id}"  class="btn btn-primary" th:text="#{close}"></a>
+            <button type="submit"  class="btn btn-primary" th:text="#{save}"></button>
+        </p>
+    </form>
+
+
+    <form th:if="${deviceInfoObject.id}!=null" method="POST" enctype="multipart/form-data"  th:action="@{/upload/file/{typeid}/{id}(id=${deviceInfoObject.id},typeid=${deviceTypeObject.id})}">
+        <div class="input-group mb-3">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" name="file" id="inputGroupFile02"/>
+                <label class="custom-file-label" for="inputGroupFile02"th:text="#{device.choosefile}"></label>
+            </div>
+            <div class="input-group-append">
+                <button class="btn btn-primary" id="upload-btn" disabled type="submit"  th:text="#{device.upload}"></button>
+            </div>
+        </div>
+        <script>
+            $('#inputGroupFile02').on('change',function(){
+                //get the file name
+                var fileName = $(this).val();
+                //replace the "Choose a file" label
+                $(this).next('.custom-file-label').html(fileName);
+                $('#upload-btn').prop('disabled', false);
+
+            })
+        </script>
+    </form>
+
+    </form>
+
+    <h5 th:text="#{device.uploaded}"></h5>
+        <div style="display: flex;margin-bottom: 5px"  th:if="(${files}!= null  or ${deviceInfoObject.getFiles().size()==0}) and ${deviceInfoObject.id}!=null"th:each="file : ${files}">
+            <div style="flex: 1;display: flex" th:if="${#strings.contains(file, filename)}" th:each="filename : ${deviceInfoObject.getFiles()}" >
+                <form style="flex: 1;display: flex" method="Get" enctype="text/plain"  th:action="@{/file/delete/{typeid}/{infoid}/{file}(typeid=${deviceTypeObject.id},infoid=${deviceInfoObject.id},file=${filename})}">
+                    <div style="display: flex;flex: 1" class="btn-group" >
+                <a style="flex: 5"  role="button" class="btn btn-outline-primary btn-xs" id="label-btn" th:href="${file}" th:text="${filename}"  aria-disabled="true">T</a>
+                <button type="submit" style="flex: 1"  class="btn btn-danger btn-xs" aria-label="Import" data-toggle="tooltip" title="Import" th:text="#{delete}">
+                </button></div></form>
+    </div>
+        </div>
+    <div class="alert alert-info" role="alert" th:if="${deviceInfoObject.id}==null" th:text="#{device.savebeforeupload}"></div>
+    <div class="alert alert-info" role="alert" th:if="${deviceInfoObject.id}!=null and ${deviceInfoObject.getFiles().size()}==0" th:text="#{device.noupload}"></div>
+
+</div>
+</body>
+</html>

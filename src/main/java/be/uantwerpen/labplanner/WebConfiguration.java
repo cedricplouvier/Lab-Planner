@@ -26,8 +26,6 @@ class WebConfiguration extends WebSecurityConfigurerAdapter {
     or implement method-level security using @preAuthorize in the controller classes */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
-
         http.authorizeRequests()
                 .antMatchers("/console/*").hasAuthority("Console Access")  //allow h2 console access to admins only
                 .antMatchers("/usermanagement/**").hasAuthority("User Management")
