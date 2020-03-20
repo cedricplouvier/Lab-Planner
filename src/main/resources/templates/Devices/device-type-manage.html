@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Import header -->
+<head th:replace="navbar :: head (title='#{device.type.management}')"></head>
+<div class="container">
+    <!-- Import menu bar -->
+    <div th:replace="navbar :: navbar"></div>
+    <form action="#" th:action="@{/devices/types/{id}(id=${deviceTypeObject.id})}" th:object="${deviceTypeObject}" method="post">
+        <input th:type="hidden" th:field="*{id}"/>
+
+
+        <div class="container">
+            <div class="row" >
+                <div class="col-3" >
+                    <p>
+                    <div class="form-group"
+                         th:classappend="${#fields.hasErrors('deviceTypeName')}?'has-error': ''">
+                        <label class="control-label" th:text="#{device.type.name}"></label>
+                        <span class="control-label" th:if="${#fields.hasErrors('deviceTypeName')}" th:errors="*{deviceTypeName}"></span>
+                        <input class="form-control" type="text" th:field="*{deviceTypeName}"/>
+                    </div>
+                    <label th:text="#{device.overnight}"></label>
+                    <select class="custom-select" th:field="*{overnightuse}">
+                        <option th:value="true" th:text="true"></option>
+                        <option th:value="false" th:text="false"></option>
+                    </select>
+                    </p>
+                    <div class="alert alert-danger" role="alert" th:if="${NameIsUsed}!=null" th:text="${NameIsUsed}"></div>
+                </div>
+                <div class="col" >
+                </div>
+                <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+                    <img class="img-fluid" th:src="${(deviceTypeObject.getDevicePictureName() != null && !#strings.isEmpty(deviceTypeObject.getDevicePictureName())) ? '/files/images/'+deviceTypeObject.getDevicePictureName() : '/images/placeholder.jpg'}" />
+                </div>
+            </div>
+        </div>
+        <p>
+            <a href="/devices/types"  class="btn btn-primary" th:text="#{close}"></a>
+            <button type="submit"  class="btn btnprimary" th:text="#{save}"></button>
+        </p>
+    </form>
+    <form th:if="${deviceTypeObject.id}!=null " method="POST" enctype="multipart/form-data"  th:action="@{/upload/typeimage/{typeid}(typeid=${deviceTypeObject.id})}">
+        <label th:text="#{device.upload.new}"></label>
+        <div class="input-group mb-3">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" name="file" id="inputGroupFile02"/>
+                <label class="custom-file-label" for="inputGroupFile02" th:text="#{device.choosefile}"></label>
+            </div>
+            <div class="input-group-append">
+                <button id="upload-btn" class="btn btn-primary" type="submit" th:text="#{device.upload}" disabled></button>
+            </div>
+        </div>
+        <script>
+            $('#inputGroupFile02').on('change',function(){
+                //get the file name
+                var fileName = $(this).val();
+                //replace the "Choose a file" label
+                $(this).next('.custom-file-label').html(fileName);
+                $('#upload-btn').prop('disabled', false);
+
+            })
+        </script>
+    </form>
+    <div class="alert alert-info" role="alert" th:if="${deviceTypeObject.id}==null" th:text="#{device.savebeforepicture}"></div>
+
+    <hr class="my-4">
+    <div class="card" th:each="deviceInfo : ${deviceTypeObject.getDeviceInformations()}" style="margin-bottom: 15px">
+        <div class="card-body">
+            <h5 class="card-title" th:text="${deviceInfo.getInformationName()}"></h5>
+            <p class="card-text" th:text="${deviceInfo.getInformation()}"></p>
+            <div>
+                <ul>
+                    <div th:if="${files}!= null  or ${deviceInfo.getFiles().size()==0}"th:each="file : ${files}">
+                        <li  th:if="${#strings.contains(file, filename)}" th:each="filename : ${deviceInfo.getFiles()}">
+                            <a   th:href="${file}" th:text="${filename}"></a>
+                        </li>
+                    </div>
+                </ul>
+            </div>
+            <a type="button" class="btn btn-primary" th:href="@{/devices/info/{id}/{typeid}(id=${deviceInfo.getId()},typeid=${deviceTypeObject.getId()})}" th:text="#{edit}"></a>
+            <a type="button" class="btn btn-primary" th:href="@{/devices/info/{id}/{typeid}/delete(id=${deviceInfo.getId()},typeid=${deviceTypeObject.getId()})}" th:text="#{delete}"></a>
+
+        </div>
+    </div>
+    <div class="alert alert-primary" role="alert" th:if="${deviceTypeObject.getDeviceInformations()}!=null and ${deviceTypeObject.getDeviceInformations().size()}==0" th:text="#{device.noinfo}"></div>
+    <div class="alert alert-info" role="alert" th:if="${deviceTypeObject.id}==null" th:text="#{device.savebeforeinfo}"></div>
+    <hr class="my-4">
+    <p>
+        <a href="/devices/types"  class="btn btn-primary" th:text="#{close}"></a>
+        <a th:if="${deviceTypeObject.id}!=null " th:href="@{/devices/info/put/{typeid}(typeid=${deviceTypeObject.getId()})}"  class="btn btn-primary" th:text="#{device.add.information}"></a>
+    </p>
+</div>
+</html>
+
+

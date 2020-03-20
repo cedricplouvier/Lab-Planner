@@ -29,6 +29,7 @@ target/
 
 ### VS Code ###
 .vscode/
+LOGS_IS_UNDEFINED/
 
 prodLog
 devLog

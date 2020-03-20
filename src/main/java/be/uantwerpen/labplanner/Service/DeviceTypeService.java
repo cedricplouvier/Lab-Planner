@@ -1,11 +1,15 @@
 package be.uantwerpen.labplanner.Service;
 
+import be.uantwerpen.labplanner.Model.Device;
+import be.uantwerpen.labplanner.Model.DeviceInformation;
 import be.uantwerpen.labplanner.Model.DeviceType;
 
+import be.uantwerpen.labplanner.Repository.DeviceInformationRepository;
 import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,7 +17,8 @@ import java.util.Optional;
 public class DeviceTypeService {
     @Autowired
     private DeviceTypeRepository deviceTypeRepository;
-
+    @Autowired
+    private DeviceInformationRepository deviceInformationRepository;
     public DeviceTypeService() {
     }
 
@@ -29,15 +34,27 @@ public class DeviceTypeService {
         return this.deviceTypeRepository.findByDeviceTypeName(deviceTypeName);
     }
     public void saveSomeAttributes(DeviceType deviceType) {
-        DeviceType tempDeviceType = deviceType.getId() == null?null:
-                deviceTypeRepository.findById( deviceType.getId()).orElse(null);
+        DeviceType tempDeviceType = deviceType.getId() == null?null: deviceTypeRepository.findById( deviceType.getId()).orElse(null);
 
         if (tempDeviceType != null){
             tempDeviceType.setOvernightuse(deviceType.getOvernightuse());
+
             tempDeviceType.setDeviceTypeName(deviceType.getDeviceTypeName());
+            if(deviceType.getDeviceInformations() !=null) {
+                for (DeviceInformation deviceInformation : deviceType.getDeviceInformations()) {
+                    DeviceInformation tempDeviceInformation = deviceInformation.getId() == null ? null : deviceInformationRepository.findById(deviceInformation.getId()).orElse(null);
+                    if (tempDeviceInformation != null) {
+                        tempDeviceInformation.setInformationName(deviceInformation.getInformationName());
+                        deviceInformationRepository.save(tempDeviceInformation);
+                    } else {
+                        deviceInformationRepository.save(deviceInformation);
+                    }
+                }
+            }
             deviceTypeRepository.save(tempDeviceType);
         }
         else{
+
             deviceTypeRepository.save(deviceType);
         }
     }
