@@ -24,6 +24,9 @@
 
         </div>
 
+        <div class="alert alert-danger" role="alert" th:if="${PrivilegeInUse}!=null" th:text="${PrivilegeInUse}"></div>
+
+
         <div class="form-group">
             <label class="control-label" th:text="#{privileges.description}"></label>
             <input class="form-control" type = text th:field="*{description}"/>

@@ -55,6 +55,8 @@
             />
 
         </div>
+        <div class="alert alert-danger" role="alert" th:if="${UserInUse}!=null" th:text="${UserInUse}"></div>
+
         <div class="form-group" th:name="PassWord" >
             <label class="control-label" th:text="#{users.password}"></label>
             <input class="form-control" th:name="pword" text th:field="*{password}" required/>

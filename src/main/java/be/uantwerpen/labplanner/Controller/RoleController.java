@@ -50,6 +50,16 @@ public class RoleController {
             model.addAttribute("allPrivileges", privilegeService.findAll());
             return "/Roles/role-manage";
         }
+        if (role.getId() == null) {
+            if (roleService.findByName(role.getName()).isPresent()) {
+                model.addAttribute("allPrivileges", privilegeService.findAll());
+                model.addAttribute("roleInUse", "Role " + role.getName() + " is already in use!");
+                return "/Roles/role-manage";
+            }
+            roleService.save(role);
+            return "redirect:/usermanagement/roles";
+        }
+
         roleService.save(role);
         return "redirect:/usermanagement/roles";
     }

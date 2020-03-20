@@ -50,19 +50,26 @@ public class UserController {
     }
 
     @RequestMapping(value = {"/usermanagement/users/","/usermanagement/users/{id}"},method = RequestMethod.POST)
-    public String addUser(@Valid User user, BindingResult result, final ModelMap model){
-        if (result.hasErrors()){
-            model.addAttribute("allRoles",roleService.findAll());
+    public String addUser(@Valid User user, BindingResult result, final ModelMap model) {
+        if (result.hasErrors()) {
+            model.addAttribute("allRoles", roleService.findAll());
             return "/Users/user-manage";
         }
-        //if the given username is unique, save the user in the database
-        if(!userService.findByUsername(user.getUsername()).isPresent()){
+
+        if (user.getId() == null) {
+            //if the given username is unique, save the user in the database
+            if (userService.findByUsername(user.getUsername()).isPresent()) {
+                model.addAttribute("allRoles", roleService.findAll());
+                model.addAttribute("UserInUse", "Username " + user.getUsername() + " is already in use!");
+                return "/Users/user-manage";
+            }
             userService.save(user);
-
+            return "redirect:/usermanagement/users";
         }
-
+        userService.save(user);
         return "redirect:/usermanagement/users";
     }
+
 
     @RequestMapping(value = "/usermanagement/users/{id}/delete",method = RequestMethod.GET)
     public String deleteUser(@PathVariable long id, final ModelMap model){
