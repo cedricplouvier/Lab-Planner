@@ -1,11 +1,18 @@
 package be.uantwerpen.labplanner.Model;
 
+import be.uantwerpen.labplanner.Repository.DeviceInformationRepository;
 import be.uantwerpen.labplanner.Repository.DeviceRepository;
 import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
+
 import be.uantwerpen.labplanner.Repository.StepRepository;
+import be.uantwerpen.labplanner.common.model.stock.Product;
+import be.uantwerpen.labplanner.common.model.stock.Tag;
+import be.uantwerpen.labplanner.common.model.stock.Unit;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
+import be.uantwerpen.labplanner.common.repository.stock.ProductRepository;
+import be.uantwerpen.labplanner.common.repository.stock.TagRepository;
 import be.uantwerpen.labplanner.common.repository.users.PrivilegeRepository;
 import be.uantwerpen.labplanner.common.repository.users.RoleRepository;
 import be.uantwerpen.labplanner.common.repository.users.UserRepository;
@@ -16,13 +23,14 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Service
-@Profile("default")
 
 public class DatabaseLoader {
 
@@ -31,20 +39,34 @@ public class DatabaseLoader {
     private final UserRepository userRepository;
     private final DeviceTypeRepository deviceTypeRepository;
     private final DeviceRepository deviceRepository;
-    private final StepRepository stepRepository;
+
+    private final StepRepository stepRepository ;
+
+    private final DeviceInformationRepository deviceInformationRepository;
+    private final ProductRepository productRepository;
+    private final TagRepository tagRepository;
+
     @Autowired
-    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, StepRepository stepRepository) {
+    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository) {
+
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         //DeviceRepositories
         this.deviceTypeRepository = deviceTypeRepository;
         this.deviceRepository = deviceRepository;
+
         this.stepRepository= stepRepository;
+
+        this.deviceInformationRepository = deviceInformationRepository;
+        //ProductRepositories
+        this.productRepository = productRepository;
+        this.tagRepository = tagRepository;
+
     }
 
     @PostConstruct
-    private void initDatabase() {
+    private void initDatabase() throws IOException {
 
         //Create all the privileges
         Privilege p1 = new Privilege("logon");
@@ -99,6 +121,8 @@ public class DatabaseLoader {
         privilegeRepository.save(p25);
         Privilege p26 = new Privilege("Device - Modify - All");
         privilegeRepository.save(p26);
+        Privilege p27 = new Privilege("Console Access");
+        privilegeRepository.save(p27);
 
         //Create all the roles
         Role bachelorstudent = new Role("Bachelorstudent");
@@ -215,22 +239,27 @@ public class DatabaseLoader {
         // Device privileges
         privileges.add(p26);
 
+        //Console privilege
+        privileges.add(p27);
+
         administrator.setPrivileges(privileges);
         roleRepository.save(administrator);
 
 
-        User u1 = new User("Cedric","PW");
-        User u2 = new User("Ruben","PW");
-        User u3 = new User("Jaimie","PW");
-        User u4 = new User("Ali","PW");
-        User u5 = new User("Timo","PW");
-        User u6 = new User("Ondrej","PW");
-        User u7 = new User("Bachelor","PW");
-        User u8 = new User("Master","PW");
-        User u9 = new User("Researcher","PW");
+        User u1 = new User("Cedric","PW","","Cedric","Plouvier","20152267","","",null,null,null);
+        User u2 = new User("Ruben","PW","","Ruben","Joosen","20164473","","",null,null,null);
+        User u3 = new User("Jaimie","PW","","Jaimie","Vranckx","20155797","","",null,null,null);
+        User u4 = new User("Ali","PW","","Ali","Amir","20163446","","",null,null,null);
+        User u5 = new User("Timo","PW","","Timo","Nelen","S0162117","","",null,null,null);
+        User u6 = new User("Ondrej","PW","","Ondrej","Bures","20160002","","",null,null,null);
+        User u7 = new User("Bachelor","PW","","Bach","Student","20170001","","",null,null,null);
+        User u8 = new User("Master","PW","","Mas","Student","20160009","","",null,null,null);
+        User u9 = new User("Researcher","PW","","Researcher","Developper","20100001","","",null,null,null);
 
+        //Set<Role> roles = new HashSet<>();
         Set<Role> roles = new HashSet<>();
         roles.add(administrator);
+
         //set 5 admins
         u1.setRoles(roles);
         userRepository.save(u1);
@@ -264,45 +293,88 @@ public class DatabaseLoader {
         userRepository.save(u9);
 
         //Create all Device Types
+        ArrayList<DeviceType> deviceTypes = new ArrayList<>();
         DeviceType t1 = new DeviceType("Autosaw",true);
-        deviceTypeRepository.save(t1);
+        deviceTypes.add(t1);
         DeviceType t2 = new DeviceType("Balance",false);
-        deviceTypeRepository.save(t2);
+        deviceTypes.add(t2);
         DeviceType t3 = new DeviceType("Big Mixer",true);
-        deviceTypeRepository.save(t3);
+        deviceTypes.add(t3);
         DeviceType t4 = new DeviceType("Caliper",true);
-        deviceTypeRepository.save(t4);
+        deviceTypes.add(t4);
         DeviceType t5 = new DeviceType("Cooling chamber",true);
-        deviceTypeRepository.save(t5);
+        deviceTypes.add(t5);
         DeviceType t6 = new DeviceType("Gyratory",false);
-        deviceTypeRepository.save(t6);
+        deviceTypes.add(t6);
         DeviceType t7 = new DeviceType("Oven",true);
-        deviceTypeRepository.save(t7);
+        deviceTypes.add(t7);
         DeviceType t8 = new DeviceType("Plate Compactor",false);
-        deviceTypeRepository.save(t8);
+        deviceTypes.add(t8);
         DeviceType t9 = new DeviceType("Small Mixer",true);
-        deviceTypeRepository.save(t9);
+        deviceTypes.add(t9);
         DeviceType t10 = new DeviceType("SVM Setup",false);
-        deviceTypeRepository.save(t10);
+        deviceTypes.add(t10);
         DeviceType t11 = new DeviceType("Uniframe",false);
-        deviceTypeRepository.save(t11);
+        deviceTypes.add(t11);
         DeviceType t12 = new DeviceType("Vacuum Setup",true);
-        deviceTypeRepository.save(t12);
+        deviceTypes.add(t12);
         DeviceType t13 = new DeviceType("Water Bath",false);
-        deviceTypeRepository.save(t13);
+        deviceTypes.add(t13);
         DeviceType t14 = new DeviceType("Wheel Tracking Test",true);
-        deviceTypeRepository.save(t14);
+        deviceTypes.add(t14);
 
         //Add random information for default information types
         //Lorem ipsum generator for random information blocks
         Lorem lorem = LoremIpsum.getInstance();
 
-        for (DeviceType devicetype : deviceTypeRepository.findAll()) {
-            for (int current = 0; current < devicetype.getDefaultInformationtypes().size(); current++) {
-                devicetype.addDeviceInformation(devicetype.getDefaultInformationtypes().get(current), lorem.getWords(20));
+        for (DeviceType devicetype : deviceTypes) {
+            List<DeviceInformation> deviceinformations = new ArrayList<DeviceInformation>();
+
+            //Add a new block for each default information type (Maintenance , Calibration ...)
+            for (int current = 0; current < DeviceType.getDefaultInformationtypes().size(); current++) {
+                //Add new device information block
+                DeviceInformation i = new DeviceInformation(DeviceType.getDefaultInformationtypes().get(current), lorem.getWords(20));
+
+                //Adding some files for Oven type , files were already loaded into the correct directory
+                if(devicetype.getDeviceTypeName().equals("Oven")){
+                    if(current==0){
+                        i.addFile("placeholder.pdf");
+                    }else if(current==2){
+                        i.addFile("placeholder.xlsx");
+                        i.addFile("placeholder.jpg");
+                    }
+                }
+                deviceinformations.add(i);
+                deviceInformationRepository.save(i);
             }
+
+            //Add an extra block of info for oven to show full possibilities
+            if(devicetype.getDeviceTypeName().equals("Oven")) {
+                DeviceInformation i = new DeviceInformation("Other", lorem.getWords(10));
+                deviceinformations.add(i);
+                deviceInformationRepository.save(i);
+            }
+                devicetype.setDeviceInformation(deviceinformations);
         }
 
+        //Set the oven profile pic , the picture is already placed in the root directory /upload-dir/images where all device pictures are kept
+        t7.setDevicePictureName("Oven.jpg");
+
+        //Save all devicetypes
+        deviceTypeRepository.save(t1);
+        deviceTypeRepository.save(t2);
+        deviceTypeRepository.save(t3);
+        deviceTypeRepository.save(t4);
+        deviceTypeRepository.save(t5);
+        deviceTypeRepository.save(t6);
+        deviceTypeRepository.save(t7);
+        deviceTypeRepository.save(t8);
+        deviceTypeRepository.save(t9);
+        deviceTypeRepository.save(t10);
+        deviceTypeRepository.save(t11);
+        deviceTypeRepository.save(t12);
+        deviceTypeRepository.save(t13);
+        deviceTypeRepository.save(t14);
         //Add devices for some device types
         Device d1 = new Device("Autosaw 1",t1);
         deviceRepository.save(d1);
@@ -317,11 +389,13 @@ public class DatabaseLoader {
         Device d6 = new Device("Wheel Tracking Test 1",t14);
         deviceRepository.save(d6);
         Device d7 = new Device("Oven 1",t7);
+        d7.setComment("Perfect oven to bake a pizza in your spare times");
         deviceRepository.save(d7);
-        Device d8 = new Device("Oven 2",t8);
+        Device d8 = new Device("Oven 2",t7);
         deviceRepository.save(d8);
-        Device d9 = new Device("Oven 3",t9);
+        Device d9 = new Device("Oven 3",t7);
         deviceRepository.save(d9);
+
 
         Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","13","14");
         stepRepository.save(s1);
@@ -333,5 +407,42 @@ public class DatabaseLoader {
         stepRepository.save(s4);
         Step s5= new Step(u5,d9,"2020-03-18","2020-03-18","13","18");
         stepRepository.save(s5);
+
+
+
+        //create some products
+        Tag tag1 = new Tag("Beton");
+        List<Tag> tags1 = new ArrayList<>();
+        tags1.add(tag1);
+        tagRepository.save(tag1);
+        Tag tag2 = new Tag("Asfalt");
+        List<Tag> tags2 = new ArrayList<>();
+        tags2.add(tag2);
+        tagRepository.save(tag2);
+        //asfalt+beton
+        List<Tag> tags3 = new ArrayList<>();
+        tags3.add(tag1);
+        tags3.add(tag2);
+        Tag tag4 = new Tag("Bindmiddel");
+        List<Tag> tags4 = new ArrayList<>();
+        tags4.add(tag4);
+        tagRepository.save(tag4);
+        Product pr1 = new Product("Zand",lorem.getWords(20),1.0, 5.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        productRepository.save(pr1);
+        Product pr2 = new Product("Water",lorem.getWords(20),1.0, 99.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        productRepository.save(pr2);
+        Product pr3 = new Product("Kalk",lorem.getWords(20),1.0, 122.0, 1.0, 1.0, Unit.UNIT, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        productRepository.save(pr3);
+        Product pr4 = new Product("grind",lorem.getWords(20),1.0, 56.0, 1.0, 1.0, Unit.LITRE, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        productRepository.save(pr4);
+        Product pr5 = new Product("Bitumen",lorem.getWords(20),1.0, 12.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
+        productRepository.save(pr5);
+        Product pr6 = new Product("Klei",lorem.getWords(20),1.0, 1.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        productRepository.save(pr6);
+        Product pr7 = new Product("Leem",lorem.getWords(20),1.0, 1580.0, 1.0, 1.0, Unit.UNIT, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        productRepository.save(pr7);
+        Product pr8 = new Product("Mineralen",lorem.getWords(20),1.0, 90.0, 1.0, 1.0, Unit.LITRE, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        productRepository.save(pr8);
+
     }
 }

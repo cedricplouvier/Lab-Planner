@@ -19,19 +19,7 @@
 
 
     $(document).ready(function(){
-        //  var status1 = /*[[${Status.value}]]*/ 'default';
-        //  var message=/*[[${Message.value}]]*/ 'default';
-        // console.log(status1);
-        // console.log(message);
-        // if (status1=="Success")
-        //     toastr.success(message);
-        // else if (status1=="Error")
-        //     toastr.error(message);
-        //  toastr.success('Have fun storming the castle!', 'Miracle Max Says')
-        // var message=/*[[${Message}]]*/{};
-        // tata.success(message);
-        // console.log(status1);
-        // console.log(message);
+
         $('.js-example-basic-single').select2();
         $('#sel').on('change', function() {
             var devices =  /*[[${allDevices}]]*/ {};
@@ -183,7 +171,7 @@
                 <input th:type="hidden" th:field="*{id}"/>
                 <select required class=" form-control input-device"  id="sel">
                     <option value="none"  selected disabled hidden th:text="#{device.type}"> Device Type </option>
-                    <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.devicetypename}">Device Type</option>
+                    <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.deviceTypeName}">Device Type</option>
                 </select>
                 <!--Dropdown-->
                 <select required id="deviceNames" th:field="*{device}" class="form-control input-device" style="visibility: hidden;">

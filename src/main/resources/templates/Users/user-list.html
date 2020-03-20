@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{usermanagement}')"></head>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+
+<!--
+<body>
+
+<div th:replace="navbar :: navbar"></div>
+
+<h1>User Management</h1>
+
+</body>
+
+-->
+<body onload="initPage()">
+<script type="text/javascript">
+    function initPage(){
+        var options = {
+            valueNames: [ 'username', 'password', 'email','firstname','lastname','uaNumber', 'telephone','locations','roles','dateCreated','updateDateTime']
+        };
+        var userList = new List('user-list', options);
+    }
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Script to go over a total table and search for any match-->
+<script>
+    $(document).ready(function(){
+        $("#search").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#UserTable tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+<div class="container">
+    <!-- Import menu bar -->
+    <div th:replace="navbar :: navbar"></div>
+    <div class="content">
+        <div id="user-list">
+            <a href="/usermanagement/users/put" class="btn btn-primary"
+               th:text="#{users.create}">Create user</a>
+            <a href="/usermanagement/roles" class="btn btn-outline-secondary"
+               th:text="#{roles.page}"></a>
+            <a href="/usermanagement/privileges" class="btn btn-outline-secondary"
+               th:text="#{privileges.page}"></a>
+            <input class="float-right" id="search" placeholder="Search" />
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th th:text="#{users.id}"></th>
+                    <th th:text="#{users.username}"></th>
+                    <th th:text="#{users.password}"></th>
+                    <th th:text="#{users.firstName}"></th>
+                    <th th:text="#{users.lastName}"></th>
+                    <th th:text="#{users.uaNumber}"></th>
+
+                    <th th:text="#{users.roles}"></th>
+                    <th th:text="#{users.quickEdit}"></th>
+
+
+                </tr>
+                </thead>
+                <!-- IMPORTANT, class="list" have to be at tbody -->
+
+                <tbody class="list" id="UserTable">
+                <tr th:each="user : ${allUsers}">
+                    <td class="ID" th:value="${user.id}" th:text="${user.id }"></td>
+                    <td class="Username" th:value="${user.username}" th:text="${user.username }"></td>
+                    <td class="Password" th:value="${user.password}" th:text="${user.password }"></td>
+                    <td class="Firstname" th:value="${user.firstName}" th:text="${user.firstName }"></td>
+                    <td class="Lastname" th:value="${user.lastName}" th:text="${user.lastName }"></td>
+                    <td class="UANumber" th:value="${user.uaNumber}" th:text="${user.uaNumber }"></td>
+                    <td class="Roles">
+                        <a
+                        th:each="role : ${user.roles}"
+                        th:value="${role.name}"
+                        th:utext="${role.name} + '<br />'"></a>
+                    </td>
+                    <td>
+                        <a th:href="@{/usermanagement/users/{id}/(id=${user.id})}"><span
+                                class="fas fa-edit"></span></a>&nbsp;
+                        <a th:href="@{/usermanagement/users/{id}/delete(id=${user.id})}">
+                            <span class="fas fa-trash"></span></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <br>
+
+
+    </div>
+    <div th:replace="footer :: footer"></div>
+</div>
+</div>
+</body>
+</html>

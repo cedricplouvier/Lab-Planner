@@ -3,53 +3,68 @@ package be.uantwerpen.labplanner.Model;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.sql.Blob;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
 
 @Entity
 public class DeviceInformation extends AbstractPersistable<Long> {
     //Default Variables
     private static String DEFAULT_INFORMATION_NAME = "DEFAULT_INFORMATION";
-
-    //Variables
-    @Column(
-            name = "devicename",
-            unique = true,
-            nullable = false
-    )
+    @Column
     private String informationName;
-    //Device
+    @Column
+    private String information;
+
     @ElementCollection
-    private List<String> informationList =new ArrayList<String>();
+    private List<String> files = new ArrayList<String>();
 
     //Constructors
     public DeviceInformation(){
-        this.informationList = Arrays.asList(new String[]{});
+        this.information = DEFAULT_INFORMATION_NAME;
         this.informationName = DEFAULT_INFORMATION_NAME;
     }
 
     public DeviceInformation(String informationName,String information){
         this.informationName = informationName;
-        this.informationList.add(information);
+        this.information = information;
     }
 
-    //Add
-    private void AddInformationBlock(String information){
-        this.informationList.add(information);
+    public String getInformationName() { return informationName; }
+    public void setInformationName(String informationName) { this.informationName = informationName; }
+
+    public String getInformation() {
+        return information;
     }
 
-    //Get and Set
-    public String getInformationName() {
-        return informationName;
+    public void setInformation(String information) {
+        this.information = information;
     }
 
-    public void setInformationName(String informationName) {
-        this.informationName = informationName;
+    public void addFile(String file){
+        this.files.add(file);
+    }
+    @Override
+    public Long getId() {
+        return super.getId();
     }
 
+    @Override
+    public void setId(Long id) {
+        super.setId(id);
+    }
+    public List<String> getFiles() {
+        return files;
+    }
 
-    public void setInformationList(List<String> informationList) {
-        this.informationList = informationList;
+    public static String getDefaultInformationName() {
+        return DEFAULT_INFORMATION_NAME;
+    }
+
+    public void setFiles(List<String> files) {
+        this.files = files;
     }
 }

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"   xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css">
+
+<!-- Import header -->
+<head th:replace="navbar :: head (title='#{products}')"></head>
+<body onload="initPage()">
+<script type="text/javascript">
+    function initPage(){
+        var options = {
+            valueNames: [ 'ProductName', 'productTag']
+        };
+        var productList = new List('products', options);
+    }
+</script>
+<style>
+    .notfound{
+        display: none;
+    }
+</style>
+<script>
+    $(document).ready(function(){
+        // Search on name column only
+        $('#txt_name').keyup(function(){
+            // Search Text
+            var search = $(this).val();
+
+            // Hide all table tbody rows
+            $('table tbody tr').hide();
+
+            // Count total search result
+            var len = $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').length;
+
+            if(len > 0){
+                // Searching text in columns and show match row
+                $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').each(function(){
+                    $(this).closest('tr').show();
+                });
+            }else{
+                $('.notfound').show();
+            }
+
+        });
+
+    });
+
+    // Case-insensitive searching (Note - remove the below script for Case sensitive search )
+    $.expr[":"].contains = $.expr.createPseudo(function(arg) {
+        return function( elem ) {
+            return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+        };
+    });
+</script>
+<div class="container">
+    <!-- Import menu bar -->
+    <div th:replace="navbar :: navbar"></div>
+    <div class="content">
+        <div id="device-list">
+            <input type='text' id='txt_name' th:placeholder="#{product.search}">
+
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th th:text="#{product}">Product Name</th>
+                    <th th:text="#{product.left}">Amount left</th>
+                    <th th:text="#{product.tag}">Tag Name</th>
+
+                </tr>
+                </thead>
+                <!-- IMPORTANT, class="list" have to be at tbody -->
+                <tbody class="list">
+                <tr th:each="product : ${allProducts}">
+                    <td th:text="${product.name}"/>
+                    <td th:text="${product.stockLevel}"/>
+                    <td class="Tags">
+                        <a
+                                th:each="tag : ${product.tags}"
+                                th:value="${tag.name}"
+                                th:text="${tag.name} + ' '"></a>
+                    </td>
+
+                    <td>
+                        <a th:href="@{/products/{id}/(id=${product.id})}"><span
+                                class="fas fa-edit"></span></a>&nbsp;
+                        <a th:href="@{/products/{id}/delete(id=${product.id})}">
+                            <span class="fas fa-trash"></span></a>
+                    </td>
+
+
+                </tr>
+                <tr class='notfound'>
+                    <td colspan='4' th:text="#{product.norecord}">No record found</td>
+                </tr>
+                </tbody>
+            </table>
+            <a href="tags" class="btn btn-primary" th:text="#{tag.manage}"
+            >Manage Materials</a>
+            <a href="/products/put" class="btn btn-outline-primary" th:text="#{product.new}"
+            >Manage device types</a>
+
+        </div>
+    </div>
+</div>
+
+
+
+<div th:replace="footer :: footer"></div>
+</body>
+</html>
+

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{Product Management}')"></head>
+<body onload = "initPage()">
+<script type="text/javascript">
+    function initPage(){
+        $('#tags').multiSelect({
+            selectableHeader: '<div class="custom-header" th:text="#{selectable.items}"></div>',
+            selectionHeader: '<div class="custom-header" th:text="#{selected.items}"></div>'
+        });
+    }
+</script>
+<div class = "container">
+    <div th:replace="navbar :: navbar"></div>
+    <form action="#" th:action="@{/products/{id}(id=${product})}"
+          th:object="${product}" method="post">
+        <input th:type="hidden" th:field="*{id}"/>
+
+        <div class="form-group">
+            <label class="control-label" th:text="#{product.name}"></label>
+            <input class="form-control" type = text th:field="*{name}"/>
+
+        </div>
+        <div class="form-group">
+            <label class="control-label" th:text="#{product.description}"></label>
+            <input class="form-control" type = text th:field="*{description}"/>
+
+        </div>
+        <div class="form-row">
+            <div class="col">
+                <div class="form-group"
+                     th:classappend="${#fields.hasErrors('stockLevel')}?'has-error': ''">
+                    <label class="control-label" th:text="#{product.left}" >Stocklevel</label>
+                    <span class="control-label" th:if="${#fields.hasErrors('name')}"
+                          th:errors="*{stockLevel}">Stocklevel Error</span>
+                    <input class="form-control" type="number" step="any" th:field="*{stockLevel}"
+                    /> </div>
+            </div>
+            <div class="col">
+                <div class="form-group"
+                     th:classappend="${#fields.hasErrors('lowStockLevel')}?'has-error': ''">
+                    <label class="control-label" th:text="#{product.lowStockLevel}">Low Stock Level</label>
+                    <span class="control-label" th:if="${#fields.hasErrors('lowStockLevel')}"
+                          th:errors="*{lowStockLevel}">LowStocklevel Error</span>
+                    <input class="form-control" type="number" step="any"  th:field="*{lowStockLevel}"
+                    /> </div>
+            </div>
+            <div class="col">
+                <div class="form-group"
+                     th:classappend="${#fields.hasErrors('reservedStockLevel')}?'has-error': ''">
+                    <label class="control-label" th:text="#{product.reservedStockLevel}">Reserved Stock Level</label>
+                    <span class="control-label" th:if="${#fields.hasErrors('reservedStockLevel')}"
+                          th:errors="*{reservedStockLevel}">Reserved Stock level Error</span>
+                    <input class="form-control" type="number" step="any" th:field="*{reservedStockLevel}"
+                    /> </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1" th:text="#{product.unit}">Unit</label>
+                    <select class="form-control" id="exampleFormControlSelect1">
+                        <option th:each="unit : ${units.values()}"
+                                th:value="${units.valueOf(unit)}"
+                                th:text="${product.units}">Wireframe</option>
+                    </select>
+            </div>
+        </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label" th:text="#{product.properties}"></label>
+            <input class="form-control" type = text th:field="*{properties}"/>
+
+        </div>
+
+        <div> <label th:text="#{product.tag.tagName}"></label>
+            <tr></tr>
+            <select th:field="*{tags}" multiple="multiple" >
+                <option th:each="tag : ${allTags}"
+                        th:value="${{tag}}"
+                        th:text="${tag.name}">Wireframe</option>
+            </select>
+        </div>
+
+
+
+
+
+
+        <p>
+            <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
+            <a href="/products" th:text="#{close}" class="btn btn-secondary">Close</a>
+
+        </p>
+    </form>
+
+
+
+
+</div>
+</body>
+</html>

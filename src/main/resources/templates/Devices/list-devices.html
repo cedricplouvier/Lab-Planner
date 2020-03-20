@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <!-- Import header -->
 <head th:replace="navbar :: head (title='#{devices}')"></head>
@@ -13,11 +13,15 @@
 
     }
 </script>
+
+<!-- Style to hide the not found div-->
 <style>
     .notfound{
         display: none;
     }
 </style>
+
+<!-- Script that implement the search-->
 <script>
     $(document).ready(function(){
         // Search on name column only
@@ -61,28 +65,60 @@
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th th:text="#{device}">Device Name</th>
-                    <th th:text="#{device.type}">Device type</th> <th></th>
+                    <th th:text="#{device}"></th>
+                    <th th:text="#{device.type}"></th>
+                    <th th:text="#{device.info}"></th> <th></th>
+                    <th sec:authorize="hasAuthority('Device - Modify - All')" th:text="#{device.manage}"></th> <th></th>
                 </tr>
                 </thead>
                 <!-- IMPORTANT, class="list" have to be at tbody -->
                 <tbody class="list">
                 <tr th:each="device : ${allDevices}">
                     <td class='deviceName' th:value="${device.getDevicename()}"
-                        th:text="${device.devicename }" >Device Name</td>
+                        th:text="${device.devicename }" ></td>
                     <td class="firstName" th:value="${device.getDeviceType()}"
-                        th:text="${device.deviceType.devicetypename }" >Device Type</td>
+                        th:text="${device.deviceType.deviceTypeName }" ></td>
+                    <td >  <a th:href="@{/device/info/{id}/(id=${device.id})}" th:text="#{device.info}" class="btn btn-primary"></a></td>
+                    <td>
+                    <td>
+                    <a sec:authorize="hasAuthority('Device - Modify - All')" th:href="@{/devices/{id}/(id=${device.id})}" class="fa fa-edit">
+                    </a>
+                    <a sec:authorize="hasAuthority('Device - Modify - All')" th:href="@{/devices/{id}/delete(id=${device.id})}"  class="fa fa-trash" style="color: red" data-toggle="modal" data-target="#modal-warning"  th:attr="data-target='#modal-warning'+${device.id }">
+                              </a>
+                    </td>
+                    <div class="modal modal-warning fade" th:id="modal-warning+${device.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3 class="modal-title" id="exampleModalLabel" th:text="#{device.delete}"></h3>
+                                </div>
+                                <div class="modal-body">
+                                    <h5 th:text="#{device.areyousure}+${device.getDevicename()}+'?'"></h5>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{device.cancel}"></button>
+                                    <a type="button" class="btn btn-danger" th:text="#{device.delete}" th:href="@{/devices/{id}/delete(id=${device.id})}"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </tr>
                 <tr class='notfound'>
-                    <td colspan='4' th:text="#{device.norecord}">No record found</td>
+                    <td colspan='4' th:text="#{device.norecord}"></td>
                 </tr>
                 </tbody>
             </table>
-            <a href="/devices/types" class="btn btn-primary" th:text="#{device.manage.types}"
-            >Manage device types</a>
+            <p>
+                <a href="/devices/types" class="btn btn-primary" sec:authorize="hasAuthority('Device - Modify - All')" th:text="#{device.manage.types}"
+                ></a>
+                <a href="/devices/put" class="btn btn-primary" sec:authorize="hasAuthority('Device - Modify - All')" th:text="#{device.add}"
+                ></a>
+            </p>
+
         </div>
     </div>
 </div>
+
     <div th:replace="footer :: footer"></div>
 </body>
 </html>
