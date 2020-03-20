@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <!-- Import header -->
 <head th:replace="navbar :: head (title='#{devices}')"></head>
@@ -67,7 +67,7 @@
                     <th th:text="#{device}"></th>
                     <th th:text="#{device.type}"></th>
                     <th th:text="#{device.info}"></th> <th></th>
-                    <th th:text="#{device.manage}"></th> <th></th>
+                    <th sec:authorize="hasAuthority('Device - Modify - All')" th:text="#{device.manage}"></th> <th></th>
                 </tr>
                 </thead>
                 <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -80,9 +80,9 @@
                     <td >  <a th:href="@{/device/info/{id}/(id=${device.id})}" th:text="#{device.info}" class="btn btn-primary"></a></td>
                     <td>
                     <td>
-                    <a th:href="@{/devices/{id}/(id=${device.id})}" class="fa fa-edit">
+                    <a sec:authorize="hasAuthority('Device - Modify - All')" th:href="@{/devices/{id}/(id=${device.id})}" class="fa fa-edit">
                     </a>
-                    <a th:href="@{/devices/{id}/delete(id=${device.id})}"  class="fa fa-trash" style="color: red" data-toggle="modal" data-target="#modal-warning"  th:attr="data-target='#modal-warning'+${device.id }">
+                    <a sec:authorize="hasAuthority('Device - Modify - All')" th:href="@{/devices/{id}/delete(id=${device.id})}"  class="fa fa-trash" style="color: red" data-toggle="modal" data-target="#modal-warning"  th:attr="data-target='#modal-warning'+${device.id }">
                               </a>
                     </td>
                     <div class="modal modal-warning fade" th:id="modal-warning+${device.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -108,9 +108,9 @@
                 </tbody>
             </table>
             <p>
-                <a href="/devices/types" class="btn btn-primary" th:text="#{device.manage.types}"
+                <a href="/devices/types" class="btn btn-primary" sec:authorize="hasAuthority('Device - Modify - All')" th:text="#{device.manage.types}"
                 ></a>
-                <a href="/devices/put" class="btn btn-primary"  th:text="#{device.add}"
+                <a href="/devices/put" class="btn btn-primary" sec:authorize="hasAuthority('Device - Modify - All')" th:text="#{device.add}"
                 ></a>
             </p>
 

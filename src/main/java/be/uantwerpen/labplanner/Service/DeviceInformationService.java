@@ -22,7 +22,9 @@ public class DeviceInformationService {
     public DeviceInformationService() {
     }
 
-
+    public Optional<DeviceInformation> findByInforationName(String deviceInformationName) {
+        return this.deviceInformationRepository.findByInformationName(deviceInformationName);
+    }
 
     public List<DeviceInformation> findAll() {
         return this.deviceInformationRepository.findAll();
@@ -43,6 +45,7 @@ public class DeviceInformationService {
             return false;
         }
     }
+
     public void addFile(String filename,Long id){
         DeviceInformation tempDeviceInformation = deviceInformationRepository.findById( id).orElse(null);
         if (tempDeviceInformation != null){

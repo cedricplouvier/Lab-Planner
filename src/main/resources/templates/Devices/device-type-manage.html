@@ -39,7 +39,7 @@
             <button type="submit"  class="btn btnprimary" th:text="#{save}"></button>
         </p>
     </form>
-    <form method="POST" enctype="multipart/form-data"  th:action="@{/upload/typeimage/{typeid}(typeid=${deviceTypeObject.id})}">
+    <form th:if="${deviceTypeObject.id}!=null " method="POST" enctype="multipart/form-data"  th:action="@{/upload/typeimage/{typeid}(typeid=${deviceTypeObject.id})}">
         <label th:text="#{device.upload.new}"></label>
         <div class="input-group mb-3">
             <div class="custom-file">
@@ -47,7 +47,7 @@
                 <label class="custom-file-label" for="inputGroupFile02" th:text="#{device.choosefile}"></label>
             </div>
             <div class="input-group-append">
-                <button class="btn btn-primary" type="submit" th:text="#{device.upload}"></button>
+                <button id="upload-btn" class="btn btn-primary" type="submit" th:text="#{device.upload}" disabled></button>
             </div>
         </div>
         <script>
@@ -56,9 +56,13 @@
                 var fileName = $(this).val();
                 //replace the "Choose a file" label
                 $(this).next('.custom-file-label').html(fileName);
+                $('#upload-btn').prop('disabled', false);
+
             })
         </script>
     </form>
+    <div class="alert alert-info" role="alert" th:if="${deviceTypeObject.id}==null" th:text="#{device.savebeforepicture}"></div>
+
     <hr class="my-4">
     <div class="card" th:each="deviceInfo : ${deviceTypeObject.getDeviceInformations()}" style="margin-bottom: 15px">
         <div class="card-body">
@@ -74,12 +78,16 @@
                 </ul>
             </div>
             <a type="button" class="btn btn-primary" th:href="@{/devices/info/{id}/{typeid}(id=${deviceInfo.getId()},typeid=${deviceTypeObject.getId()})}" th:text="#{edit}"></a>
+            <a type="button" class="btn btn-primary" th:href="@{/devices/info/{id}/{typeid}/delete(id=${deviceInfo.getId()},typeid=${deviceTypeObject.getId()})}" th:text="#{delete}"></a>
+
         </div>
     </div>
+    <div class="alert alert-primary" role="alert" th:if="${deviceTypeObject.getDeviceInformations()}!=null and ${deviceTypeObject.getDeviceInformations().size()}==0" th:text="#{device.noinfo}"></div>
+    <div class="alert alert-info" role="alert" th:if="${deviceTypeObject.id}==null" th:text="#{device.savebeforeinfo}"></div>
     <hr class="my-4">
     <p>
         <a href="/devices/types"  class="btn btn-primary" th:text="#{close}"></a>
-        <a th:href="@{/devices/info/put/{typeid}(typeid=${deviceTypeObject.getId()})}"  class="btn btn-primary" th:text="#{device.add.information}"></a>
+        <a th:if="${deviceTypeObject.id}!=null " th:href="@{/devices/info/put/{typeid}(typeid=${deviceTypeObject.getId()})}"  class="btn btn-primary" th:text="#{device.add.information}"></a>
     </p>
 </div>
 </html>
