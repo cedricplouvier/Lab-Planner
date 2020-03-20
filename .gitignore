@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 /.idea/
 =======
 .idea/
@@ -29,3 +30,7 @@ target/
 
 ### VS Code ###
 .vscode/
+=======
+.idea
+target
+>>>>>>> 62c0bf82f1f1f290d60c2fa388604cb65ab62856

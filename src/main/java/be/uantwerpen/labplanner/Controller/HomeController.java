@@ -28,9 +28,13 @@ public class HomeController {
     }
     @RequestMapping("/planningtool")
     public String showPlanningtoolPage(){
+<<<<<<< HEAD
         logger.info("showPlanningtoolPage");
         return "redirect:/calendar/weekly";
 
+=======
+        return "redirect:/planning";
+>>>>>>> 62c0bf82f1f1f290d60c2fa388604cb65ab62856
     }
     @RequestMapping("/devicemanagement")
     public String showDevicemanagementPage(){
