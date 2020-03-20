@@ -41,11 +41,11 @@
     <div th:replace="navbar :: navbar"></div>
     <div class="content">
         <div id="user-list">
-            <a href="/users/put" class="btn btn-primary"
+            <a href="/usermanagement/users/put" class="btn btn-primary"
                th:text="#{users.create}">Create user</a>
-            <a href="/roles" class="btn btn-outline-secondary"
+            <a href="/usermanagement/roles" class="btn btn-outline-secondary"
                th:text="#{roles.page}"></a>
-            <a href="/privileges" class="btn btn-outline-secondary"
+            <a href="/usermanagement/privileges" class="btn btn-outline-secondary"
                th:text="#{privileges.page}"></a>
             <input class="float-right" id="search" placeholder="Search" />
             <table class="table table-hover">
@@ -81,9 +81,9 @@
                         th:utext="${role.name} + '<br />'"></a>
                     </td>
                     <td>
-                        <a th:href="@{/users/{id}/(id=${user.id})}"><span
+                        <a th:href="@{/usermanagement/users/{id}/(id=${user.id})}"><span
                                 class="fas fa-edit"></span></a>&nbsp;
-                        <a th:href="@{/users/{id}/delete(id=${user.id})}">
+                        <a th:href="@{/usermanagement/users/{id}/delete(id=${user.id})}">
                             <span class="fas fa-trash"></span></a>
                     </td>
                 </tr>

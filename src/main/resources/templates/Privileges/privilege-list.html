@@ -28,13 +28,13 @@
     <div th:replace="navbar :: navbar"></div>
     <div class="content">
         <div id="privilege-list">
-            <a href="/privileges/put" class="btn btn-primary"
+            <a href="/usermanagement/privileges/put" class="btn btn-primary"
                th:text="#{privileges.create}"></a>
 
             <!-- still problem when u want to delete a role when this role is in use. -->
-            <a href="/users" class="btn btn-outline-secondary"
+            <a href="/usermanagement/users" class="btn btn-outline-secondary"
                th:text="#{users.page}"></a>
-            <a href="/roles" class="btn btn-outline-secondary"
+            <a href="/usermanagement/roles" class="btn btn-outline-secondary"
                th:text="#{roles.page}"></a>
             <input class="float-right" id="search" placeholder="Search" />
             <table class="table table-hover">
@@ -56,9 +56,9 @@
                     <td class="Name" th:value="${privilege.name}" th:text="${privilege.name }"></td>
                     <td class="Description" th:value="${privilege.description}" th:text="${privilege.description }"></td>
                     <td>
-                        <a th:href="@{/privileges/{id}/(id=${privilege.id})}"><span
+                        <a th:href="@{/usermanagement/privileges/{id}/(id=${privilege.id})}"><span
                                 class="fas fa-edit"></span></a>&nbsp;
-                        <a th:href="@{/privileges/{id}/delete(id=${privilege.id})}">
+                        <a th:href="@{/usermanagement/privileges/{id}/delete(id=${privilege.id})}">
                             <span class="fas fa-trash"></span></a>
                     </td>
                 </tr>

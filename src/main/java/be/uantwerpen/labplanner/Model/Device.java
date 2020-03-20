@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 public class Device extends AbstractPersistable<Long> {
     //Default variables
-    private static String DEFAULT_DEVICENAME = "default_username";
+    private static String DEFAULT_DEVICENAME = "default_devicename";
 
     //Variables
     @Column(
