@@ -4,6 +4,8 @@ import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.stereotype.Controller;
@@ -19,47 +21,49 @@ import javax.validation.Valid;
 @Controller
 public class UserController {
 
+    Logger logger = LoggerFactory.getLogger(HomeController.class);
+
     @Autowired
     private UserService userService;
 
     @Autowired
     private RoleService roleService;
 
-    @RequestMapping(value = "/users",method = RequestMethod.GET)
+    @RequestMapping(value = "/usermanagement/users",method = RequestMethod.GET)
     public String showUsers(final ModelMap model){
         model.addAttribute("allUsers",userService.findAll());
         return "/Users/user-list";
     }
 
-    @RequestMapping(value = "/users/put",method = RequestMethod.GET)
+    @RequestMapping(value = "/usermanagement/users/put",method = RequestMethod.GET)
     public String viewCreateUser(final ModelMap model){
         model.addAttribute("allRoles",roleService.findAll());
         model.addAttribute(new User("","","","","","","","",null,null,null));
         return "/Users/user-manage";
     }
 
-    @RequestMapping(value = "/users/{id}",method = RequestMethod.GET)
+    @RequestMapping(value = "/usermanagement/users/{id}",method = RequestMethod.GET)
     public String viewEditUser(@PathVariable long id, final ModelMap model){
         model.addAttribute("allRoles",roleService.findAll());
         model.addAttribute("user",userService.findById(id).orElse(null));
         return "/Users/user-manage";
     }
 
-    @RequestMapping(value = {"/users/","/users/{id}"},method = RequestMethod.POST)
+    @RequestMapping(value = {"/usermanagement/users/","/usermanagement/users/{id}"},method = RequestMethod.POST)
     public String addUser(@Valid User user, BindingResult result, final ModelMap model){
         if (result.hasErrors()){
             model.addAttribute("allRoles",roleService.findAll());
             return "/Users/user-manage";
         }
         userService.save(user);
-        return "redirect:/users";
+        return "redirect:/usermanagement/users";
     }
 
-    @RequestMapping(value = "/users/{id}/delete",method = RequestMethod.GET)
+    @RequestMapping(value = "/usermanagement/users/{id}/delete",method = RequestMethod.GET)
     public String deleteUser(@PathVariable long id, final ModelMap model){
         userService.deleteById(id);
         model.clear();
-        return "redirect:/users";
+        return "redirect:/usermanagement/users";
     }
 
 

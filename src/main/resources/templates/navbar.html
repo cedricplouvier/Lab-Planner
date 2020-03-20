@@ -1,4 +1,4 @@
-<html xmlns:th="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <head>
     <!-- Create an import-block for other html pages -->
@@ -55,10 +55,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <div sec:authorize="hasAuthority('User Management')">
                         <a class="nav-link" th:href="@{/usermanagement}" th:text="#{navbar.user}">
                             User Management
                             <span class="sr-only">(user management)</span>
                         </a>
+                        </div>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/stockmanagement}" th:text="#{navbar.stock}">

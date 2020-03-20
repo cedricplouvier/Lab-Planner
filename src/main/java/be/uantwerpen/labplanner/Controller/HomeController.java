@@ -14,28 +14,26 @@ public class HomeController {
 
     @RequestMapping({"/","/home"})
     public String showHomepage(){
-        logger.info("showHomepage");
         return "homepage";
     }
+
+    //@PreAuthorize("hasAuthority('User Management')")
     @RequestMapping("/usermanagement")
     public String showUsermanagementPage(){
-
-        logger.info("showUserManagementPage");
-        return "redirect:/users";
+        return "redirect:/usermanagement/users";
     }
     @RequestMapping("/stockmanagement")
     public String showStockmanagementPage(){
-        logger.info("showStochmanagementPage");
         return "redirect:/products";
     }
     @RequestMapping("/planningtool")
     public String showPlanningtoolPage(){
         logger.info("showPlanningtoolPage");
         return "redirect:/calendar/weekly";
+
     }
     @RequestMapping("/devicemanagement")
     public String showDevicemanagementPage(){
-        logger.info("showDevicemanagementPage");
         return "redirect:/devices";
     }
 }
