@@ -3,6 +3,8 @@ package be.uantwerpen.labplanner.Model;
 import be.uantwerpen.labplanner.Repository.DeviceInformationRepository;
 import be.uantwerpen.labplanner.Repository.DeviceRepository;
 import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
+
+import be.uantwerpen.labplanner.Repository.StepRepository;
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.model.stock.Unit;
@@ -37,18 +39,25 @@ public class DatabaseLoader {
     private final UserRepository userRepository;
     private final DeviceTypeRepository deviceTypeRepository;
     private final DeviceRepository deviceRepository;
+
+    private final StepRepository stepRepository ;
+
     private final DeviceInformationRepository deviceInformationRepository;
     private final ProductRepository productRepository;
     private final TagRepository tagRepository;
 
     @Autowired
-    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository) {
+    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository) {
+
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         //DeviceRepositories
         this.deviceTypeRepository = deviceTypeRepository;
         this.deviceRepository = deviceRepository;
+
+        this.stepRepository= stepRepository;
+
         this.deviceInformationRepository = deviceInformationRepository;
         //ProductRepositories
         this.productRepository = productRepository;
@@ -388,6 +397,18 @@ public class DatabaseLoader {
         deviceRepository.save(d9);
 
 
+        Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","13","14");
+        stepRepository.save(s1);
+        Step s2= new Step(u1,d7,"2020-03-17","2020-03-17","8","18");
+        stepRepository.save(s2);
+        Step s3= new Step(u4,d1,"2020-03-18","2020-03-18","14","16");
+        stepRepository.save(s3);
+        Step s4= new Step(u4,d7,"2020-03-18","2020-03-18","16","18");
+        stepRepository.save(s4);
+        Step s5= new Step(u5,d9,"2020-03-18","2020-03-18","13","18");
+        stepRepository.save(s5);
+
+
 
         //create some products
         Tag tag1 = new Tag("Beton");
@@ -422,5 +443,6 @@ public class DatabaseLoader {
         productRepository.save(pr7);
         Product pr8 = new Product("Mineralen",lorem.getWords(20),1.0, 90.0, 1.0, 1.0, Unit.LITRE, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr8);
+
     }
 }

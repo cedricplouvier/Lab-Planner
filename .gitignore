@@ -1,10 +1,13 @@
-<<<<<<< HEAD
+
+.idea
+target
+
 /.idea/
-=======
+
 .idea/
 HELP.md
 target/
->>>>>>> ca6696a5835792b0c395e839805e4a7bcf8ec831
+
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
@@ -30,3 +33,4 @@ target/
 ### VS Code ###
 .vscode/
 LOGS_IS_UNDEFINED/
+
