@@ -138,7 +138,7 @@ public class DatabaseLoader {
         Role administrator = new Role("Administrator");
 
         //Create a list of privileges
-
+        // ###########################//
         //Bachelor student
         List<Privilege> privileges = new ArrayList<Privilege>();
 
@@ -164,6 +164,7 @@ public class DatabaseLoader {
         bachelorstudent.setPrivileges(privileges);
         roleRepository.save(bachelorstudent);
 
+        // ###########################//
         //Master student
         privileges = new ArrayList<Privilege>();
 
@@ -189,6 +190,7 @@ public class DatabaseLoader {
         masterstudent.setPrivileges(privileges);
         roleRepository.save(masterstudent);
 
+        // ###########################//
         //Researcher
         privileges = new ArrayList<Privilege>();
 
@@ -217,6 +219,7 @@ public class DatabaseLoader {
         researcher.setPrivileges(privileges);
         roleRepository.save(researcher);
 
+        // ###########################//
         // Admin
         privileges = new ArrayList<Privilege>();
 
@@ -414,8 +417,8 @@ public class DatabaseLoader {
         stepRepository.save(s4);
         Step s5= new Step(u5,d9,"2020-03-18","2020-03-18","13","18");
         stepRepository.save(s5);
-
-
+        Step s6= new Step(u7,d7,"2020-03-18","2020-03-18","13","18");
+        stepRepository.save(s6);
 
         //create some products
         Tag tag1 = new Tag("Aggregates");

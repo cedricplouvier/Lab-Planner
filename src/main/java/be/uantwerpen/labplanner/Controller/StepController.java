@@ -7,22 +7,29 @@ import be.uantwerpen.labplanner.Repository.DeviceRepository;
 import be.uantwerpen.labplanner.Service.DeviceService;
 import be.uantwerpen.labplanner.Service.DeviceTypeService;
 import be.uantwerpen.labplanner.Service.StepService;
+import be.uantwerpen.labplanner.common.model.stock.Product;
+import be.uantwerpen.labplanner.common.model.users.Privilege;
+import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
+import be.uantwerpen.labplanner.common.repository.users.UserRepository;
+import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 
 @Controller
@@ -34,7 +41,11 @@ public class StepController {
     private StepService stepService;
     @Autowired
     private DeviceTypeService deviceTypeService;
+    @Autowired
+    private RoleService roleService;
 
+    @Autowired
+    UserRepository userRepository;
 
     //Populate
     @ModelAttribute("allDevices")
@@ -49,8 +60,50 @@ public class StepController {
     @PreAuthorize("hasAuthority('Planning - Overview')")
     @RequestMapping(value="/planning", method= RequestMethod.GET)
     public String showStepPage(final ModelMap model){
-        model.addAttribute("allDevices", deviceService.findAll());
-        model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+
+        List<Step> userSteps = new ArrayList<>();
+        List<Step> allsteps = stepService.findAll();
+        Set<Role> userRoles = user.getRoles();
+        Role adminRol = roleService.findByName("Administrator").get();
+
+        if(userRoles.contains(adminRol)){
+            System.out.println("user is admin");
+
+            Iterator<Step> it = allsteps.iterator();
+            while (it.hasNext()) {
+                Step temp = it.next();
+                userSteps.add(temp);
+            }
+            model.addAttribute("userSteps", userSteps);
+            model.addAttribute("Step", new Step());
+        }
+        else {
+            Iterator<Step> it = allsteps.iterator();
+            while (it.hasNext()) {
+            Step temp = it.next();
+                if(temp.getUser().equals(user)){
+                userSteps.add(temp);
+                }
+            }
+            model.addAttribute("userSteps", userSteps);
+            model.addAttribute("Step", new Step());
+        }
+
+        /*Iterator<Step> it = allsteps.iterator();
+        while (it.hasNext()) {
+            Step temp = it.next();
+            if(temp.getUser().equals(user)){
+                userSteps.add(temp);
+            }
+            else {
+            }
+        }*/
+        //model.addAttribute("allDevices", deviceService.findAll());
+        //model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+        model.addAttribute("userSteps", userSteps);
         model.addAttribute("Step", new Step());
 //        model.addAttribute("startformat", new String());
 //        model.addAttribute("endformat", new String());
@@ -86,6 +139,13 @@ public class StepController {
     public String showTimeslot(Step step, final ModelMap model){
             model.addAttribute("Step", step);
             return "/PlanningTool/step-timeslot";
+    }
+
+    @RequestMapping(value = "/planning/{id}/delete",method = RequestMethod.GET)
+    public String deleteStep(@PathVariable long id, final ModelMap model){
+        stepService.delete(id);
+        model.clear();
+        return "redirect:/planning";
     }
 
     public boolean overlapCheck(Step step) throws ParseException {
