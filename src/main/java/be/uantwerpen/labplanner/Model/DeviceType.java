@@ -1,7 +1,6 @@
 package be.uantwerpen.labplanner.Model;
 
 import be.uantwerpen.labplanner.Exception.StorageException;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;

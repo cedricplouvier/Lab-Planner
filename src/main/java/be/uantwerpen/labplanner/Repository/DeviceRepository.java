@@ -13,4 +13,5 @@ import java.util.Optional;
 public interface DeviceRepository extends CrudRepository<Device, Long> {
     Optional<Device> findByDevicename(String devicename);
     List<Device> findAll();
+    Optional<Device> findByDeviceType(Long id);
 }

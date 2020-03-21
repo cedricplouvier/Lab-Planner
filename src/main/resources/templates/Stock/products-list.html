@@ -55,48 +55,78 @@
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
     <div class="content">
-        <div id="device-list">
+        <div id="product-list">
             <input type='text' id='txt_name' th:placeholder="#{product.search}">
 
             <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th th:text="#{product}">Product Name</th>
-                    <th th:text="#{product.left}">Amount left</th>
-                    <th th:text="#{product.tag}">Tag Name</th>
+            <thead>
+            <tr>
+                <th th:text="#{product}">Product Name</th>
+                <th th:text="#{product.left}">Amount left</th>
+                <th th:text="#{product.tag}">Tag Name</th>
 
-                </tr>
-                </thead>
-                <!-- IMPORTANT, class="list" have to be at tbody -->
-                <tbody class="list">
-                <tr th:each="product : ${allProducts}">
-                    <td th:text="${product.name}"/>
-                    <td th:text="${product.stockLevel}"/>
-                    <td class="Tags">
-                        <a
-                                th:each="tag : ${product.tags}"
-                                th:value="${tag.name}"
-                                th:text="${tag.name} + ' '"></a>
-                    </td>
+            </tr>
+            </thead>
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody class="list">
+            <tr  sec:authorize="hasAuthority('Stock - Aggregates + Bitumen Read only - Basic') or hasAuthority('Stock - Aggregates + Bitumen Read only - Advanced') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced') or hasAuthority('Stock - Modify - All')" th:each="product : ${agg_bit}">
+                <td th:text="${product.name}"/>
+                <td th:text="${product.stockLevel} + ' '+${product.units.getSIString()}" />
+                <td class="Tags">
+                    <a
+                            th:each="tag : ${product.tags}"
+                            th:value="${tag.name}"
+                            th:text="${tag.name} + ' '"></a>
+                </td>
 
-                    <td>
-                        <a th:href="@{/products/{id}/(id=${product.id})}"><span
-                                class="fas fa-edit"></span></a>&nbsp;
-                        <a th:href="@{/products/{id}/delete(id=${product.id})}">
-                            <span class="fas fa-trash"></span></a>
-                    </td>
+                <td>
+
+                    <a sec:authorize="hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced') or hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/(id=${product.id})}">
+                        <span class="fas fa-edit"></span></a>&nbsp;
+                    <a sec:authorize="hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced') or hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/delete(id=${product.id})}">
+                        <span class="fas fa-trash"></span></a>
+                    <a th:href="@{/products/info/{id}/(id=${product.id})}">
+                        <span class="fas fa-info"></span></a>
+                </td>
 
 
-                </tr>
-                <tr class='notfound'>
-                    <td colspan='4' th:text="#{product.norecord}">No record found</td>
-                </tr>
-                </tbody>
-            </table>
-            <a href="tags" class="btn btn-primary" th:text="#{tag.manage}"
+            </tr>
+            <tr  sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')" th:each="product : ${con_oth}">
+                <td th:text="${product.name}"/>
+                <td th:text="${product.stockLevel} + ' '+${product.units.getSIString()}" />
+                <td class="Tags">
+                    <a
+                            th:each="tag : ${product.tags}"
+                            th:value="${tag.name}"
+                            th:text="${tag.name} + ' '"></a>
+                </td>
+
+                <td>
+
+                    <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/(id=${product.id})}">
+                        <span class="fas fa-edit"></span></a>&nbsp;
+                    <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/delete(id=${product.id})}">
+                        <span class="fas fa-trash"></span></a>
+                    <a th:href="@{/products/info/{id}/(id=${product.id})}">
+                        <span class="fas fa-info"></span></a>
+                </td>
+
+
+            </tr>
+
+            </tbody>
+        </table>
+
+
+
+
+            <a sec:authorize="hasAuthority('Stock - Modify - All')" href="tags" class="btn btn-primary" th:text="#{tag.manage}"
             >Manage Materials</a>
-            <a href="/products/put" class="btn btn-outline-primary" th:text="#{product.new}"
+            <a href="mixtures" class="btn btn-outline-primary" th:text="#{mixtures}"
+            >Mixtures</a>
+            <a sec:authorize="hasAuthority('Stock - Modify - All')" href="/products/put" class="btn btn-outline-primary" th:text="#{product.new}"
             >Manage device types</a>
+
 
         </div>
     </div>

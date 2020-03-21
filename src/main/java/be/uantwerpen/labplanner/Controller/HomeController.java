@@ -28,7 +28,7 @@ public class HomeController {
     }
     @RequestMapping("/planningtool")
     public String showPlanningtoolPage(){
-        return "planningtool";
+        return "redirect:/planning";
     }
     @RequestMapping("/devicemanagement")
     public String showDevicemanagementPage(){

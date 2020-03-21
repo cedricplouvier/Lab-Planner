@@ -1,16 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <!-- Import header -->
-<head th:replace="navbar :: head (title='#{tags}')"></head>
+<head th:replace="navbar :: head (title='#{mixtures}')"></head>
 <body onload="initPage()">
-<script type="text/javascript">
-    function initPage(){
-        var options = {
-            valueNames: [ 'deviceTypeName']
-        };
-        var deviceTypesList = new List('deviceTypes', options);
-    }
-</script>
+
 <style>
     .notfound{
         display: none;
@@ -53,24 +46,32 @@
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
     <div class="content">
-        <div id="tag-list">
-            <input type='text' id='txt_name' th:placeholder="#{product.tag.search}">
+        <div id="mixture-list">
+            <input type='text' id='txt_name' th:placeholder="#{mixtures.search}">
 
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th th:text="#{product.tag}">Product Tag Name</th>
+                    <th th:text="#{mixtures.name}">Mixture Name</th>
+                    <th th:text="#{mixtures.ingredients}">Mixture Ingredients</th>
+
                 </tr>
                 </thead>
                 <!-- IMPORTANT, class="list" have to be at tbody -->
                 <tbody class="list">
-                <tr th:each="tag : ${allProductTags}">
-                    <td class='deviceTypeName' th:value="${tag.getName()}"
-                        th:text="${tag.name}" >Tag Name</td>
+                <tr th:each="mixture : ${allMixtures}">
+                    <td class='mixtureName' th:value="${mixture.getName()}"
+                        th:text="${mixture.name}" >Mixture Name</td>
+                        <td class="ingredients">
+                            <a
+                                    th:each="ingred : ${mixture.compositions}"
+                                    th:value="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()}"
+                                    th:utext="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()} + '<br />'"></a>
+                        </td>
                     <td>
-                        <a th:href="@{/tags/{id}/(id=${tag.id})}"><span
+                        <a th:href="@{/mixtures/{id}/(id=${mixture.id})}"><span
                                 class="fas fa-edit"></span></a>&nbsp;
-                        <a th:href="@{/tags/{id}/delete(id=${tag.id})}">
+                        <a th:href="@{/mixtures/{id}/delete(id=${mixture.id})}">
                             <span class="fas fa-trash"></span></a>
                     </td>
                 </tr>
@@ -80,8 +81,11 @@
                 </tbody>
             </table>
             <a href="/products" class="btn btn-primary" th:text="#{product.return}" >Return to products</a>
-            <a href="/tags/put" type="button" class="btn btn-outline-primary"th:text="#{tag.create}">
+            <a href="/mixtures/put" type="button" class="btn btn-outline-primary"th:text="#{mixture.create}">
                 Create new tag
+            </a>
+            <a href="/compositions" type="button" class="btn btn-outline-primary"th:text="#{mixtures.ingredients}">
+                Ingredient List
             </a>
 
 
