@@ -26,7 +26,7 @@
             /> </div>
         <div class="form-group"
              th:classappend="${#fields.hasErrors('information')}?'has-error': ''">
-            <label class="control-label" th:text="#{name}"></label>
+            <label class="control-label" th:text="#{device.comment}"></label>
             <span class="control-label" th:if="${#fields.hasErrors('information')}"
                   th:errors="*{information}"></span>
             <textarea rows="5" class="form-control" type="text" th:field="*{information}"/>

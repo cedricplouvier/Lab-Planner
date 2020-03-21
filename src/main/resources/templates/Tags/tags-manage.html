@@ -20,6 +20,7 @@
         <div class="form-group">
             <label class="control-label" th:text="#{tag.name}"></label>
             <input class="form-control" type = text th:field="*{name}"/>
+            <div class="alert alert-danger" role="alert" th:if="${NameIsUsed}!=null" th:text="${NameIsUsed}"></div>
 
 
         <p>
