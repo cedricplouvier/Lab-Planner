@@ -114,7 +114,7 @@ public class StockController {
         String NameIsUsed = null;
         while (it.hasNext()) {
             Product temp = it.next();
-            if(temp.getName().contains(product.getName())){
+            if(temp.getName().contains(product.getName()) && !temp.getId().equals(product.getId())){
                 NameIsUsed = "There is already a product with the name " + product.getName();
             }
         }
@@ -207,7 +207,7 @@ public class StockController {
         String NameIsUsed = null;
         while (it.hasNext()) {
             Tag temp = it.next();
-            if(temp.getName().contains(tag.getName())){
+            if(temp.getName().contains(tag.getName()) && !temp.getId().equals(tag.getId())){
                  NameIsUsed = "There is already a tag with the name " + tag.getName();
             }
         }
@@ -270,7 +270,7 @@ public class StockController {
         String NameIsUsed = null;
         while (it.hasNext()) {
             Mixture temp = it.next();
-            if(temp.getName().contains(mixture.getName())){
+            if(temp.getName().contains(mixture.getName()) && !temp.getId().equals(mixture.getId())){
                 NameIsUsed = "There is already a mixture with the name " + mixture.getName();
             }
         }
@@ -318,7 +318,7 @@ public class StockController {
         Iterator<Mixture> it = mixtures.iterator();
         while (it.hasNext()) {
             Mixture temp = it.next();
-            if(temp.getCompositions().contains(compos)){
+            if(temp.getCompositions().contains(compos) && temp.getId() != compos.getId()){
                 List<Composition> list = temp.getCompositions();
                 if(compos != null) {
                     list.remove(compos);

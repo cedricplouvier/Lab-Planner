@@ -1,5 +1,6 @@
 package Model;
 
+import be.uantwerpen.labplanner.Model.Device;
 import be.uantwerpen.labplanner.common.model.users.User;
 
 public class Step{

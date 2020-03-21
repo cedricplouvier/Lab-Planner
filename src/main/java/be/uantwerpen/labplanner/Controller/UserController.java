@@ -29,41 +29,41 @@ public class UserController {
     @Autowired
     private RoleService roleService;
 
-    @RequestMapping(value = "/users",method = RequestMethod.GET)
+    @RequestMapping(value = "/usermanagement/users",method = RequestMethod.GET)
     public String showUsers(final ModelMap model){
         model.addAttribute("allUsers",userService.findAll());
         return "/Users/user-list";
     }
 
-    @RequestMapping(value = "/users/put",method = RequestMethod.GET)
+    @RequestMapping(value = "/usermanagement/users/put",method = RequestMethod.GET)
     public String viewCreateUser(final ModelMap model){
         model.addAttribute("allRoles",roleService.findAll());
         model.addAttribute(new User("","","","","","","","",null,null,null));
         return "/Users/user-manage";
     }
 
-    @RequestMapping(value = "/users/{id}",method = RequestMethod.GET)
+    @RequestMapping(value = "/usermanagement/users/{id}",method = RequestMethod.GET)
     public String viewEditUser(@PathVariable long id, final ModelMap model){
         model.addAttribute("allRoles",roleService.findAll());
         model.addAttribute("user",userService.findById(id).orElse(null));
         return "/Users/user-manage";
     }
 
-    @RequestMapping(value = {"/users/","/users/{id}"},method = RequestMethod.POST)
+    @RequestMapping(value = {"/usermanagement/users/","/usermanagement/users/{id}"},method = RequestMethod.POST)
     public String addUser(@Valid User user, BindingResult result, final ModelMap model){
         if (result.hasErrors()){
             model.addAttribute("allRoles",roleService.findAll());
             return "/Users/user-manage";
         }
         userService.save(user);
-        return "redirect:/users";
+        return "redirect:/usermanagement/users";
     }
 
-    @RequestMapping(value = "/users/{id}/delete",method = RequestMethod.GET)
+    @RequestMapping(value = "/usermanagement/users/{id}/delete",method = RequestMethod.GET)
     public String deleteUser(@PathVariable long id, final ModelMap model){
         userService.deleteById(id);
         model.clear();
-        return "redirect:/users";
+        return "redirect:/usermanagement/users";
     }
 
 

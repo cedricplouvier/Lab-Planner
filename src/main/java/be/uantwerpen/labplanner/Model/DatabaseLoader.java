@@ -1,5 +1,10 @@
 package be.uantwerpen.labplanner.Model;
 
+import be.uantwerpen.labplanner.Repository.DeviceInformationRepository;
+import be.uantwerpen.labplanner.Repository.DeviceRepository;
+import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
+
+import be.uantwerpen.labplanner.Repository.StepRepository;
 import be.uantwerpen.labplanner.Repository.*;
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.stock.Tag;
@@ -35,6 +40,9 @@ public class DatabaseLoader {
     private final UserRepository userRepository;
     private final DeviceTypeRepository deviceTypeRepository;
     private final DeviceRepository deviceRepository;
+
+    private final StepRepository stepRepository ;
+
     private final DeviceInformationRepository deviceInformationRepository;
     private final ProductRepository productRepository;
     private final TagRepository tagRepository;
@@ -42,13 +50,18 @@ public class DatabaseLoader {
     private final MixtureRepository mixtureRepository;
 
     @Autowired
-    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository) {
+    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository,StepRepository stepRepository) {
+
+
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         //DeviceRepositories
         this.deviceTypeRepository = deviceTypeRepository;
         this.deviceRepository = deviceRepository;
+
+        this.stepRepository= stepRepository;
+
         this.deviceInformationRepository = deviceInformationRepository;
         //ProductRepositories
         this.productRepository = productRepository;
@@ -125,7 +138,7 @@ public class DatabaseLoader {
         Role administrator = new Role("Administrator");
 
         //Create a list of privileges
-
+        // ###########################//
         //Bachelor student
         List<Privilege> privileges = new ArrayList<Privilege>();
 
@@ -151,6 +164,7 @@ public class DatabaseLoader {
         bachelorstudent.setPrivileges(privileges);
         roleRepository.save(bachelorstudent);
 
+        // ###########################//
         //Master student
         privileges = new ArrayList<Privilege>();
 
@@ -176,6 +190,7 @@ public class DatabaseLoader {
         masterstudent.setPrivileges(privileges);
         roleRepository.save(masterstudent);
 
+        // ###########################//
         //Researcher
         privileges = new ArrayList<Privilege>();
 
@@ -204,6 +219,7 @@ public class DatabaseLoader {
         researcher.setPrivileges(privileges);
         roleRepository.save(researcher);
 
+        // ###########################//
         // Admin
         privileges = new ArrayList<Privilege>();
 
@@ -391,6 +407,18 @@ public class DatabaseLoader {
         deviceRepository.save(d9);
 
 
+        Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","13","14");
+        stepRepository.save(s1);
+        Step s2= new Step(u1,d7,"2020-03-17","2020-03-17","8","18");
+        stepRepository.save(s2);
+        Step s3= new Step(u4,d1,"2020-03-18","2020-03-18","14","16");
+        stepRepository.save(s3);
+        Step s4= new Step(u4,d7,"2020-03-18","2020-03-18","16","18");
+        stepRepository.save(s4);
+        Step s5= new Step(u5,d9,"2020-03-18","2020-03-18","13","18");
+        stepRepository.save(s5);
+        Step s6= new Step(u7,d7,"2020-03-18","2020-03-18","13","18");
+        stepRepository.save(s6);
 
         //create some products
         Tag tag1 = new Tag("Aggregates");
@@ -456,6 +484,7 @@ public class DatabaseLoader {
         mixtureRepository.save(m2);
         Mixture m3 = new Mixture("Elon Musk's Mengsel", mix3);
         mixtureRepository.save(m3);
+
 
 
 
