@@ -31,9 +31,11 @@
 
         <div class="form-group">
             <label class="control-label" th:text="#{roles.name}"></label>
-            <input class="form-control" type = text th:field="*{name}"/>
+            <input class="form-control" type = text th:field="*{name}" required/>
 
         </div>
+        <div class="alert alert-danger" role="alert" th:if="${roleInUse}!=null" th:text="${roleInUse}"></div>
+
 
         <div>
             <label class="control-label" th:text="#{roles.privileges}"></label>

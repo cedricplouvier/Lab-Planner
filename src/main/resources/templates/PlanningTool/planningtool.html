@@ -3,28 +3,17 @@
 <head th:replace="navbar :: head (title='#{homepage}')">
 
 </head>
-<body onload="initPage()">
+<div onload="initPage()">
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 <script th:inline="javascript" type="text/javascript">
     function initPage(){
-
     }
 </script>
 <script th:inline="javascript">
     $(document).ready(function(){
-         var status1 = /*[[${Status}]]*/{};
-         var message=/*[[${Message}]]*/{};
-        if (status1=="Success")
-            toastr.success(message);
-        else if (status1=="Error")
-            toastr.error(message);
-         //toastr.success('Have fun storming the castle!', 'Miracle Max Says')
-        // var message=/*[[${Message}]]*/{};
-        // tata.success(message);
-        console.log(status1);
-        console.log(message);
+
         $('.js-example-basic-single').select2();
         $('#sel').on('change', function() {
             var devices =  /*[[${allDevices}]]*/ {};
@@ -116,8 +105,8 @@
         margin-top: 10px;
     }
 </style>
+    <div class ="container">
 <div th:replace="navbar :: navbar"></div>
-
 <h1>Planning Tool
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal" data-target="#staticBackdrop" th:text="#{book.step}">
@@ -133,25 +122,31 @@
         <th th:text="#{step.startHour}">Start Hour</th>
         <th th:text="#{step.end}">End Date</th>
         <th th:text="#{step.endHour}">End Hour</th>
-
     </tr>
     </thead>
     <!-- IMPORTANT, class="list" have to be at tbody -->
     <tbody class="list" id="list">
-    <tr th:each="step : ${allSteps}">
+    <tr th:each="step : ${userSteps}">
         <td class='username' th:value="${step.getUser().getUsername()}" th:text="${step.user.username}">Username</td>
         <td class="devicename" th:value="${step.getDevice().getDevicename()}" th:text="${step.device.devicename }" >Device name</td>
         <td class="startTime" th:value="${step.getStart()}" th:text="${step.start}"> Start Date</td>
         <td class="startTime" th:value="${step.getStartHour()}" th:text="${step.startHour}"> Start Hour</td>
         <td class="endTime" th:value="${step.getEnd()}" th:text="${step.end}">End Date</td>
         <td class="endTime" th:value="${step.getEndHour()}" th:text="${step.endHour}">End Hour</td>
+        <td>
+
+        <td>
+            <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                <span class="fas fa-trash" style="color: red" ></span> </a>
+        </td>
+        </td>
     </tr>
-    <tr class='notfound' th:if="${allSteps.isEmpty()}" >
+    <tr class='notfound' th:if="${userSteps.isEmpty()}" >
         <td colspan='4' th:text="#{step.norecord}">No record found</td>
     </tr>
     </tbody>
 </table></table>
-
+    </div>
 </div>
 <!-- Modal -->
 <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -169,7 +164,11 @@
                 <input th:type="hidden" th:field="*{id}"/>
                 <select required class=" form-control input-device"  id="sel">
                     <option value="none"  selected disabled hidden th:text="#{device.type}"> Device Type </option>
+<<<<<<< HEAD
                     <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.getDeviceTypeName()}">Device Type</option>
+=======
+                    <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.deviceTypeName}">Device Type</option>
+>>>>>>> 2f805d6d777466e4d604ccf88d06d5ed9aa5b67b
                 </select>
                 <!--Dropdown-->
                 <select required id="deviceNames" th:field="*{device}" class="form-control input-device" style="visibility: hidden;">
@@ -191,6 +190,7 @@
             </form>
         </div>
     </div>
+</div>
 </div>
 </body>
 </html>

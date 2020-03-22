@@ -4,6 +4,7 @@ import be.uantwerpen.labplanner.Exception.StorageException;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -19,6 +20,7 @@ public class DeviceType extends AbstractPersistable<Long>{
     private static String DEFAULT_DEVICTYPENAME = "default_deviceTypeName";
     private static Boolean DEFAULT_OVERNIGHTUSE = false;
     private static List<String> DEFAULT_INFORMATIONTYPES = Arrays.asList(new String[]{"Manual","Maintenance", "Calibration","Safety instruction card"});
+
 
     //Variables
     @Column
@@ -83,7 +85,27 @@ public class DeviceType extends AbstractPersistable<Long>{
     public List<DeviceInformation> getDeviceInformation() { return deviceInformations; }
     public void setDeviceInformation(List<DeviceInformation> deviceInformations) { this.deviceInformations = deviceInformations; }
     public String getDeviceTypeName() { return deviceTypeName; }
-    public void setDeviceTypeName(String deviceTypeName) { this.deviceTypeName = deviceTypeName; }
+    public void setDeviceTypeName(String deviceTypeName) {
+        //Change updload dir name if the type name changes
+        if(!this.deviceTypeName.equals(deviceTypeName)){
+            File dir = new File("upload-dir/"+this.deviceTypeName);
+            if (!dir.isDirectory()) {
+                System.err.println("There is no directory @ given path");
+            } else {
+                String newDirName = deviceTypeName;
+                File newDir = new File(dir.getParent() + "/" + newDirName);
+                dir.renameTo(newDir);
+            }
+            if (this.devicePictureName!=null){
+                String rootlocation = "upload-dir/images/";
+                File f1 = new File(rootlocation+this.devicePictureName);
+                File f2 = new File(rootlocation+deviceTypeName + "."+this.devicePictureName.substring(this.devicePictureName.lastIndexOf(".") + 1));
+                f1.renameTo(f2);
+                this.devicePictureName =deviceTypeName + "."+this.devicePictureName.substring(this.devicePictureName.lastIndexOf(".") + 1);
+            }
+        }
+        this.deviceTypeName = deviceTypeName;
+    }
     public static void setDefaultInformationtypes(List<String> defaultInformationtypes) {
         DEFAULT_INFORMATIONTYPES = defaultInformationtypes;
     }
@@ -99,8 +121,20 @@ public class DeviceType extends AbstractPersistable<Long>{
     public List<DeviceInformation> getDeviceInformations() {
         return deviceInformations;
     }
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
 
+    @Override
+    public void setId(Long id) {
+        super.setId(id);
+    }
     public void setDeviceInformations(List<DeviceInformation> deviceInformations) {
         this.deviceInformations = deviceInformations;
+    }
+
+    public static String getDefaultDevictypename() {
+        return DEFAULT_DEVICTYPENAME;
     }
 }
