@@ -8,7 +8,7 @@
 (function (window, Calendar) {
     var cal, resizeThrottled;
     var useCreationPopup = false;
-    var useDetailPopup = false;
+    var useDetailPopup = true;
     var datePicker, selectedCalendar;
 
 
@@ -60,14 +60,41 @@
         },
         'beforeCreateSchedule': function (e) {
             console.log('beforeCreateSchedule', e);
-            saveNewSchedule(e);
+
+            $("#staticBackdrop").modal('show')
+            var str = e.start.getFullYear().toString()+ "-" + ("0" + (e.start.getMonth() + 1)).slice(-2) + "-" + ("0" + (e.start.getDate())).slice(-2) ;
+            document.getElementById("startTime").value = str;
+            document.getElementById('startHour').value=e.start.toDate().getHours();
+            document.getElementById('endHour').value=e.end.toDate().getHours();
+            var str = e.end.getFullYear().toString()+ "-" + ("0" + (e.end.getMonth() + 1)).slice(-2) + "-" + ("0" + (e.end.getDate())).slice(-2) ;
+            document.getElementById("endTime").value = str;
+            let devicetype = null;
+            CalendarList.forEach(function (calendar) {
+                if(calendar.checked){
+                    devicetype = calendar.name
+                    console.log(calendar)
+                }
+            });
+
+
+            $('#deviceNames').find('option').remove();
+
+            for (var current=0;current<devices.length;current++) {
+                console.log(devices[0]['deviceType']['deviceTypeName'] );
+                if(devices[current]['deviceType']['deviceTypeName'] == devicetype){
+                    // $('#deviceNames').append('<option value=devices[current]>'+devices[current]['devicename']  +'</option>');
+                    const optionText = devices[current]['devicename'] ;
+                    const optionValue =  devices[current]['id'] ;
+                    $('#deviceNames').append($('<option>').val(optionValue).text(optionText));
+                }
+            }
+
+
         },
         'beforeUpdateSchedule': function (e) {
             var schedule = e.schedule;
             var changes = e.changes;
-
             console.log('beforeUpdateSchedule', e);
-
             cal.updateSchedule(schedule.id, schedule.calendarId, changes);
             refreshScheduleVisibility();
         },
@@ -98,6 +125,7 @@
             return true;
         }
     });
+    /*]]>*/
 
 
     /**
@@ -245,6 +273,7 @@
                 location: location
             },
             state: 'Busy'
+
         }]);
 
         $('#modal-new-schedule').modal('hide');
@@ -320,31 +349,32 @@
         var calendarElements = Array.prototype.slice.call(document.querySelectorAll('#calendarList input'));
         var allCheckedCalendars = true;
 
-        if (calendarId === 'all') {
-            allCheckedCalendars = checked;
+        allCheckedCalendars = checked;
+        calendarElements.forEach(function(input) {
+            var span = input.parentNode;
+            input.checked = false;
+            span.style.backgroundColor = 'transparent';
+        });
+        // calendarElements.forEach(function (input) {
+        //     var span = input.parentNode;
+        //     input.checked = false;
+        //     span.style.backgroundColor = 'transparent';
+        //     if(input.id===calendarId){
+        //         input.checked = true;
+        //         span.style.backgroundColor = span.style.borderColor ;
+        //
+        //     }
+        // });
+        e.target.checked = true
 
-            calendarElements.forEach(function (input) {
-                var span = input.parentNode;
-                input.checked = checked;
-                span.style.backgroundColor = checked ? span.style.borderColor : 'transparent';
-            });
 
-            CalendarList.forEach(function (calendar) {
-                calendar.checked = checked;
-            });
-        } else {
-            findCalendar(calendarId).checked = checked;
 
-            allCheckedCalendars = calendarElements.every(function (input) {
-                return input.checked;
-            });
+        CalendarList.forEach(function (calendar) {
+            calendar.checked = false;
+        });
+        findCalendar(calendarId).checked = true;
 
-            if (allCheckedCalendars) {
-                viewAll.checked = true;
-            } else {
-                viewAll.checked = false;
-            }
-        }
+
 
         refreshScheduleVisibility();
     }
