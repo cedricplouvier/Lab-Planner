@@ -7,13 +7,14 @@
 
 (function (window, Calendar) {
     var cal, resizeThrottled;
-    var useCreationPopup = true;
-    var useDetailPopup = true;
+    var useCreationPopup = false;
+    var useDetailPopup = false;
     var datePicker, selectedCalendar;
 
 
     // change start day of week(from monday)
     cal = new Calendar('#calendar', {
+
         month: {
             narrowWeekend: true,
             startDayOfWeek: 1, // monday
