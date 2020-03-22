@@ -1,6 +1,7 @@
 package be.uantwerpen.labplanner.Controller;
 
 
+import be.uantwerpen.labplanner.Service.OwnPrivilegeService;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.service.users.PrivilegeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import java.beans.MethodDescriptor;
 public class PrivilegeController {
 
     @Autowired
-    private PrivilegeService privilegeService;
+    private OwnPrivilegeService privilegeService;
 
     @RequestMapping(value = "/usermanagement/privileges",method = RequestMethod.GET)
     public String showPrivileges(final ModelMap model){
@@ -43,6 +44,15 @@ public class PrivilegeController {
         if (result.hasErrors()) {
             return "/Privileges/privilege-manage";
         }
+        if (privilege.getId() == null) {
+            if (privilegeService.findByName(privilege.getName()).isPresent()) {
+                model.addAttribute("PrivilegeInUse", "Privilege " + privilege.getName() + " is already in use!");
+                return "/Privileges/privilege-manage";
+            }
+            privilegeService.save(privilege);
+            return "redirect:/usermanagement/privileges";
+        }
+
         privilegeService.save(privilege);
         return "redirect:/usermanagement/privileges";
     }

@@ -57,6 +57,8 @@
                     <th th:text="#{roles.name}"></th>
                     <th th:text="#{roles.privileges}"></th>
                     <th th:text="#{roles.users}"></th>
+                    <th th:text="#{quickEdit}"></th>
+
 
                 </tr>
                 </thead>
@@ -81,8 +83,8 @@
                     <td>
                         <a th:href="@{/usermanagement/roles/{id}/(id=${role.id})}"><span
                                 class="fas fa-edit"></span></a>&nbsp;
-                        <a th:href="@{/usermanagement/roles/{id}/delete(id=${role.id})}">
-                            <span class="fas fa-trash"></span></a>
+                        <a th:href="@{/usermanagement/roles/{id}/delete(id=${role.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\');'">
+                            <span style="color: red" class="fas fa-trash"></span></a>
                     </td>
                 </tr>
                 </tbody>

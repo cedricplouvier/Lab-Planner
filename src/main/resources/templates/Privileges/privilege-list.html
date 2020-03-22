@@ -43,6 +43,8 @@
                     <th th:text="#{privileges.id}"></th>
                     <th th:text="#{privileges.name}"></th>
                     <th th:text="#{privileges.description}"></th>
+                    <th th:text="#{quickEdit}"></th>
+
                     <th></th>
 
 
@@ -58,8 +60,8 @@
                     <td>
                         <a th:href="@{/usermanagement/privileges/{id}/(id=${privilege.id})}"><span
                                 class="fas fa-edit"></span></a>&nbsp;
-                        <a th:href="@{/usermanagement/privileges/{id}/delete(id=${privilege.id})}">
-                            <span class="fas fa-trash"></span></a>
+                        <a th:href="@{/usermanagement/privileges/{id}/delete(id=${privilege.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\');'">
+                            <span style="color: red" class="fas fa-trash"></span></a>
                     </td>
                 </tr>
                 </tbody>
