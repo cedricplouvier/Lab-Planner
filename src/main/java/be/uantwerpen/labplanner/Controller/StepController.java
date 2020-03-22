@@ -14,6 +14,8 @@ import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.repository.users.UserRepository;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -47,6 +49,8 @@ public class StepController {
     @Autowired
     UserRepository userRepository;
 
+    private Logger logger = LoggerFactory.getLogger(StepController.class);
+
     //Populate
     @ModelAttribute("allDevices")
     public Iterable<Device> populateDevices() {
@@ -70,8 +74,6 @@ public class StepController {
         Role adminRol = roleService.findByName("Administrator").get();
 
         if(userRoles.contains(adminRol)){
-            System.out.println("user is admin");
-
             Iterator<Step> it = allsteps.iterator();
             while (it.hasNext()) {
                 Step temp = it.next();
@@ -91,20 +93,6 @@ public class StepController {
             model.addAttribute("userSteps", userSteps);
             model.addAttribute("Step", new Step());
         }
-
-        /*Iterator<Step> it = allsteps.iterator();
-        while (it.hasNext()) {
-            Step temp = it.next();
-            if(temp.getUser().equals(user)){
-                userSteps.add(temp);
-            }
-            else {
-            }
-        }*/
-        //model.addAttribute("allDevices", deviceService.findAll());
-        //model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
-        model.addAttribute("userSteps", userSteps);
-        model.addAttribute("Step", new Step());
 //        model.addAttribute("startformat", new String());
 //        model.addAttribute("endformat", new String());
         return "PlanningTool/planningtool";
@@ -143,7 +131,33 @@ public class StepController {
 
     @RequestMapping(value = "/planning/{id}/delete",method = RequestMethod.GET)
     public String deleteStep(@PathVariable long id, final ModelMap model){
-        stepService.delete(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+
+        List<Step> allsteps = stepService.findAll();
+        Set<Role> userRoles = user.getRoles();
+        Role adminRol = roleService.findByName("Administrator").get();
+
+        boolean ownStep = false;
+
+        if(userRoles.contains(adminRol)){
+            stepService.delete(id);
+        }
+        else {
+            Iterator<Step> it = allsteps.iterator();
+            while (it.hasNext()) {
+                Step temp = it.next();
+                if(temp.getUser().equals(user) && temp.getId().equals(id)){
+                    ownStep = true;
+                }
+            }
+            if(ownStep) {
+                stepService.delete(id);
+            }
+            else{
+                logger.error(user.getUsername()+" tried to delete someone elses step or step id doesn't exist");
+            }
+        }
         model.clear();
         return "redirect:/planning";
     }
