@@ -40,17 +40,16 @@ public class DatabaseLoader {
     private final UserRepository userRepository;
     private final DeviceTypeRepository deviceTypeRepository;
     private final DeviceRepository deviceRepository;
-
-    private final StepRepository stepRepository ;
-
     private final DeviceInformationRepository deviceInformationRepository;
     private final ProductRepository productRepository;
     private final TagRepository tagRepository;
+    private final StepRepository stepRepository;
     private final CompositionRepository compositionRepository;
     private final MixtureRepository mixtureRepository;
 
     @Autowired
-    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository,StepRepository stepRepository) {
+    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository) {
+
 
 
         this.privilegeRepository = privilegeRepository;
@@ -407,18 +406,6 @@ public class DatabaseLoader {
         deviceRepository.save(d9);
 
 
-        Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","13","14");
-        stepRepository.save(s1);
-        Step s2= new Step(u1,d7,"2020-03-17","2020-03-17","8","18");
-        stepRepository.save(s2);
-        Step s3= new Step(u4,d1,"2020-03-18","2020-03-18","14","16");
-        stepRepository.save(s3);
-        Step s4= new Step(u4,d7,"2020-03-18","2020-03-18","16","18");
-        stepRepository.save(s4);
-        Step s5= new Step(u5,d9,"2020-03-18","2020-03-18","13","18");
-        stepRepository.save(s5);
-        Step s6= new Step(u7,d7,"2020-03-18","2020-03-18","13","18");
-        stepRepository.save(s6);
 
         //create some products
         Tag tag1 = new Tag("Aggregates");
@@ -453,7 +440,16 @@ public class DatabaseLoader {
         productRepository.save(pr7);
         Product pr8 = new Product("Mineralen",lorem.getWords(20),1.0, 90.0, 1.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr8);
-
+        Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","11:00","12:00");
+        stepRepository.save(s1);
+        Step s2= new Step(u1,d7,"2020-03-17","2020-03-17","08:00","18:00");
+        stepRepository.save(s2);
+        Step s3= new Step(u4,d1,"2020-03-16","2020-03-16","14:00","16:00");
+        stepRepository.save(s3);
+        Step s4= new Step(u4,d7,"2020-03-15","2020-03-15","16:00","18:00");
+        stepRepository.save(s4);
+        Step s5= new Step(u5,d9,"2020-03-19","2020-03-19","13:00","18:00");
+        stepRepository.save(s5);
         //Create compositions
         Composition c1 = new Composition(5.0,pr8);
         Composition c2 = new Composition(1.2, pr7);

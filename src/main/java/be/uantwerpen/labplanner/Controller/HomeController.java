@@ -53,7 +53,9 @@ public class HomeController {
     }
     @RequestMapping("/planningtool")
     public String showPlanningtoolPage(){
-        return "redirect:/planning";
+        logger.info("showPlanningtoolPage");
+        return "redirect:/calendar/weekly";
+
     }
     @RequestMapping("/devicemanagement")
     public String showDevicemanagementPage(){

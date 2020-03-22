@@ -64,6 +64,9 @@ public class StepController {
     @PreAuthorize("hasAuthority('Planning - Overview')")
     @RequestMapping(value="/planning", method= RequestMethod.GET)
     public String showStepPage(final ModelMap model){
+            model.addAttribute("allDevices", deviceService.findAll());
+            model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+            model.addAttribute("Step", new Step());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -101,7 +104,8 @@ public class StepController {
     @RequestMapping(value={"/planning" , "/planning/{id}"},method= RequestMethod.POST)
     public String addStep(@Valid Step step, BindingResult result, final ModelMap model) throws ParseException {
         User currentUser =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(result.hasErrors() || overlapCheck(step)){
+        if(result.hasErrors() ){
+            System.out.println(result.getFieldError().toString());
             model.addAttribute("allDevices", deviceService.findAll());
             model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
             model.addAttribute("allSteps",stepService.findAll());
@@ -205,6 +209,4 @@ public class StepController {
         }
         return false;
     }
-
-
 }

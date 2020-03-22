@@ -7,16 +7,11 @@
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-<!--<script src="js/tata.js"></script>-->
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <script th:inline="javascript" type="text/javascript">
     function initPage(){
     }
 </script>
 <script th:inline="javascript">
-
-
     $(document).ready(function(){
 
         $('.js-example-basic-single').select2();
@@ -30,7 +25,6 @@
             var id = this.value;
             var count = 0;
             $.each( devices, function(key,device ) {
-
                 if(id == device.deviceType.id){
                     count++;
                     optionText = device.devicename;
@@ -45,7 +39,6 @@
 
 
             document.getElementById("deviceNames").style.visibility="visible";
-
         $('#deviceNames').on('change', function () {
             document.getElementById("startTime").style.visibility="visible";
             document.getElementById("startHour").style.visibility="visible";
@@ -82,11 +75,8 @@
             }else{
                 $('.notfound').show();
             }
-
         });
-
     });
-
     // Case-insensitive searching (Note - remove the below script for Case sensitive search )
     $.expr[":"].contains = $.expr.createPseudo(function(arg) {
         return function( elem ) {
@@ -97,8 +87,6 @@
     function onDeviceTypeSelected(id) {
         alert(id);
         document.getElementById("DeviceNameDropDown").style.visibility="visible";
-
-
     }
 </script>
 <style>
@@ -176,7 +164,11 @@
                 <input th:type="hidden" th:field="*{id}"/>
                 <select required class=" form-control input-device"  id="sel">
                     <option value="none"  selected disabled hidden th:text="#{device.type}"> Device Type </option>
+<<<<<<< HEAD
+                    <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.getDeviceTypeName()}">Device Type</option>
+=======
                     <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.deviceTypeName}">Device Type</option>
+>>>>>>> 2f805d6d777466e4d604ccf88d06d5ed9aa5b67b
                 </select>
                 <!--Dropdown-->
                 <select required id="deviceNames" th:field="*{device}" class="form-control input-device" style="visibility: hidden;">
@@ -190,10 +182,8 @@
                     <input required id="endTime" type="date" th:field="*{end}" class="form-control input-date"  placeholder="End date">
                     <input id="endHour" class="form-control float-right input-hour" th:field="*{endHour}" placeholder="Hour">
                 </div>
-
             </div>
-
-            <div class="modal-footer" >
+            <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>
