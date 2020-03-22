@@ -425,15 +425,15 @@ public class DatabaseLoader {
         productRepository.save(pr7);
         Product pr8 = new Product("Mineralen",lorem.getWords(20),1.0, 90.0, 1.0, 1.0, Unit.LITRE, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr8);
-        Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","13","14");
+        Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","11:00","12:00");
         stepRepository.save(s1);
-        Step s2= new Step(u1,d7,"2020-03-17","2020-03-17","8","18");
+        Step s2= new Step(u1,d7,"2020-03-17","2020-03-17","08:00","18:00");
         stepRepository.save(s2);
-        Step s3= new Step(u4,d1,"2020-03-18","2020-03-18","14","16");
+        Step s3= new Step(u4,d1,"2020-03-16","2020-03-16","14:00","16:00");
         stepRepository.save(s3);
-        Step s4= new Step(u4,d7,"2020-03-18","2020-03-18","16","18");
+        Step s4= new Step(u4,d7,"2020-03-15","2020-03-15","16:00","18:00");
         stepRepository.save(s4);
-        Step s5= new Step(u5,d9,"2020-03-18","2020-03-18","13","18");
+        Step s5= new Step(u5,d9,"2020-03-19","2020-03-19","13:00","18:00");
         stepRepository.save(s5);
     }
 }

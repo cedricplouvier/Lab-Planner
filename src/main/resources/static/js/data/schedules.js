@@ -159,7 +159,8 @@ function generateSchedule(viewName, renderStart, renderEnd) {
             length = 4;
         }
         for (; i < length; i += 1) {
-            generateRandomSchedule(calendar, renderStart, renderEnd);
+           //generateRandomSchedule(calendar, renderStart, renderEnd);
+            //loadSchedule(calendar, i)
         }
     });
 }
