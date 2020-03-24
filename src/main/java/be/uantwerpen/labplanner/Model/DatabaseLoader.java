@@ -424,21 +424,21 @@ public class DatabaseLoader {
         List<Tag> tags4 = new ArrayList<>();
         tags4.add(tag4);
         tagRepository.save(tag4);
-        Product pr1 = new Product("Zand",lorem.getWords(20),1.0, 5.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        Product pr1 = new Product("placeholder1",lorem.getWords(20),1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
         productRepository.save(pr1);
-        Product pr2 = new Product("Water",lorem.getWords(20),1.0, 99.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        Product pr2 = new Product("placeholder2",lorem.getWords(20),1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
         productRepository.save(pr2);
-        Product pr3 = new Product("Kalk",lorem.getWords(20),1.0, 122.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        Product pr3 = new Product("placeholder3",lorem.getWords(20),1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
         productRepository.save(pr3);
-        Product pr4 = new Product("grind",lorem.getWords(20),1.0, 56.0, 1.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        Product pr4 = new Product("placeholder4",lorem.getWords(20),1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
         productRepository.save(pr4);
-        Product pr5 = new Product("Bitumen",lorem.getWords(20),1.0, 12.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
+        Product pr5 = new Product("placeholder5",lorem.getWords(20),1.0, 1000.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
         productRepository.save(pr5);
-        Product pr6 = new Product("Klei",lorem.getWords(20),1.0, 1.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        Product pr6 = new Product("placeholder6",lorem.getWords(20),1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr6);
-        Product pr7 = new Product("Leem",lorem.getWords(20),1.0, 1580.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        Product pr7 = new Product("placeholder7",lorem.getWords(20),1.0, 200.0, 25.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr7);
-        Product pr8 = new Product("Mineralen",lorem.getWords(20),1.0, 90.0, 1.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        Product pr8 = new Product("placeholder8",lorem.getWords(20),1.0, 90.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr8);
         Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","11:00","12:00");
         stepRepository.save(s1);
@@ -451,34 +451,64 @@ public class DatabaseLoader {
         Step s5= new Step(u5,d9,"2020-03-19","2020-03-19","13:00","18:00");
         stepRepository.save(s5);
         //Create compositions
-        Composition c1 = new Composition(5.0,pr8);
-        Composition c2 = new Composition(1.2, pr7);
-        Composition c3 = new Composition(5.2,pr2);
-        Composition c4 = new Composition(1.2, pr4);
-        Composition c5 = new Composition(12.0,pr1);
-        Composition c6 = new Composition(0.25, pr5);
+
+        //APT-C ingredients
+        Composition c1 = new Composition(46.67,pr1);
+        Composition c2 = new Composition(10.10, pr2);
+        Composition c3 = new Composition(8.29,pr3);
+        Composition c4 = new Composition(23.89, pr4);
+        Composition c5 = new Composition(2.45,pr5);
+        Composition c6 = new Composition(8.60, pr6);
+        Composition c7 = new Composition(6.50, pr7);
         compositionRepository.save(c1);
         compositionRepository.save(c2);
         compositionRepository.save(c3);
         compositionRepository.save(c4);
         compositionRepository.save(c5);
         compositionRepository.save(c6);
-
-        //Create mixtures composition lists
+        compositionRepository.save(c7);
         List<Composition> mix1= new ArrayList<>();
-        mix1.add(c1);mix1.add(c2);mix1.add(c3);
+        mix1.add(c1);mix1.add(c2);mix1.add(c3);mix1.add(c4);mix1.add(c5);mix1.add(c6);mix1.add(c7);
+
+        //Ab-4C ingredients
+        Composition c11 = new Composition(20.72,pr1);
+        Composition c12 = new Composition(14.20, pr2);
+        Composition c13 = new Composition(21.24,pr3);
+        Composition c14 = new Composition(23.84, pr4);
+        Composition c15 = new Composition(12.91,pr5);
+        Composition c16 = new Composition(7.10, pr6);
+        Composition c17 = new Composition(6.50, pr7);
+        compositionRepository.save(c11);
+        compositionRepository.save(c12);
+        compositionRepository.save(c13);
+        compositionRepository.save(c14);
+        compositionRepository.save(c15);
+        compositionRepository.save(c16);
+        compositionRepository.save(c17);
         List<Composition> mix2= new ArrayList<>();
-        mix2.add(c4);mix2.add(c5);mix2.add(c6);
+        mix2.add(c11);mix2.add(c12);mix2.add(c13);mix2.add(c14);mix2.add(c15);mix2.add(c16);mix2.add(c17);
+
+        //SMA ingredients
+        Composition c21 = new Composition(61.70,pr1);
+        Composition c22 = new Composition(11.20, pr2);
+        Composition c24 = new Composition(17.80, pr4);
+        Composition c25 = new Composition(9.30,pr5);
+        Composition c27 = new Composition(6.90, pr7);
+        compositionRepository.save(c21);
+        compositionRepository.save(c22);
+        compositionRepository.save(c24);
+        compositionRepository.save(c25);
+        compositionRepository.save(c27);
         List<Composition> mix3= new ArrayList<>();
-        mix3.add(c1);mix3.add(c3);mix3.add(c6);
+        mix3.add(c21);mix3.add(c22);mix3.add(c24);mix3.add(c25);mix3.add(c27);
 
 
         //create mixtures and save them
-        Mixture m1 = new Mixture("Hele mooie mix", mix1);
+        Mixture m1 = new Mixture("APT-C", mix1);
         mixtureRepository.save(m1);
-        Mixture m2 = new Mixture("gevaarlijk mengsel", mix2);
+        Mixture m2 = new Mixture("AB-4C", mix2);
         mixtureRepository.save(m2);
-        Mixture m3 = new Mixture("Elon Musk's Mengsel", mix3);
+        Mixture m3 = new Mixture("SMA", mix3);
         mixtureRepository.save(m3);
 
 

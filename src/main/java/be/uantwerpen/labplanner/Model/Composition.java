@@ -42,7 +42,9 @@ public class Composition extends AbstractPersistable<Long> {
     }
 
     public void setAmount(Double amount) {
-        this.amount = amount;
+        if(amount>=0) {
+            this.amount = amount;
+        }
     }
 
     public Product getProduct() {
