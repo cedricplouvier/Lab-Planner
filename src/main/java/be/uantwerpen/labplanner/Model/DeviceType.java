@@ -6,10 +6,8 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 import javax.persistence.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,7 +15,7 @@ import java.util.List;
 @Entity
 public class DeviceType extends AbstractPersistable<Long>{
     //Default Variables
-    private static String DEFAULT_DEVICTYPENAME = "default_deviceTypeName";
+    private static String DEFAULT_DEVICETYPENAME = "default_deviceTypeName";
     private static Boolean DEFAULT_OVERNIGHTUSE = false;
     private static List<String> DEFAULT_INFORMATIONTYPES = Arrays.asList(new String[]{"Manual","Maintenance", "Calibration","Safety instruction card"});
 
@@ -49,7 +47,7 @@ public class DeviceType extends AbstractPersistable<Long>{
 
     //Constructors
     public DeviceType() {
-        this.deviceTypeName = DEFAULT_DEVICTYPENAME;
+        this.deviceTypeName = DEFAULT_DEVICETYPENAME;
         this.overnightuse = DEFAULT_OVERNIGHTUSE;
         initDirectory();
     }
@@ -90,7 +88,7 @@ public class DeviceType extends AbstractPersistable<Long>{
         if(!this.deviceTypeName.equals(deviceTypeName)){
             File dir = new File("upload-dir/"+this.deviceTypeName);
             if (!dir.isDirectory()) {
-                System.err.println("There is no directory @ given path");
+                // 
             } else {
                 String newDirName = deviceTypeName;
                 File newDir = new File(dir.getParent() + "/" + newDirName);
@@ -134,7 +132,7 @@ public class DeviceType extends AbstractPersistable<Long>{
         this.deviceInformations = deviceInformations;
     }
 
-    public static String getDefaultDevictypename() {
-        return DEFAULT_DEVICTYPENAME;
+    public static String getDefaultDevicetypename() {
+        return DEFAULT_DEVICETYPENAME;
     }
 }

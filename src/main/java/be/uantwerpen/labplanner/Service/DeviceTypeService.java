@@ -33,7 +33,7 @@ public class DeviceTypeService {
     public Optional<DeviceType> findByDevicetypeName(String deviceTypeName) {
         return this.deviceTypeRepository.findByDeviceTypeName(deviceTypeName);
     }
-    public void saveSomeAttributes(DeviceType deviceType) {
+    public void saveNewDeviceType(DeviceType deviceType) {
         DeviceType tempDeviceType = deviceType.getId() == null?null: deviceTypeRepository.findById( deviceType.getId()).orElse(null);
 
         if (tempDeviceType != null){
