@@ -264,7 +264,7 @@ public class DatabaseLoader {
         User u7 = new User("Bachelor","PW","","Bach","Student","20170001","","",null,null,null);
         User u8 = new User("Master","PW","","Mas","Student","20160009","","",null,null,null);
         User u9 = new User("Researcher","PW","","Researcher","Developper","20100001","","",null,null,null);
-
+        User admin = new User("admin","admin","","admin","admin",null,"","",null,null,null);
         //Set<Role> roles = new HashSet<>();
         Set<Role> roles = new HashSet<>();
         roles.add(administrator);
@@ -282,6 +282,8 @@ public class DatabaseLoader {
         userRepository.save(u5);
         u6.setRoles(roles);
         userRepository.save(u6);
+        admin.setRoles(roles);
+        userRepository.save(admin);
 
         //Bachelor student
         roles = new HashSet<>();
