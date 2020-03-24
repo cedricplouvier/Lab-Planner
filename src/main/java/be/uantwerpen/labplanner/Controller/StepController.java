@@ -104,7 +104,7 @@ public class StepController {
     @RequestMapping(value={"/planning" , "/planning/{id}"},method= RequestMethod.POST)
     public String addStep(@Valid Step step, BindingResult result, final ModelMap model) throws ParseException {
         User currentUser =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(result.hasErrors() ){
+        if(result.hasErrors() || overlapCheck(step) ){
             System.out.println(result.getFieldError().toString());
             model.addAttribute("allDevices", deviceService.findAll());
             model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
@@ -167,44 +167,20 @@ public class StepController {
     }
 
     public boolean overlapCheck(Step step) throws ParseException {
-            Iterable<Step> allSteps=populateSteps();
-            SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd");
-            Date thisStepDateStart=formatter.parse(step.getStart());
-            Date thisStepDateStop= formatter.parse(step.getEnd());
+        Iterable<Step> allSteps=populateSteps();
+        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd hh");
+        Date thisStepDateStart=formatter.parse(step.getStart()+" "+step.getStartHour());
+        Date thisStepDateStop= formatter.parse(step.getEnd()+" "+step.getEndHour());
         for (Step s : allSteps) {
             if (step.getDevice()==s.getDevice())
             {
-                Date startDate = formatter.parse(s.getStart());
-                Date stopDate = formatter.parse(s.getEnd());
+                Date startDate = formatter.parse(s.getStart()+" "+s.getStartHour());
+                Date stopDate = formatter.parse(s.getEnd()+" "+s.getEndHour());
                 if((thisStepDateStart.after(startDate) && thisStepDateStart.before(stopDate)) || (thisStepDateStop.after(startDate) && thisStepDateStop.before(stopDate)) || (startDate.after(thisStepDateStart) && startDate.before(thisStepDateStop)) || (stopDate.after(thisStepDateStart) && stopDate.before(thisStepDateStop)))
                 {   //Start of stop van step ligt tussen de start en stop van een al reeds bestaande step -> sws overlap
                     return true;
                 }
-                if (thisStepDateStart.equals(startDate))
-                { //Starten op zelfde datum
-                    if(!thisStepDateStop.equals(thisStepDateStart) && !stopDate.equals(startDate)) // Maar eindigen beide niet op deze datum -> sws overlap
-                        return true;
-                    else {
-                        if (thisStepDateStop.equals(thisStepDateStart) && !stopDate.equals(startDate)) {  // Deze Step stopt ook op deze dag
-                            if (Integer.parseInt(step.getEndHour())>Integer.parseInt(s.getStartHour()))
-                            {
-                                return true;
-                            }
-                        }
-                        if (stopDate.equals(startDate) && !thisStepDateStop.equals(thisStepDateStart)) {
-                            if (Integer.parseInt(s.getEndHour())>Integer.parseInt(step.getStartHour()))
-                                return true;
-                        }
-                        if(thisStepDateStop.equals(thisStepDateStart) && stopDate.equals(startDate))
-                        {
-                            if ( (Integer.parseInt(s.getStartHour()) <= Integer.parseInt(step.getStartHour())) && (Integer.parseInt(step.getStartHour()) < Integer.parseInt(s.getEndHour()))) {
-                                return true;
-                            }
-                            if ((Integer.parseInt(s.getStartHour()) < Integer.parseInt(step.getEndHour())) && (Integer.parseInt(step.getEndHour()) <= Integer.parseInt(s.getEndHour())))
-                                return true;
-                        }
-                    }
-                }
+
             }
         }
         return false;
