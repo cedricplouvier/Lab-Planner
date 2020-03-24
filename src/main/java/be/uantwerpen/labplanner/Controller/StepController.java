@@ -183,6 +183,12 @@ public class StepController {
                 {   //Start of stop van step ligt tussen de start en stop van een al reeds bestaande step -> sws overlap
                     return true;
                 }
+                if( (thisStepDateStart.equals(startDate)) && thisStepDateStop.equals(stopDate))
+                {
+                    return true;
+                }
+                if (thisStepDateStart.equals(thisStepDateStop))
+                    return true;
 
             }
         }
