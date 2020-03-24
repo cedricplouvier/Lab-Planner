@@ -7,7 +7,7 @@ var CalendarList = [];
 function CalendarInfo() {
     this.id = null;
     this.name = null;
-    this.checked = true;
+    this.checked = false;
     this.color = null;
     this.bgColor = null;
     this.borderColor = null;
@@ -55,4 +55,8 @@ function hexToRGBA(hex) {
     calendar.borderColor = '#9e5fff';
     addCalendar(calendar);
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7ac6b3749502331ef289a1822c1c895cf3be3e8c
 })();

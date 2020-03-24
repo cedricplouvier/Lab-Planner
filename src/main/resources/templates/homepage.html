@@ -6,7 +6,41 @@
 <div class ="container" >
     <div th:replace="navbar :: navbar"></div>
 
-    <h1>Homepage</h1>
+    <h1> Welcome <span th:text="${currentUser}"></span></h1>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th th:text="#{step.device.devicename}">Device Name</th>
+            <th th:text="#{step.start}">Start Date</th>
+            <th th:text="#{step.startHour}">Start Hour</th>
+            <th th:text="#{step.end}">End Date</th>
+            <th th:text="#{step.endHour}">End Hour</th>
+        </tr>
+        </thead>
+        <!-- IMPORTANT, class="list" have to be at tbody -->
+        <tbody class="list" id="list">
+        <tr th:each="step : ${userSteps}">
+            <td class="devicename" th:value="${step.getDevice().getDevicename()}" th:text="${step.device.devicename }" >Device name</td>
+            <td class="startTime" th:value="${step.getStart()}" th:text="${step.start}"> Start Date</td>
+            <td class="startTime" th:value="${step.getStartHour()}" th:text="${step.startHour}"> Start Hour</td>
+            <td class="endTime" th:value="${step.getEnd()}" th:text="${step.end}">End Date</td>
+            <td class="endTime" th:value="${step.getEndHour()}" th:text="${step.endHour}">End Hour</td>
+            <td>
+                <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" th:text="#{device.info}" class="btn btn-primary"></a>
+            </td>
+            <td>
+            <td>
+                <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                    <span class="fas fa-trash" style="color: red" ></span> </a>
+            </td>
+            </td>
+
+        </tr>
+        <tr class='notfound' th:if="${userSteps.isEmpty()}" >
+            <td colspan='4' th:text="#{step.norecord}">No record found</td>
+        </tr>
+        </tbody>
+    </table></table>
 
     <div th:replace="footer :: footer"></div>
 </div>

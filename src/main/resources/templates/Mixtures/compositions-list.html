@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{Mixture  Management}')"></head>
+<body onload = "initPage()">
+
+<div class = "container">
+    <div th:replace="navbar :: navbar"></div>
+    <table class="table table-hover">
+
+        <thead>
+        <tr>
+            <th th:text="#{mixtures.ingredients}">Mixture Ingredients</th>
+            <th th:text="#{mixtures.amount}">Ingredients amount</th>
+
+        </tr>
+        </thead>
+        <!-- IMPORTANT, class="list" have to be at tbody -->
+        <tbody class="list">
+        <tr th:each="ingred : ${allCompositions}">
+            <td class='ingredients' th:value="${ingred.getProduct().getName()}"
+                th:text="${ingred.getProduct().getName()}" >Ingredient Name</td>
+            <td class="amount" th:value="${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()}"
+                th:text="${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()} "></a>
+            </td>
+            <td>
+                <a th:href="@{/compositions/{id}/(id=${ingred.id})}"><span
+                        class="fas fa-edit"></span></a>&nbsp;
+                <a th:href="@{/compositions/{id}/delete(id=${ingred.id})}">
+                    <span class="fas fa-trash"></span></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="/mixtures" class="btn btn-primary" th:text="#{mixtures.return}" >Return to mixtures</a>
+    <a href="/compositions/put" type="button" class="btn btn-outline-primary"th:text="#{composition.create}">
+        Create new composition
+    </a>
+
+
+
+
+</div>
+</body>
+</html>

@@ -1,4 +1,8 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 2f805d6d777466e4d604ccf88d06d5ed9aa5b67b
+<<<<<<< HEAD
 /.idea/
 =======
 .idea/
@@ -29,3 +33,16 @@ target/
 
 ### VS Code ###
 .vscode/
+<<<<<<< HEAD
+=======
+.idea
+target
+>>>>>>> 62c0bf82f1f1f290d60c2fa388604cb65ab62856
+=======
+LOGS_IS_UNDEFINED/
+
+prodLog
+devLog
+>>>>>>> 2f805d6d777466e4d604ccf88d06d5ed9aa5b67b
+labplanner.iml~2f805d6d777466e4d604ccf88d06d5ed9aa5b67b
+src/test/java/be/uantwerpen/labplanner/Service/LabplannerApplicationTests.class

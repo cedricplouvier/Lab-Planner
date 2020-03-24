@@ -3,6 +3,9 @@ package be.uantwerpen.labplanner.Model;
 import be.uantwerpen.labplanner.Repository.DeviceInformationRepository;
 import be.uantwerpen.labplanner.Repository.DeviceRepository;
 import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
+
+import be.uantwerpen.labplanner.Repository.StepRepository;
+import be.uantwerpen.labplanner.Repository.*;
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.model.stock.Unit;
@@ -40,19 +43,31 @@ public class DatabaseLoader {
     private final DeviceInformationRepository deviceInformationRepository;
     private final ProductRepository productRepository;
     private final TagRepository tagRepository;
+    private final StepRepository stepRepository;
+    private final CompositionRepository compositionRepository;
+    private final MixtureRepository mixtureRepository;
 
     @Autowired
-    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository) {
+    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository) {
+
+
+
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         //DeviceRepositories
         this.deviceTypeRepository = deviceTypeRepository;
         this.deviceRepository = deviceRepository;
+
+        this.stepRepository= stepRepository;
+
         this.deviceInformationRepository = deviceInformationRepository;
         //ProductRepositories
         this.productRepository = productRepository;
         this.tagRepository = tagRepository;
+        //MixtureRepositories
+        this.mixtureRepository = mixtureRepository;
+        this.compositionRepository = compositionRepository;
 
     }
 
@@ -112,6 +127,8 @@ public class DatabaseLoader {
         privilegeRepository.save(p25);
         Privilege p26 = new Privilege("Device - Modify - All");
         privilegeRepository.save(p26);
+        Privilege p27 = new Privilege("Console Access");
+        privilegeRepository.save(p27);
 
         //Create all the roles
         Role bachelorstudent = new Role("Bachelorstudent");
@@ -120,7 +137,7 @@ public class DatabaseLoader {
         Role administrator = new Role("Administrator");
 
         //Create a list of privileges
-
+        // ###########################//
         //Bachelor student
         List<Privilege> privileges = new ArrayList<Privilege>();
 
@@ -146,6 +163,7 @@ public class DatabaseLoader {
         bachelorstudent.setPrivileges(privileges);
         roleRepository.save(bachelorstudent);
 
+        // ###########################//
         //Master student
         privileges = new ArrayList<Privilege>();
 
@@ -171,6 +189,7 @@ public class DatabaseLoader {
         masterstudent.setPrivileges(privileges);
         roleRepository.save(masterstudent);
 
+        // ###########################//
         //Researcher
         privileges = new ArrayList<Privilege>();
 
@@ -199,6 +218,7 @@ public class DatabaseLoader {
         researcher.setPrivileges(privileges);
         roleRepository.save(researcher);
 
+        // ###########################//
         // Admin
         privileges = new ArrayList<Privilege>();
 
@@ -228,6 +248,9 @@ public class DatabaseLoader {
         // Device privileges
         privileges.add(p26);
 
+        //Console privilege
+        privileges.add(p27);
+
         administrator.setPrivileges(privileges);
         roleRepository.save(administrator);
 
@@ -242,8 +265,10 @@ public class DatabaseLoader {
         User u8 = new User("Master","PW","","Mas","Student","20160009","","",null,null,null);
         User u9 = new User("Researcher","PW","","Researcher","Developper","20100001","","",null,null,null);
 
+        //Set<Role> roles = new HashSet<>();
         Set<Role> roles = new HashSet<>();
         roles.add(administrator);
+
         //set 5 admins
         u1.setRoles(roles);
         userRepository.save(u1);
@@ -383,37 +408,84 @@ public class DatabaseLoader {
 
 
         //create some products
-        Tag tag1 = new Tag("Beton");
+        Tag tag1 = new Tag("Aggregates");
         List<Tag> tags1 = new ArrayList<>();
         tags1.add(tag1);
         tagRepository.save(tag1);
-        Tag tag2 = new Tag("Asfalt");
+        Tag tag2 = new Tag("Bitumen");
         List<Tag> tags2 = new ArrayList<>();
         tags2.add(tag2);
         tagRepository.save(tag2);
-        //asfalt+beton
+        Tag tag3 = new Tag("Consumables");
         List<Tag> tags3 = new ArrayList<>();
-        tags3.add(tag1);
-        tags3.add(tag2);
-        Tag tag4 = new Tag("Bindmiddel");
+        tags3.add(tag3);
+        tagRepository.save(tag3);
+        Tag tag4 = new Tag("Other");
         List<Tag> tags4 = new ArrayList<>();
         tags4.add(tag4);
         tagRepository.save(tag4);
-        Product pr1 = new Product("Zand",lorem.getWords(20),1.0, 5.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        Product pr1 = new Product("Zand",lorem.getWords(20),1.0, 5.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
         productRepository.save(pr1);
-        Product pr2 = new Product("Water",lorem.getWords(20),1.0, 99.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        Product pr2 = new Product("Water",lorem.getWords(20),1.0, 99.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
         productRepository.save(pr2);
-        Product pr3 = new Product("Kalk",lorem.getWords(20),1.0, 122.0, 1.0, 1.0, Unit.UNIT, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        Product pr3 = new Product("Kalk",lorem.getWords(20),1.0, 122.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
         productRepository.save(pr3);
-        Product pr4 = new Product("grind",lorem.getWords(20),1.0, 56.0, 1.0, 1.0, Unit.LITRE, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        Product pr4 = new Product("grind",lorem.getWords(20),1.0, 56.0, 1.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
         productRepository.save(pr4);
-        Product pr5 = new Product("Bitumen",lorem.getWords(20),1.0, 12.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
+        Product pr5 = new Product("Bitumen",lorem.getWords(20),1.0, 12.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
         productRepository.save(pr5);
-        Product pr6 = new Product("Klei",lorem.getWords(20),1.0, 1.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        Product pr6 = new Product("Klei",lorem.getWords(20),1.0, 1.0, 1.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr6);
-        Product pr7 = new Product("Leem",lorem.getWords(20),1.0, 1580.0, 1.0, 1.0, Unit.UNIT, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        Product pr7 = new Product("Leem",lorem.getWords(20),1.0, 1580.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr7);
-        Product pr8 = new Product("Mineralen",lorem.getWords(20),1.0, 90.0, 1.0, 1.0, Unit.LITRE, "locatie2", "properties", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        Product pr8 = new Product("Mineralen",lorem.getWords(20),1.0, 90.0, 1.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr8);
+        Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","11:00","12:00");
+        stepRepository.save(s1);
+        Step s2= new Step(u1,d7,"2020-03-17","2020-03-17","08:00","18:00");
+        stepRepository.save(s2);
+        Step s3= new Step(u4,d1,"2020-03-16","2020-03-16","14:00","16:00");
+        stepRepository.save(s3);
+        Step s4= new Step(u4,d7,"2020-03-15","2020-03-15","16:00","18:00");
+        stepRepository.save(s4);
+        Step s5= new Step(u5,d9,"2020-03-19","2020-03-19","13:00","18:00");
+        stepRepository.save(s5);
+        //Create compositions
+        Composition c1 = new Composition(5.0,pr8);
+        Composition c2 = new Composition(1.2, pr7);
+        Composition c3 = new Composition(5.2,pr2);
+        Composition c4 = new Composition(1.2, pr4);
+        Composition c5 = new Composition(12.0,pr1);
+        Composition c6 = new Composition(0.25, pr5);
+        compositionRepository.save(c1);
+        compositionRepository.save(c2);
+        compositionRepository.save(c3);
+        compositionRepository.save(c4);
+        compositionRepository.save(c5);
+        compositionRepository.save(c6);
+
+        //Create mixtures composition lists
+        List<Composition> mix1= new ArrayList<>();
+        mix1.add(c1);mix1.add(c2);mix1.add(c3);
+        List<Composition> mix2= new ArrayList<>();
+        mix2.add(c4);mix2.add(c5);mix2.add(c6);
+        List<Composition> mix3= new ArrayList<>();
+        mix3.add(c1);mix3.add(c3);mix3.add(c6);
+
+
+        //create mixtures and save them
+        Mixture m1 = new Mixture("Hele mooie mix", mix1);
+        mixtureRepository.save(m1);
+        Mixture m2 = new Mixture("gevaarlijk mengsel", mix2);
+        mixtureRepository.save(m2);
+        Mixture m3 = new Mixture("Elon Musk's Mengsel", mix3);
+        mixtureRepository.save(m3);
+
+
+
+
+
+
+
     }
 }

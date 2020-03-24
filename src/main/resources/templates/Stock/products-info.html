@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"   xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css">
+
+<!-- Import header -->
+<head th:replace="navbar :: head (title='#{products}')"></head>
+<body onload="initPage()">
+<script type="text/javascript">
+    function initPage(){
+        $('#tags').multiSelect({
+            selectableHeader: '<div class="custom-header" th:text="#{selectable.items}"></div>',
+            selectionHeader: '<div class="custom-header" th:text="#{selected.items}"></div>'
+        });
+    }
+</script>
+
+<div class="container">
+    <!-- Import menu bar -->
+    <div th:replace="navbar :: navbar"></div>
+    <div class="row">
+        <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+            <a href="/products" th:text="#{close}" class="btn btn-primary">Close</a>
+        </div>
+        <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+            <h2 th:text="#{product.info}">Material Info </h2>
+
+        </div>
+    </div>
+    <h4 th:text="${product.name}">Name</h4>
+    <div class="row">
+        <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+
+            <img th:src="${(product.getImageUrl() != null && product.getImageUrl() != 'locatie2') ? '/files/images/'+product.getImageUrl() : '/images/placeholder.jpg'}" />
+
+        </div>
+        <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"> <a th:text="#{product.description}">description</a> </h5>
+
+                    <a th:text="${product.description}">description</a>
+                </div>
+            </div>
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"> <a th:text="#{product.properties}">Properties</a> </h5>
+
+                    <a th:text="${product.properties}">properties</a>
+                </div>
+            </div>
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"> Tags </h5>
+                    <a
+                            th:each="tag : ${product.tags}"
+                            th:text="${tag.name} + ' '">
+                    </a>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+    <div sec:authorize="hasAuthority('Stock - Aggregates + Bitumen Read only - Advanced') or hasAuthority('Stock - Modify - All')" class="row">
+        <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+            <div class="card" style="width: 18rem;">
+                    <div class="card-header">
+                        <h5 th:text="#{stock.info}">Stock Info</h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a th:text="#{product.left}+ ': '+${product.stockLevel} + ' '+${product.units.getSIString()}">description</a></li>
+                        <li class="list-group-item"><a th:text="#{product.lowStockLevel}+': '+${product.lowStockLevel}+ ' '+${product.units.getSIString()}">description</a></li>
+                        <li class="list-group-item"><a th:text="#{product.reservedStockLevel}+ ': '+${product.reservedStockLevel} + ' '+${product.units.getSIString()}">description</a></li>
+                    </ul>
+                </div>
+        </div>
+
+
+
+
+</div>
+
+</body>
+</html>

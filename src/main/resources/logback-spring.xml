@@ -44,7 +44,7 @@
         <!-- Level can not be lower than root. Filters out classes in between root level and this level.
             ex: root = INFO, this level = ERROR will only show error messages and no info. -->
         <logger name="be.uantwerpen.labplanner.Controller.HomeController">
-            <level value="INFO" />
+            <level value="ERROR" />
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="RollingFileDev"/>
         </logger>

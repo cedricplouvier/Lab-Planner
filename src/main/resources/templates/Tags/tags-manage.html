@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{Product Management}')"></head>
+<body onload = "initPage()">
+<script type="text/javascript">
+    function initPage(){
+        $('#tags').multiSelect({
+            selectableHeader: '<div class="custom-header" th:text="#{selectable.items}"></div>',
+            selectionHeader: '<div class="custom-header" th:text="#{selected.items}"></div>'
+        });
+    }
+</script>
+<div class = "container">
+    <div th:replace="navbar :: navbar"></div>
+    <h4 th:text="#{tag.create}">New tag</h4>
+    <form action="#" th:action="@{/tags/{id}(id=${tag})}"
+          th:object="${tag}" method="post">
+        <input th:type="hidden" th:field="*{id}"/>
+
+        <div class="form-group">
+            <label class="control-label" th:text="#{tag.name}"></label>
+            <input class="form-control" type = text th:field="*{name}"/>
+            <div class="alert alert-danger" role="alert" th:if="${NameIsUsed}!=null" th:text="${NameIsUsed}"></div>
+
+
+        <p>
+            <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
+            <a href="/products" th:text="#{close}" class="btn btn-secondary">Close</a>
+
+        </p>
+    </form>
+
+
+
+
+</div>
+</body>
+</html>
