@@ -50,7 +50,9 @@ public class PrivilegeController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = {"/usermanagement/privileges/","/usermanagement/privileges/{id}"},method = RequestMethod.POST)
     public String addPrivilege(@Valid Privilege privilege, BindingResult result, final ModelMap model) {
-        if (result.hasErrors()) {
+        if (result.hasErrors() || privilege.getName().trim().equals("")) {
+            //validate on empty input name
+            model.addAttribute("PrivilegeInUse", "Error when trying to save privilege, must have a valid name");
             return "/Privileges/privilege-manage";
         }
         if (privilege.getId() == null) {
@@ -58,7 +60,8 @@ public class PrivilegeController {
                 model.addAttribute("PrivilegeInUse", "Privilege " + privilege.getName() + " is already in use!");
                 return "/Privileges/privilege-manage";
             }
-
+            //trim input and save
+            privilege.setName(privilege.getName().trim());
             privilegeService.save(privilege);
             return "redirect:/usermanagement/privileges";
         }
@@ -69,10 +72,13 @@ public class PrivilegeController {
                 model.addAttribute("PrivilegeInUse", "Privilege " + privilege.getName() + " is already in use!");
                 return "/Privileges/privilege-manage";
             }
+            //trim input and save
+            privilege.setName(privilege.getName().trim());
             privilegeService.save(privilege);
             return "redirect:/usermanagement/privileges";
         }
-
+        //trim input and save
+        privilege.setName(privilege.getName().trim());
         privilegeService.save(privilege);
         return "redirect:/usermanagement/privileges";
     }

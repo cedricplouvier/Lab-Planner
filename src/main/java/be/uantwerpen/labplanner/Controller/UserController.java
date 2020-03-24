@@ -4,6 +4,7 @@ import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,9 +64,11 @@ public class UserController {
 
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = {"/usermanagement/users/","/usermanagement/users/{id}"},method = RequestMethod.POST)
-    public String addUser(@Valid User user, BindingResult result, final ModelMap model) {
-        if (result.hasErrors()) {
+    public String addUser(@Valid User user,  BindingResult result, final ModelMap model) {
+        if (result.hasErrors()|| user.getUsername().trim().equals("") || user.getPassword().trim().equals("")) {
             model.addAttribute("allRoles", roleService.findAll());
+            model.addAttribute("UserInUse", "Error when trying to save user, must have a valid name & password");
+
             return "/Users/user-manage";
         }
 
@@ -76,6 +79,9 @@ public class UserController {
                 model.addAttribute("UserInUse", "Username " + user.getUsername() + " is already in use!");
                 return "/Users/user-manage";
             }
+            //trim input and save
+            user.setUsername(user.getUsername().trim());
+            user.setPassword(user.getPassword().trim());
             userService.save(user);
             return "redirect:/usermanagement/users";
         }
@@ -88,10 +94,15 @@ public class UserController {
                 model.addAttribute("allRoles", roleService.findAll());
                 return "/Users/user-manage";
             }
+            //trim input and save
+            user.setUsername(user.getUsername().trim());
+            user.setPassword(user.getPassword().trim());
             userService.save(user);
             return "redirect:/usermanagement/users";
         }
-
+        //trim input and save
+        user.setUsername(user.getUsername().trim());
+        user.setPassword(user.getPassword().trim());
         userService.save(user);
         return "redirect:/usermanagement/users";
     }

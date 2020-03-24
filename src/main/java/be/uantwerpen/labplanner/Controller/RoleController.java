@@ -6,6 +6,7 @@ import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.service.users.PrivilegeService;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -60,8 +61,9 @@ public class RoleController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = {"/usermanagement/roles/","/usermanagement/roles/{id}"},method = RequestMethod.POST)
     public String addRole(@Valid Role role, BindingResult result, final ModelMap model) {
-        if (result.hasErrors()) {
+        if (result.hasErrors() || role.getName().trim().equals("")) {
             model.addAttribute("allPrivileges", privilegeService.findAll());
+            model.addAttribute("roleInUse", "Error when trying to save role, must have a valid name");
             return "/Roles/role-manage";
         }
         if (role.getId() == null) {
@@ -70,6 +72,8 @@ public class RoleController {
                 model.addAttribute("roleInUse", "Role " + role.getName() + " is already in use!");
                 return "/Roles/role-manage";
             }
+            //trim input and save
+            role.setName(role.getName().trim());
             roleService.save(role);
             return "redirect:/usermanagement/roles";
         }
@@ -81,10 +85,13 @@ public class RoleController {
                 model.addAttribute("roleInUse", "Role " + role.getName() + " is already in use!");
                 return "/Roles/role-manage";
             }
+            //trim input and save
+            role.setName(role.getName().trim());
             roleService.save(role);
             return "redirect:/usermanagement/roles";
         }
-
+        //trim input and save
+        role.setName(role.getName().trim());
         roleService.save(role);
         return "redirect:/usermanagement/roles";
     }
