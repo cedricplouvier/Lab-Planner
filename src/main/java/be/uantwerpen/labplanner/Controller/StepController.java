@@ -105,14 +105,17 @@ public class StepController {
     public String addStep(@Valid Step step, BindingResult result, final ModelMap model) throws ParseException {
         User currentUser =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(result.hasErrors() || overlapCheck(step) ){
-            System.out.println(result.getFieldError().toString());
             model.addAttribute("allDevices", deviceService.findAll());
             model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
             model.addAttribute("allSteps",stepService.findAll());
             model.addAttribute("Step", new Step());
             model.addAttribute("Status", new String("Error"));
             if (result.hasErrors())
+            {
+                System.out.println(result.getFieldError().toString());
                 model.addAttribute("Message",new String(result.getFieldError().toString()));
+            }
+
             else
                 model.addAttribute("Message",new String("Device is already booked in this timeslot"));
             return "redirect:/planning";
