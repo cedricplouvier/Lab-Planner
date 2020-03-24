@@ -164,11 +164,8 @@
                 <input th:type="hidden" th:field="*{id}"/>
                 <select required class=" form-control input-device"  id="sel">
                     <option value="none"  selected disabled hidden th:text="#{device.type}"> Device Type </option>
-<<<<<<< HEAD
                     <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.getDeviceTypeName()}">Device Type</option>
-=======
                     <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.deviceTypeName}">Device Type</option>
->>>>>>> 2f805d6d777466e4d604ccf88d06d5ed9aa5b67b
                 </select>
                 <!--Dropdown-->
                 <select required id="deviceNames" th:field="*{device}" class="form-control input-device" style="visibility: hidden;">
