@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -29,12 +30,21 @@ public class UserController {
     @Autowired
     private RoleService roleService;
 
+    //Populate
+    @ModelAttribute("allUsers")
+    public Iterable<User> populateUsers() {return this.userService.findAll();}
+
+    @ModelAttribute("allRoles")
+    public Iterable<Role> populateRoles() {return this.roleService.findAll();}
+
+    @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users",method = RequestMethod.GET)
     public String showUsers(final ModelMap model){
         model.addAttribute("allUsers",userService.findAll());
         return "/Users/user-list";
     }
 
+    @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users/put",method = RequestMethod.GET)
     public String viewCreateUser(@org.jetbrains.annotations.NotNull final ModelMap model){
         model.addAttribute("allRoles",roleService.findAll());
@@ -42,6 +52,7 @@ public class UserController {
         return "/Users/user-manage";
     }
 
+    @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users/{id}",method = RequestMethod.GET)
     public String viewEditUser(@PathVariable long id, final ModelMap model){
         model.addAttribute("allRoles",roleService.findAll());
@@ -49,6 +60,8 @@ public class UserController {
         return "/Users/user-manage";
     }
 
+
+    @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = {"/usermanagement/users/","/usermanagement/users/{id}"},method = RequestMethod.POST)
     public String addUser(@Valid User user, BindingResult result, final ModelMap model) {
         if (result.hasErrors()) {
@@ -66,11 +79,24 @@ public class UserController {
             userService.save(user);
             return "redirect:/usermanagement/users";
         }
+
+        //Check if name is not already used.
+        User tempUser = userService.findById(user.getId()).orElse(null);
+        if(!tempUser.getUsername().equals(user.getUsername())){
+            if(userService.findByUsername(user.getUsername()).isPresent()){
+                model.addAttribute("UserInUse", "Username " + user.getUsername() + " is already in use!");
+                model.addAttribute("allRoles", roleService.findAll());
+                return "/Users/user-manage";
+            }
+            userService.save(user);
+            return "redirect:/usermanagement/users";
+        }
+
         userService.save(user);
         return "redirect:/usermanagement/users";
     }
 
-
+    @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users/{id}/delete",method = RequestMethod.GET)
     public String deleteUser(@PathVariable long id, final ModelMap model){
         userService.deleteById(id);
