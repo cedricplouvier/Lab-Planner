@@ -1,124 +1,106 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css">
-
-<!-- Import header -->
-<head th:replace="navbar :: head (title='#{products}')"></head>
-<body onload="initPage()">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{Product Management}')"></head>
+<body onload = "initPage()">
 <script type="text/javascript">
     function initPage(){
-        var options = {
-            valueNames: [ 'ProductName', 'productTag']
-        };
-        var productList = new List('products', options);
-    }
-</script>
-<style>
-    .notfound{
-        display: none;
-    }
-
-
-</style>
-<script>
-    $(document).ready(function(){
-        // Search on name column only
-        $('#txt_name').keyup(function(){
-            // Search Text
-            var search = $(this).val();
-
-            // Hide all table tbody rows
-            $('table tbody tr').hide();
-
-            // Count total search result
-            var len = $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').length;
-
-            if(len > 0){
-                // Searching text in columns and show match row
-                $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').each(function(){
-                    $(this).closest('tr').show();
-                });
-            }else{
-                $('.notfound').show();
-            }
-
+        $('#tags').multiSelect({
+            selectableHeader: '<div class="custom-header" th:text="#{selectable.items}"></div>',
+            selectionHeader: '<div class="custom-header" th:text="#{selected.items}"></div>'
         });
-
-    });
-
-    // Case-insensitive searching (Note - remove the below script for Case sensitive search )
-    $.expr[":"].contains = $.expr.createPseudo(function(arg) {
-        return function( elem ) {
-            return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
-        };
-    });
+    }
 </script>
-<div class="container">
-    <!-- Import menu bar -->
+<div class = "container">
     <div th:replace="navbar :: navbar"></div>
-    <h2 th:text="#{product.edit}">Edit material </h2>
-    <h4 th:text="${product.name}">Name</h4>
-    <div class="row">
-        <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
-
-            <img th:src="${(product.getImageUrl() != null && product.getImageUrl() != 'locatie2') ? '/files/images/'+product.getImageUrl() : '/images/placeholder.jpg'}" />
-
-        </div>
-        <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
-            <div class="card bg-light mb-3">
-                <div class="card-body">
-                    <h5 class="card-title"> Description </h5>
-
-                    <a th:text="${product.description}">description</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <form action="#" th:action="@{/products/{id}(id=${product})}"
           th:object="${product}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
+
+        <div class="form-group">
+            <label class="control-label" th:text="#{product.name}"></label>
+            <input class="form-control" type = text th:field="*{name}"/>
+            <div class="alert alert-danger" role="alert" th:if="${NameIsUsed}!=null" th:text="${NameIsUsed}"></div>
+
+
+        </div>
+        <div class="form-group">
+            <label class="control-label" th:text="#{product.description}"></label>
+            <input class="form-control" type = text th:field="*{description}"/>
+
+        </div>
         <div class="form-row">
             <div class="col">
-        <div class="form-group"
-             th:classappend="${#fields.hasErrors('stockLevel')}?'has-error': ''">
-            <label class="control-label" th:text="#{product.left}" >Stocklevel</label>
-            <span class="control-label" th:if="${#fields.hasErrors('name')}"
-                  th:errors="*{stockLevel}">Stocklevel Error</span>
-            <input class="form-control" type="number" th:field="*{stockLevel}"
-            /> </div>
+                <div class="form-group"
+                     th:classappend="${#fields.hasErrors('stockLevel')}?'has-error': ''">
+                    <label class="control-label" th:text="#{product.left}" >Stocklevel</label>
+                    <span class="control-label" th:if="${#fields.hasErrors('name')}"
+                          th:errors="*{stockLevel}">Stocklevel Error</span>
+                    <input class="form-control" type="number" step="any" th:field="*{stockLevel}"
+                    /> </div>
             </div>
             <div class="col">
-        <div class="form-group"
-             th:classappend="${#fields.hasErrors('lowStockLevel')}?'has-error': ''">
-            <label class="control-label" th:text="#{product.lowStockLevel}">Low Stock Level</label>
-            <span class="control-label" th:if="${#fields.hasErrors('lowStockLevel')}"
-                  th:errors="*{lowStockLevel}">LowStocklevel Error</span>
-            <input class="form-control" type="number" th:field="*{lowStockLevel}"
-            /> </div>
+                <div class="form-group"
+                     th:classappend="${#fields.hasErrors('lowStockLevel')}?'has-error': ''">
+                    <label class="control-label" th:text="#{product.lowStockLevel}">Low Stock Level</label>
+                    <span class="control-label" th:if="${#fields.hasErrors('lowStockLevel')}"
+                          th:errors="*{lowStockLevel}">LowStocklevel Error</span>
+                    <input class="form-control" type="number" step="any"  th:field="*{lowStockLevel}"
+                    /> </div>
             </div>
             <div class="col">
-        <div class="form-group"
-             th:classappend="${#fields.hasErrors('reservedStockLevel')}?'has-error': ''">
-            <label class="control-label" th:text="#{product.reservedStockLevel}">Reserved Stock Level</label>
-            <span class="control-label" th:if="${#fields.hasErrors('reservedStockLevel')}"
-                  th:errors="*{reservedStockLevel}">Reserved Stock level Error</span>
-            <input class="form-control" type="number" th:field="*{reservedStockLevel}"
-            /> </div>
+                <div class="form-group"
+                     th:classappend="${#fields.hasErrors('reservedStockLevel')}?'has-error': ''">
+                    <label class="control-label" th:text="#{product.reservedStockLevel}">Reserved Stock Level</label>
+                    <span class="control-label" th:if="${#fields.hasErrors('reservedStockLevel')}"
+                          th:errors="*{reservedStockLevel}">Reserved Stock level Error</span>
+                    <input class="form-control" type="number" step="any" th:field="*{reservedStockLevel}"
+                    /> </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1" th:text="#{product.unit}">Unit</label>
+                    <select th:field="*{units}" class="form-control" id="exampleFormControlSelect1">
+                        <option th:each="unit : ${units}"
+                                th:value="${{unit}}"
+                                 th:text="${unit.getSIString()}">Wireframe</option>                        <
+
+                    </select>
+
+
             </div>
         </div>
-        <p> <label th:text="#{product.tag}">tags</label>
-            <select th:field="*{tags}" multiple="multiple">
+        </div>
+
+        <div class="form-group">
+            <label class="control-label" th:text="#{product.properties}"></label>
+            <input class="form-control" type = text th:field="*{properties}"/>
+
+        </div>
+
+        <div> <label th:text="#{product.tag.tagName}"></label>
+            <tr></tr>
+            <select th:field="*{tags}" multiple="multiple" >
                 <option th:each="tag : ${allTags}"
                         th:value="${{tag}}"
                         th:text="${tag.name}">Wireframe</option>
-            </select></span>
-        </p>
+            </select>
+        </div>
+
+
+
+
+
+
         <p>
-            <a href="/products" th:text="#{close}" class="btn btn-primary">Close</a>
-            <button type="submit" th:text="#{save}" class="btn btnprimary">Save</button>
+            <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
+            <a href="/products" th:text="#{close}" class="btn btn-secondary">Close</a>
+
         </p>
     </form>
+
+
+
+
 </div>
 </body>
 </html>

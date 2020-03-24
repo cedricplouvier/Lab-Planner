@@ -127,6 +127,12 @@
             <artifactId>common</artifactId>
             <version>LATEST</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
 
         <!-- If you use the Nexus Repo (use this one when in doubt) -->
 
