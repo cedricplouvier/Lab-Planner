@@ -34,8 +34,8 @@ public class DeviceService {
     public Device save(Device device) {
         return (Device)this.deviceRepository.save(device);
     }
-    public void saveSomeAttributes(Device device) {
-        Device tempDevice = device.getId() == null?null: deviceRepository.findById( device.getId()).orElse(null);
+    public void saveNewDevice(Device device) {
+        Device tempDevice = (Device)this.deviceRepository.findById(device.getId()).orElse(null);
         if (tempDevice != null){
             tempDevice.setDeviceType(device.getDeviceType());
             tempDevice.setDevicename(device.getDevicename());
