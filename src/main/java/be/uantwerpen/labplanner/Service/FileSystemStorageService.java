@@ -32,7 +32,6 @@ public class FileSystemStorageService implements StorageService {
 		this.rootLocation = Paths.get(properties.getLocation());
 	}
 
-	//will be used in next story to upload files
 	@Override
 	public void store(MultipartFile file,String dir,String filename) {
 
@@ -42,7 +41,6 @@ public class FileSystemStorageService implements StorageService {
 				throw new StorageException("Failed to store empty file " + filename);
 			}
 			if (filename.contains("..")) {
-				// This is a security check
 				throw new StorageException(
 						"Cannot store file with relative path outside current directory "
 								+ filename);
@@ -102,10 +100,6 @@ public class FileSystemStorageService implements StorageService {
 		}
 	}
 
-	//will be used in next story to delete files
-//	@Override
-//	public void deleteAll() {
-//		FileSystemUtils.deleteRecursively(rootLocation.toFile());
-//	}
+
 
 }
