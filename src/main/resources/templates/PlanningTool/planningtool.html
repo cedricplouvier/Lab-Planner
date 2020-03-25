@@ -7,12 +7,26 @@
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 <script th:inline="javascript" type="text/javascript">
     function initPage(){
+
     }
 </script>
 <script th:inline="javascript">
+
     $(document).ready(function(){
+        var status= /*[[${Status}]]*/ null;
+        var messages =  /*[[${Message}]]*/ "";
+        console.log(messages);
+        if(status != null)
+        {
+            if (status=="Success")
+                toastr.success(messages);
+            if (status=="Error")
+                toastr.error(messages);
+        }
 
         $('.js-example-basic-single').select2();
         $('#sel').on('change', function() {
@@ -147,7 +161,7 @@
     </tbody>
 </table></table>
     </div>
-</div>
+
 <!-- Modal -->
 <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -189,4 +203,5 @@
 </div>
 </div>
 </body>
+</div>
 </html>

@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.text.ParseException;
@@ -102,22 +103,22 @@ public class StepController {
     }
     @PreAuthorize("hasAuthority('Planning - Book step/experiment')")
     @RequestMapping(value={"/planning" , "/planning/{id}"},method= RequestMethod.POST)
-    public String addStep(@Valid Step step, BindingResult result, final ModelMap model) throws ParseException {
+    public String addStep(@Valid Step step, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
         User currentUser =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(result.hasErrors() || overlapCheck(step) ){
             model.addAttribute("allDevices", deviceService.findAll());
             model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
             model.addAttribute("allSteps",stepService.findAll());
             model.addAttribute("Step", new Step());
-            model.addAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Status", new String("Error"));
             if (result.hasErrors())
             {
                 System.out.println(result.getFieldError().toString());
-                model.addAttribute("Message",new String(result.getFieldError().toString()));
+                ra.addFlashAttribute("Message",new String(result.getFieldError().toString()));
             }
 
             else
-                model.addAttribute("Message",new String("Device is already booked in this timeslot"));
+                ra.addFlashAttribute("Message",new String("Device is already booked in this timeslot."));
             return "redirect:/planning";
         }
         step.setUser(currentUser);
@@ -126,14 +127,10 @@ public class StepController {
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
         model.addAttribute("allSteps",stepService.findAll());
         model.addAttribute("Step", new Step());
-        model.addAttribute("Status", "Success");
-        model.addAttribute("Message", "New step has been added.");
+        ra.addFlashAttribute("Status", "Success");
+        String message = new String("New step has been added.");
+        ra.addFlashAttribute("Message", message);
         return "redirect:/planning";
-    }
-    @RequestMapping(value="/", method= RequestMethod.POST)
-    public String showTimeslot(Step step, final ModelMap model){
-            model.addAttribute("Step", step);
-            return "/PlanningTool/step-timeslot";
     }
 
     @RequestMapping(value = "/planning/{id}/delete",method = RequestMethod.GET)
