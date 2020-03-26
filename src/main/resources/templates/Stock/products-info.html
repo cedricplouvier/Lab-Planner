@@ -62,7 +62,9 @@
 
         </div>
     </div>
-    <div sec:authorize="hasAuthority('Stock - Aggregates + Bitumen Read only - Advanced') or hasAuthority('Stock - Modify - All')" class="row">
+    <div class="row">
+
+    <div sec:authorize="hasAuthority('Stock - Aggregates + Bitumen Read only - Advanced') or hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')">
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
             <div class="card" style="width: 18rem;">
                     <div class="card-header">
@@ -76,9 +78,20 @@
                 </div>
         </div>
 
-
-
-
+    <div sec:authorize="hasAuthority('Stock - Modify - All')">
+            <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+                <div class="card" style="width: 18rem;">
+                    <div class="card-header">
+                        <h5 th:text="#{update.info}">Update info</h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a th:text="#{product.create}+ ': '+${product.getCreateDateTime()}">created</a></li>
+                        <li class="list-group-item"><a th:text="#{product.update}+': '+${product.getUpdateDateTime()}">updated</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 </body>

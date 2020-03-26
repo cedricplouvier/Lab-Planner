@@ -23,9 +23,9 @@
                 th:text="${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()} "></a>
             </td>
             <td>
-                <a th:href="@{/compositions/{id}/(id=${ingred.id})}"><span
+                <a  sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')" th:href="@{/compositions/{id}/(id=${ingred.id})}"><span
                         class="fas fa-edit"></span></a>&nbsp;
-                <a th:href="@{/compositions/{id}/delete(id=${ingred.id})}">
+                <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/compositions/{id}/delete(id=${ingred.id})}">
                     <span class="fas fa-trash"></span></a>
             </td>
         </tr>
@@ -33,7 +33,7 @@
     </table>
 
     <a href="/mixtures" class="btn btn-primary" th:text="#{mixtures.return}" >Return to mixtures</a>
-    <a href="/compositions/put" type="button" class="btn btn-outline-primary"th:text="#{composition.create}">
+    <a  sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')" href="/compositions/put" type="button" class="btn btn-outline-primary"th:text="#{composition.create}">
         Create new composition
     </a>
 

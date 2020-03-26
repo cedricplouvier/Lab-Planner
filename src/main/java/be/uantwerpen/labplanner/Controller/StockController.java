@@ -84,7 +84,7 @@ public class StockController {
 
 
 
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value="/products/put", method= RequestMethod.GET)
     public String viewCreateProducts(final ModelMap model){
         model.addAttribute("allProducts", productService.findAll());
@@ -94,7 +94,7 @@ public class StockController {
         return "/Stock/products-manage";
     }
 
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value="/products/{id}", method= RequestMethod.GET)
     public String viewEditProduct(@PathVariable Long id, final ModelMap model){
         model.addAttribute("allProducts", productService.findAll());
@@ -104,7 +104,7 @@ public class StockController {
         return "/Stock/products-manage";
     }
 
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value={"/products/", "/products/{id}"},
             method= RequestMethod.POST)
     public String addProduct(@Valid Product product, BindingResult result,
@@ -250,7 +250,7 @@ public class StockController {
         return url;
     }
 
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value="/mixtures/{id}", method= RequestMethod.GET)
     public String viewEditMixture(@PathVariable Long id, final ModelMap model){
         model.addAttribute("mixture",mixtureService.findById(id).orElse(null));
@@ -259,7 +259,7 @@ public class StockController {
         return "/Mixtures/mixtures-manage";
     }
 
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value={"/mixtures", "/mixtures/{id}"},
             method= RequestMethod.POST)
     public String addMixture(@Valid Mixture mixture, BindingResult result,
@@ -294,7 +294,7 @@ public class StockController {
         return "/Mixtures/mixtures-list";
     }
 
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value="/mixtures/put", method= RequestMethod.GET)
     public String viewCreateMixture(final ModelMap model){
         model.addAttribute("allMixtures", mixtureService.findAll());
@@ -305,7 +305,7 @@ public class StockController {
         return "/Mixtures/mixtures-manage";
     }
 
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value="/compositions/{id}/delete",method = RequestMethod.GET)
     public String deleteIngredients(@PathVariable Long id, final ModelMap model){
         List<Mixture> mixtures = mixtureService.findAll();
@@ -339,7 +339,7 @@ public class StockController {
         return "/Mixtures/compositions-list";
     }
 
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value={"/compositions", "/compositions/{id}"},
             method= RequestMethod.POST)
     public String addComposition(@Valid Composition composition, BindingResult result,
@@ -356,7 +356,7 @@ public class StockController {
         return "/Mixtures/compositions-list";
     }
 
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value="/compositions/{id}", method= RequestMethod.GET)
     public String viewEditComposition(@PathVariable Long id, final ModelMap model){
         model.addAttribute("allProducts", productService.findAll());
@@ -366,7 +366,7 @@ public class StockController {
     }
 
 
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
+    @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value="/compositions/put", method= RequestMethod.GET)
     public String viewCreateComposition(final ModelMap model){
         model.addAttribute("allCompositions", compositionService.findAll());
