@@ -60,7 +60,7 @@ public class ProductServiceTests {
     }
 
     @Test
-    public void TestDeleteById(){
+    public void testDeleteById(){
         Product product = new Product();
         product.setName("test");
         productRepository.save(product);

@@ -1,6 +1,7 @@
 package be.uantwerpen.labplanner.Service;
 
 import be.uantwerpen.labplanner.LabplannerApplication;
+import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.repository.stock.TagRepository;
 import be.uantwerpen.labplanner.common.service.stock.TagService;
@@ -10,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = LabplannerApplication.class)
@@ -38,6 +42,12 @@ public class TagServiceTests {
         Tag fetched = tagService.findByName("test").orElse(null);
         assertEquals(fetched.getId(), tag.getId());
 
+    }
+
+    @Test
+    public void testGetAllTags(){
+        List<Tag> fetchedList  = tagService.findAll();
+        assertNotNull(fetchedList);
     }
 
 }
