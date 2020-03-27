@@ -108,7 +108,8 @@ public class ProductRepositoryTests {
         productRepository.save(fetchedproduct);
         Product fetchUpdatedProduct9 = productRepository.findById(fetchedproduct.getId()).orElse(null);
         assertEquals(fetchedproduct.getLastUpdatedById(), fetchUpdatedProduct9.getLastUpdatedById());
-        /*
+
+
         //update tags
         List<Tag> taglist = new ArrayList<>();
         Tag tag1 = new Tag("test1");
@@ -121,7 +122,7 @@ public class ProductRepositoryTests {
         productRepository.save(fetchedproduct);
         Product fetchUpdatedProduct10 = productRepository.findById(fetchedproduct.getId()).orElse(null);
         assertEquals(fetchedproduct.getTags(), fetchUpdatedProduct10.getTags());
-        */
+
 
         //get all products, list should only have one more then initial
         Iterable<Product> products = productRepository.findAll();

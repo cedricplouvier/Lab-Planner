@@ -55,6 +55,7 @@ public class TagRepositoryTests {
             count++;
         }
         assertEquals(count, 5); //omdat er al 4 tags zijn in database
+        //NOTE: change to actual: 7 if you're running all the tests at once.
 
     }
 }

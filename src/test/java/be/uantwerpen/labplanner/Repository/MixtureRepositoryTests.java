@@ -81,13 +81,13 @@ public class MixtureRepositoryTests {
         Mixture fetchedMix2 = mixtureRepository.findById(fetchedMix.getId()).orElse(null);
         assertEquals(fetchedMix.getName(), fetchedMix2.getName());
 
-        /*
+
         //update compositions
         fetchedMix.setCompositions(compositions);
         mixtureRepository.save(fetchedMix);
         Mixture fetchedMix3 = mixtureRepository.findById(fetchedMix.getId()).orElse(null);
         assertEquals(fetchedMix.getCompositions(), fetchedMix3.getCompositions());
-        */
+
 
         //get all tag, list should only have one more then initial
         Iterable<Mixture> mixtures = mixtureRepository.findAll();
