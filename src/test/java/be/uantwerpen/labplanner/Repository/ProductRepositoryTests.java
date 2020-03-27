@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -107,9 +108,20 @@ public class ProductRepositoryTests {
         productRepository.save(fetchedproduct);
         Product fetchUpdatedProduct9 = productRepository.findById(fetchedproduct.getId()).orElse(null);
         assertEquals(fetchedproduct.getLastUpdatedById(), fetchUpdatedProduct9.getLastUpdatedById());
-
-
-
+        /*
+        //update tags
+        List<Tag> taglist = new ArrayList<>();
+        Tag tag1 = new Tag("test1");
+        tagRepository.save(tag1);
+        taglist.add(tag1);
+        Tag tag2 = new Tag("test2");
+        tagRepository.save(tag2);
+        taglist.add(tag2);
+        fetchedproduct.setTags(taglist);
+        productRepository.save(fetchedproduct);
+        Product fetchUpdatedProduct10 = productRepository.findById(fetchedproduct.getId()).orElse(null);
+        assertEquals(fetchedproduct.getTags(), fetchUpdatedProduct10.getTags());
+        */
 
         //get all products, list should only have one more then initial
         Iterable<Product> products = productRepository.findAll();

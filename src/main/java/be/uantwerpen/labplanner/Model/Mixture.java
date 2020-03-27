@@ -3,13 +3,11 @@ package be.uantwerpen.labplanner.Model;
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.model.users.User;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Map;
-
-
+import java.util.*;
 
 
 @Entity
@@ -37,6 +35,8 @@ public class Mixture extends AbstractPersistable<Long> {
     }
 
     public Mixture(){
+        this.name = "";
+        this.compositions = new ArrayList();
     }
 
     @Override
