@@ -50,6 +50,8 @@
 
             <input class="float-right" id="search" placeholder="Search" />
 
+            <div class="alert alert-danger" role="alert" th:if="${inUseError}!=null" th:text="${inUseError}"></div>
+
             <table class="table table-hover">
                 <thead>
                 <tr>
