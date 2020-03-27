@@ -1,6 +1,7 @@
 package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.LabplannerApplication;
+import be.uantwerpen.labplanner.Model.DatabaseLoader;
 import be.uantwerpen.labplanner.Service.CompositionService;
 import be.uantwerpen.labplanner.Service.MixtureService;
 import be.uantwerpen.labplanner.common.service.stock.ProductService;
@@ -13,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -27,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = LabplannerApplication.class)
 @WebAppConfiguration
 public class StockControllerTests {
+
 
     @Mock
     private UserService userService;
