@@ -12,10 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.beans.MethodDescriptor;
@@ -34,7 +31,8 @@ public class PrivilegeController {
     private OwnPrivilegeService privilegeService;
 
     @ModelAttribute("allPrivileges")
-    public Iterable<Privilege> populatePrivileges(){return privilegeService.findAll();}
+    public Iterable<Privilege> populatePrivileges(){return
+            privilegeService.findAll();}
 
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/privileges",method = RequestMethod.GET)
