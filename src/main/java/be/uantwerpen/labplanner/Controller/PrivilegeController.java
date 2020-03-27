@@ -3,8 +3,11 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Service.OwnPrivilegeService;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
+import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.service.users.PrivilegeService;
+import be.uantwerpen.labplanner.common.service.users.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -16,9 +19,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
 import java.beans.MethodDescriptor;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 @Controller
 public class PrivilegeController {
+
+    @Autowired
+    private RoleService roleService;
+
 
     @Autowired
     private OwnPrivilegeService privilegeService;
@@ -50,14 +60,14 @@ public class PrivilegeController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = {"/usermanagement/privileges/","/usermanagement/privileges/{id}"},method = RequestMethod.POST)
     public String addPrivilege(@Valid Privilege privilege, BindingResult result, final ModelMap model) {
-        if (result.hasErrors() || privilege.getName().trim().equals("")) {
+        if (result.hasErrors() || privilege.getName().trim().equals("") || privilege.getName() == null) {
             //validate on empty input name
-            model.addAttribute("PrivilegeInUse", "Error when trying to save privilege, must have a valid name");
+            model.addAttribute("PrivilegeInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("privilege.errorAdd"));
             return "/Privileges/privilege-manage";
         }
         if (privilege.getId() == null) {
             if (privilegeService.findByName(privilege.getName()).isPresent()) {
-                model.addAttribute("PrivilegeInUse", "Privilege " + privilege.getName() + " is already in use!");
+                model.addAttribute("PrivilegeInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("privilege.errorUnique"));
                 return "/Privileges/privilege-manage";
             }
             //trim input and save
@@ -69,7 +79,7 @@ public class PrivilegeController {
         Privilege tempPrivilege = privilegeService.findById(privilege.getId()).orElse(null);
         if(!tempPrivilege.getName().equals(privilege.getName())){
             if(privilegeService.findByName(privilege.getName()).isPresent()){
-                model.addAttribute("PrivilegeInUse", "Privilege " + privilege.getName() + " is already in use!");
+                model.addAttribute("PrivilegeInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("privilege.errorUnique"));
                 return "/Privileges/privilege-manage";
             }
             //trim input and save
@@ -86,6 +96,21 @@ public class PrivilegeController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/privileges/{id}/delete",method = RequestMethod.GET)
     public String deletePrivilege(@PathVariable long id, final ModelMap model){
+        List<Role> allRoles = roleService.findAll();
+        boolean inUse = false;
+        for (Role role : allRoles) {
+            for (Privilege privilege : role.getPrivileges()) {
+                if (privilege.getId()==id){
+                    inUse = true;
+                }
+            }
+        }
+
+        if (inUse){
+            model.addAttribute("allPrivileges",privilegeService.findAll());
+            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("privilege.inUseError"));
+            return "Privileges/privilege-list";
+        }
         privilegeService.deleteById(id);
         model.clear();
         return "redirect:/usermanagement/privileges";

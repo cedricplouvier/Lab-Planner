@@ -1,5 +1,7 @@
 package be.uantwerpen.labplanner.Controller;
 
+import be.uantwerpen.labplanner.Model.Step;
+import be.uantwerpen.labplanner.Service.StepService;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
@@ -9,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -20,6 +23,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 @Controller
 public class UserController {
 
@@ -30,6 +37,9 @@ public class UserController {
 
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private StepService stepService;
 
     //Populate
     @ModelAttribute("allUsers")
@@ -65,10 +75,9 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = {"/usermanagement/users/","/usermanagement/users/{id}"},method = RequestMethod.POST)
     public String addUser(@Valid User user,  BindingResult result, final ModelMap model) {
-        if (result.hasErrors()|| user.getUsername().trim().equals("") || user.getPassword().trim().equals("")) {
+        if (result.hasErrors()|| user.getUsername().trim().equals("") || user.getPassword().trim().equals("") ||user.getPassword() == null || user.getUsername() ==null) {
             model.addAttribute("allRoles", roleService.findAll());
-            model.addAttribute("UserInUse", "Error when trying to save user, must have a valid name & password");
-
+            model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.addError") );
             return "/Users/user-manage";
         }
 
@@ -76,7 +85,7 @@ public class UserController {
             //if the given username is unique, save the user in the database
             if (userService.findByUsername(user.getUsername()).isPresent()) {
                 model.addAttribute("allRoles", roleService.findAll());
-                model.addAttribute("UserInUse", "Username " + user.getUsername() + " is already in use!");
+                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.uniqueError") );
                 return "/Users/user-manage";
             }
             //trim input and save
@@ -90,7 +99,7 @@ public class UserController {
         User tempUser = userService.findById(user.getId()).orElse(null);
         if(!tempUser.getUsername().equals(user.getUsername())){
             if(userService.findByUsername(user.getUsername()).isPresent()){
-                model.addAttribute("UserInUse", "Username " + user.getUsername() + " is already in use!");
+                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.uniqueError") );
                 model.addAttribute("allRoles", roleService.findAll());
                 return "/Users/user-manage";
             }
@@ -109,7 +118,23 @@ public class UserController {
 
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users/{id}/delete",method = RequestMethod.GET)
-    public String deleteUser(@PathVariable long id, final ModelMap model){
+    public String deleteUser(@PathVariable long id, final ModelMap model) {
+        //get current locale
+        Locale current = LocaleContextHolder.getLocale();
+        List<Step> allSteps = stepService.findAll();
+        boolean isUsed = false;
+        for (Step step : allSteps) {
+            if (step.getUser().getId() == id) {
+                isUsed = true;
+            }
+        }
+
+        if (isUsed){
+            model.addAttribute("allUsers",userService.findAll());
+            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",current).getString("user.deleteError"));
+            return "/Users/user-list";
+        }
+
         userService.deleteById(id);
         model.clear();
         return "redirect:/usermanagement/users";
