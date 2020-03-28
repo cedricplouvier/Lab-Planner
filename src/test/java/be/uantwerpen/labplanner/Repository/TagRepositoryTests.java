@@ -54,7 +54,7 @@ public class TagRepositoryTests {
         for(Tag p : tags){
             count++;
         }
-        assertEquals(count, 5); //omdat er al 4 tags zijn in database
+        assertEquals(count, 6); //omdat er al 4 tags zijn in database
         //NOTE: change to actual: 7 if you're running all the tests at once.
 
     }

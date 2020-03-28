@@ -64,7 +64,7 @@ public class CompositionRepositoryTests {
         for(Composition p : comps){
             count++;
         }
-        assertEquals(count, 22); //omdat er al 22 compositions zijn in database
+        assertEquals(count, 20); //omdat er al 22 compositions zijn in database
 
     }
 }
