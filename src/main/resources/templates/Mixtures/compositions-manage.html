@@ -18,6 +18,7 @@
         <input th:type="hidden" th:field="*{id}"/>
 
         <div class="form-group">
+            <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>
             <label for="productss" th:text="#{composition.product}">Products</label>
             <select class="custom-select" th:field="*{product}" id="productss">
                 <option th:each="product : ${allProducts}"

@@ -119,9 +119,65 @@ public class StockController {
             }
         }
 
+        if(product.getName().length() == 0 ){
+            model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("errormessage", "Please give the product a valid name.");
+            model.addAttribute("units", Unit.values());
+
+            return "/Stock/products-manage";
+        }
+
+        if(product.getDescription().length() == 0 ){
+            model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("errormessage", "Please give the product a valid description.");
+            model.addAttribute("units", Unit.values());
+
+            return "/Stock/products-manage";
+        }
+
+        if(product.getProperties().length() == 0 ){
+            model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("errormessage", "Please give the product a valid properties description.");
+            model.addAttribute("units", Unit.values());
+
+            return "/Stock/products-manage";
+        }
+
+        if(product.getStockLevel() < 0){
+            model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("errormessage", "Please give a valid amount in stock.");
+            model.addAttribute("units", Unit.values());
+
+            return "/Stock/products-manage";
+        }
+
+        if(product.getLowStockLevel() < 0){
+            model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("errormessage", "The low stock level is not valid.");
+            model.addAttribute("units", Unit.values());
+
+            return "/Stock/products-manage";
+        }
+
+        if(product.getReservedStockLevel() < 0){
+            model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("errormessage", "The reserved stock level is not valid.");
+            model.addAttribute("units", Unit.values());
+
+            return "/Stock/products-manage";
+        }
+
+        if(product.getTags().size() == 0){
+            model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("errormessage", "Please assign a tag to the product");
+            model.addAttribute("units", Unit.values());
+
+            return "/Stock/products-manage";
+        }
+
         if(NameIsUsed != null){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("NameIsUsed", NameIsUsed);
+            model.addAttribute("errormessage", NameIsUsed);
             model.addAttribute("units", Unit.values());
 
             return "/Stock/products-manage";
@@ -129,6 +185,7 @@ public class StockController {
 
         if(result.hasErrors()){
             model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("errormessage", "Oops, something went wrong!");
             model.addAttribute("units", Unit.values());
 
             return "/Stock/products-manage";
@@ -212,14 +269,22 @@ public class StockController {
             }
         }
 
+        if(tag.getName().length() == 0){
+            model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("errormessage", "Please give the tag a valid name");
+            return "Tags/tags-manage";
+        }
+
         if(NameIsUsed != null){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("NameIsUsed", NameIsUsed);
+            model.addAttribute("errormessage", NameIsUsed);
             return "Tags/tags-manage";
         }
 
         if(result.hasErrors()){
             model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("errormessage", "Oops, something went wrong!");
+
             return "Tags/tags-manage";
         }
         tagService.save(tag);
@@ -275,9 +340,26 @@ public class StockController {
             }
         }
 
+        if(mixture.getName().length() == 0){
+            model.addAttribute("allMixtures", mixtureService.findAll());
+            model.addAttribute("errormessage", "Please enter a valid name");
+            model.addAttribute("allCompositions", compositionService.findAll());
+
+            return "Mixtures/mixtures-manage";
+        }
+
+
+        if(mixture.getCompositions().isEmpty()){
+            model.addAttribute("allMixtures", mixtureService.findAll());
+            model.addAttribute("errormessage", "Please select ingredients");
+            model.addAttribute("allCompositions", compositionService.findAll());
+
+            return "Mixtures/mixtures-manage";
+        }
+
         if(NameIsUsed != null){
             model.addAttribute("allMixtures", tagService.findAll());
-            model.addAttribute("NameIsUsed", NameIsUsed);
+            model.addAttribute("errormessage", NameIsUsed);
             model.addAttribute("allCompositions", compositionService.findAll());
 
             return "/Mixtures/mixtures-manage";
@@ -285,6 +367,7 @@ public class StockController {
 
         if(result.hasErrors()){
             model.addAttribute("allMixtures", mixtureService.findAll());
+            model.addAttribute("errormessage", "Oops, something went wrong!");
             model.addAttribute("allCompositions", compositionService.findAll());
 
             return "Mixtures/mixtures-manage";
@@ -344,9 +427,15 @@ public class StockController {
             method= RequestMethod.POST)
     public String addComposition(@Valid Composition composition, BindingResult result,
                              final ModelMap model){
+        if(composition.getAmount()<=0.0){
+            System.out.println(composition.getAmount());
+            model.addAttribute("errormessage", "Oops, the amount is invalid. Please choose a positive amount.");
+            return "Mixtures/compositions-manage";
+        }
 
         if(result.hasErrors()){
             model.addAttribute("allProducts", productService.findAll());
+            model.addAttribute("errormessage", "Oops, something went wrong!");
             model.addAttribute("composition", new Composition());
             return "Mixtures/compositions-manage";
         }
