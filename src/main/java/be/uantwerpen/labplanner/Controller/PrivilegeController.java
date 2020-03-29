@@ -63,6 +63,7 @@ public class PrivilegeController {
             model.addAttribute("PrivilegeInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("privilege.errorAdd"));
             return "/Privileges/privilege-manage";
         }
+        //id = null, so not yet in database
         if (privilege.getId() == null) {
             if (privilegeService.findByName(privilege.getName()).isPresent()) {
                 model.addAttribute("PrivilegeInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("privilege.errorUnique"));
@@ -75,11 +76,15 @@ public class PrivilegeController {
         }
 
         Privilege tempPrivilege = privilegeService.findById(privilege.getId()).orElse(null);
+        //if save contains editing the name
         if(!tempPrivilege.getName().equals(privilege.getName())){
+            //if new name is an alraedy existing name
             if(privilegeService.findByName(privilege.getName()).isPresent()){
                 model.addAttribute("PrivilegeInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("privilege.errorUnique"));
                 return "/Privileges/privilege-manage";
             }
+
+            //otherwise the new name is a correct name
             //trim input and save
             privilege.setName(privilege.getName().trim());
             privilegeService.save(privilege);
