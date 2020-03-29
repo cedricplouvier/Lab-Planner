@@ -105,6 +105,7 @@ public class PrivilegeControllerTests {
     }
 
     @Test
+    //Test for inserting a correct new privilege.
     public void testNewPrivilege() throws Exception{
         long id = 10;
 
@@ -122,6 +123,8 @@ public class PrivilegeControllerTests {
                 .andExpect(view().name("redirect:/usermanagement/privileges"))
                 .andDo(print());
     }
+
+
 
     @Test
     public void deleteTest() throws Exception{

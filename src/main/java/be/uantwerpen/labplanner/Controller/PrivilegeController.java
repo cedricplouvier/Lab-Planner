@@ -58,7 +58,7 @@ public class PrivilegeController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = {"/usermanagement/privileges/","/usermanagement/privileges/{id}"},method = RequestMethod.POST)
     public String addPrivilege(@Valid Privilege privilege, BindingResult result, final ModelMap model) {
-        if (result.hasErrors() || privilege.getName().trim().equals("") || privilege.getName() == null) {
+        if ((result.hasErrors()) || (privilege.getName() == null) || (privilege.getName().trim().equals(""))) {
             //validate on empty input name
             model.addAttribute("PrivilegeInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("privilege.errorAdd"));
             return "/Privileges/privilege-manage";
