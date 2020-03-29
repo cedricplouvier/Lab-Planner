@@ -4,20 +4,14 @@ package be.uantwerpen.labplanner.Controller;
 import be.uantwerpen.labplanner.Service.OwnPrivilegeService;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.model.users.Role;
-import be.uantwerpen.labplanner.common.repository.users.PrivilegeRepository;
-import be.uantwerpen.labplanner.common.service.users.PrivilegeService;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 
@@ -26,8 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;  //belangrijke imports
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -61,10 +53,11 @@ public class PrivilegeControllerTests {
     @Test
     public void viewPrivilegeList() throws Exception{
         Privilege p1 = new Privilege("test");
-        List<Privilege> privs = new ArrayList<>();
-        privs.add(p1);
-        when(privilegeService.findAll()).thenReturn(privs);
-        mockMvc.perform(get("/usermanagement/privileges")).andExpect(status().isOk())
+        List<Privilege> privileges = new ArrayList<>();
+        privileges.add(p1);
+        when(privilegeService.findAll()).thenReturn(privileges);
+        mockMvc.perform(get("/usermanagement/privileges"))
+                .andExpect(status().isOk())
                 .andExpect(view().name("/Privileges/privilege-list"))
                 .andExpect(model().attribute("allPrivileges", hasSize(1)));
     }
@@ -72,14 +65,20 @@ public class PrivilegeControllerTests {
     //test for ViewCreatePrivilege
     @Test
     public void CreatePrivilegeTest() throws Exception{
-        mockMvc.perform(get("/usermanagement/privileges/put")).andExpect(status().isOk())
+        mockMvc.perform(get("/usermanagement/privileges/put"))
+                .andExpect(status().isOk())
                 .andExpect(model().attribute("privilege",instanceOf(Privilege.class)))
                 .andExpect(view().name("/Privileges/privilege-manage"));
     }
 
     //test for viewEditPrivilege with wrong path
     @Test
-    public void VieuwEditPrivTest()throws Exception{
+    public void VieuwEditPrivilegeTest()throws Exception{
+        Privilege privilege = new Privilege("testPrivilege");
+        long id = 10;
+        privilege.setId(id);
+
+        when(privilegeService.findById(id)).thenReturn(Optional.of(privilege));
 
         mockMvc.perform(get("/usermanagement/privileges/{id}","fff"))
                 .andExpect(status().is4xxClientError())
@@ -97,18 +96,13 @@ public class PrivilegeControllerTests {
     @Test
     // Test add a privilege with no usefull name!
     //should return Privilege-manage
-    public void testNewPrivilegeNoUsefullName() throws Exception{
+    public void AddNonValidNamePrivilegeTest() throws Exception{
         long id = 10;
 
         Privilege p1 = new Privilege(null);
         p1.setId(id);
 
-        p1.setDescription("blablabla");
-
-        lenient().when(privilegeService.findById(id)).thenReturn(Optional.of(p1));
-        lenient().when(privilegeService.findByName("test")).thenReturn(Optional.of(p1));
-        lenient().when(privilegeService.save(p1)).thenReturn(p1);
-
+        //name of privilege is null
         mockMvc.perform(post("/usermanagement/privileges/","70")
                 .flashAttr("privilege",p1))
                 .andExpect(status().is(200))
@@ -116,6 +110,7 @@ public class PrivilegeControllerTests {
                 .andExpect(view().name("/Privileges/privilege-manage"))
                 .andDo(print());
 
+        //privilege name is empty string
         p1.setName("  ");
         mockMvc.perform(post("/usermanagement/privileges/","10")
                 .flashAttr("privilege",p1))
@@ -129,14 +124,11 @@ public class PrivilegeControllerTests {
 
     @Test
     //add new priv with unique name.
-    public void addNewCorrectPriv() throws Exception{
-        long id = 10;
+    public void addNewCorrectPrivilegeTest() throws Exception{
 
         Privilege p2 = new Privilege("test");
 
-        lenient().when(privilegeService.findById(id)).thenReturn(Optional.empty());
         when(privilegeService.findByName("test")).thenReturn(Optional.empty());
-        when(privilegeService.save(p2)).thenReturn(p2);
 
         mockMvc.perform(post("/usermanagement/privileges/").flashAttr("privilege",p2))
                 .andExpect(status().is(302))
@@ -146,16 +138,12 @@ public class PrivilegeControllerTests {
 
     @Test
     //add new pri with already existing name
-    public void addNewFalsePriv() throws Exception{
+    public void addNewFalsePrivilegeTest() throws Exception{
         long id = 10;
 
         Privilege p2 = new Privilege("test");
 
-
-        lenient().when(privilegeService.findById(id)).thenReturn(Optional.empty());
         when(privilegeService.findByName("test")).thenReturn(Optional.of(p2));
-        lenient().when(privilegeService.save(p2)).thenReturn(p2);
-
         mockMvc.perform(post("/usermanagement/privileges/").flashAttr("privilege",p2))
                 .andExpect(status().is(200))
                 .andExpect(view().name("/Privileges/privilege-manage"))
@@ -165,16 +153,12 @@ public class PrivilegeControllerTests {
 
     @Test
     //edit existing priv with same name & existing id.
-    public void testEditorrectPrivilege() throws Exception{
+    public void EditCorrectPrivilegeTest() throws Exception{
         long id = 10;
-
         Privilege p1 = new Privilege("test");
         p1.setId(id);
 
         when(privilegeService.findById(id)).thenReturn(Optional.of(p1));
-        lenient().when(privilegeService.findByName("test")).thenReturn(Optional.of(p1));
-        when(privilegeService.save(p1)).thenReturn(p1);
-
         mockMvc.perform(post("/usermanagement/privileges/{id}","10").flashAttr("privilege",p1))
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/usermanagement/privileges"))
@@ -182,17 +166,15 @@ public class PrivilegeControllerTests {
     }
 
 
-
     @Test
-    //edit existing priv with  unique name & existing id.
-    public void testEditPrivilegeNonUnique() throws Exception{
+    //edit existing priv with  non unique name & existing id.
+    public void EditPrivilegeNonUniqueNameTest() throws Exception{
         long id = 10;
         Privilege p1 = new Privilege("test");
         p1.setId(id);
         Privilege p2 = new Privilege("test2");
         when(privilegeService.findById(id)).thenReturn(Optional.of(p2));
         when(privilegeService.findByName("test")).thenReturn(Optional.of(p1));
-        lenient().when(privilegeService.save(p1)).thenReturn(p1);
 
         mockMvc.perform(post("/usermanagement/privileges/{id}","10").flashAttr("privilege",p1))
                 .andExpect(status().is(200))
@@ -203,14 +185,14 @@ public class PrivilegeControllerTests {
 
     @Test
     //edit existing priv with new non unique name & existing id.
-    public void testEditPrivilegeNewCorrectName() throws Exception{
+    public void EditPrivilegeUniqueNameTest() throws Exception{
         long id = 10;
         Privilege p1 = new Privilege("test");
         p1.setId(id);
         Privilege p2 = new Privilege("test2");
+
         when(privilegeService.findById(id)).thenReturn(Optional.of(p2));
         when(privilegeService.findByName("test")).thenReturn(Optional.empty());
-        when(privilegeService.save(p1)).thenReturn(p1);
 
         mockMvc.perform(post("/usermanagement/privileges/{id}","10").flashAttr("privilege",p1))
                 .andExpect(status().is(302))
@@ -224,16 +206,17 @@ public class PrivilegeControllerTests {
         Role role = new Role("rol");
         Privilege p1 = new Privilege("test");
         p1.setId(id);
-        List<Privilege> privs = new ArrayList<>();
-        privs.add(p1);
-        role.setPrivileges(privs);
+
+        List<Privilege> privileges = new ArrayList<>();
+        privileges.add(p1);
+
+        role.setPrivileges(privileges);
         List<Role> roles = new ArrayList<>();
         roles.add(role);
 
 
         //Privilege is in Use
         when(roleService.findAll()).thenReturn(roles);
-        when(privilegeService.deleteById(id)).thenReturn(null);
         mockMvc.perform(get("/usermanagement/privileges/{id}/delete","10"))
                 .andExpect(status().is(200))
                 .andDo(print())
@@ -243,7 +226,6 @@ public class PrivilegeControllerTests {
 
         //Privilege is not in Use
         when(roleService.findAll()).thenReturn(roles);
-        lenient().when(privilegeService.deleteById(id)).thenReturn(null);
         mockMvc.perform(get("/usermanagement/privileges/{id}/delete","11"))
                 .andExpect(status().is(302))
                 .andDo(print())

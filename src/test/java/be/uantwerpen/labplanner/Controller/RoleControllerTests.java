@@ -7,7 +7,6 @@ import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,9 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static com.sun.deploy.uitoolkit.impl.awt.AWTClientPrintHelper.print;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.lenient;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get; //belangrijke imports
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -60,8 +57,6 @@ public class RoleControllerTests {
     //View Role list
     public void ViewRoleListTest() throws Exception{
         Role role = new Role("testrol");
-        long id = 10;
-        role.setId(id);
         List<Role> roles = new ArrayList<Role>();
         roles.add(role);
 
@@ -77,16 +72,17 @@ public class RoleControllerTests {
     // Show role manage page test
     public void ViewCreateRoleTest() throws Exception{
         Role role = new Role("testrol");
-        long id = 10;
-        role.setId(id);
         List<Role> roles = new ArrayList<Role>();
         roles.add(role);
+        Privilege p = new Privilege("test");
+        List<Privilege> privileges = new ArrayList<>();
+        privileges.add(p);
 
-        when(roleService.findAll()).thenReturn(roles);
+        when(privilegeService.findAll()).thenReturn(privileges);
 
         mockMvc.perform(get("/usermanagement/roles/put"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("allRoles",hasSize(1)))
+                .andExpect(model().attribute("allPrivileges",hasSize(1)))
                 .andExpect(model().attribute("role",instanceOf(Role.class)))
                 .andExpect(view().name("/Roles/role-manage"));
 
@@ -102,13 +98,11 @@ public class RoleControllerTests {
        roles.add(role);
        Privilege p = new Privilege("test");
        p.setId((long) 15);
-       List<Privilege> privs = new ArrayList<Privilege>();
-       privs.add(p);
+       List<Privilege> privileges = new ArrayList<Privilege>();
+       privileges.add(p);
 
-
-       when(roleService.findAll()).thenReturn(roles);
        when(roleService.findById(id)).thenReturn(Optional.of(role));
-       when(privilegeService.findAll()).thenReturn(privs);
+       when(privilegeService.findAll()).thenReturn(privileges);
 
        //editing with existing id as input
        mockMvc.perform(get("/usermanagement/roles/{id}",10))
@@ -130,14 +124,15 @@ public class RoleControllerTests {
        Role role = new Role("  ");
        long id = 10;
        role.setId(id);
-       List<Role> roles = new ArrayList<Role>();
-       roles.add(role);
+
        Privilege p = new Privilege("test");
        p.setId((long) 15);
-       List<Privilege> privs = new ArrayList<Privilege>();
-       privs.add(p);
+       List<Privilege> privileges = new ArrayList<Privilege>();
+       privileges.add(p);
 
-       when(privilegeService.findAll()).thenReturn(privs);
+       when(privilegeService.findAll()).thenReturn(privileges);
+
+       //empty string name
        mockMvc.perform(post("/usermanagement/roles/").flashAttr("role",role))
                .andExpect(status().is(200))
                .andExpect(model().attribute("roleInUse",notNullValue()))
@@ -157,13 +152,6 @@ public class RoleControllerTests {
     //add new role with unique name
     public void addNewCorrectRoleTest() throws Exception{
        Role role = new Role("testrole");
-       long id = 10;
-       List<Role> roles = new ArrayList<Role>();
-       roles.add(role);
-       Privilege p = new Privilege("test");
-       p.setId((long) 15);
-       List<Privilege> privs = new ArrayList<Privilege>();
-       privs.add(p);
 
        when(roleService.findByName("testrole")).thenReturn(Optional.empty());
        mockMvc.perform(post("/usermanagement/roles/").flashAttr("role",role))
@@ -177,13 +165,6 @@ public class RoleControllerTests {
     //add new role with unique name
     public void addNewFalseRoleTest() throws Exception{
         Role role = new Role("testrole");
-        long id = 10;
-        List<Role> roles = new ArrayList<Role>();
-        roles.add(role);
-        Privilege p = new Privilege("test");
-        p.setId((long) 15);
-        List<Privilege> privs = new ArrayList<Privilege>();
-        privs.add(p);
 
         when(roleService.findByName("testrole")).thenReturn(Optional.of(role));
         mockMvc.perform(post("/usermanagement/roles/").flashAttr("role",role))
@@ -199,13 +180,6 @@ public class RoleControllerTests {
     public void EditCorrectRoleTest() throws Exception{
         Role role = new Role("testrole");
         long id = 10;
-        role.setId((long) 10);
-        List<Role> roles = new ArrayList<Role>();
-        roles.add(role);
-        Privilege p = new Privilege("test");
-        p.setId((long) 15);
-        List<Privilege> privs = new ArrayList<Privilege>();
-        privs.add(p);
 
         when(roleService.findById(id)).thenReturn(Optional.of(role));
         mockMvc.perform(post("/usermanagement/roles/{id}","10").flashAttr("role",role))
@@ -221,12 +195,7 @@ public class RoleControllerTests {
         Role role = new Role("testrole");
         long id = 10;
         role.setId((long) 10);
-        List<Role> roles = new ArrayList<Role>();
-        roles.add(role);
-        Privilege p = new Privilege("test");
-        p.setId((long) 15);
-        List<Privilege> privs = new ArrayList<Privilege>();
-        privs.add(p);
+
         Role role2 = new Role(("testrole2"));
 
         when(roleService.findById(id)).thenReturn(Optional.of(role2));
@@ -241,17 +210,12 @@ public class RoleControllerTests {
     }
 
     @Test
-    // Edit existing role with non unique name
+    // Edit existing role with unique name
     public void EditRoleUniqueNameTest() throws Exception{
         Role role = new Role("testrole");
         long id = 10;
-        role.setId((long) 10);
-        List<Role> roles = new ArrayList<Role>();
-        roles.add(role);
-        Privilege p = new Privilege("test");
-        p.setId((long) 15);
-        List<Privilege> privs = new ArrayList<Privilege>();
-        privs.add(p);
+        role.setId(id);
+
         Role role2 = new Role(("testrole2"));
 
         when(roleService.findById(id)).thenReturn(Optional.of(role2));
@@ -266,17 +230,13 @@ public class RoleControllerTests {
 
     @Test
     //test for deleting
-    public void DelteRoleTest() throws Exception{
+    public void DeleteRoleTest() throws Exception{
         Role role = new Role("testrole");
         long id = 10;
-        role.setId((long) 10);
+        role.setId(id);
+
         Set<Role> roles = new HashSet<Role>();
         roles.add(role);
-        Privilege p = new Privilege("test");
-        p.setId((long) 15);
-        List<Privilege> privs = new ArrayList<Privilege>();
-        privs.add(p);
-        Role role2 = new Role(("testrole2"));
 
         User user = new User("admin","admin");
         user.setRoles(roles);
@@ -292,9 +252,8 @@ public class RoleControllerTests {
 
                 .andExpect(view().name("/Roles/role-list"));
 
-        //Privilege is not in Use
+        //Role is not in Use
         when(userService.findAll()).thenReturn(users);
-        lenient().when(privilegeService.deleteById(id)).thenReturn(null);
         mockMvc.perform(get("/usermanagement/roles/{id}/delete","11"))
                 .andExpect(status().is(302))
                 .andDo(print())
