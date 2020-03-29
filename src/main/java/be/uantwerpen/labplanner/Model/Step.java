@@ -31,22 +31,19 @@ public class Step extends AbstractPersistable<Long> {
     private String startHour;
     @Column(name = "endHour", nullable = false)
     private String endHour;
-    @Column(name= "stepName", unique = true)
-    private String stepName;
 
 
 
     public Step(){
     }
 
-    public Step(User user, Device device, String start, String end, String startHour, String endHour, String stepName) {
+    public Step(User user, Device device, String start, String end, String startHour, String endHour) {
         this.user=  user;
         this.device = device;
         this.start=start;
         this.end=end;
         this.startHour=startHour;
         this.endHour=endHour;
-        this.stepName=stepName;
     }
 
     @Override
@@ -111,13 +108,5 @@ public class Step extends AbstractPersistable<Long> {
 
     public void setEndHour(String endHour) {
         this.endHour = endHour;
-    }
-
-    public String getStepName() {
-        return stepName;
-    }
-
-    public void setStepName(String stepName) {
-        this.stepName = stepName;
     }
 }
