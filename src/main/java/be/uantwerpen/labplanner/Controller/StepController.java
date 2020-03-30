@@ -6,6 +6,7 @@ import be.uantwerpen.labplanner.Model.Step;
 import be.uantwerpen.labplanner.Repository.DeviceRepository;
 import be.uantwerpen.labplanner.Service.DeviceService;
 import be.uantwerpen.labplanner.Service.DeviceTypeService;
+import be.uantwerpen.labplanner.Service.ExperimentService;
 import be.uantwerpen.labplanner.Service.StepService;
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
@@ -46,6 +47,8 @@ public class StepController {
     private DeviceTypeService deviceTypeService;
     @Autowired
     private RoleService roleService;
+    @Autowired
+    private ExperimentService experimentService;
 
     @Autowired
     UserRepository userRepository;
@@ -164,6 +167,11 @@ public class StepController {
         }
         model.clear();
         return "redirect:/planning";
+    }
+    @RequestMapping(value = "/planning", method = RequestMethod.GET)
+    public String viewShowExperiments(final ModelMap model){
+        model.addAttribute("allExperiments",experimentService.findAll());
+        return "/PlanningTool/planning-manage";
     }
 
     public boolean overlapCheck(Step step) throws ParseException {

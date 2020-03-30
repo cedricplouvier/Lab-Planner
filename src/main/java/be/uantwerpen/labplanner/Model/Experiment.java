@@ -21,39 +21,66 @@ Experiment
 */
 @Entity
 public class Experiment extends AbstractPersistable<Long> {
+
+
+
+
     @ManyToOne
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "user",unique = true)
     private User user;
+    @OneToOne
+    @JoinColumn(name = "experimentType",nullable = false)
+    private ExperimentType experimentType;
 
-    @OneToMany
-    @JoinColumn(name = "step", nullable = false)
-    private List<Step> steps;
+    @Column(name = "experimentname",unique = true, nullable = false)
+    private String experimentname;
 
 
-    @OneToMany
-    @JoinColumn(name = "continuity", nullable = false)
-    private List<Continuity> continuities;
+
+    @Column(name = "startDate")
+    private String startDate;
+    @Column(name = "endDate")
+    private String endDate;
 
     public Experiment() {
     }
 
-    public void addStep(Step step) {
-        //First step wil be added without continuity
-        if (steps.size() == 0) {
-            steps.add(step);
-        } else {
-            steps.add(step);
-            continuities.add(new Continuity(steps.get(steps.size() - 1), step));
-        }
+    public User getUser() {
+        return user;
     }
 
-    public void addStep(Step step, ContinuityType continuityType, int hours, int minutes) {
-        //First step wil be added without continuity
-        if (steps.size() == 0) {
-            steps.add(step);
-        } else {
-            steps.add(step);
-            continuities.add(new Continuity(continuityType, hours, minutes, steps.get(steps.size() - 1), step));
-        }
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public ExperimentType getExperimentType() {
+        return experimentType;
+    }
+
+    public void setExperimentType(ExperimentType experimentType) {
+        this.experimentType = experimentType;
+    }
+
+    public String getExperimentname() {
+        return experimentname;
+    }
+
+    public void setExperimentname(String experimentname) {
+        this.experimentname = experimentname;
+    }
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
     }
 }
