@@ -1,13 +1,8 @@
 package be.uantwerpen.labplanner.Controller;
 
-import be.uantwerpen.labplanner.Model.Device;
-import be.uantwerpen.labplanner.Model.DeviceType;
-import be.uantwerpen.labplanner.Model.Step;
+import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Repository.DeviceRepository;
-import be.uantwerpen.labplanner.Service.DeviceService;
-import be.uantwerpen.labplanner.Service.DeviceTypeService;
-import be.uantwerpen.labplanner.Service.ExperimentService;
-import be.uantwerpen.labplanner.Service.StepService;
+import be.uantwerpen.labplanner.Service.*;
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.model.users.Role;
@@ -49,6 +44,8 @@ public class StepController {
     private RoleService roleService;
     @Autowired
     private ExperimentService experimentService;
+    @Autowired
+    private ExperimentTypeService experimentTypeService;
 
     @Autowired
     UserRepository userRepository;
@@ -125,7 +122,7 @@ public class StepController {
             return "redirect:/planning";
         }
         step.setUser(currentUser);
-        stepService.save(step);
+        stepService.saveSomeAttributes(step);
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
         model.addAttribute("allSteps",stepService.findAll());
@@ -168,10 +165,58 @@ public class StepController {
         model.clear();
         return "redirect:/planning";
     }
-    @RequestMapping(value = "/planning", method = RequestMethod.GET)
+    @RequestMapping(value = "/planning/experiments", method = RequestMethod.GET)
     public String viewShowExperiments(final ModelMap model){
         model.addAttribute("allExperiments",experimentService.findAll());
-        return "/PlanningTool/planning-manage";
+        model.addAttribute("allExperimentTypes",experimentTypeService.findAll());
+        return "/PlanningTool/planning-exp-list";
+    }
+    @RequestMapping(value = "/planning/experiments/{id}/delete",method = RequestMethod.GET)
+    public String deleteExperiment(@PathVariable Long id, final ModelMap model,RedirectAttributes ra){
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<Experiment> Experiments=experimentService.findAll();
+        Set<Role> userRoles = currentUser.getRoles();
+        Role adminRol = roleService.findByName("Administrator").get();
+        boolean isUsed=false;
+
+        if(userRoles.contains(adminRol)){
+            stepService.delete(id);
+            Iterator<Experiment> it = Experiments.iterator();
+            while (it.hasNext()) {
+                Experiment temp = it.next();
+                if(temp.getExperimentType().getId()==id){
+                    isUsed = true;
+                }
+            }
+            if(isUsed)
+            {
+                ra.addFlashAttribute("Status", new String("Error"));
+                ra.addFlashAttribute("Message",new String("Experiment type is still in use."));
+                logger.error(currentUser.getUsername()+" tried to delete experiment type that is still in use.");
+            }
+            else {
+                experimentTypeService.delete(id);
+                ra.addFlashAttribute("Status", new String("Success"));
+                ra.addFlashAttribute("Message",new String("Experiment type successfully deleted."));
+            }
+        }
+        model.clear();
+        return "redirect:/planning/experiments";
+
+    }
+    @RequestMapping(value = "/planning/experiments/put",method = RequestMethod.GET)
+    public String viewCreateExperiment(final ModelMap model){
+        model.addAttribute("allSteps",stepService.findAll());
+        model.addAttribute("allDevices",deviceService.findAll());
+        model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+        return "/PlanningTool/planning-exp-manage";
+    }
+    @RequestMapping(value = "/planning/experiments/{id}",method = RequestMethod.GET)
+    public String viewEditExperiment(@PathVariable Long id,final ModelMap model){
+        model.addAttribute("allSteps",stepService.findAll());
+        model.addAttribute("allDevices",deviceService.findAll());
+        model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+        return "/PlanningTool/planning-exp-manage";
     }
 
     public boolean overlapCheck(Step step) throws ParseException {

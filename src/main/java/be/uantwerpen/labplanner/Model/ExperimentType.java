@@ -15,7 +15,7 @@ public class ExperimentType extends AbstractPersistable<Long> {
     @Column(name = "experimentTypeName",unique = true,nullable = false)
     private String experimentTypeName;
     @OneToMany
-    @JoinColumn(name = "step", nullable = false)
+    @JoinColumn(name = "steps")
     private List<Step> steps;
 
 

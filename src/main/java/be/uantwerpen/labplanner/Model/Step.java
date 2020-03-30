@@ -15,21 +15,16 @@ public class Step extends AbstractPersistable<Long> {
     @JoinColumn(name= "device",nullable = false)
     private Device device;
 
-
-
-    /*@OneToOne
-        @Column(name="timeslot",nullable = false)
-        private Timeslot timeslot;*/
-    @Column(name = "start",nullable = false)
+    @Column(name = "start")
     private String start;
-    @Column(name = "end",nullable = false)
+    @Column(name = "end")
     private String end;
 
 
 
-    @Column(name = "startHour", nullable = false)
+    @Column(name = "startHour")
     private String startHour;
-    @Column(name = "endHour", nullable = false)
+    @Column(name = "endHour")
     private String endHour;
 
 
@@ -70,14 +65,6 @@ public class Step extends AbstractPersistable<Long> {
     public void setDevice(Device device) {
         this.device = device;
     }
-/*
-    public Timeslot getTimeslot() {
-        return timeslot;
-    }
-
-    public void setTimeslot(Timeslot timeslot) {
-        this.timeslot = timeslot;
-    }*/
 
     public String getStart() {
         return start;
