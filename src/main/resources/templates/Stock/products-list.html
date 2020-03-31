@@ -55,6 +55,10 @@
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
     <div class="content">
+
+        <div class="alert alert-success" role="alert" th:if="${success}!=null" th:text="${success}"></div>
+        <div class="alert alert-danger" role="alert" th:if="${error}!=null" th:text="${error}"></div>
+
         <div id="product-list">
             <input type='text' id='txt_name' th:placeholder="#{product.search}">
 
@@ -83,7 +87,7 @@
 
                     <a sec:authorize="hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced') or hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/(id=${product.id})}">
                         <span class="fas fa-edit"></span></a>&nbsp;
-                    <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/delete(id=${product.id})}">
+                    <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/delete(id=${product.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
                         <span class="fas fa-trash"></span></a>
                     <a th:href="@{/products/info/{id}/(id=${product.id})}">
                         <span class="fas fa-info"></span></a>
@@ -105,7 +109,7 @@
 
                     <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/(id=${product.id})}">
                         <span class="fas fa-edit"></span></a>&nbsp;
-                    <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/delete(id=${product.id})}">
+                    <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/delete(id=${product.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
                         <span class="fas fa-trash"></span></a>
                     <a th:href="@{/products/info/{id}/(id=${product.id})}">
                         <span class="fas fa-info"></span></a>
@@ -122,7 +126,7 @@
 
             <a sec:authorize="hasAuthority('Stock - Modify - All')" href="tags" class="btn btn-primary" th:text="#{tag.manage}"
             >Manage Materials</a>
-            <a href="mixtures" class="btn btn-outline-primary" th:text="#{mixtures}"
+            <a href="/mixtures" class="btn btn-outline-primary" th:text="#{mixtures}"
             >Mixtures</a>
             <a sec:authorize="hasAuthority('Stock - Modify - All')" href="/products/put" class="btn btn-outline-primary" th:text="#{product.new}"
             >Manage device types</a>
