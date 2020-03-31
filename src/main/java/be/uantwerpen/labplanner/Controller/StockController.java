@@ -10,6 +10,7 @@ import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.model.stock.Unit;
 import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import be.uantwerpen.labplanner.common.service.stock.TagService;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -144,6 +145,8 @@ public class StockController {
             method= RequestMethod.POST)
     public String addProduct(@Valid Product product, BindingResult result,
                           final ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
+
         List<Product > products = productService.findAll();
         Iterator<Product> it = products.iterator();
         String NameIsUsed = null;
@@ -156,7 +159,7 @@ public class StockController {
 
         if(product.getName().length() == 0 ){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("errormessage", "Please give the product a valid name.");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.name"));
             model.addAttribute("units", Unit.values());
 
             return "/Stock/products-manage";
@@ -164,7 +167,7 @@ public class StockController {
 
         if(product.getDescription().length() == 0 ){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("errormessage", "Please give the product a valid description.");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.description"));
             model.addAttribute("units", Unit.values());
 
             return "/Stock/products-manage";
@@ -172,7 +175,7 @@ public class StockController {
 
         if(product.getProperties().length() == 0 ){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("errormessage", "Please give the product a valid properties description.");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.properties"));
             model.addAttribute("units", Unit.values());
 
             return "/Stock/products-manage";
@@ -180,7 +183,7 @@ public class StockController {
 
         if(product.getStockLevel() < 0){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("errormessage", "The stock level is not valid.");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.stock"));
             model.addAttribute("units", Unit.values());
 
             return "/Stock/products-manage";
@@ -188,7 +191,7 @@ public class StockController {
 
         if(product.getLowStockLevel() < 0){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("errormessage", "The low stock level is not valid.");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.lowstock"));
             model.addAttribute("units", Unit.values());
 
             return "/Stock/products-manage";
@@ -196,7 +199,7 @@ public class StockController {
 
         if(product.getReservedStockLevel() < 0){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("errormessage", "The reserved stock level is not valid.");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.reservedstock"));
             model.addAttribute("units", Unit.values());
 
             return "/Stock/products-manage";
@@ -204,7 +207,7 @@ public class StockController {
 
         if(product.getTags().size() == 0){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("errormessage", "Please assign a tag to the product");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.tag"));
             model.addAttribute("units", Unit.values());
 
             return "/Stock/products-manage";
@@ -212,7 +215,7 @@ public class StockController {
 
         if(NameIsUsed != null){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("errormessage", NameIsUsed);
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.duplicate"));
             model.addAttribute("units", Unit.values());
 
             return "/Stock/products-manage";
@@ -220,7 +223,7 @@ public class StockController {
 
         if(result.hasErrors()){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("errormessage", "Oops, something went wrong!");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.general"));
             model.addAttribute("units", Unit.values());
 
             return "/Stock/products-manage";
@@ -302,7 +305,7 @@ public class StockController {
         }
         if (isUsed){
             model.addAttribute("allProductTags",tagService.findAll());
-            model.addAttribute("error", "Please give the tag a valid name");
+            model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("tag.deleteError"));
             return "/Tags/tags-list";
         }
         tagService.deleteById(id);
@@ -325,6 +328,8 @@ public class StockController {
             method= RequestMethod.POST)
         public String addTag(@Valid Tag tag, BindingResult result,
                              final ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
+
         List<Tag > tags = tagService.findAll();
         Iterator<Tag> it = tags.iterator();
         String NameIsUsed = null;
@@ -337,19 +342,19 @@ public class StockController {
 
         if(tag.getName().length() == 0){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("errormessage", "Please give the tag a valid name");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.name"));
             return "Tags/tags-manage";
         }
 
         if(NameIsUsed != null){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("errormessage", NameIsUsed);
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.duplicate"));
             return "Tags/tags-manage";
         }
 
         if(result.hasErrors()){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("errormessage", "Oops, something went wrong!");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.general"));
 
             return "Tags/tags-manage";
         }
@@ -395,6 +400,7 @@ public class StockController {
             method= RequestMethod.POST)
     public String addMixture(@Valid Mixture mixture, BindingResult result,
                              final ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
 
         List<Mixture > mixtures = mixtureService.findAll();
         Iterator<Mixture> it = mixtures.iterator();
@@ -408,7 +414,7 @@ public class StockController {
 
         if(mixture.getName().length() == 0){
             model.addAttribute("allMixtures", mixtureService.findAll());
-            model.addAttribute("errormessage", "Please enter a valid name");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.name"));
             model.addAttribute("allCompositions", compositionService.findAll());
 
             return "Mixtures/mixtures-manage";
@@ -417,7 +423,7 @@ public class StockController {
 
         if(mixture.getCompositions().isEmpty()){
             model.addAttribute("allMixtures", mixtureService.findAll());
-            model.addAttribute("errormessage", "Please select ingredients");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.ingredients"));
             model.addAttribute("allCompositions", compositionService.findAll());
 
             return "Mixtures/mixtures-manage";
@@ -425,7 +431,7 @@ public class StockController {
 
         if(NameIsUsed != null){
             model.addAttribute("allMixtures", tagService.findAll());
-            model.addAttribute("errormessage", NameIsUsed);
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.duplicate"));
             model.addAttribute("allCompositions", compositionService.findAll());
 
             return "/Mixtures/mixtures-manage";
@@ -433,7 +439,7 @@ public class StockController {
 
         if(result.hasErrors()){
             model.addAttribute("allMixtures", mixtureService.findAll());
-            model.addAttribute("errormessage", "Oops, something went wrong!");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.general"));
             model.addAttribute("allCompositions", compositionService.findAll());
 
             return "Mixtures/mixtures-manage";
@@ -458,8 +464,12 @@ public class StockController {
     @RequestMapping(value="/compositions/{id}/delete",method = RequestMethod.GET)
     public String deleteIngredients(@PathVariable Long id, final ModelMap model){
         List<Mixture> mixtures = mixtureService.findAll();
+        Locale current = LocaleContextHolder.getLocale();
+
         Composition compos = null;
+        Boolean isUsed = false;
         Optional<Composition> tempCompos = compositionService.findById(id);
+
         if(tempCompos.isPresent()){
             compos = tempCompos.get();
         }
@@ -468,16 +478,18 @@ public class StockController {
         while (it.hasNext()) {
             Mixture temp = it.next();
             if(temp.getCompositions().contains(compos) && temp.getId() != compos.getId()){
-                List<Composition> list = temp.getCompositions();
-                if(compos != null) {
-                    list.remove(compos);
-                    temp.setCompositions(list);
-                }
+                isUsed = true;
             }
+        }
+
+        if (isUsed){
+            model.addAttribute("allCompositions", compositionService.findAll());
+            model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("composition.deleteError"));
+            return "/Tags/tags-list";
         }
         compositionService.deleteById(id);
         model.clear();
-        String url = "redirect:/compositions/";
+        String url =  "/Mixtures/compositions-list";
 
         return url;
     }
@@ -493,15 +505,17 @@ public class StockController {
             method= RequestMethod.POST)
     public String addComposition(@Valid Composition composition, BindingResult result,
                              final ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
+
         if(composition.getAmount()<=0.0){
             System.out.println(composition.getAmount());
-            model.addAttribute("errormessage", "Oops, the amount is invalid. Please choose a positive amount.");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.amount"));
             return "Mixtures/compositions-manage";
         }
 
         if(result.hasErrors()){
             model.addAttribute("allProducts", productService.findAll());
-            model.addAttribute("errormessage", "Oops, something went wrong!");
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.general"));
             model.addAttribute("composition", new Composition());
             return "Mixtures/compositions-manage";
         }

@@ -85,7 +85,7 @@
 
                     <a sec:authorize="hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced') or hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/(id=${product.id})}">
                         <span class="fas fa-edit"></span></a>&nbsp;
-                    <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/delete(id=${product.id})}">
+                    <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/delete(id=${product.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
                         <span class="fas fa-trash"></span></a>
                     <a th:href="@{/products/info/{id}/(id=${product.id})}">
                         <span class="fas fa-info"></span></a>
