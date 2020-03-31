@@ -35,10 +35,4 @@ public class LabplannerApplicationTests {
     public void contextLoads() {
     }
 
-    @Test
-    public void extraCheck(){
-        int id = 0;
-        assertEquals(id,0);
-    }
-
 }
