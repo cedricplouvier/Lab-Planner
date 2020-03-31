@@ -48,6 +48,10 @@
     <div th:replace="navbar :: navbar"></div>
     <div class="content">
         <div id="mixture-list">
+
+            <div class="alert alert-success" role="alert" th:if="${success}!=null" th:text="${success}"></div>
+
+
             <input type='text' id='txt_name' th:placeholder="#{mixtures.search}">
 
             <table class="table table-hover">

@@ -261,7 +261,12 @@ public class StockController {
         else {
             productService.deleteById(id);
             model.clear();
-            return "redirect:/products";
+            List<Product> agg_bit = getAggBitList();
+            List<Product> con_oth = getComOthList();
+            model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
+            model.addAttribute("agg_bit", agg_bit);
+            model.addAttribute("con_oth", con_oth);
+            return "/Stock/products-list";
         }
 
 
@@ -309,8 +314,9 @@ public class StockController {
             return "/Tags/tags-list";
         }
         tagService.deleteById(id);
-        model.clear();
-        return "redirect:/tags";
+        model.addAttribute("allProductTags",tagService.findAll());
+        model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
+        return "/Tags/tags-list";
     }
 
 
@@ -379,11 +385,13 @@ public class StockController {
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
     @RequestMapping(value="/mixtures/{id}/delete",method = RequestMethod.GET)
     public String deleteMixture(@PathVariable Long id, final ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
         mixtureService.deleteById(id);
         model.clear();
-        String url = "redirect:/mixtures/";
+        model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
+        model.addAttribute("allMixtures", mixtureService.findAll());
+        return "/Mixtures/mixtures-list";
 
-        return url;
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
@@ -485,13 +493,13 @@ public class StockController {
         if (isUsed){
             model.addAttribute("allCompositions", compositionService.findAll());
             model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("composition.deleteError"));
-            return "/Tags/tags-list";
+            return "/Mixtures/compositions-list";
         }
         compositionService.deleteById(id);
         model.clear();
-        String url =  "/Mixtures/compositions-list";
-
-        return url;
+        model.addAttribute("allCompositions", compositionService.findAll());
+        model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
+        return "/Mixtures/compositions-list";
     }
 
     @RequestMapping(value="/compositions", method= RequestMethod.GET)
