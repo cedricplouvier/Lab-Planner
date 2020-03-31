@@ -1,6 +1,7 @@
-package be.uantwerpen.labplanner.Controller;
+package be.uantwerpen.labplanner;
 
 
+import be.uantwerpen.labplanner.Controller.PrivilegeController;
 import be.uantwerpen.labplanner.Service.OwnPrivilegeService;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.model.users.Role;
