@@ -3,13 +3,20 @@ package be.uantwerpen.labplanner;
 import be.uantwerpen.labplanner.Controller.PrivilegeController;
 import be.uantwerpen.labplanner.Service.OwnPrivilegeService;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
+import be.uantwerpen.labplanner.common.model.users.Role;
+import be.uantwerpen.labplanner.common.repository.users.PrivilegeRepository;
+import be.uantwerpen.labplanner.common.repository.users.RoleRepository;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -34,36 +41,78 @@ public class LabplannerApplicationTests {
         assertEquals(id,0);
     }
 
-    @Mock
-    private RoleService roleService;
+    @Autowired
+    private RoleRepository roleRepository;
 
-    @Mock
-    private OwnPrivilegeService privilegeService;
-
-    @InjectMocks
-    private PrivilegeController privilegeController;
-
-    private MockMvc mockMvc;
-
-    @Before
-    public void setup(){
-
-        MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(privilegeController).build();
-    }
+    @Autowired
+    private PrivilegeRepository privilegeRepository;
 
 
-    //View user list test
+
     @Test
-    public void viewPrivilegeList() throws Exception{
-        Privilege p1 = new Privilege("test");
-        List<Privilege> privileges = new ArrayList<>();
-        privileges.add(p1);
-        when(privilegeService.findAll()).thenReturn(privileges);
-        mockMvc.perform(get("/usermanagement/privileges"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("/Privileges/privilege-list"))
-                .andExpect(model().attribute("allPrivileges", hasSize(1)));
+    public void testRoleSave(){
+        //create Role
+        Role role = new Role();
+        role.setName("Tester");
+
+        long precount = roleRepository.count();
+
+        Privilege p1 = new Privilege("logon");
+        privilegeRepository.save(p1);
+        List<Privilege> privs = new ArrayList<Privilege>();
+        privs.add(p1);
+        role.setPrivileges(privs);
+
+        //save product & varify id
+        assertNull(role.getId());
+        roleRepository.save(role);
+        assertNotNull(role.getId());
+
+        //retrieve Role from database.
+        Role fetchedRole = roleRepository.findById(role.getId()).orElse(null);
+        assertNotNull(fetchedRole);
+
+        //and the fetched Role should equal the real Role
+        assertEquals(fetchedRole.getName(),role.getName());
+        assertEquals(fetchedRole.getId(),role.getId());
+        assertEquals(fetchedRole.getPrivileges().size(),role.getPrivileges().size());
+
+        //update name & desciption
+        fetchedRole.setName("Test_updated");
+        Privilege p2 = new Privilege("test");
+        privilegeRepository.save(p2);
+        privs.add(p2);
+        fetchedRole.setPrivileges(privs);
+
+
+        roleRepository.save(fetchedRole);
+
+        Role fetchedUpdated = roleRepository.findById(fetchedRole.getId()).orElse(null);
+
+        assertEquals(fetchedUpdated.getName(),fetchedRole.getName());
+        assertEquals(fetchedRole.getPrivileges().size(),2);
+        assertEquals(fetchedUpdated.getPrivileges().size(),fetchedRole.getPrivileges().size());
+        assertEquals(fetchedUpdated.getPrivileges().size(),2);
+
+
+        assertEquals(roleRepository.count(),precount+1);
+
+        int count = 0;
+        for (Role p : roleRepository.findAll()) {
+            count++;
+        }
+
+        assertEquals(count,precount+1);
+
+        //delete user and check if still in database
+        roleRepository.deleteById(fetchedUpdated.getId());
+
+        assertEquals(roleRepository.count(),precount);
+        assertNull(roleRepository.findById(fetchedUpdated.getId()).orElse(null));
+
+        //check for delete if nnot exists
+        assertThrows(EmptyResultDataAccessException.class,()->{roleRepository.deleteById(fetchedUpdated.getId());});
+
     }
 
 
