@@ -53,6 +53,8 @@
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
     <div class="content">
+        <div class="alert alert-danger" role="alert" th:if="${error}!=null" th:text="${error}"></div>
+
         <div id="tag-list">
             <input type='text' id='txt_name' th:placeholder="#{product.tag.search}">
 
@@ -70,7 +72,7 @@
                     <td>
                         <a th:href="@{/tags/{id}/(id=${tag.id})}"><span
                                 class="fas fa-edit"></span></a>&nbsp;
-                        <a th:href="@{/tags/{id}/delete(id=${tag.id})}">
+                        <a th:href="@{/tags/{id}/delete(id=${tag.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
                             <span class="fas fa-trash"></span></a>
                     </td>
                 </tr>

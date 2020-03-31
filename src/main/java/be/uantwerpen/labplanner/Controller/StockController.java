@@ -11,6 +11,7 @@ import be.uantwerpen.labplanner.common.model.stock.Unit;
 import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import be.uantwerpen.labplanner.common.service.stock.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -22,10 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class StockController {
@@ -45,11 +43,7 @@ public class StockController {
         return  this.productService.findAll();
     }
 
-
-    //Mappings
-    //@PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Read only - Basic') or hasAuthority('Stock - Aggregates + Bitumen Read only - Advanced') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
-    @RequestMapping(value="/products", method= RequestMethod.GET)
-    public String showProducts(final ModelMap model){
+    public List<Product> getAggBitList(){
         //aggregates + bitumen
         List<Product> agg_bit = new ArrayList<>();
         //consumables + other
@@ -59,10 +53,10 @@ public class StockController {
         Optional<Tag> OptAggregateTag = tagService.findByName("Aggregates");
         Optional<Tag> optBitumenTag = tagService.findByName("Bitumen");
         if(OptAggregateTag.isPresent()){
-             aggregateTag = OptAggregateTag.get();
+            aggregateTag = OptAggregateTag.get();
         }
         if(optBitumenTag.isPresent()){
-             bitumenTag = optBitumenTag.get();
+            bitumenTag = optBitumenTag.get();
         }
 
 
@@ -77,6 +71,47 @@ public class StockController {
                 con_oth.add(temp);
             }
         }
+        return agg_bit;
+    }
+
+    public List<Product> getComOthList(){
+        //aggregates + bitumen
+        List<Product> agg_bit = new ArrayList<>();
+        //consumables + other
+        List<Product> con_oth = new ArrayList<>();
+        Tag aggregateTag = null;
+        Tag bitumenTag = null;
+        Optional<Tag> OptAggregateTag = tagService.findByName("Aggregates");
+        Optional<Tag> optBitumenTag = tagService.findByName("Bitumen");
+        if(OptAggregateTag.isPresent()){
+            aggregateTag = OptAggregateTag.get();
+        }
+        if(optBitumenTag.isPresent()){
+            bitumenTag = optBitumenTag.get();
+        }
+
+
+        List<Product> products = productService.findAll();
+        Iterator<Product> it = products.iterator();
+        while (it.hasNext()) {
+            Product temp = it.next();
+            if(temp.getTags().contains(aggregateTag) || temp.getTags().contains(bitumenTag)){
+                agg_bit.add(temp);
+            }
+            else {
+                con_oth.add(temp);
+            }
+        }
+        return con_oth;
+    }
+
+    //Mappings
+    //@PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Read only - Basic') or hasAuthority('Stock - Aggregates + Bitumen Read only - Advanced') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
+    @RequestMapping(value="/products", method= RequestMethod.GET)
+    public String showProducts(final ModelMap model){
+        List<Product> agg_bit = getAggBitList();
+        List<Product> con_oth = getComOthList();
+
         model.addAttribute("agg_bit", agg_bit);
         model.addAttribute("con_oth", con_oth);
         return "/Stock/products-list";
@@ -197,9 +232,37 @@ public class StockController {
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
     @RequestMapping(value="/products/{id}/delete",method = RequestMethod.GET)
     public String deleteProduct(@PathVariable Long id, final ModelMap model){
-        productService.deleteById(id);
-        model.clear();
-        return "redirect:/products";
+        Locale current = LocaleContextHolder.getLocale();
+        List<Composition> compositions = compositionService.findAll();
+        Product product = null;
+        Optional<Product> tempProd = productService.findById(id);
+        boolean isUsed = false;
+        if(tempProd.isPresent()){
+            product = tempProd.get();
+        }
+        Iterator<Composition> it = compositions.iterator();
+        while (it.hasNext()) {
+            Composition temp = it.next();
+            if(temp.getProduct().equals(product)){
+                isUsed = true;
+            }
+        }
+        if (isUsed){
+            List<Product> agg_bit = getAggBitList();
+            List<Product> con_oth = getComOthList();
+            model.addAttribute("agg_bit", agg_bit);
+            model.addAttribute("con_oth", con_oth);
+            model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("product.deleteError"));
+            return "/Stock/products-list";
+        }
+        else {
+            productService.deleteById(id);
+            model.clear();
+            return "redirect:/products";
+        }
+
+
+
     }
 
     @RequestMapping(value ="/products/info/{id}", method= RequestMethod.GET)
@@ -221,9 +284,11 @@ public class StockController {
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
     @RequestMapping(value="/tags/{id}/delete",method = RequestMethod.GET)
     public String deleteTag(@PathVariable Long id, final ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
         List<Product> products = productService.findAll();
         Tag tag = null;
         Optional<Tag> tempTag = tagService.findById(id);
+        boolean isUsed = false;
         if(tempTag.isPresent()){
             tag = tempTag.get();
         }
@@ -232,12 +297,13 @@ public class StockController {
         while (it.hasNext()) {
             Product temp = it.next();
             if(temp.getTags().contains(tag)){
-                List<Tag> list = temp.getTags();
-                if(tag != null) {
-                    list.remove(tag);
-                    temp.setTags(list);
-                }
+                isUsed = true;
             }
+        }
+        if (isUsed){
+            model.addAttribute("allProductTags",tagService.findAll());
+            model.addAttribute("error", "Please give the tag a valid name");
+            return "/Tags/tags-list";
         }
         tagService.deleteById(id);
         model.clear();
@@ -411,7 +477,7 @@ public class StockController {
         }
         compositionService.deleteById(id);
         model.clear();
-        String url = "redirect:/mixtures/";
+        String url = "redirect:/compositions/";
 
         return url;
     }
