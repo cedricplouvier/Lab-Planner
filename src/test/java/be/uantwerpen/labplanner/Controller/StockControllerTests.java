@@ -1,9 +1,13 @@
 package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.LabplannerApplication;
+import be.uantwerpen.labplanner.Model.Composition;
 import be.uantwerpen.labplanner.Model.DatabaseLoader;
 import be.uantwerpen.labplanner.Service.CompositionService;
 import be.uantwerpen.labplanner.Service.MixtureService;
+import be.uantwerpen.labplanner.common.model.stock.Product;
+import be.uantwerpen.labplanner.common.model.stock.Tag;
+import be.uantwerpen.labplanner.common.model.stock.Unit;
 import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import be.uantwerpen.labplanner.common.service.stock.TagService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
@@ -23,7 +27,19 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import javax.swing.text.html.Option;
+import javax.swing.tree.ExpandVetoException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -121,6 +137,114 @@ public class StockControllerTests {
     @Test
     public void viewCompositionsCreateTest() throws Exception{
         mockMvc.perform(get("/compositions/put")).andExpect(view().name("/Mixtures/compositions-manage"));
+    }
+
+
+    @Test
+    public void addNonValidProduct() throws Exception{
+
+        Product prod = new Product();
+        long id = 555;
+        prod.setId(id);
+
+        //empty name String
+        prod.setName("");
+        mockMvc.perform(post("/products/").flashAttr("product",prod))
+                .andExpect(model().attribute("errormessage", notNullValue()))
+                .andExpect(view().name("/Stock/products-manage"))
+                .andDo(print());
+
+        //empty  description
+        prod.setName("testname");
+        prod.setDescription("");
+        mockMvc.perform(post("/products/").flashAttr("product",prod))
+                .andExpect(model().attribute("errormessage", notNullValue()))
+                .andExpect(view().name("/Stock/products-manage"))
+                .andDo(print());
+
+        //empty properties
+        prod.setDescription("blablabla");
+        prod.setProperties("");
+        mockMvc.perform(post("/products/").flashAttr("product",prod))
+                .andExpect(model().attribute("errormessage", notNullValue()))
+                .andExpect(view().name("/Stock/products-manage"))
+                .andDo(print());
+
+        //invalid stock
+        prod.setProperties("thisareproperties");
+        prod.setStockLevel(-1.0);
+        prod.setLowStockLevel(-1.0);
+        prod.setReservedStockLevel(-1.0);
+        mockMvc.perform(post("/products/").flashAttr("product",prod))
+                .andExpect(model().attribute("errormessage", notNullValue()))
+                .andExpect(view().name("/Stock/products-manage"))
+                .andDo(print());
+
+        //empty tag
+        prod.setProperties("thisareproperties");
+        prod.setStockLevel(5.0);
+        prod.setLowStockLevel(1.0);
+        prod.setReservedStockLevel(1.0);
+        List<Tag > tags = new ArrayList<>();
+        //tags is empty list
+        prod.setTags(tags);
+        mockMvc.perform(post("/products/").flashAttr("product",prod))
+                .andExpect(model().attribute("errormessage", notNullValue()))
+                .andExpect(view().name("/Stock/products-manage"))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void addValidProduct() throws  Exception{
+        Tag t1 = new Tag("test");
+        List<Tag > tags = new ArrayList<>();
+        tags.add(t1);
+        Product prod = new Product("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags);
+        mockMvc.perform(post("/products/").flashAttr("product",prod))
+                .andExpect(view().name("redirect:/products"))
+                .andDo(print());
+    }
+
+
+
+    @Test
+    public void addValidTag() throws Exception{
+        Tag t1 = new Tag("test");
+        mockMvc.perform(post("/tags/").flashAttr("tag",t1))
+                .andExpect(view().name("redirect:/tags"))
+                .andDo(print());
+    }
+
+    @Test
+    public void addNonValidTag() throws Exception{
+
+        //name is empty
+        Tag t1 = new Tag("");
+        mockMvc.perform(post("/tags/").flashAttr("tag",t1))
+                .andExpect(model().attribute("errormessage", notNullValue()))
+                .andExpect(view().name("Tags/tags-manage"))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void addDuplicateNameTag() throws Exception{
+
+        Tag tag = new Tag("test1");
+        long id = 5;
+        tag.setId(id);
+
+        Tag tag2 = new Tag("test2");
+
+        when(tagService.findById(id)).thenReturn(Optional.of(tag2));
+        when(tagService.findByName("test1")).thenReturn(Optional.of(tag));
+
+        mockMvc.perform(post("/tags/{id", "5").flashAttr("tag",tag))
+                .andExpect(model().attribute("errormessage", notNullValue()))
+                .andExpect(view().name("Tags/tags-manage"))
+                .andDo(print());
+
     }
 
 
