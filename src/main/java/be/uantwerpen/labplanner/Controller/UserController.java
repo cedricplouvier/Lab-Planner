@@ -75,7 +75,7 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = {"/usermanagement/users/","/usermanagement/users/{id}"},method = RequestMethod.POST)
     public String addUser(@Valid User user,  BindingResult result, final ModelMap model) {
-        if (result.hasErrors()|| user.getUsername().trim().equals("") || user.getPassword().trim().equals("") ||user.getPassword() == null || user.getUsername() ==null) {
+        if ((result.hasErrors())|| (user.getPassword() == null) || (user.getUsername() ==null) || (user.getUsername().trim().equals("")) || (user.getPassword().trim().equals(""))){
             model.addAttribute("allRoles", roleService.findAll());
             model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.addError") );
             return "/Users/user-manage";
