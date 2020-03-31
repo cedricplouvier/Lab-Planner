@@ -145,7 +145,7 @@ public class StockController {
 
         if(product.getStockLevel() < 0){
             model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("errormessage", "Please give a valid amount in stock.");
+            model.addAttribute("errormessage", "The stock level is not valid.");
             model.addAttribute("units", Unit.values());
 
             return "/Stock/products-manage";
