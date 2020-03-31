@@ -218,6 +218,20 @@ public class StepController {
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
         return "/PlanningTool/planning-exp-manage";
     }
+    @RequestMapping(value = {"/planning/experiments/","/planning/experiments/{id}"},method = RequestMethod.POST)
+    public String addNewExperimentType(@Valid ExperimentType experiment,BindingResult result, ModelMap model, RedirectAttributes ra){
+
+        if (result.hasErrors()) {
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message",new String("There was a problem in adding the Experiment Type."));
+            System.out.println(result.getFieldError().toString());
+            return "redirect:/planning/experiments";
+        }
+        experimentTypeService.saveExperimentType(experiment);
+        ra.addFlashAttribute("Status", new String("Success"));
+        ra.addFlashAttribute("Message",new String("Experiment type successfully added."));
+        return "redirect:/planning/experiments";
+    }
 
     public boolean overlapCheck(Step step) throws ParseException {
         Iterable<Step> allSteps=populateSteps();
