@@ -27,7 +27,7 @@ public class PrivilegeRepositoryTests {
     public void testPrivilegeSave(){
         //create privilege
         Privilege privilege = new Privilege();
-        privilege.setName("logon");
+        privilege.setName("logon_test");
 
         long precount = privilegeRepository.count();
         //save product & varify id
