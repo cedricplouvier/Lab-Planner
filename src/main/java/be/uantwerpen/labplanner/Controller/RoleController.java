@@ -1,6 +1,7 @@
 package be.uantwerpen.labplanner.Controller;
 
 
+import be.uantwerpen.labplanner.Service.OwnPrivilegeService;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
@@ -35,7 +36,7 @@ public class RoleController {
     private RoleService roleService;
 
     @Autowired
-    private PrivilegeService privilegeService;
+    private OwnPrivilegeService privilegeService;
 
     @Autowired
     private UserService userService;
@@ -74,7 +75,7 @@ public class RoleController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = {"/usermanagement/roles/","/usermanagement/roles/{id}"},method = RequestMethod.POST)
     public String addRole(@Valid Role role, BindingResult result, final ModelMap model) {
-        if (result.hasErrors() || role.getName().trim().equals("") || role.getName() == null) {
+        if ((result.hasErrors()) || (role.getName() == null)||( role.getName().trim().equals(""))) {
             model.addAttribute("allPrivileges", privilegeService.findAll());
             model.addAttribute("roleInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("roles.errorAdd"));
             return "/Roles/role-manage";
