@@ -5,11 +5,12 @@ import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
-@Entity
-public class Composition extends AbstractPersistable<Long> {
+@Embeddable
+public class Composition{
 
     @Column
     private Double amount;
@@ -25,16 +26,6 @@ public class Composition extends AbstractPersistable<Long> {
     public  Composition(){
         this.amount = 0.0;
         this.product = null;
-    }
-
-    @Override
-    public Long getId() {
-        return super.getId();
-    }
-
-    @Override
-    public void setId(Long id) {
-        super.setId(id);
     }
 
     public Double getAmount() {

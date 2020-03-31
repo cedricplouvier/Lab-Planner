@@ -59,19 +59,31 @@
                 <tr>
                     <th th:text="#{mixtures.name}">Mixture Name</th>
                     <th th:text="#{mixtures.ingredients}">Mixture Ingredients</th>
+                    <th style="width: 50%"  th:text="#{product.description}">Mixture Descrption</th>
+                    <th th:text="#{mixtures.tag}">Mixture Tags</th>
+
+
 
                 </tr>
                 </thead>
                 <!-- IMPORTANT, class="list" have to be at tbody -->
                 <tbody class="list">
                 <tr th:each="mixture : ${allMixtures}">
-                    <td class='mixtureName' th:value="${mixture.getName()}"
+                        <td class='mixtureName' th:value="${mixture.getName()}"
                         th:text="${mixture.name}" >Mixture Name</td>
                         <td class="ingredients">
                             <a
                                     th:each="ingred : ${mixture.compositions}"
-                                    th:value="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()}"
-                                    th:utext="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()} + '<br />'"></a>
+                                    th:value="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' %'"
+                                    th:utext="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' %' + '<br />'"></a>
+                        </td>
+                         <td class='mixtureName' th:value="${mixture.getDescription()}"
+                        th:text="${mixture.description}" >Mixture description</td>
+                        <td class="Tags">
+                            <a
+                                    th:each="tag : ${mixture.tags}"
+                                    th:value="${tag.name}"
+                                    th:text="${tag.name} + ' '"></a>
                         </td>
                     <td>
                         <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  th:href="@{/mixtures/{id}/(id=${mixture.id})}"><span
@@ -89,9 +101,7 @@
             <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  href="/mixtures/put" type="button" class="btn btn-outline-primary"th:text="#{mixture.create}">
                 Create new mixture
             </a>
-            <a href="/compositions" type="button" class="btn btn-outline-primary"th:text="#{mixtures.ingredients}">
-                Ingredient List
-            </a>
+
 
 
 

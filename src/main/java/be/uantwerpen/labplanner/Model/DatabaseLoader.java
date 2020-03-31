@@ -44,11 +44,10 @@ public class DatabaseLoader {
     private final ProductRepository productRepository;
     private final TagRepository tagRepository;
     private final StepRepository stepRepository;
-    private final CompositionRepository compositionRepository;
     private final MixtureRepository mixtureRepository;
 
     @Autowired
-    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository) {
+    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, MixtureRepository mixtureRepository) {
 
 
 
@@ -67,7 +66,6 @@ public class DatabaseLoader {
         this.tagRepository = tagRepository;
         //MixtureRepositories
         this.mixtureRepository = mixtureRepository;
-        this.compositionRepository = compositionRepository;
 
     }
 
@@ -462,13 +460,7 @@ public class DatabaseLoader {
         Composition c5 = new Composition(2.45,pr5);
         Composition c6 = new Composition(8.60, pr6);
         Composition c7 = new Composition(6.50, pr7);
-        compositionRepository.save(c1);
-        compositionRepository.save(c2);
-        compositionRepository.save(c3);
-        compositionRepository.save(c4);
-        compositionRepository.save(c5);
-        compositionRepository.save(c6);
-        compositionRepository.save(c7);
+
         List<Composition> mix1= new ArrayList<>();
         mix1.add(c1);mix1.add(c2);mix1.add(c3);mix1.add(c4);mix1.add(c5);mix1.add(c6);mix1.add(c7);
 
@@ -480,13 +472,7 @@ public class DatabaseLoader {
         Composition c15 = new Composition(12.91,pr5);
         Composition c16 = new Composition(7.10, pr6);
         Composition c17 = new Composition(6.50, pr7);
-        compositionRepository.save(c11);
-        compositionRepository.save(c12);
-        compositionRepository.save(c13);
-        compositionRepository.save(c14);
-        compositionRepository.save(c15);
-        compositionRepository.save(c16);
-        compositionRepository.save(c17);
+
         List<Composition> mix2= new ArrayList<>();
         mix2.add(c11);mix2.add(c12);mix2.add(c13);mix2.add(c14);mix2.add(c15);mix2.add(c16);mix2.add(c17);
 
@@ -496,21 +482,17 @@ public class DatabaseLoader {
         Composition c24 = new Composition(17.80, pr4);
         Composition c25 = new Composition(9.30,pr5);
         Composition c27 = new Composition(6.90, pr7);
-        compositionRepository.save(c21);
-        compositionRepository.save(c22);
-        compositionRepository.save(c24);
-        compositionRepository.save(c25);
-        compositionRepository.save(c27);
+
         List<Composition> mix3= new ArrayList<>();
         mix3.add(c21);mix3.add(c22);mix3.add(c24);mix3.add(c25);mix3.add(c27);
 
 
         //create mixtures and save them
-        Mixture m1 = new Mixture("APT-C", mix1);
+        Mixture m1 = new Mixture("APT-C", mix1, lorem.getWords(20),tags2);
         mixtureRepository.save(m1);
-        Mixture m2 = new Mixture("AB-4C", mix2);
+        Mixture m2 = new Mixture("AB-4C", mix2,lorem.getWords(20), tags1);
         mixtureRepository.save(m2);
-        Mixture m3 = new Mixture("SMA", mix3);
+        Mixture m3 = new Mixture("SMA", mix3,lorem.getWords(20), tags4);
         mixtureRepository.save(m3);
 
 
