@@ -25,10 +25,12 @@
                         <option th:value="false" th:text="false"></option>
                     </select>
 
+                    <p></p>
+                    <div class="form-group">
+                        <label th:text="#{device.type.color}"></label>
+                        <input type="color"  th:value="*{color}" th:field="*{color}">
+                    </div>
 
-                    <label th:text="#{device.type.color}"></label>
-                    <input type="color" value="#e66465">>
-                    </p>
                     <div class="alert alert-danger" role="alert" th:if="${NameIsUsed}!=null" th:text="${NameIsUsed}"></div>
                 </div>
                 <div class="col" >
