@@ -24,6 +24,10 @@
                         <option th:value="true" th:text="true"></option>
                         <option th:value="false" th:text="false"></option>
                     </select>
+
+
+                    <label th:text="#{device.type.color}"></label>
+                    <input type="color" value="#e66465">>
                     </p>
                     <div class="alert alert-danger" role="alert" th:if="${NameIsUsed}!=null" th:text="${NameIsUsed}"></div>
                 </div>
