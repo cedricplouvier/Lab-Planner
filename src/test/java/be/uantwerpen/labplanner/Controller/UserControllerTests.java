@@ -1,6 +1,7 @@
 package be.uantwerpen.labplanner.Controller;
 
 
+import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.Step;
 import be.uantwerpen.labplanner.Service.StepService;
 import be.uantwerpen.labplanner.common.model.users.Role;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -30,7 +32,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = LabplannerApplication.class)
+@WebAppConfiguration
 public class UserControllerTests {
 
     @Mock
