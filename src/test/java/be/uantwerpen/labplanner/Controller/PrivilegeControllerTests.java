@@ -1,19 +1,18 @@
 package be.uantwerpen.labplanner.Controller;
 
 
+import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Service.OwnPrivilegeService;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +25,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(MockitoJUnitRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = LabplannerApplication.class)
+@WebAppConfiguration
 public class PrivilegeControllerTests {
 
     @Mock
@@ -41,7 +40,7 @@ public class PrivilegeControllerTests {
 
     private MockMvc mockMvc;
 
-    @Before
+    @BeforeEach
     public void setup(){
 
         MockitoAnnotations.initMocks(this);

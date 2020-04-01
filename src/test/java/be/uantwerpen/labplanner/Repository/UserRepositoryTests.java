@@ -10,13 +10,14 @@ import be.uantwerpen.labplanner.common.repository.users.UserRepository;
 import be.uantwerpen.labplanner.common.repository.users.UserRepository;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = LabplannerApplication.class)
 @WebAppConfiguration
 public class UserRepositoryTests {
@@ -36,6 +36,72 @@ public class UserRepositoryTests {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Test
+    public void testUserSave(){
+        //create User
+        User user = new User(null,null,"","","","","","",null,null,null);
+        long precount = userRepository.count();
+
+        Role p1 = new Role("tester");
+        user.setPassword("test_correct");
+        user.setUsername("test_correct");
+        assertNull(user.getId());
+        roleRepository.save(p1);
+        Set<Role> roles = new HashSet<Role>();
+        roles.add(p1);
+        user.setRoles(roles);
+
+        //save product & varify id
+
+        userRepository.save(user);
+        assertNotNull(user.getId());
+
+        //retrieve User from database.
+        User fetchedUser = userRepository.findById(user.getId()).orElse(null);
+        assertNotNull(fetchedUser);
+
+        //and the fetched User should equal the real User
+        assertEquals(fetchedUser.getUsername(),user.getUsername());
+        assertEquals(fetchedUser.getId(),user.getId());
+        assertEquals(fetchedUser.getRoles().size(),user.getRoles().size());
+        assertEquals(fetchedUser.getRoles().size(),1);
+        assertEquals(fetchedUser.getPassword(),user.getPassword());
+
+        //update name & desciption
+        fetchedUser.setUsername("test_correct_updated");
+        fetchedUser.setPassword("test_correct_updated");
+        Role p2 = new Role("admin");
+        roleRepository.save(p2);
+        roles.add(p2);
+        fetchedUser.setRoles(roles);
+
+
+        userRepository.save(fetchedUser);
+
+        User fetchedUpdated = userRepository.findById(fetchedUser.getId()).orElse(null);
+
+        assertEquals(fetchedUpdated.getUsername(),fetchedUser.getUsername());
+        assertEquals(fetchedUser.getRoles().size(),2);
+        assertEquals(fetchedUpdated.getRoles().size(),fetchedUser.getRoles().size());
+
+
+        assertEquals(userRepository.count(),precount+1);
+
+        int count = 0;
+        for (User p : userRepository.findAll()) {
+            count++;
+        }
+
+        assertEquals(count,precount+1);
+
+        //delete user and check if still in database
+        userRepository.deleteById(fetchedUpdated.getId());
+
+        assertEquals(userRepository.count(),precount);
+        assertNull(userRepository.findById(fetchedUpdated.getId()).orElse(null));
+    }
+
 
     @Test
     public void testWrongUserSave(){
@@ -70,70 +136,6 @@ public class UserRepositoryTests {
         assertThrows(EmptyResultDataAccessException.class,()->{userRepository.deleteById(user3.getId());});
     }
 
-    @Test
-    public void testUserSave(){
-        //create User
-        User user = new User(null,null,"","","","","","",null,null,null);
-        long precount = userRepository.count();
-
-        Role p1 = new Role("tester");
-        user.setPassword("test");
-        user.setUsername("test");
-        assertNull(user.getId());
-        roleRepository.save(p1);
-        Set<Role> roles = new HashSet<Role>();
-        roles.add(p1);
-        user.setRoles(roles);
-
-        //save product & varify id
-
-        userRepository.save(user);
-        assertNotNull(user.getId());
-
-        //retrieve User from database.
-        User fetchedUser = userRepository.findById(user.getId()).orElse(null);
-        assertNotNull(fetchedUser);
-
-        //and the fetched User should equal the real User
-        assertEquals(fetchedUser.getUsername(),user.getUsername());
-        assertEquals(fetchedUser.getId(),user.getId());
-        assertEquals(fetchedUser.getRoles().size(),user.getRoles().size());
-        assertEquals(fetchedUser.getRoles().size(),1);
-        assertEquals(fetchedUser.getPassword(),user.getPassword());
-
-        //update name & desciption
-        fetchedUser.setUsername("Test_updated");
-        fetchedUser.setPassword("pw_updted");
-        Role p2 = new Role("admin");
-        roleRepository.save(p2);
-        roles.add(p2);
-        fetchedUser.setRoles(roles);
-
-
-        userRepository.save(fetchedUser);
-
-        User fetchedUpdated = userRepository.findById(fetchedUser.getId()).orElse(null);
-
-        assertEquals(fetchedUpdated.getUsername(),fetchedUser.getUsername());
-        assertEquals(fetchedUser.getRoles().size(),2);
-        assertEquals(fetchedUpdated.getRoles().size(),fetchedUser.getRoles().size());
-
-
-        assertEquals(userRepository.count(),precount+1);
-
-        int count = 0;
-        for (User p : userRepository.findAll()) {
-            count++;
-        }
-
-        assertEquals(count,precount+1);
-
-        //delete user and check if still in database
-        userRepository.deleteById(fetchedUpdated.getId());
-
-        assertEquals(userRepository.count(),precount);
-        assertNull(userRepository.findById(fetchedUpdated.getId()).orElse(null));
-    }
 
 
 

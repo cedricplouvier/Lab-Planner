@@ -1,20 +1,18 @@
 package be.uantwerpen.labplanner.Controller;
 
 
+import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Service.OwnPrivilegeService;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -29,8 +27,11 @@ import java.util.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(MockitoJUnitRunner.class)
-@SpringBootTest
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+
+@SpringBootTest(classes = LabplannerApplication.class)
+@WebAppConfiguration
 public class RoleControllerTests {
 
     @Mock
@@ -47,7 +48,7 @@ public class RoleControllerTests {
 
     private MockMvc mockMvc;
 
-    @Before
+    @BeforeEach
     public void setup(){
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(this.roleController).build();
