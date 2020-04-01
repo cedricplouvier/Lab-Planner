@@ -34,6 +34,12 @@ public class Continuity extends AbstractPersistable<Long> {
     @OneToOne
     @JoinColumn(name = "currentStep", nullable = false)
     private Step currentStep;
+    @OneToOne
+    @JoinColumn(name = "currentDeviceType")
+    private DeviceType currentDeviceType;
+    @OneToOne
+    @JoinColumn(name = "nextDeviceType")
+    private DeviceType nextDeviceType;
 
     //step that comes after current step
     @OneToOne
@@ -57,5 +63,20 @@ public class Continuity extends AbstractPersistable<Long> {
         this.minutes = DEFAULT_MINUTES;
         this.currentStep = currentStep;
         this.nextStep = nextStep;
+    }
+
+    public Continuity(DeviceType currentStepType,DeviceType nextStepType){
+        this.currentDeviceType=currentStepType;
+        this.nextDeviceType=nextStepType;
+        this.continuityType = DEFAULT_CONTINUITY_TYPE;
+        this.hours = DEFAULT_HOURS;
+        this.minutes = DEFAULT_MINUTES;
+    }
+    public Continuity(ContinuityType continuityType, int hours, int minutes, DeviceType currentDeviceType,DeviceType nextDeviceType){
+        this.continuityType = continuityType;
+        this.hours = hours;
+        this.minutes = minutes;
+        this.currentDeviceType=currentDeviceType;
+        this.nextDeviceType=nextDeviceType;
     }
 }

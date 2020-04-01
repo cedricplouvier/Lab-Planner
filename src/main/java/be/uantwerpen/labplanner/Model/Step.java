@@ -20,6 +20,10 @@ public class Step extends AbstractPersistable<Long> {
     @Column(name = "end")
     private String end;
 
+    @ManyToOne
+    @JoinColumn(name = "stepType")
+    private StepType stepType;
+
 
 
     @Column(name = "startHour")
@@ -95,5 +99,12 @@ public class Step extends AbstractPersistable<Long> {
 
     public void setEndHour(String endHour) {
         this.endHour = endHour;
+    }
+    public StepType getStepType() {
+        return stepType;
+    }
+
+    public void setStepType(StepType stepType) {
+        this.stepType = stepType;
     }
 }

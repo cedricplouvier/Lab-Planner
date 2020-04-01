@@ -34,6 +34,11 @@ public class Experiment extends AbstractPersistable<Long> {
 
     @Column(name = "experimentname",unique = true, nullable = false)
     private String experimentname;
+    @OneToOne
+    @JoinColumn(name = "expMixture")
+    private Mixture mixture;
+    @Column(name = "expMixtureComment")
+    private String mixtureComment;
 
 
 
@@ -82,5 +87,20 @@ public class Experiment extends AbstractPersistable<Long> {
 
     public void setEndDate(String endDate) {
         this.endDate = endDate;
+    }
+    public Mixture getMixture() {
+        return mixture;
+    }
+
+    public void setMixture(Mixture mixture) {
+        this.mixture = mixture;
+    }
+
+    public String getMixtureComment() {
+        return mixtureComment;
+    }
+
+    public void setMixtureComment(String mixtureComment) {
+        this.mixtureComment = mixtureComment;
     }
 }

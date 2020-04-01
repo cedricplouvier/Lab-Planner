@@ -10,5 +10,8 @@ import java.util.Optional;
 @Repository
 public interface ExperimentTypeRepository extends CrudRepository<ExperimentType, Long> {
     List<ExperimentType> findAll();
-    Optional<ExperimentType> findByExperimentTypeName(String ExperimentTypeName);
+    Optional<ExperimentType> findByName(String ExperimentTypeName);
+
+    @Override
+    Optional<ExperimentType> findById(Long id);
 }

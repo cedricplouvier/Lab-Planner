@@ -15,7 +15,7 @@ public class ExperimentTypeService {
     public ExperimentTypeService(){}
     public List<ExperimentType> findAll(){return this.experimentTypeRepository.findAll();}
     public Optional<ExperimentType> findByExperimentTypeName(String ExperimentTypeName){
-        return this.experimentTypeRepository.findByExperimentTypeName(ExperimentTypeName);
+        return this.experimentTypeRepository.findByName(ExperimentTypeName);
     }
     public Optional<ExperimentType> findById(Long id){
         return this.experimentTypeRepository.findById(id);
@@ -26,7 +26,7 @@ public class ExperimentTypeService {
         if(tempExperimentType!=null){
             tempExperimentType.setContinuities(experimentType.getContinuities());
             tempExperimentType.setExperimentTypeName(experimentType.getExperimentTypeName());
-            tempExperimentType.setSteps(experimentType.getSteps());
+            tempExperimentType.setStepTypes(experimentType.getDeviceTypes());
             experimentTypeRepository.save(tempExperimentType);
         }
         else experimentTypeRepository.save(experimentType);

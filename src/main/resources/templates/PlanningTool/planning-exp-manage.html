@@ -1,10 +1,141 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{Experiment Management}')"></head>
+<script th:inline="javascript">
+    function addrow(a) {
+        console.log(a);
+        $('#list')
+            .append(' <tr><input type="hidden"  value="'+a.id+'"><td>'+a.deviceTypeName+'</td><td><input name="cont"  placeholder="Continuity" id="continuity"></td><td><input placeholder="duration" id="duration"></td></tr>')
+    }
+    function filterFunction() {
+        var input, filter, ul, li, a, i;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        div = document.getElementById("myDropdown");
+        a = div.getElementsByTagName("a");
+        for (i = 0; i < a.length; i++) {
+            txtValue = a[i].textContent || a[i].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                a[i].style.display = "";
+            } else {
+                a[i].style.display = "none";
+            }
+        }
+    }
+</script>
+<style>
+    .dropbtn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+    }
 
+    .dropbtn:hover, .dropbtn:focus {
+        background-color: #3e8e41;
+    }
+
+    #myInput {
+        box-sizing: border-box;
+        background-image: url('searchicon.png');
+        background-position: 14px 12px;
+        background-repeat: no-repeat;
+        font-size: 16px;
+        padding: 14px 20px 12px 45px;
+        border: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    #myInput:focus {outline: 3px solid #ddd;}
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f6f6f6;
+        min-width: 230px;
+        overflow: auto;
+        border: 1px solid #ddd;
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown a:hover {background-color: #ddd;}
+
+    .show {display: block;}
+</style>
+<body>
+<div class = "container">
+    <div th:replace="navbar :: navbar"></div>
+    <form th:action="@{/planning/experiments/{id} (id=${experimentType})}" method="post">
+    <table class="table table-hover">
+        <div class="dropdown">
+            <div  class="">
+                <input type="text" placeholder="Search.." id="myInput" onclick="myFunction()" onmouseout="myFunction()" onkeyup="filterFunction()">
+                <div  id="myDropdown" class="dropdown-content">
+                    <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}" th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
+                </div>
+            </div>
+        </div>
+        <thead>
+        <tr>
+            <th th:text="#{step.type}">Step Type</th>
+            <th>Continuity</th>
+            <th th:text="#{step.duration}">Duration</th>
+
+        </tr>
+        </thead>
+
+        <!-- IMPORTANT, class="list" have to be at tbody -->
+        <tbody id="list" class="list" >
+
+        </tbody>
+    </table>
+<!--    <input th:field="*{name}" placeholder="Expirement Type Name">-->
+
+
+
+    <a href="/planning/experiments" class="btn btn-primary" th:text="#{experimentstype.return}" >Return</a>
+    <a type="submit" class="btn btn-outline-primary"th:text="#{experiment.type.submit}">
+        Submit
+    </a>
+    </form>
+</div>
+
+<script>
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function myFunction() {
+        document.getElementById("myDropdown").classList.toggle("show");
+    }
+
+    function filterFunction() {
+        var input, filter, ul, li, a, i;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        div = document.getElementById("myDropdown");
+        a = div.getElementsByTagName("a");
+        for (i = 0; i < a.length; i++) {
+            txtValue = a[i].textContent || a[i].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                a[i].style.display = "";
+            } else {
+                a[i].style.display = "none";
+            }
+        }
+    }
+</script>
 </body>
 </html>

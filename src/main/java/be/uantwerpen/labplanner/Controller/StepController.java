@@ -46,6 +46,11 @@ public class StepController {
     private ExperimentService experimentService;
     @Autowired
     private ExperimentTypeService experimentTypeService;
+    @Autowired
+    private MixtureService mixtureService;
+    @Autowired
+    private StepTypeService stepTypeService;
+
 
     @Autowired
     UserRepository userRepository;
@@ -205,17 +210,21 @@ public class StepController {
 
     }
     @RequestMapping(value = "/planning/experiments/put",method = RequestMethod.GET)
-    public String viewCreateExperiment(final ModelMap model){
-        model.addAttribute("allSteps",stepService.findAll());
+    public String viewCreateExperimentType(final ModelMap model){
         model.addAttribute("allDevices",deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+        model.addAttribute("allMixtures",mixtureService.findAll());
+        model.addAttribute("allStepTypes", stepTypeService.findAll());
+        model.addAttribute("experimentType",new ExperimentType());
         return "/PlanningTool/planning-exp-manage";
     }
     @RequestMapping(value = "/planning/experiments/{id}",method = RequestMethod.GET)
-    public String viewEditExperiment(@PathVariable Long id,final ModelMap model){
-        model.addAttribute("allSteps",stepService.findAll());
+    public String viewEditExperimentType(@PathVariable Long id,final ModelMap model){
         model.addAttribute("allDevices",deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+        model.addAttribute("allMixtures",mixtureService.findAll());
+        model.addAttribute("allStepTypes",stepTypeService.findAll());
+        model.addAttribute("experimentType",experimentTypeService.findById(id));
         return "/PlanningTool/planning-exp-manage";
     }
     @RequestMapping(value = {"/planning/experiments/","/planning/experiments/{id}"},method = RequestMethod.POST)
