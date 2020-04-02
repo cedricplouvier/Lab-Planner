@@ -245,8 +245,29 @@ public class StockController {
 
     @RequestMapping(value ="/products/info/{id}", method= RequestMethod.GET)
     public String viewProductInfo(@PathVariable Long id, final ModelMap model){
+
+        Product prod = productService.findById(id).orElse(null);
+
+        List<Mixture> mixtures = new ArrayList<>();
+        List<Mixture> returnList = new ArrayList<>();
+        mixtures = mixtureService.findAll();
+        Iterator<Mixture> it = mixtures.iterator();
+        while (it.hasNext()) {
+            Mixture mix = it.next();
+            List<Composition> compositions = mix.getCompositions();
+            Iterator<Composition> it2 = compositions.iterator();
+            while (it2.hasNext()) {
+                Composition comp = it2.next();
+                if (comp.getProduct().equals(prod)) {
+                    returnList.add(mix);
+                }
+            }
+
+        }
+
         model.addAttribute("product",productService.findById(id).orElse(null));
         model.addAttribute("allTags", tagService.findAll());
+        model.addAttribute("mixtures",returnList);
         return "/Stock/products-info";
     }
 
@@ -434,6 +455,13 @@ public class StockController {
         model.addAttribute("mixture", new Mixture());
 
         return "/Mixtures/mixtures-manage";
+    }
+
+    @RequestMapping(value ="/mixtures/info/{id}", method= RequestMethod.GET)
+    public String viewMixtureInfo(@PathVariable Long id, final ModelMap model){
+        model.addAttribute("mixture",mixtureService.findById(id).orElse(null));
+        model.addAttribute("allProducts", productService.findAll());
+        return "/Mixtures/mixtures-info";
     }
 
 
