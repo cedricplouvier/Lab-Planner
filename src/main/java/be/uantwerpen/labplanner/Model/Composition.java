@@ -18,7 +18,7 @@ public class Composition{
     @ManyToOne
     private Product product;
 
-    Composition(Double amount, Product prod){
+    public Composition(Double amount, Product prod){
         this.amount = amount;
         this.product = prod;
     }

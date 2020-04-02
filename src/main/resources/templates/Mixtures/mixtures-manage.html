@@ -23,20 +23,27 @@
 
         </div>
         <div>
-            <label class="control-label" th:text="#{mixtures.ingredients}"></label>
+            <h6 th:text="#{mixtures.tag}">tags</h6>
         </div>
         <div class="form-check">
-            <input th:field ="*{compositions}" class="form-check-input" type="checkbox"
-                   th:each="prod : ${allProducts}"
-                   th:value="${{prod}}"
-                   th:utext="${prod.name} + '<br>'">
+            <input th:field ="*{tags}" class="form-check-input" type="checkbox"
+                   th:each="tag : ${allTags}"
+                   th:value="${{tag}}"
+                   th:utext="${tag.name} + '<br>'">
+        </div>
+        <div>
+            <h6 th:text="#{mixtures.ingredients}">Ingredients</h6>
         </div>
 
-            <p>
-                <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
-                <a href="/mixtures" th:text="#{close}" class="btn btn-secondary">Close</a>
 
+
+    <div>
+            <p>
+        <button type="submit" th:text="#{manage.ingred}" class="btn btn-outline-primary">Save</button>
+        <a href="/mixtures" th:text="#{close}" class="btn btn-secondary">Close</a>
             </p>
+    </div>
+
     </form>
 
 

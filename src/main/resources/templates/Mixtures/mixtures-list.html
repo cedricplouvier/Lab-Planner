@@ -58,7 +58,6 @@
                 <thead>
                 <tr>
                     <th th:text="#{mixtures.name}">Mixture Name</th>
-                    <th th:text="#{mixtures.ingredients}">Mixture Ingredients</th>
                     <th style="width: 50%"  th:text="#{product.description}">Mixture Descrption</th>
                     <th th:text="#{mixtures.tag}">Mixture Tags</th>
 
@@ -71,13 +70,8 @@
                 <tr th:each="mixture : ${allMixtures}">
                         <td class='mixtureName' th:value="${mixture.getName()}"
                         th:text="${mixture.getName()}" >Mixture Name</td>
-                        <td class="ingredients">
-                            <a
-                                    th:each="ingred : ${mixture.compositions}"
-                                    th:value="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' %'"
-                                    th:utext="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' %' + '<br />'"></a>
-                        </td>
-                         <td class='mixtureName' th:value="${mixture.getDescription()}"
+
+                         <td class='descr' th:value="${mixture.getDescription()}"
                         th:text="${mixture.description}" >Mixture description</td>
                         <td class="Tags">
                             <a
