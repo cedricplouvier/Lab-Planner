@@ -9,63 +9,64 @@ import java.util.List;
 public class ExperimentType extends AbstractPersistable<Long> {
 
 
-    @Column(name = "name",unique = true,nullable = false)
-    private String name;
+
+
+    @Column(name = "expname",unique = true,nullable = false)
+    private String expname;
 
     @OneToMany
-    @JoinColumn(name = "deviceTypes")
-    private List<DeviceType> deviceTypes;
-
-    @OneToMany
-    @JoinColumn(name = "continuity", nullable = false)
-    private List<Continuity> continuities;
+    @JoinColumn(name = "stepTypes")
+    private List<StepType> stepTypes;
 
    public ExperimentType(){}
-   public ExperimentType(String experimentTypeName,List<Continuity> continuities,List<DeviceType> stepTypes) {
-       this.continuities=continuities;
-       this.name=experimentTypeName;
-       this.deviceTypes=stepTypes;
+   public ExperimentType(String expname,List<StepType> stepTypes) {
+       this.expname=expname;
+       this.stepTypes=stepTypes;
    }
-   public void addStepType(DeviceType deviceType){
-       deviceTypes.add(deviceType);
+   public void addStepType(StepType stepType){
+       stepTypes.add(stepType);
    }
 
-    public void addStep(DeviceType deviceType) {
-        //First step wil be added without continuity
-        if (deviceTypes.size() == 0) {
-            deviceTypes.add(deviceType);
-        } else {
-            deviceTypes.add(deviceType);
-            continuities.add(new Continuity(deviceTypes.get(deviceTypes.size() - 1), deviceType));
-        }
+//    public void addStep(DeviceType deviceType) {
+//        //First step wil be added without continuity
+//        if (deviceTypes.size() == 0) {
+//            deviceTypes.add(deviceType);
+//        } else {
+//            deviceTypes.add(deviceType);
+//            continuities.add(new Continuity(deviceTypes.get(deviceTypes.size() - 1), deviceType));
+//        }
+//    }
+//
+//    public void addStep(DeviceType deviceType, ContinuityType continuityType, int hours, int minutes) {
+//        //First step wil be added without continuity
+//        if (deviceTypes.size() == 0) {
+//            deviceTypes.add(deviceType);
+//        } else {
+//            deviceTypes.add(deviceType);
+//            continuities.add(new Continuity(continuityType, hours, minutes, deviceTypes.get(deviceTypes.size() - 1), deviceType));
+//        }
+//    }
+
+
+    public String getExpname() {
+        return expname;
     }
 
-    public void addStep(DeviceType deviceType, ContinuityType continuityType, int hours, int minutes) {
-        //First step wil be added without continuity
-        if (deviceTypes.size() == 0) {
-            deviceTypes.add(deviceType);
-        } else {
-            deviceTypes.add(deviceType);
-            continuities.add(new Continuity(continuityType, hours, minutes, deviceTypes.get(deviceTypes.size() - 1), deviceType));
-        }
+    public void setExpname(String expname) {
+        this.expname = expname;
     }
 
-    public List<Continuity> getContinuities() {
-        return continuities;
+    public List<StepType> getStepTypes() {
+        return stepTypes;
     }
 
-    public void setContinuities(List<Continuity> continuities) {
-        this.continuities = continuities;
-    }
-    public String getExperimentTypeName() { return name; }
-    public void setExperimentTypeName(String experimentTypeName) { this.name = experimentTypeName; }
-    public List<DeviceType> getDeviceTypes() {
-        return deviceTypes;
-    }
 
-    public void setStepTypes(List<DeviceType> deviceTypes) {
-        this.deviceTypes = deviceTypes;
+    public void setStepTypes(List<StepType> stepTypes) {
+        this.stepTypes = stepTypes;
     }
-
+    public String getExperimentTypeName() {
+        return expname;
+    }
+    public void setExperimentTypeName(String expname){this.expname=expname;}
 
 }

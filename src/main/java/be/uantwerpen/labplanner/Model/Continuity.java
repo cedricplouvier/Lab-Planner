@@ -22,14 +22,14 @@ public class Continuity extends AbstractPersistable<Long> {
     private final int DEFAULT_MINUTES = 0;
 
     //type of continuity (can be EQUAL, MORE, LESS)
-    private ContinuityType continuityType;
+    private String continuityType;
 
     //hours between current step and next step
     private int hours;
 
     //minutes between current step and next step
     private int minutes;
-
+    private String duration;
     //current step to which we set the continuity
     @OneToOne
     @JoinColumn(name = "currentStep", nullable = false)
@@ -50,7 +50,7 @@ public class Continuity extends AbstractPersistable<Long> {
     }
 
     public Continuity(ContinuityType continuityType, int hours, int minutes, Step currentStep, Step nextStep) {
-        this.continuityType = continuityType;
+//        this.continuityType = continuityType;
         this.hours = hours;
         this.minutes = minutes;
         this.currentStep = currentStep;
@@ -58,7 +58,7 @@ public class Continuity extends AbstractPersistable<Long> {
     }
 
     public Continuity(Step currentStep, Step nextStep) {
-        this.continuityType = DEFAULT_CONTINUITY_TYPE;
+//        this.continuityType = DEFAULT_CONTINUITY_TYPE;
         this.hours = DEFAULT_HOURS;
         this.minutes = DEFAULT_MINUTES;
         this.currentStep = currentStep;
@@ -68,15 +68,16 @@ public class Continuity extends AbstractPersistable<Long> {
     public Continuity(DeviceType currentStepType,DeviceType nextStepType){
         this.currentDeviceType=currentStepType;
         this.nextDeviceType=nextStepType;
-        this.continuityType = DEFAULT_CONTINUITY_TYPE;
+//        this.continuityType = DEFAULT_CONTINUITY_TYPE;
         this.hours = DEFAULT_HOURS;
         this.minutes = DEFAULT_MINUTES;
     }
-    public Continuity(ContinuityType continuityType, int hours, int minutes, DeviceType currentDeviceType,DeviceType nextDeviceType){
+    public Continuity(String continuityType, int hours, int minutes, DeviceType currentDeviceType,DeviceType nextDeviceType){
         this.continuityType = continuityType;
         this.hours = hours;
         this.minutes = minutes;
         this.currentDeviceType=currentDeviceType;
         this.nextDeviceType=nextDeviceType;
     }
+
 }
