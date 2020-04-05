@@ -513,6 +513,8 @@ public class DatabaseLoader {
         Mixture m3 = new Mixture("SMA", mix3);
         mixtureRepository.save(m3);
 
+        StepType stp1 =new StepType();
+
 
 
 

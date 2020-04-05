@@ -1,10 +1,178 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 
+<head th:replace="navbar :: head (title='#{Experiment Management}')"></head>
+<script th:inline="javascript">
+    var url = /*[[@{/planning/experiments/{id} (id=${experimentType})}]]*/ "";
+    function addrow(a) {
+        console.log(a);
+        var rowCount = $('#list tr').length;
+        $('#list')
+            .append('<tr> <td><input hidden class="steptype" value="'+a.id+'" id="stepTypes'+rowCount+'.deviceType" name="stepTypes['+rowCount+'].deviceType">'+a.deviceTypeName+'</td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.type" name="stepTypes['+rowCount+'].continuity.type"></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.hour" name="stepTypes['+rowCount+'].continuity.hour"></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.minutes" name="stepTypes['+rowCount+'].continuity.minutes"></td> </tr>')
+    }
+    function filterFunction() {
+        var input, filter, ul, li, a, i;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        div = document.getElementById("myDropdown");
+        a = div.getElementsByTagName("a");
+        for (i = 0; i < a.length; i++) {
+            txtValue = a[i].textContent || a[i].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                a[i].style.display = "";
+            } else {
+                a[i].style.display = "none";
+            }
+        }
+    }
+    function saveExperiment() {
+        var experimentName = $('#experimentTypeName').val();
+        var steps = [];
+        $('#list tr').each(function (i, row) {
+
+        var id = $(this)[0].childNodes[0].value;
+        var cont = $(this)[0].childNodes[2].children[0].value;
+        var dur =$(this)[0].childNodes[3].children[0].value;
+            var step = [id,cont,dur];
+            steps.push(step);
+    });
+        console.log(experimentName);
+        console.log(steps);
+        var data = [experimentName,steps];
+
+        $.ajax({
+
+            'url' : '/planning/experiments/new',
+            'type' : 'post',
+            'data' : data,
+            'success' : function(data) {
+                alert('Data: '+data);
+            },
+            'error' : function(request,error)
+            {
+                alert("Request: "+JSON.stringify(request));
+            }
+        });
+    }
+</script>
+<style>
+    .dropbtn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .dropbtn:hover, .dropbtn:focus {
+        background-color: #3e8e41;
+    }
+
+    #myInput {
+        box-sizing: border-box;
+        background-image: url('searchicon.png');
+        background-position: 14px 12px;
+        background-repeat: no-repeat;
+        font-size: 16px;
+        padding: 14px 20px 12px 45px;
+        border: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    #myInput:focus {outline: 3px solid #ddd;}
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f6f6f6;
+        min-width: 230px;
+        overflow: auto;
+        border: 1px solid #ddd;
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown a:hover {background-color: #ddd;}
+
+    .show {display: block;}
+</style>
+<body>
+<div class = "container">
+    <div th:replace="navbar :: navbar"></div>
+    <form th:action="@{/planning/experiments/{id} (id=${experimentType})}" th:object="${experimentType}" method="post">
+        <input th:field="*{id}" th:type="hidden">
+    <table class="table table-hover">
+        <div class="dropdown">
+            <div  class="">
+                <input type="text" placeholder="Search.." id="myInput" onclick="myFunction()" onmouseover="myFunction()"  onkeyup="filterFunction()">
+                <div  id="myDropdown" class="dropdown-content">
+                    <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}" th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
+                </div>
+            </div>
+        </div>
+        <thead>
+        <tr>
+            <th th:text="#{step.type}">Step Type</th>
+            <th>Continuity</th>
+            <th th:text="#{step.duration}">Duration</th>
+        </tr>
+        </thead>
+
+        <!-- IMPORTANT, class="list" have to be at tbody -->
+        <tbody id="list" class="list"  >
+            <tr th:each="stepType, itemStat : *{stepTypes}">
+                <td ><input class="steptype" th:type="hidden" th:field="*{stepTypes[__${itemStat.index}__].deviceType}" th:value="${stepType.deviceType.deviceTypeName}" th:text="${stepType.deviceType.deviceTypeName}" ></td>
+                <td ><input th:field="*{stepTypes[__${itemStat.index}__].continuity.type}" th:value="${stepType.continuity.type}"></td>
+                <td ><input th:field="*{stepTypes[__${itemStat.index}__].continuity.hour}" th:value="${stepType.continuity.hour}"></td>
+                <td ><input th:field="*{stepTypes[__${itemStat.index}__].continuity.minutes}" th:value="${stepType.continuity.minutes}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <input th:field="*{expname}" placeholder="Expirement Type Name">
+
+
+
+    <a href="/planning/experiments" class="btn btn-primary" th:text="#{experimentstype.return}" >Return</a>
+    <button type="submit"  class="btn btn-outline-primary"th:text="#{experiment.type.submit}">
+        Submit
+    </button>
+    </form>
+</div>
+
+<script>
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function myFunction() {
+        document.getElementById("myDropdown").classList.toggle("show");
+    }
+
+    function filterFunction() {
+        var input, filter, ul, li, a, i;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        div = document.getElementById("myDropdown");
+        a = div.getElementsByTagName("a");
+        for (i = 0; i < a.length; i++) {
+            txtValue = a[i].textContent || a[i].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                a[i].style.display = "";
+            } else {
+                a[i].style.display = "none";
+            }
+        }
+    }
+</script>
 </body>
 </html>

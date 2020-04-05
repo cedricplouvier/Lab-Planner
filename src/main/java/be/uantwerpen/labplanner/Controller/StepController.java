@@ -10,6 +10,8 @@ import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.repository.users.UserRepository;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
+
+import org.h2.util.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
@@ -46,6 +45,11 @@ public class StepController {
     private ExperimentService experimentService;
     @Autowired
     private ExperimentTypeService experimentTypeService;
+    @Autowired
+    private MixtureService mixtureService;
+    @Autowired
+    private StepTypeService stepTypeService;
+
 
     @Autowired
     UserRepository userRepository;
@@ -172,7 +176,7 @@ public class StepController {
         return "/PlanningTool/planning-exp-list";
     }
     @RequestMapping(value = "/planning/experiments/{id}/delete",method = RequestMethod.GET)
-    public String deleteExperiment(@PathVariable Long id, final ModelMap model,RedirectAttributes ra){
+    public String deleteExperimentType(@PathVariable Long id, final ModelMap model,RedirectAttributes ra){
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<Experiment> Experiments=experimentService.findAll();
         Set<Role> userRoles = currentUser.getRoles();
@@ -180,7 +184,6 @@ public class StepController {
         boolean isUsed=false;
 
         if(userRoles.contains(adminRol)){
-            stepService.delete(id);
             Iterator<Experiment> it = Experiments.iterator();
             while (it.hasNext()) {
                 Experiment temp = it.next();
@@ -195,6 +198,11 @@ public class StepController {
                 logger.error(currentUser.getUsername()+" tried to delete experiment type that is still in use.");
             }
             else {
+                ExperimentType experimentType = experimentTypeService.findById(id).get();
+                List<StepType> stepTypes = experimentType.getStepTypes();
+                for(StepType stepType :stepTypes){
+                    stepTypeService.delete(stepType.getId());
+                }
                 experimentTypeService.delete(id);
                 ra.addFlashAttribute("Status", new String("Success"));
                 ra.addFlashAttribute("Message",new String("Experiment type successfully deleted."));
@@ -205,19 +213,43 @@ public class StepController {
 
     }
     @RequestMapping(value = "/planning/experiments/put",method = RequestMethod.GET)
-    public String viewCreateExperiment(final ModelMap model){
-        model.addAttribute("allSteps",stepService.findAll());
+    public String viewCreateExperimentType(final ModelMap model){
         model.addAttribute("allDevices",deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+        model.addAttribute("allMixtures",mixtureService.findAll());
+        model.addAttribute("allStepTypes", stepTypeService.findAll());
+        model.addAttribute("experimentType",new ExperimentType());
         return "/PlanningTool/planning-exp-manage";
     }
     @RequestMapping(value = "/planning/experiments/{id}",method = RequestMethod.GET)
-    public String viewEditExperiment(@PathVariable Long id,final ModelMap model){
-        model.addAttribute("allSteps",stepService.findAll());
+    public String viewEditExperimentType(@PathVariable Long id,final ModelMap model){
         model.addAttribute("allDevices",deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+        model.addAttribute("allMixtures",mixtureService.findAll());
+        model.addAttribute("allStepTypes",stepTypeService.findAll());
+        model.addAttribute("experimentType",experimentTypeService.findById(id).get());
         return "/PlanningTool/planning-exp-manage";
     }
+    @RequestMapping(value = {"/planning/experiments/","/planning/experiments/{id}"},method = RequestMethod.POST)
+    public String addNewExperimentType(@Valid ExperimentType experimentType, BindingResult result, ModelMap model, RedirectAttributes ra){
+
+        if (result.hasErrors()) {
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message",new String("There was a problem in adding the Experiment Type."));
+            System.out.println(result.getFieldError().toString());
+            return "redirect:/planning/experiments";
+        }
+        for(StepType stepType : experimentType.getStepTypes()){stepTypeService.saveNewStepType(stepType);}
+        experimentTypeService.saveExperimentType(experimentType);
+        ra.addFlashAttribute("Status", new String("Success"));
+        ra.addFlashAttribute("Message",new String("Experiment type successfully added."));
+        return "redirect:/planning/experiments";
+    }
+//    @RequestMapping(value = {"/planning/experiments/new"},method = RequestMethod.POST)
+//    public String addExperimentType( @RequestBody ExperimentJson experimentType, BindingResult result, ModelMap model, RedirectAttributes ra){
+//        String str= new String();
+//        return "redirect:/planning/experiments";
+//    }
 
     public boolean overlapCheck(Step step) throws ParseException {
         Iterable<Step> allSteps=populateSteps();
