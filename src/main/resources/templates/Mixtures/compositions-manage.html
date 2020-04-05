@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{Mixture  Management}')"></head>
+<body onload = "initPage()">
+
+<div class = "container">
+    <div th:replace="navbar :: navbar"></div>
+<h4 th:text="#{composition.create}">New tag</h4>
+<form action="#" th:action="@{/compositions/{id}(id=${composition})}"
+      th:object="${composition}" method="post">
+    <input th:type="hidden" th:field="*{id}"/>
+    <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>
+
+    <div class="form-group row">
+        <label  class="control-label" th:text="#{composition.product}+'   '"></label>
+        <select class="custom-select-sm" th:field="*{product}"  >
+            <option th:each="product : ${allProducts}"
+                    th:value="${{product}}"
+                    th:text="${product.name}"></option>
+        </select>
+    </div>
+    <div class="form-group row">
+        <label class="control-label" th:text="#{composition.amount} + '(%)'"></label>
+        <input class="form-control" type="number" step="any" th:field="*{amount}"/>
+
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-10">
+            <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
+            <a href="/compositions" th:text="#{close}" class="btn btn-secondary">Close</a>
+
+        </div>
+    </div>
+
+</body>
+</html>

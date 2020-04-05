@@ -9,8 +9,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
-@Embeddable
-public class Composition{
+@Entity
+public class Composition extends AbstractPersistable<Long> {
 
     @Column
     private Double amount;
@@ -18,7 +18,7 @@ public class Composition{
     @ManyToOne
     private Product product;
 
-    public Composition(Double amount, Product prod){
+    Composition(Double amount, Product prod){
         this.amount = amount;
         this.product = prod;
     }
@@ -44,5 +44,15 @@ public class Composition{
 
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Override
+    public void setId(Long id) {
+        super.setId(id);
     }
 }

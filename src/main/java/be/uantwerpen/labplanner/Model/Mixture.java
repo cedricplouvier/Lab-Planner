@@ -18,7 +18,18 @@ public class Mixture extends AbstractPersistable<Long> {
     @Column
     private String description;
 
-    @ElementCollection
+    @ManyToMany
+    @JoinTable(
+            name = "Mix_COMP",
+            joinColumns = {@JoinColumn(
+                    name = "PROD_ID",
+                    referencedColumnName = "ID"
+            )},
+            inverseJoinColumns = {@JoinColumn(
+                    name = "COMP_ID",
+                    referencedColumnName = "ID"
+            )}
+    )
     private List <Composition> compositions;
 
     @ManyToMany

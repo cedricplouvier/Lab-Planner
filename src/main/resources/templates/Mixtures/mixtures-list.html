@@ -97,6 +97,8 @@
             <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  href="/mixtures/put" type="button" class="btn btn-outline-primary"th:text="#{mixture.create}">
                 Create new mixture
             </a>
+            <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  href="/compositions" th:text="#{manage.ingred}"  class="btn btn-outline-primary" > New Ingredient</a>
+
 
 
 

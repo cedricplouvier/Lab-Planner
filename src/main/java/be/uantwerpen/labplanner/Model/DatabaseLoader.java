@@ -45,9 +45,10 @@ public class DatabaseLoader {
     private final TagRepository tagRepository;
     private final StepRepository stepRepository;
     private final MixtureRepository mixtureRepository;
+    private final CompositionRepository compositionRepository;
 
     @Autowired
-    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, MixtureRepository mixtureRepository) {
+    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, MixtureRepository mixtureRepository, CompositionRepository compositionRepository) {
 
 
 
@@ -66,6 +67,8 @@ public class DatabaseLoader {
         this.tagRepository = tagRepository;
         //MixtureRepositories
         this.mixtureRepository = mixtureRepository;
+        this.compositionRepository = compositionRepository;
+
 
     }
 
@@ -482,6 +485,30 @@ public class DatabaseLoader {
         Composition c24 = new Composition(17.80, pr4);
         Composition c25 = new Composition(9.30,pr5);
         Composition c27 = new Composition(6.90, pr7);
+        compositionRepository.save(c1);
+        compositionRepository.save(c2);
+        compositionRepository.save(c3);
+        compositionRepository.save(c4);
+        compositionRepository.save(c5);
+        compositionRepository.save(c6);
+        compositionRepository.save(c7);
+
+        compositionRepository.save(c11);
+        compositionRepository.save(c12);
+        compositionRepository.save(c13);
+        compositionRepository.save(c14);
+        compositionRepository.save(c15);
+        compositionRepository.save(c16);
+        compositionRepository.save(c17);
+
+        compositionRepository.save(c21);
+        compositionRepository.save(c22);
+        compositionRepository.save(c24);
+        compositionRepository.save(c25);
+        compositionRepository.save(c27);
+
+
+
 
         List<Composition> mix3= new ArrayList<>();
         mix3.add(c21);mix3.add(c22);mix3.add(c24);mix3.add(c25);mix3.add(c27);
