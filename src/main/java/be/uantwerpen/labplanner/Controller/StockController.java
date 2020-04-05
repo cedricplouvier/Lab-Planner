@@ -466,6 +466,8 @@ public class StockController {
         if(totalAmount != 100.0){
             model.addAttribute("allMixtures", mixtureService.findAll());
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.totalAmount"));
+            model.addAttribute("amount", totalAmount);
+
             model.addAttribute("allProducts", productService.findAll());
             model.addAttribute("allTags", tagService.findAll());
             model.addAttribute("composition", new Composition());

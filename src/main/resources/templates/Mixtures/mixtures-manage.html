@@ -14,6 +14,7 @@
 
         <div class="form-group">
             <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>
+            <div class="alert alert-secondary" role="alert" th:if="${amount}!=null" th:text="#{selected.amount} + ' '+ ${amount}+ ' %'"></div>
 
             <label class="control-label" th:text="#{mixtures.name}"></label>
             <input class="form-control" type = text th:field="*{name}"/>
