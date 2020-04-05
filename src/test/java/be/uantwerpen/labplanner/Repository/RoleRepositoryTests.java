@@ -9,7 +9,7 @@ import be.uantwerpen.labplanner.common.repository.users.PrivilegeRepository;
 import be.uantwerpen.labplanner.common.repository.users.RoleRepository;
 import be.uantwerpen.labplanner.common.repository.users.RoleRepository;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,7 +22,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = LabplannerApplication.class)
 @WebAppConfiguration
 public class RoleRepositoryTests {

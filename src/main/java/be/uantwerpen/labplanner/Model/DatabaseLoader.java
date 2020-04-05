@@ -306,32 +306,46 @@ public class DatabaseLoader {
         //Create all Device Types
         ArrayList<DeviceType> deviceTypes = new ArrayList<>();
         DeviceType t1 = new DeviceType("Autosaw",true);
+        t1.setColor("#FF00FF");
         deviceTypes.add(t1);
         DeviceType t2 = new DeviceType("Balance",false);
+        t2.setColor("#FFAFAF");
         deviceTypes.add(t2);
         DeviceType t3 = new DeviceType("Big Mixer",true);
+        t3.setColor("#00FF00");
         deviceTypes.add(t3);
         DeviceType t4 = new DeviceType("Caliper",true);
+        t4.setColor("#000000");
         deviceTypes.add(t4);
         DeviceType t5 = new DeviceType("Cooling chamber",true);
+        t5.setColor("#FFFF00");
         deviceTypes.add(t5);
         DeviceType t6 = new DeviceType("Gyratory",false);
+        t6.setColor("#00FFFF");
         deviceTypes.add(t6);
         DeviceType t7 = new DeviceType("Oven",true);
+        t7.setColor("#404040");
         deviceTypes.add(t7);
         DeviceType t8 = new DeviceType("Plate Compactor",false);
+        t8.setColor("#FF0000");
         deviceTypes.add(t8);
         DeviceType t9 = new DeviceType("Small Mixer",true);
+        t9.setColor("#FFC800");
         deviceTypes.add(t9);
         DeviceType t10 = new DeviceType("SVM Setup",false);
+        t10.setColor("#808080");
         deviceTypes.add(t10);
         DeviceType t11 = new DeviceType("Uniframe",false);
+        t11.setColor("#FFFFFF");
         deviceTypes.add(t11);
         DeviceType t12 = new DeviceType("Vacuum Setup",true);
+        t12.setColor("#0000FF");
         deviceTypes.add(t12);
         DeviceType t13 = new DeviceType("Water Bath",false);
+        t13.setColor("#222222");
         deviceTypes.add(t13);
         DeviceType t14 = new DeviceType("Wheel Tracking Test",true);
+        t14.setColor("#C0C0C0");
         deviceTypes.add(t14);
 
         //Add random information for default information types
