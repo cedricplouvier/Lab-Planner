@@ -616,7 +616,7 @@ public class StockController {
         Locale current = LocaleContextHolder.getLocale();
 
 
-        if(composition.getAmount() == 0.0){
+        if(composition.getAmount() == 0.0 || composition.getAmount() > 100.0){
             model.addAttribute("allCompositions", compositionService.findAll());
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.amount"));
             return "/Mixtures/compositions-manage";
