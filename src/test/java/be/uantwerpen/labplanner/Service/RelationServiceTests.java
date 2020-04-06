@@ -12,11 +12,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -49,11 +47,11 @@ public class RelationServiceTests {
         User stud3 = new User("res1","res1");
         User stud4= new User("res2","res2");
 
-        List<User> students1 = new ArrayList<>();
+        Set<User> students1 = new HashSet<>();
         students1.add(stud1);
         students1.add(stud2);
 
-        List<User> students2 = new ArrayList<>();
+        Set<User> students2 = new HashSet<>();
         students2.add(stud3);
         students2.add(stud4);
 
@@ -83,11 +81,11 @@ public class RelationServiceTests {
         User stud3 = new User("res1","res1");
         User stud4= new User("res2","res2");
 
-        List<User> students1 = new ArrayList<>();
+        Set<User> students1 = new HashSet<>();
         students1.add(stud1);
         students1.add(stud2);
 
-        List<User> students2 = new ArrayList<>();
+        Set<User> students2 = new HashSet<>();
         students2.add(stud3);
         students2.add(stud4);
 
@@ -115,11 +113,11 @@ public class RelationServiceTests {
         User stud3 = new User("res1","res1");
         User stud4= new User("res2","res2");
 
-        List<User> students1 = new ArrayList<>();
+        Set<User> students1 = new HashSet<>();
         students1.add(stud1);
         students1.add(stud2);
 
-        List<User> students2 = new ArrayList<>();
+        Set<User> students2 = new HashSet<>();
         students2.add(stud3);
         students2.add(stud4);
 
@@ -132,7 +130,7 @@ public class RelationServiceTests {
         relation1.setId((long) 1);
         relationRepository.save(relation2);
 
-        when(relationRepository.findById(1)).thenReturn(Optional.of(relation1));
+        when(relationRepository.findById((long) 1)).thenReturn(Optional.of(relation1));
         relationService.delete(1);
 
     }
@@ -149,11 +147,11 @@ public class RelationServiceTests {
         User stud3 = new User("res1","res1");
         User stud4= new User("res2","res2");
 
-        List<User> students1 = new ArrayList<>();
+        Set<User> students1 = new HashSet<>();
         students1.add(stud1);
         students1.add(stud2);
 
-        List<User> students2 = new ArrayList<>();
+        Set<User> students2 = new HashSet<>();
         students2.add(stud3);
         students2.add(stud4);
 
@@ -167,7 +165,7 @@ public class RelationServiceTests {
         relationRepository.save(relation2);
 
         //deleted does not exist
-        when(relationRepository.findById(1)).thenReturn(null);
+        when(relationRepository.findById((long) 1)).thenReturn(Optional.empty());
         assertEquals(relationService.deleteById((long) 1),false);
 
     }
@@ -184,11 +182,11 @@ public class RelationServiceTests {
         User stud3 = new User("res1","res1");
         User stud4= new User("res2","res2");
 
-        List<User> students1 = new ArrayList<>();
+        Set<User> students1 = new HashSet<>();
         students1.add(stud1);
         students1.add(stud2);
 
-        List<User> students2 = new ArrayList<>();
+        Set<User> students2 = new HashSet<>();
         students2.add(stud3);
         students2.add(stud4);
 
@@ -202,7 +200,7 @@ public class RelationServiceTests {
         relationRepository.save(relation2);
 
         //deleted does not exist
-        when(relationRepository.findById(1)).thenReturn(Optional.of(relation1));
+        when(relationRepository.findById((long) 1)).thenReturn(Optional.of(relation1));
         assertEquals(relationService.deleteById((long) 1),false);
 
     }

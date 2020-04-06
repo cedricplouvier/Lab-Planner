@@ -12,9 +12,6 @@ public interface RelationRepository extends CrudRepository<Relation, Long> {
 
 Optional<Relation> findByResearcher(User researcher);
 
-Optional<Relation> findById(long id);
-
-
 
 
 

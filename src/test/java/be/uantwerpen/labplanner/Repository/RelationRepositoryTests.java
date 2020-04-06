@@ -15,7 +15,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,7 +45,7 @@ public class RelationRepositoryTests {
 
         //retrieve relation from database.
         Relation fetchedRelation = relationRepository.findById(relation.getId()).orElse(null);
-        Relation test = relationRepository.findById(42).orElse(null);
+        Relation test = relationRepository.findById((long) 42).orElse(null);
         assertNotNull(fetchedRelation);
 
         //and the fetched relation should equal the real relation
@@ -61,7 +62,7 @@ public class RelationRepositoryTests {
         userRepository.save(user2);
         userRepository.save(user3);
 
-        List<User> studs = new ArrayList<User>();
+        Set<User> studs = new HashSet<>();
         studs.add(user2);
         studs.add(user3);
         fetchedRelation.setResearcher(user);

@@ -6,8 +6,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.Entity;
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -17,19 +16,19 @@ public class Relation extends AbstractPersistable<Long>
     @Column
     private String description;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne
+    @JoinColumn(name = "user")
     private User researcher;
 
     @OneToMany(
             fetch = FetchType.EAGER
     )
-    private List<User> students;
-
+    private Set<User> students;
+    
     public Relation() {
     }
 
-    public Relation(String description, User researcher, List<User> students){
+    public Relation(String description, User researcher, Set<User> students){
         this.description = description;
         this.researcher = researcher;
         this.students = students;
@@ -55,11 +54,11 @@ public class Relation extends AbstractPersistable<Long>
         this.researcher = researcher;
     }
 
-    public List<User> getStudents() {
+    public Set<User> getStudents() {
         return students;
     }
 
-    public void setStudents(List<User> students) {
+    public void setStudents(Set<User> students) {
         this.students = students;
     }
 

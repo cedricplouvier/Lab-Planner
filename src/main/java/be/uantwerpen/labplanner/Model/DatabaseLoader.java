@@ -306,18 +306,19 @@ public class DatabaseLoader {
         userRepository.save(u9);
 
 //        //add relations
-//        Relation relation = new Relation("testrelation");
-//        relation.setResearcher(u9);
-//        List<User> students = new ArrayList<>();
-//        students.add(u7);
-//        students.add(u8);
-//
-//        relation.setStudents(students);
-//        Relation f =  relationRepository.save(relation);
-//        Relation fetch = relationRepository.findById((long) 42).orElse(null);
-//
-//        relation.setResearcher(u1);
-//        relationRepository.save(relation);
+        Relation relation = new Relation("testrelation");
+        relation.setResearcher(u9);
+        Set<User> students = new HashSet<>();
+        students.add(u7);
+        students.add(u8);
+
+        relation.setStudents(students);
+        Relation f =  relationRepository.save(relation);
+        Relation fetch = relationRepository.findById((long) 42).orElse(null);
+
+        Relation fetchByRes = relationRepository.findByResearcher(u9).orElse(null);
+        relation.setResearcher(u1);
+        relationRepository.save(relation);
 
         //Create all Device Types
         ArrayList<DeviceType> deviceTypes = new ArrayList<>();
