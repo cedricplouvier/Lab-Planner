@@ -27,9 +27,26 @@
     function toggle(source) {
         var checkboxes = document.querySelectorAll('input[type="checkbox"]');
         for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i] != source)
+            if (checkboxes[i] != source) {
                 checkboxes[i].checked = source.checked;
+
+            }
+
         }
+        if (document.getElementById("Researcher").checked == true)
+            document.getElementById("btnSelectStudents").disabled = false;
+        else
+            document.getElementById("btnSelectStudents").disabled = true;
+
+    }
+</script>
+
+<script type="text/javascript">
+    function goFurther(){
+        if (document.getElementById("Researcher").checked == true)
+            document.getElementById("btnSelectStudents").disabled = false;
+        else
+            document.getElementById("btnSelectStudents").disabled = true;
     }
 </script>
 
@@ -72,10 +89,17 @@
         <div class="form-check">
             <input th:field ="*{roles}" class="form-check-input" type="checkbox"
                    th:each="role : ${allRoles}"
+                   th:id="${{role.name}}"
                    th:value="${{role}}"
-                   th:utext="${role.name} + '<br>'">
+                   th:utext="${role.name} + '<br>'"
+            onclick="goFurther()">
         </div>
 
+        <p></p>
+        <div>
+            <input class="btn btn-primary" type="button" data-toggle="modal" data-target="#studentSelectModal" id="btnSelectStudents" th:value="#{users.selectStudents}" disabled>
+        </div>
+        <p></p>
         <div class="form-group">
             <label class="control-label" th:text="#{users.email}"></label>
             <input class="form-control" type = text th:field="*{email}"/>
@@ -96,19 +120,32 @@
             <input class="form-control" type = text th:field="*{location}"/>
 
         </div>
-
-
-
-
-
-
-
-
         <p>
             <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
             <a href="/usermanagement/users" th:text="#{close}" class="btn btn-secondary">Close</a>
 
         </p>
+        <!-- Modal -->
+        <div class="modal fade" id="studentSelectModal" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Modal Header</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Some text in the modal.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </form>
 
 
