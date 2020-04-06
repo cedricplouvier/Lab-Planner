@@ -3,6 +3,7 @@ package be.uantwerpen.labplanner.Service;
 import be.uantwerpen.labplanner.Model.Composition;
 import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Repository.RelationRepository;
+import be.uantwerpen.labplanner.common.model.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -20,8 +21,8 @@ public class RelationService {
         return this.relationRepository.findAll();
     }
 
-    public Optional<Relation> findByResearcher(long ID){
-        return this.relationRepository.findByResearcherID(ID);
+    public Optional<Relation> findByResearcher(User researcher){
+        return this.relationRepository.findByResearcher(researcher);
     }
 
     public void delete(long id){relationRepository.delete(relationRepository.findById(id).orElse(null));}

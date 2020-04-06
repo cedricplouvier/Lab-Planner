@@ -46,9 +46,10 @@ public class DatabaseLoader {
     private final StepRepository stepRepository;
     private final CompositionRepository compositionRepository;
     private final MixtureRepository mixtureRepository;
+    private final RelationRepository relationRepository;
 
     @Autowired
-    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository) {
+    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository, RelationRepository relationRepository) {
 
 
 
@@ -68,6 +69,7 @@ public class DatabaseLoader {
         //MixtureRepositories
         this.mixtureRepository = mixtureRepository;
         this.compositionRepository = compositionRepository;
+        this.relationRepository = relationRepository;
 
     }
 
@@ -302,6 +304,20 @@ public class DatabaseLoader {
         roles.add(researcher);
         u9.setRoles(roles);
         userRepository.save(u9);
+
+//        //add relations
+//        Relation relation = new Relation("testrelation");
+//        relation.setResearcher(u9);
+//        List<User> students = new ArrayList<>();
+//        students.add(u7);
+//        students.add(u8);
+//
+//        relation.setStudents(students);
+//        Relation f =  relationRepository.save(relation);
+//        Relation fetch = relationRepository.findById((long) 42).orElse(null);
+//
+//        relation.setResearcher(u1);
+//        relationRepository.save(relation);
 
         //Create all Device Types
         ArrayList<DeviceType> deviceTypes = new ArrayList<>();
