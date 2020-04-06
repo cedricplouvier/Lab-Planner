@@ -8,26 +8,23 @@
             selectableHeader: '<div class="custom-header" th:text="#{selectable.items}"></div>',
             selectionHeader: '<div class="custom-header" th:text="#{selected.items}"></div>'
         });
+        -
+
+        if ($("Researcher").is(':checked')) {
+            $('.tab1_btn').prop('disabled', false);
+        } else {
+            $('.tab1_btn').prop('disabled', true);
+        }
     }
 </script>
-<!--<script>-->
-<!--    $(document).ready(function () {-->
-<!--        $("#txt_username").keyup(function (-->
-<!--        ) {-->
-<!--            alert('fds');-->
-<!--        })-->
-
-<!--    })-->
-<!--</script>-->
 
 <script>
-    function finterStudents(){
-        var input,filter;
-        input = "student";
-        filter = input.value.toLowerCase();
-
-    }
+    $(document).ready(function(){
+        goFurther();
+    });
 </script>
+
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
@@ -42,10 +39,7 @@
             }
 
         }
-        if (document.getElementById("Researcher").checked == true)
-            document.getElementById("btnSelectStudents").disabled = false;
-        else
-            document.getElementById("btnSelectStudents").disabled = true;
+        goFurther();
 
     }
 </script>
@@ -106,7 +100,7 @@
 
         <p></p>
         <div>
-            <input class="btn btn-primary" type="button" data-toggle="modal" data-target="#studentSelectModal" id="btnSelectStudents" th:value="#{users.selectStudents}" disabled>
+            <input class="btn btn-primary" type="button" data-toggle="modal" data-target="#studentSelectModal" id="btnSelectStudents" th:value="#{users.selectStudents}" disabled  >
         </div>
         <p></p>
         <div class="form-group">
@@ -141,11 +135,10 @@
                 <!-- Modal content-->
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">Modal Header</h4>
+                        <h4 class="modal-title" th:text="#{users.selectStudents}"></h4>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <p>Some text in the modal.</p>
                         <div class="form-check">
                             <!-- th:field needs to be put back on -->
                             <input class="form-check-input" type="checkbox"
