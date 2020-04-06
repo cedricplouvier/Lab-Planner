@@ -212,6 +212,16 @@ public class StepController {
         return "redirect:/planning/experiments";
 
     }
+    @RequestMapping(value = "/planning/experiments/book",method = RequestMethod.GET)
+    public String viewBookNewExperiment(final ModelMap model){
+        model.addAttribute("allDevices",deviceService.findAll());
+        model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+        model.addAttribute("allMixtures",mixtureService.findAll());
+        model.addAttribute("allStepTypes", stepTypeService.findAll());
+        model.addAttribute("allExperimentTypes",experimentTypeService.findAll());
+        model.addAttribute("experiment", new Experiment());
+        return "/PlanningTool/planning-exp-book";
+    }
     @RequestMapping(value = "/planning/experiments/put",method = RequestMethod.GET)
     public String viewCreateExperimentType(final ModelMap model){
         model.addAttribute("allDevices",deviceService.findAll());
@@ -221,6 +231,7 @@ public class StepController {
         model.addAttribute("experimentType",new ExperimentType());
         return "/PlanningTool/planning-exp-manage";
     }
+
     @RequestMapping(value = "/planning/experiments/{id}",method = RequestMethod.GET)
     public String viewEditExperimentType(@PathVariable Long id,final ModelMap model){
         model.addAttribute("allDevices",deviceService.findAll());
