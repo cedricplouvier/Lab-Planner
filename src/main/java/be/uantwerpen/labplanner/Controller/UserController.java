@@ -59,6 +59,7 @@ public class UserController {
     @RequestMapping(value = "/usermanagement/users/put",method = RequestMethod.GET)
     public String viewCreateUser(@org.jetbrains.annotations.NotNull final ModelMap model){
         model.addAttribute("allRoles",roleService.findAll());
+        model.addAttribute("allUsers",userService.findAll());
         model.addAttribute(new User("","","","","","","","",null,null,null));
         return "/Users/user-manage";
     }
@@ -66,6 +67,7 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users/{id}",method = RequestMethod.GET)
     public String viewEditUser(@PathVariable long id, final ModelMap model){
+        model.addAttribute("allUsers",userService.findAll());
         model.addAttribute("allRoles",roleService.findAll());
         model.addAttribute("user",userService.findById(id).orElse(null));
         return "/Users/user-manage";
@@ -77,6 +79,7 @@ public class UserController {
     public String addUser(@Valid User user,  BindingResult result, final ModelMap model) {
         if ((result.hasErrors())|| (user.getPassword() == null) || (user.getUsername() ==null) || (user.getUsername().trim().equals("")) || (user.getPassword().trim().equals(""))){
             model.addAttribute("allRoles", roleService.findAll());
+            model.addAttribute("allUsers",userService.findAll());
             model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.addError") );
             return "/Users/user-manage";
         }
@@ -85,6 +88,7 @@ public class UserController {
             //if the given username is unique, save the user in the database
             if (userService.findByUsername(user.getUsername()).isPresent()) {
                 model.addAttribute("allRoles", roleService.findAll());
+                model.addAttribute("allUsers",userService.findAll());
                 model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.uniqueError") );
                 return "/Users/user-manage";
             }
@@ -101,6 +105,7 @@ public class UserController {
             if(userService.findByUsername(user.getUsername()).isPresent()){
                 model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.uniqueError") );
                 model.addAttribute("allRoles", roleService.findAll());
+                model.addAttribute("allUsers",userService.findAll());
                 return "/Users/user-manage";
             }
             //trim input and save

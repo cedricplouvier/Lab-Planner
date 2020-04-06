@@ -20,6 +20,15 @@
 <!--    })-->
 <!--</script>-->
 
+<script>
+    function finterStudents(){
+        var input,filter;
+        input = "student";
+        filter = input.value.toLowerCase();
+
+    }
+</script>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <script type="text/javascript">
@@ -137,6 +146,17 @@
                     </div>
                     <div class="modal-body">
                         <p>Some text in the modal.</p>
+                        <div class="form-check">
+                            <!-- th:field needs to be put back on -->
+                            <input class="form-check-input" type="checkbox"
+
+                                   th:each="user : ${allUsers}"
+                                   th:if="${#strings.contains(user.roles.iterator().next().name, 'student')}"
+
+                                   th:id="${{user.firstName}}"
+                                   th:value="${{user}}"
+                                   th:utext="${user.firstName} + ' ' + ${user.lastName} + ' : ' +  ${user.roles.iterator().next().name} +  '<br>'"
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
