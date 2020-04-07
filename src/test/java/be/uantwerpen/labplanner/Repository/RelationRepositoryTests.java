@@ -52,9 +52,9 @@ public class RelationRepositoryTests {
         //update name & desciption
         
         fetchedRelation.setDescription("This is the description");
-        User user = new User("test","test");
-        User user2 = new User("test2","test2");
-        User user3 = new User("test3","test3");
+        User user = new User("test","test","","","","","","",null,null,null);
+        User user2 = new User("test2","test2","","","","","","",null,null,null);
+        User user3 = new User("test3","test3","","","","","","",null,null,null);
         userRepository.save(user);
         userRepository.save(user2);
         userRepository.save(user3);
