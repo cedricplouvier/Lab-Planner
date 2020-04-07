@@ -1,8 +1,8 @@
 package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Model.Step;
-import be.uantwerpen.labplanner.Service.RelationService;
 import be.uantwerpen.labplanner.Service.StepService;
+import be.uantwerpen.labplanner.Service.RelationService;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
@@ -37,8 +37,6 @@ public class UserController {
     @Autowired
     private StepService stepService;
 
-    @Autowired
-    private RelationService relationService;
 
     //Populate
     @ModelAttribute("allUsers")

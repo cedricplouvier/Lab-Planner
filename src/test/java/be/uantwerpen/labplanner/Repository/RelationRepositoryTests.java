@@ -32,7 +32,7 @@ public class RelationRepositoryTests {
         //create relation
         Relation relation = new Relation();
         relation.setDescription("logon_test");
-        relation.setResearcherID((long) 1);
+        //relation.setResearcher((long) 1);
 
         long precount = relationRepository.count();
         //save product & varify id
@@ -62,14 +62,14 @@ public class RelationRepositoryTests {
         Set<User> studs = new HashSet<>();
         studs.add(user2);
         studs.add(user3);
-        fetchedRelation.setResearcherID(user.getId());
+        fetchedRelation.setResearcher(user);
         fetchedRelation.setStudents(studs);
         
         relationRepository.save(fetchedRelation);
 
         Relation fetchedUpdated = relationRepository.findById(fetchedRelation.getId()).orElse(null);
 
-        assertEquals(fetchedUpdated.getResearcherID(),fetchedRelation.getResearcherID());
+        assertEquals(fetchedUpdated.getResearcher(),fetchedRelation.getResearcher());
         assertEquals(fetchedUpdated.getDescription(),fetchedRelation.getDescription());
         assertEquals(fetchedUpdated.getStudents().size(),2);
 

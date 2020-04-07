@@ -29,15 +29,12 @@ public class RelationController {
 
     Logger logger = LoggerFactory.getLogger(HomeController.class);
 
+
     @Autowired
     private UserService userService;
 
     @Autowired
     private RelationService relationService;
-
-    //Populate
-    @ModelAttribute("allUsers")
-    public Iterable<User> populateUsers() {return this.userService.findAll();}
 
     @ModelAttribute("allRelations")
     public Iterable<Relation> populateRelations() {return this.relationService.findAll();}
