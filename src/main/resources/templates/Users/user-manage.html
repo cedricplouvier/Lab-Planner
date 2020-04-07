@@ -131,11 +131,11 @@
 
     </form>
 
-    <form action="#" th:action="@{/usermanagement/users/{id}(id=${user})}"
+    <form action="#" th:action="@{/usermanagement/users/{id}(id=${user.id})}"
                 th:object="${relation}" method="post">
         <div th:object="${user}"></div>
     <input th:type="hidden" th:field="*{id}"/>
-        <input th:type="hidden" th:field="*{researcherID}" th:value="${user.getId()}"/>
+        <input th:type="hidden" th:field="*{description}" th:value="${user.lastName}"/>
 
 
         <!-- Modal -->

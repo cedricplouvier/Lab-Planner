@@ -20,6 +20,7 @@ import be.uantwerpen.labplanner.common.repository.users.UserRepository;
 import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -306,7 +307,7 @@ public class DatabaseLoader {
 
 //        //add relations
         Relation relation = new Relation("testrelation");
-        relation.setResearcherID(u9.getId());
+        relation.setResearcher(u9);
         Set<User> students = new HashSet<>();
         students.add(u7);
         students.add(u8);

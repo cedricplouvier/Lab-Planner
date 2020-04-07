@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface RelationRepository extends CrudRepository<Relation, Long> {
     List<Relation> findAll();
 
-Optional<Relation> findByResearcherID(Long id);
+Optional<Relation> findByResearcher(User researcher);
 
 
 

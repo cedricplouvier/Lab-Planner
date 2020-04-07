@@ -8,14 +8,17 @@ import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -52,7 +55,6 @@ public class UserController {
     @RequestMapping(value = "/usermanagement/users",method = RequestMethod.GET)
     public String showUsers(final ModelMap model){
         model.addAttribute("allUsers",userService.findAll());
-        model.addAttribute("relation",new Relation(""));
         return "/Users/user-list";
     }
 
@@ -68,11 +70,11 @@ public class UserController {
 
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users/{id}",method = RequestMethod.GET)
-    public String viewEditUser(@PathVariable("id") Long id, final ModelMap model){
+    public String viewEditUser(@PathVariable("id") long id, final ModelMap model){
         model.addAttribute("allUsers",userService.findAll());
         model.addAttribute("allRoles",roleService.findAll());
         model.addAttribute("user",userService.findById(id).orElse(null));
-       // model.addAttribute("relation",relationService.findByResearcherID(id).orElse(null));
+        model.addAttribute("relation",relationService.findByResearcher(userService.findById(id).orElse(null)));
         return "/Users/user-manage";
     }
 
@@ -84,6 +86,7 @@ public class UserController {
             model.addAttribute("allRoles", roleService.findAll());
             model.addAttribute("allUsers",userService.findAll());
             model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.addError") );
+
             return "/Users/user-manage";
         }
 
@@ -125,7 +128,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyAuthority('User Management')")
-    @RequestMapping(value = {"/usermanagement/users/"}, params = "RelationSave",method = RequestMethod.POST)
+    @RequestMapping(value = {"/usermanagement/users/","/usermanagement/users/{id}"}, params = "RelationSave",method = RequestMethod.POST)
     public String addRelation(@Valid Relation relation, @PathVariable(required = false) Long id, BindingResult result, final ModelMap model) {
         //Check if this is a valid relation, otherwise return to the manage page with
 
@@ -161,7 +164,7 @@ public class UserController {
                 }
             }
 
-            relation.setResearcherID(id);
+            relation.setResearcher(userService.findById(id).orElse(null));
             model.addAttribute("allRoles", roleService.findAll());
             model.addAttribute("allUsers", userService.findAll());
 
