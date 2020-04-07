@@ -124,7 +124,7 @@ public class StepController {
             }
 
             else
-                ra.addFlashAttribute("Message",new String("Device is already booked in this timeslot."));
+                ra.addFlashAttribute("Message",new String("Device can't be booked in this timeslot."));
             return "redirect:/planning";
         }
         step.setUser(currentUser);
