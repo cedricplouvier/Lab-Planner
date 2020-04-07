@@ -177,7 +177,7 @@
             </div>
             <form th:action="@{/planning/{id} (id=${Step})}" th:object="${Step}" method="post">
 
-            <div class="modal-body" style="height: 240px;">
+            <div class="modal-body" style="height: 260px;">
                 <input th:field="*{id}" th:type="hidden"/>
                 <select required class=" form-control input-device"  id="sel">
                     <option value="none"  selected disabled hidden th:text="#{device.type}"> Device Type </option>
@@ -189,11 +189,14 @@
                 </select>
                 <div style="display: flow-root;">
                     <input required id="startTime" type="date" th:field="*{start}" class="form-control input-date" placeholder="Start date">
-                    <input id="startHour" class="form-control float-right input-hour" th:field="*{startHour}" placeholder="Hour">
+                    <input type="time" id="startHour" class="form-control float-right input-hour" th:field="*{startHour}" placeholder="Hour">
                 </div>
                 <div>
                     <input required id="endTime" type="date" th:field="*{end}" class="form-control input-date"  placeholder="End date">
-                    <input id="endHour" class="form-control float-right input-hour" th:field="*{endHour}" placeholder="Hour">
+                    <input type="time" id="endHour" class="form-control float-right input-hour" th:field="*{endHour}" placeholder="Hour">
+                </div>
+                <div style="margin-top: 60px">
+                    <input th:field="*{comment}" placeholder="Comment">
                 </div>
             </div>
             <div class="modal-footer">

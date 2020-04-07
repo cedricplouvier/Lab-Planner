@@ -30,19 +30,21 @@ public class Step extends AbstractPersistable<Long> {
     private String startHour;
     @Column(name = "endHour")
     private String endHour;
-
+    @Column(name = "comment")
+    private String comment;
 
 
     public Step(){
     }
 
-    public Step(User user, Device device, String start, String end, String startHour, String endHour) {
+    public Step(User user, Device device, String start, String end, String startHour, String endHour,String comment) {
         this.user=  user;
         this.device = device;
         this.start=start;
         this.end=end;
         this.startHour=startHour;
         this.endHour=endHour;
+        this.comment=comment;
     }
 
     @Override
@@ -106,5 +108,12 @@ public class Step extends AbstractPersistable<Long> {
 
     public void setStepType(StepType stepType) {
         this.stepType = stepType;
+    }
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

@@ -255,7 +255,7 @@ public class StepController {
 
     public boolean overlapCheck(Step step) throws ParseException {
         Iterable<Step> allSteps=populateSteps();
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd hh");
+        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd hh:mm");
         Date thisStepDateStart=formatter.parse(step.getStart()+" "+step.getStartHour());
         Date thisStepDateStop= formatter.parse(step.getEnd()+" "+step.getEndHour());
         for (Step s : allSteps) {
