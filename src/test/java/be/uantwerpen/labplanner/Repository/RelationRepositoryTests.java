@@ -54,26 +54,13 @@ public class RelationRepositoryTests {
         //update name & desciption
         
         fetchedRelation.setDescription("This is the description");
-        User user = new User("test","test","","","","","","",null,null,null);
-        User user2 = new User("test2","test2","","","","","","",null,null,null);
-        User user3 = new User("test3","test3","","","","","","",null,null,null);
-        userRepository.save(user);
-        userRepository.save(user2);
-        userRepository.save(user3);
 
-        Set<User> studs = new HashSet<>();
-        studs.add(user2);
-        studs.add(user3);
-        fetchedRelation.setResearcher(user);
-        fetchedRelation.setStudents(studs);
-        
         relationRepository.save(fetchedRelation);
 
         Relation fetchedUpdated = relationRepository.findById(fetchedRelation.getId()).orElse(null);
 
-        assertEquals(fetchedUpdated.getResearcher(),fetchedRelation.getResearcher());
         assertEquals(fetchedUpdated.getDescription(),fetchedRelation.getDescription());
-        assertEquals(fetchedUpdated.getStudents().size(),2);
+        assertEquals(fetchedUpdated.getStudents().size(),0);
 
 
         assertEquals(relationRepository.count(),precount+1);
