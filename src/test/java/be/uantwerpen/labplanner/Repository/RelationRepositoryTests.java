@@ -30,7 +30,7 @@ public class RelationRepositoryTests {
 
 
     @Test
-    public void testPrivilegeSave(){
+    public void testRelationSave(){
         //create relation
         Relation relation = new Relation();
         relation.setDescription("logon_test");
