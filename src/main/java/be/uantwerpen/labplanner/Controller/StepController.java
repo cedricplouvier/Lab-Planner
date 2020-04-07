@@ -245,7 +245,21 @@ public class StepController {
             System.out.println(result.getFieldError().toString());
             return "redirect:/planning/experiments";
         }
-        for(StepType stepType : experimentType.getStepTypes()){stepTypeService.saveNewStepType(stepType);}
+
+        for(StepType stepType : experimentType.getStepTypes()){
+            if(stepType.getContinuity().getHour()<0){
+                ra.addFlashAttribute("Status", new String("Error"));
+                ra.addFlashAttribute("Message",new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
+                return "redirect:/planning/experiments";
+            }
+            if(stepType.getContinuity().getMinutes()>59 || stepType.getContinuity().getMinutes()<0){
+                ra.addFlashAttribute("Status", new String("Error"));
+                ra.addFlashAttribute("Message",new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
+                return "redirect:/planning/experiments";
+            }
+            else
+                stepTypeService.saveNewStepType(stepType);
+        }
         experimentTypeService.saveExperimentType(experimentType);
         ra.addFlashAttribute("Status", new String("Success"));
         ra.addFlashAttribute("Message",new String("Experiment type successfully added."));
