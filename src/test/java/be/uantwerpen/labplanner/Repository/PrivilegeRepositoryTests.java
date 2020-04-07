@@ -15,7 +15,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = LabplannerApplication.class)
 @WebAppConfiguration
 public class PrivilegeRepositoryTests {

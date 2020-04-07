@@ -17,7 +17,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = LabplannerApplication.class)
 @WebAppConfiguration
 public class CompositionRepositoryTests {
@@ -31,6 +30,10 @@ public class CompositionRepositoryTests {
 
     @Test
     public void testSaveCompositions(){
+
+        long precount = compositionRepository.count();
+
+
         //Setup composition
         Composition composition  = new Composition();
         Product prod = new Product();
@@ -58,13 +61,13 @@ public class CompositionRepositoryTests {
         Composition fetchedComp2 = compositionRepository.findById(fetchedComp.getId()).orElse(null);
         assertEquals(fetchedComp.getAmount(), fetchedComp2.getAmount());
 
-        //get all tag, list should only have one more then initial
+        //get all compositions, list should only have one more then initial
         Iterable<Composition> comps = compositionRepository.findAll();
         int count = 0;
         for(Composition p : comps){
             count++;
         }
-        assertEquals(count, 20); //omdat er al 22 compositions zijn in database
+        assertEquals(count, precount+1);
 
     }
 }

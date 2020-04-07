@@ -24,7 +24,6 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = LabplannerApplication.class)
 @WebAppConfiguration
 public class ProductRepositoryTests {
@@ -37,6 +36,10 @@ public class ProductRepositoryTests {
 
     @Test
     public void testSaveProduct(){
+
+        long precount = productRepository.count();
+
+
         //Setup products
         Product product = new Product();
         product.setName("testproduct");
@@ -130,7 +133,7 @@ public class ProductRepositoryTests {
         for(Product p : products){
             count++;
         }
-        assertEquals(count, 9); //omdat er al 8 producten zijn in db loader
+        assertEquals(count, precount+1);
 
     }
 }

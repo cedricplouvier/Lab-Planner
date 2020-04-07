@@ -4,7 +4,9 @@ import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.Composition;
 import be.uantwerpen.labplanner.Model.Mixture;
 import be.uantwerpen.labplanner.common.model.stock.Product;
+import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.repository.stock.ProductRepository;
+import be.uantwerpen.labplanner.common.repository.stock.TagRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +21,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = LabplannerApplication.class)
 @WebAppConfiguration
 public class MixtureRepositoryTests {
@@ -33,8 +34,16 @@ public class MixtureRepositoryTests {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private TagRepository tagRepository;
+
     @Test
     public void testSaveMixtures(){
+
+
+        long precount = mixtureRepository.count();
+
+
         Product prod1 = new Product();
         prod1.setName("testproduct1");
         productRepository.save(prod1);
@@ -88,6 +97,22 @@ public class MixtureRepositoryTests {
         Mixture fetchedMix3 = mixtureRepository.findById(fetchedMix.getId()).orElse(null);
         assertEquals(fetchedMix.getCompositions(), fetchedMix3.getCompositions());
 
+        //update description
+        fetchedMix.setDescription("testdecription");
+        mixtureRepository.save(fetchedMix);
+        Mixture fetchedMix4 = mixtureRepository.findById(fetchedMix.getId()).orElse(null);
+        assertEquals(fetchedMix.getDescription(), fetchedMix4.getDescription());
+
+        //update tag
+        List<Tag> tags  = new ArrayList<>();
+        Tag t1 = new Tag("test");
+        tagRepository.save(t1);
+        tags.add(t1);
+        fetchedMix.setTags(tags);
+        mixtureRepository.save(fetchedMix);
+        Mixture fetchedMix5 = mixtureRepository.findById(fetchedMix.getId()).orElse(null);
+        assertEquals(fetchedMix.getTags(), fetchedMix5.getTags());
+
 
         //get all tag, list should only have one more then initial
         Iterable<Mixture> mixtures = mixtureRepository.findAll();
@@ -95,7 +120,7 @@ public class MixtureRepositoryTests {
         for(Mixture p : mixtures){
             count++;
         }
-        assertEquals(count, 4); //omdat er al 3 mixtures zijn in database
+        assertEquals(count, precount+1);
 
 
 
