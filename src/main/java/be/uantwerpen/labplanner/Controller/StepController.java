@@ -213,21 +213,27 @@ public class StepController {
 
     }
     @RequestMapping(value = "/planning/experiments/put",method = RequestMethod.GET)
-    public String viewCreateExperimentType(final ModelMap model){
+    public String viewCreateExperimentType( final ModelMap model){
+        List<String> options = new ArrayList<>();
+        options.add("No");options.add("Soft");options.add("Hard");
         model.addAttribute("allDevices",deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
         model.addAttribute("allMixtures",mixtureService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("experimentType",new ExperimentType());
+        model.addAttribute("allOptions",options);
         return "/PlanningTool/planning-exp-manage";
     }
     @RequestMapping(value = "/planning/experiments/{id}",method = RequestMethod.GET)
     public String viewEditExperimentType(@PathVariable Long id,final ModelMap model){
+        List<String> options = new ArrayList<>();
+        options.add("No");options.add("Soft");options.add("Hard");
         model.addAttribute("allDevices",deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
         model.addAttribute("allMixtures",mixtureService.findAll());
         model.addAttribute("allStepTypes",stepTypeService.findAll());
         model.addAttribute("experimentType",experimentTypeService.findById(id).get());
+        model.addAttribute("allOptions",options);
         return "/PlanningTool/planning-exp-manage";
     }
     @RequestMapping(value = {"/planning/experiments/","/planning/experiments/{id}"},method = RequestMethod.POST)
@@ -245,11 +251,7 @@ public class StepController {
         ra.addFlashAttribute("Message",new String("Experiment type successfully added."));
         return "redirect:/planning/experiments";
     }
-//    @RequestMapping(value = {"/planning/experiments/new"},method = RequestMethod.POST)
-//    public String addExperimentType( @RequestBody ExperimentJson experimentType, BindingResult result, ModelMap model, RedirectAttributes ra){
-//        String str= new String();
-//        return "redirect:/planning/experiments";
-//    }
+
 
     public boolean overlapCheck(Step step) throws ParseException {
         Iterable<Step> allSteps=populateSteps();

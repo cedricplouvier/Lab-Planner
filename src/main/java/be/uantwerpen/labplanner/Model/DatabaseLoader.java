@@ -20,7 +20,6 @@ import be.uantwerpen.labplanner.common.repository.users.UserRepository;
 import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -46,9 +45,12 @@ public class DatabaseLoader {
     private final StepRepository stepRepository;
     private final CompositionRepository compositionRepository;
     private final MixtureRepository mixtureRepository;
+    private final ExperimentTypeRepository experimentTypeRepository;
+    private final StepTypeRepository stepTypeRepository;
+    private final ContinuityRepository continuityRepository;
 
     @Autowired
-    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository) {
+    public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository,ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository) {
 
 
 
@@ -68,6 +70,10 @@ public class DatabaseLoader {
         //MixtureRepositories
         this.mixtureRepository = mixtureRepository;
         this.compositionRepository = compositionRepository;
+
+        this.experimentTypeRepository=experimentTypeRepository;
+        this.stepTypeRepository=stepTypeRepository;
+        this.continuityRepository=continuityRepository;
 
     }
 
@@ -512,8 +518,54 @@ public class DatabaseLoader {
         mixtureRepository.save(m2);
         Mixture m3 = new Mixture("SMA", mix3);
         mixtureRepository.save(m3);
+        //Continuities
+        Continuity cont1 = new Continuity(0,0,"No");
+        continuityRepository.save(cont1);
+        Continuity cont2 = new Continuity(8,0,"Soft");
+        continuityRepository.save(cont2);
+        Continuity cont3 = new Continuity(24,0,"Hard");
+        continuityRepository.save(cont3);
+        Continuity cont4 = new Continuity(12,0,"Soft");
+        continuityRepository.save(cont4);
+        Continuity cont5 = new Continuity(0,0,"Hard");
+        continuityRepository.save(cont5);
+        Continuity cont6 = new Continuity(24,0,"Soft");
+        continuityRepository.save(cont6);
 
-        StepType stp1 =new StepType();
+        //Steptypes
+        StepType styp1 = new StepType(t2,cont1,t2.getDeviceTypeName());
+        stepTypeRepository.save(styp1);
+        StepType styp2 = new StepType(t8,cont2,t8.getDeviceTypeName());
+        stepTypeRepository.save(styp2);
+        StepType styp3 = new StepType(t3,cont1,"Mixer");
+        stepTypeRepository.save(styp3);
+        StepType styp4= new StepType(t6,cont3,t6.getDeviceTypeName());
+        stepTypeRepository.save(styp4);
+        StepType styp5 = new StepType(t1,cont4,t1.getDeviceTypeName());
+        stepTypeRepository.save(styp5);
+        StepType styp6= new StepType(t4,cont1,t4.getDeviceTypeName());
+        stepTypeRepository.save(styp6);
+        StepType styp7= new StepType(t10,cont1,t10.getDeviceTypeName());
+        stepTypeRepository.save(styp7);
+        StepType styp8= new StepType(t12,cont5,t12.getDeviceTypeName());
+        stepTypeRepository.save(styp8);
+        StepType styp9= new StepType(t13,cont1,t13.getDeviceTypeName());
+        stepTypeRepository.save(styp9);
+        StepType styp10= new StepType(t14,cont1,t14.getDeviceTypeName());
+        stepTypeRepository.save(styp10);
+        StepType styp11= new StepType(t8,cont6,t8.getDeviceTypeName());
+        stepTypeRepository.save(styp11);
+        List<StepType> ITSRStyps = new ArrayList<StepType>();
+        ITSRStyps.add(styp1);ITSRStyps.add(styp2);ITSRStyps.add(styp1);ITSRStyps.add(styp3);
+        ITSRStyps.add(styp4);ITSRStyps.add(styp5);ITSRStyps.add(styp6);ITSRStyps.add(styp7);
+        ITSRStyps.add(styp8);ITSRStyps.add(styp9);
+        List<StepType> WhlTrkTest = new ArrayList<StepType>();
+        WhlTrkTest.add(styp1); WhlTrkTest.add(styp2); WhlTrkTest.add(styp1); WhlTrkTest.add(styp3);
+        WhlTrkTest.add(styp11); WhlTrkTest.add(styp10);
+        ExperimentType experimentType1 = new ExperimentType("ITSR",ITSRStyps);
+        experimentTypeRepository.save(experimentType1);
+        ExperimentType experimentType2= new ExperimentType("Wheel Tracking Test",WhlTrkTest);
+        experimentTypeRepository.save(experimentType2);
 
 
 

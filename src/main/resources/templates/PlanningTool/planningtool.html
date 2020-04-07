@@ -160,7 +160,7 @@
     </tr>
     </tbody>
 </table></table>
-        <a href="/planning/experiments" type="button" class="btn btn-outline-primary"th:text="#{experiment.types}">
+        <a href="/planning/experiments" type="button" class="btn btn-primary"th:text="#{experiment.types}">
             Experiment Types
         </a>
     </div>
@@ -178,7 +178,7 @@
             <form th:action="@{/planning/{id} (id=${Step})}" th:object="${Step}" method="post">
 
             <div class="modal-body" style="height: 240px;">
-                <input th:type="hidden" th:field="*{id}"/>
+                <input th:field="*{id}" th:type="hidden"/>
                 <select required class=" form-control input-device"  id="sel">
                     <option value="none"  selected disabled hidden th:text="#{device.type}"> Device Type </option>
                     <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.getDeviceTypeName()}">Device Type</option>
