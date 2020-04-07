@@ -14,4 +14,6 @@ public interface MixtureRepository extends CrudRepository<Mixture, Long> {
     Optional<Mixture> findById(Long aLong);
 
     Optional<Mixture> findByName(String name);
+
+
 }

@@ -14,26 +14,52 @@
 
         <div class="form-group">
             <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>
+            <div class="alert alert-secondary" role="alert" th:if="${amount}!=null" th:text="#{selected.amount} + ' '+ ${amount}+ ' %'"></div>
 
             <label class="control-label" th:text="#{mixtures.name}"></label>
             <input class="form-control" type = text th:field="*{name}"/>
 
+            <label class="control-label" th:text="#{product.description}"></label>
+            <input class="form-control" type = text th:field="*{description}"/>
+
         </div>
-        <div> <label th:text="#{mixtures.ingredients}"></label>
-            <tr></tr>
-            <select th:field="*{compositions}" multiple="multiple" >
-                <option th:each="ingred : ${allCompositions}"
-                        th:value="${{ingred}}"
-                        th:text="${ingred.getProduct().getName()} + ':   ' + ${ingred.amount} +' ' + ${ingred.getProduct().units.getSIString()}">Wireframe</option>
-            </select>
+        <div>
+            <h6 th:text="#{mixtures.tag}">tags</h6>
+        </div>
+        <div class="form-check">
+            <input th:field ="*{tags}" class="form-check-input" type="checkbox"
+                   th:each="tag : ${allTags}"
+                   th:value="${{tag}}"
+                   th:utext="${tag.name} + '<br>'">
+        </div>
+        <div>
+            <h6 th:text="#{mixtures.ingredients}">Ingredients</h6>
+        </div>
+        <div class="form-check">
+            <input th:field ="*{compositions}" class="form-check-input" type="checkbox"
+                   th:each="comp : ${allCompositions}"
+                   th:value="${{comp}}"
+                   th:utext="${comp.product.getName()} + '    ' + ${comp.getAmount()}+ ' %' + '<br>'">
         </div>
 
 
+
+    <div>
             <p>
-                <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
+        <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
                 <a href="/mixtures" th:text="#{close}" class="btn btn-secondary">Close</a>
+                <a href="/compositions" th:text="#{manage.ingred}" class="btn btn-secondary">Close</a>
+
 
             </p>
+    </div>
+
+        <form class="form-inline">
+
+
+
+
+
     </form>
 
 
