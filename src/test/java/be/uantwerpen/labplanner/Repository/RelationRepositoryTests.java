@@ -17,6 +17,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ContextConfiguration
 @SpringBootTest(classes = LabplannerApplication.class)
 @WebAppConfiguration
 public class RelationRepositoryTests {
