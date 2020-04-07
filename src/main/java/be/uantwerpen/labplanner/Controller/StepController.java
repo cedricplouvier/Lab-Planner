@@ -2,6 +2,7 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Repository.DeviceRepository;
+import be.uantwerpen.labplanner.Repository.ExperimentTypeRepository;
 import be.uantwerpen.labplanner.Service.*;
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
@@ -49,7 +50,8 @@ public class StepController {
     private MixtureService mixtureService;
     @Autowired
     private StepTypeService stepTypeService;
-
+    @Autowired
+    private ExperimentTypeRepository experimentTypeRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -245,6 +247,15 @@ public class StepController {
             System.out.println(result.getFieldError().toString());
             return "redirect:/planning/experiments";
         }
+        for(ExperimentType exptyp : experimentTypeService.findAll()) {
+            if(experimentType.getExpname().equals(exptyp.getExpname()))
+            {
+                ra.addFlashAttribute("Status", new String("Error"));
+                ra.addFlashAttribute("Message",new String("There was a problem in adding the Experiment Type:\nThis experiment type name is already occupied!"));
+                return "redirect:/planning/experiments";
+            }
+        }
+
 
         for(StepType stepType : experimentType.getStepTypes()){
             if(stepType.getContinuity().getHour()<0){
@@ -260,9 +271,16 @@ public class StepController {
             else
                 stepTypeService.saveNewStepType(stepType);
         }
+        ExperimentType tempExperimentType = experimentType.getId() == null?null: experimentTypeRepository.findById( experimentType.getId()).orElse(null);
+        if(tempExperimentType!=null){
+            ra.addFlashAttribute("Status", new String("Success"));
+            ra.addFlashAttribute("Message",new String("Experiment type successfully edited."));
+        }
+        else{
+            ra.addFlashAttribute("Status", new String("Success"));
+            ra.addFlashAttribute("Message",new String("Experiment type successfully added."));
+        }
         experimentTypeService.saveExperimentType(experimentType);
-        ra.addFlashAttribute("Status", new String("Success"));
-        ra.addFlashAttribute("Message",new String("Experiment type successfully added."));
         return "redirect:/planning/experiments";
     }
 
@@ -272,6 +290,8 @@ public class StepController {
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd hh:mm");
         Date thisStepDateStart=formatter.parse(step.getStart()+" "+step.getStartHour());
         Date thisStepDateStop= formatter.parse(step.getEnd()+" "+step.getEndHour());
+        if(thisStepDateStop.before(thisStepDateStart))
+            return true;
         for (Step s : allSteps) {
             if (step.getDevice()==s.getDevice())
             {

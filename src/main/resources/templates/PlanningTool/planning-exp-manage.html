@@ -8,8 +8,9 @@
         console.log(a);
         var rowCount = $('#list tr').length;
         $('#list')
-            .append('<tr> <td><input hidden class="steptype" value="'+a.id+'" id="stepTypes'+rowCount+'.deviceType" name="stepTypes['+rowCount+'].deviceType">'+a.deviceTypeName+'</td> <td><select required value="" id="stepTypes'+rowCount+'.continuity.type" name="stepTypes['+rowCount+'].continuity.type"><option class="dropdown-item" value="No">No</option><option class="dropdown-item" value="Soft">Soft</option><option class="dropdown-item" value="Hard">Hard</option> </select></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.hour" name="stepTypes['+rowCount+'].continuity.hour" placeholder="Hours"></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.minutes" name="stepTypes['+rowCount+'].continuity.minutes" placeholder="Minutes"></td> </tr>')
+            .append('<tr class="row'+rowCount+'" id="row'+rowCount+'"> <td><input hidden class="steptype" value="'+a.id+'" id="stepTypes'+rowCount+'.deviceType" name="stepTypes['+rowCount+'].deviceType">'+a.deviceTypeName+'</td> <td><select required value="" id="stepTypes'+rowCount+'.continuity.type" name="stepTypes['+rowCount+'].continuity.type"><option class="dropdown-item" value="No">No</option><option class="dropdown-item" value="Soft">Soft</option><option class="dropdown-item" value="Hard">Hard</option> </select></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.hour" name="stepTypes['+rowCount+'].continuity.hour" placeholder="Hours"></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.minutes" name="stepTypes['+rowCount+'].continuity.minutes" placeholder="Minutes"></td><td><a onclick="removeRow(this)"> <span class="fas fa-trash" style="color: red" ></span> </a></td> </tr>')
     }
+
     function filterFunction() {
         var input, filter, ul, li, a, i;
         input = document.getElementById("myInput");
@@ -25,39 +26,14 @@
             }
         }
     }
-    function saveExperiment() {
-        var experimentName = $('#experimentTypeName').val();
-        var steps = [];
-        $('#list tr').each(function (i, row) {
 
-        var id = $(this)[0].childNodes[0].value;
-        var cont = $(this)[0].childNodes[2].children[0].value;
-        var dur =$(this)[0].childNodes[3].children[0].value;
-            var step = [id,cont,dur];
-            steps.push(step);
-    });
-        console.log(experimentName);
-        console.log(steps);
-        var data = [experimentName,steps];
-
-        $.ajax({
-
-            'url' : '/planning/experiments/new',
-            'type' : 'post',
-            'data' : data,
-            'success' : function(data) {
-                alert('Data: '+data);
-            },
-            'error' : function(request,error)
-            {
-                alert("Request: "+JSON.stringify(request));
-            }
-        });
-    }
     /* When the user clicks on the button,
     toggle between hiding and showing the dropdown content */
     function myFunction() {
         document.getElementById("myDropdown").classList.toggle("show");
+    }
+    function removeRow(r) {
+        $(r).closest('tr').remove();
     }
 </script>
 <style>
