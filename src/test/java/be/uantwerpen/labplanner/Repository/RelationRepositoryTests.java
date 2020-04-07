@@ -5,16 +5,12 @@ import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.repository.users.UserRepository;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,6 +32,7 @@ public class RelationRepositoryTests {
         //create relation
         Relation relation = new Relation();
         relation.setDescription("logon_test");
+        relation.setResearcherID((long) 1);
 
         long precount = relationRepository.count();
         //save product & varify id
@@ -65,14 +62,14 @@ public class RelationRepositoryTests {
         Set<User> studs = new HashSet<>();
         studs.add(user2);
         studs.add(user3);
-        fetchedRelation.setResearcher(user);
+        fetchedRelation.setResearcherID(user.getId());
         fetchedRelation.setStudents(studs);
         
         relationRepository.save(fetchedRelation);
 
         Relation fetchedUpdated = relationRepository.findById(fetchedRelation.getId()).orElse(null);
 
-        assertEquals(fetchedUpdated.getResearcher(),fetchedRelation.getResearcher());
+        assertEquals(fetchedUpdated.getResearcherID(),fetchedRelation.getResearcherID());
         assertEquals(fetchedUpdated.getDescription(),fetchedRelation.getDescription());
         assertEquals(fetchedUpdated.getStudents().size(),2);
 

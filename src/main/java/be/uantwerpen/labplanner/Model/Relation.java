@@ -1,6 +1,5 @@
 package be.uantwerpen.labplanner.Model;
 
-import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.model.users.User;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
@@ -16,9 +15,8 @@ public class Relation extends AbstractPersistable<Long>
     @Column
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "user")
-    private User researcher;
+    @Column(nullable = false)
+    private Long researcherID;
 
     @OneToMany(
             fetch = FetchType.EAGER
@@ -28,9 +26,9 @@ public class Relation extends AbstractPersistable<Long>
     public Relation() {
     }
 
-    public Relation(String description, User researcher, Set<User> students){
+    public Relation(String description, Long researcherID, Set<User> students){
         this.description = description;
-        this.researcher = researcher;
+        this.researcherID = researcherID;
         this.students = students;
     }
 
@@ -46,12 +44,12 @@ public class Relation extends AbstractPersistable<Long>
         this.description = description;
     }
 
-    public User getResearcher() {
-        return researcher;
+    public Long getResearcherID() {
+        return researcherID;
     }
 
-    public void setResearcher(User researcher) {
-        this.researcher = researcher;
+    public void setResearcherID(Long researcher) {
+        this.researcherID = researcher;
     }
 
     public Set<User> getStudents() {

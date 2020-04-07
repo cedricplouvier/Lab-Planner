@@ -24,8 +24,8 @@ public class RelationService {
         return this.relationRepository.findAll();
     }
 
-    public Optional<Relation> findByResearcher(User researcher){
-        return this.relationRepository.findByResearcher(researcher);
+    public Optional<Relation> findByResearcherID(Long researcher){
+        return this.relationRepository.findByResearcherID(researcher);
     }
 
     public void delete(long id){relationRepository.delete(relationRepository.findById(id).orElse(null));}
