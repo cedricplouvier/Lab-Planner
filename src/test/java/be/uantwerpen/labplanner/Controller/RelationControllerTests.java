@@ -38,6 +38,9 @@ public class RelationControllerTests {
     @Mock
     private RelationService relationService;
 
+    @Mock
+    private UserService userService;
+
     @InjectMocks
     private RelationController relationController;
     private MockMvc mockMvc;

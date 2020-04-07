@@ -1,5 +1,6 @@
 package be.uantwerpen.labplanner.Service;
 
+import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Repository.RelationRepository;
 import be.uantwerpen.labplanner.common.model.users.User;
@@ -10,7 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.*;
 
@@ -18,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+@SpringBootTest(classes = LabplannerApplication.class)
+@WebAppConfiguration
 public class RelationServiceTests {
     @Mock
     private RelationRepository relationRepository;
