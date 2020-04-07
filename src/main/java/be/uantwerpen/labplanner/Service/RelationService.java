@@ -5,11 +5,13 @@ import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Repository.RelationRepository;
 import be.uantwerpen.labplanner.common.model.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@Service
 public class RelationService {
 
     @Autowired

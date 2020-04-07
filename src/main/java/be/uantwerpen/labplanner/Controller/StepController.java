@@ -102,7 +102,7 @@ public class StepController {
         return "PlanningTool/planningtool";
     }
     @PreAuthorize("hasAuthority('Planning - Book step/experiment')")
-    @RequestMapping(value={"/planning" , "/planning/{id}"},method= RequestMethod.POST)
+    @RequestMapping(value={"/planning" , "/planning/{id}"},method =  RequestMethod.POST)
     public String addStep(@Valid Step step, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
         User currentUser =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(result.hasErrors() || overlapCheck(step) ){

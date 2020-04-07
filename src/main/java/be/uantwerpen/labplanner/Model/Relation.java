@@ -62,6 +62,10 @@ public class Relation extends AbstractPersistable<Long>
         this.students = students;
     }
 
+    public void deleteStudent(User student){
+        this.students.remove(student);
+    }
+
     @Override
     public Long getId() {
         return super.getId();

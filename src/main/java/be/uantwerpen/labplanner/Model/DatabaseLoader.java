@@ -314,11 +314,11 @@ public class DatabaseLoader {
 
         relation.setStudents(students);
         Relation f =  relationRepository.save(relation);
-        Relation fetch = relationRepository.findById((long) 42).orElse(null);
+      //  Relation fetch = relationRepository.findById((long) 42).orElse(null);
 
-        Relation fetchByRes = relationRepository.findByResearcher(u9).orElse(null);
-        relation.setResearcher(u1);
-        relationRepository.save(relation);
+     //   Relation fetchByRes = relationRepository.findByResearcher(u9).orElse(null);
+     //   relation.setResearcher(u1);
+     //   relationRepository.save(relation);
 
         //Create all Device Types
         ArrayList<DeviceType> deviceTypes = new ArrayList<>();
