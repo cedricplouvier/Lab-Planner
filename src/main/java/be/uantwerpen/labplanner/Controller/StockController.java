@@ -25,7 +25,6 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static jdk.nashorn.internal.objects.Global.print;
 
 @Controller
 public class StockController {
