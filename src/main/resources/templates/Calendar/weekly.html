@@ -237,10 +237,12 @@ er.js@1.16.0/dist/umd/popper.min.js"
 
         let deviceType = [];
         let deviceTypeId = [];
+        let deviceTypeColor = [];
 
         /*[# th:each="n : ${allDeviceTypes}"]*/
         deviceType.push("[(${n.getDeviceTypeName()})]");
         deviceTypeId.push("[(${n.getId()})]");
+        deviceTypeColor.push("[(${n.getColor()})]");
 
         /*[/]*/
         var calendar;
@@ -248,10 +250,10 @@ er.js@1.16.0/dist/umd/popper.min.js"
             calendar = new CalendarInfo();
             calendar.id = deviceTypeId[i];
             calendar.name = deviceType[i];
-            calendar.color = '#ffffff';
-            calendar.bgColor = '#9e5fff';
-            calendar.dragBgColor = '#9e5fff';
-            calendar.borderColor = '#9e5fff';
+            calendar.color = '#ffffff'; //text color
+            calendar.bgColor = deviceTypeColor[i];  //baclground color
+            calendar.dragBgColor = deviceTypeColor[i]; // color to drag
+            calendar.borderColor = deviceTypeColor[i]; //border color
             addCalendar(calendar);
 
         }

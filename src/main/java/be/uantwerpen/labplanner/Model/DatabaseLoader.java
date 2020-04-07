@@ -43,16 +43,14 @@ public class DatabaseLoader {
     private final ProductRepository productRepository;
     private final TagRepository tagRepository;
     private final StepRepository stepRepository;
-    private final CompositionRepository compositionRepository;
     private final MixtureRepository mixtureRepository;
     private final ExperimentTypeRepository experimentTypeRepository;
     private final StepTypeRepository stepTypeRepository;
     private final ContinuityRepository continuityRepository;
+    private final CompositionRepository compositionRepository;
 
     @Autowired
     public DatabaseLoader(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository,ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository) {
-
-
 
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
@@ -70,6 +68,7 @@ public class DatabaseLoader {
         //MixtureRepositories
         this.mixtureRepository = mixtureRepository;
         this.compositionRepository = compositionRepository;
+
 
         this.experimentTypeRepository=experimentTypeRepository;
         this.stepTypeRepository=stepTypeRepository;
@@ -312,32 +311,46 @@ public class DatabaseLoader {
         //Create all Device Types
         ArrayList<DeviceType> deviceTypes = new ArrayList<>();
         DeviceType t1 = new DeviceType("Autosaw",true);
+        t1.setColor("#FF00FF");
         deviceTypes.add(t1);
         DeviceType t2 = new DeviceType("Balance",false);
+        t2.setColor("#FFAFAF");
         deviceTypes.add(t2);
         DeviceType t3 = new DeviceType("Big Mixer",true);
+        t3.setColor("#00FF00");
         deviceTypes.add(t3);
         DeviceType t4 = new DeviceType("Caliper",true);
+        t4.setColor("#000000");
         deviceTypes.add(t4);
         DeviceType t5 = new DeviceType("Cooling chamber",true);
+        t5.setColor("#FFFF00");
         deviceTypes.add(t5);
         DeviceType t6 = new DeviceType("Gyratory",false);
+        t6.setColor("#00FFFF");
         deviceTypes.add(t6);
         DeviceType t7 = new DeviceType("Oven",true);
+        t7.setColor("#404040");
         deviceTypes.add(t7);
         DeviceType t8 = new DeviceType("Plate Compactor",false);
+        t8.setColor("#FF0000");
         deviceTypes.add(t8);
         DeviceType t9 = new DeviceType("Small Mixer",true);
+        t9.setColor("#FFC800");
         deviceTypes.add(t9);
         DeviceType t10 = new DeviceType("SVM Setup",false);
+        t10.setColor("#808080");
         deviceTypes.add(t10);
         DeviceType t11 = new DeviceType("Uniframe",false);
+        t11.setColor("#FFFFFF");
         deviceTypes.add(t11);
         DeviceType t12 = new DeviceType("Vacuum Setup",true);
+        t12.setColor("#0000FF");
         deviceTypes.add(t12);
         DeviceType t13 = new DeviceType("Water Bath",false);
+        t13.setColor("#222222");
         deviceTypes.add(t13);
         DeviceType t14 = new DeviceType("Wheel Tracking Test",true);
+        t14.setColor("#C0C0C0");
         deviceTypes.add(t14);
 
         //Add random information for default information types
@@ -468,13 +481,7 @@ public class DatabaseLoader {
         Composition c5 = new Composition(2.45,pr5);
         Composition c6 = new Composition(8.60, pr6);
         Composition c7 = new Composition(6.50, pr7);
-        compositionRepository.save(c1);
-        compositionRepository.save(c2);
-        compositionRepository.save(c3);
-        compositionRepository.save(c4);
-        compositionRepository.save(c5);
-        compositionRepository.save(c6);
-        compositionRepository.save(c7);
+
         List<Composition> mix1= new ArrayList<>();
         mix1.add(c1);mix1.add(c2);mix1.add(c3);mix1.add(c4);mix1.add(c5);mix1.add(c6);mix1.add(c7);
 
@@ -486,13 +493,7 @@ public class DatabaseLoader {
         Composition c15 = new Composition(12.91,pr5);
         Composition c16 = new Composition(7.10, pr6);
         Composition c17 = new Composition(6.50, pr7);
-        compositionRepository.save(c11);
-        compositionRepository.save(c12);
-        compositionRepository.save(c13);
-        compositionRepository.save(c14);
-        compositionRepository.save(c15);
-        compositionRepository.save(c16);
-        compositionRepository.save(c17);
+
         List<Composition> mix2= new ArrayList<>();
         mix2.add(c11);mix2.add(c12);mix2.add(c13);mix2.add(c14);mix2.add(c15);mix2.add(c16);mix2.add(c17);
 
@@ -502,21 +503,41 @@ public class DatabaseLoader {
         Composition c24 = new Composition(17.80, pr4);
         Composition c25 = new Composition(9.30,pr5);
         Composition c27 = new Composition(6.90, pr7);
+        compositionRepository.save(c1);
+        compositionRepository.save(c2);
+        compositionRepository.save(c3);
+        compositionRepository.save(c4);
+        compositionRepository.save(c5);
+        compositionRepository.save(c6);
+        compositionRepository.save(c7);
+
+        compositionRepository.save(c11);
+        compositionRepository.save(c12);
+        compositionRepository.save(c13);
+        compositionRepository.save(c14);
+        compositionRepository.save(c15);
+        compositionRepository.save(c16);
+        compositionRepository.save(c17);
+
         compositionRepository.save(c21);
         compositionRepository.save(c22);
         compositionRepository.save(c24);
         compositionRepository.save(c25);
         compositionRepository.save(c27);
+
+
+
+
         List<Composition> mix3= new ArrayList<>();
         mix3.add(c21);mix3.add(c22);mix3.add(c24);mix3.add(c25);mix3.add(c27);
 
 
         //create mixtures and save them
-        Mixture m1 = new Mixture("APT-C", mix1);
+        Mixture m1 = new Mixture("APT-C", mix1, lorem.getWords(20),tags2);
         mixtureRepository.save(m1);
-        Mixture m2 = new Mixture("AB-4C", mix2);
+        Mixture m2 = new Mixture("AB-4C", mix2,lorem.getWords(20), tags1);
         mixtureRepository.save(m2);
-        Mixture m3 = new Mixture("SMA", mix3);
+        Mixture m3 = new Mixture("SMA", mix3,lorem.getWords(20), tags4);
         mixtureRepository.save(m3);
         //Continuities
         Continuity cont1 = new Continuity(0,0,"No");

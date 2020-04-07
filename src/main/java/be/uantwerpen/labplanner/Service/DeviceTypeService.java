@@ -38,7 +38,7 @@ public class DeviceTypeService {
 
         if (tempDeviceType != null){
             tempDeviceType.setOvernightuse(deviceType.getOvernightuse());
-
+            tempDeviceType.setColor(deviceType.getColor());
             tempDeviceType.setDeviceTypeName(deviceType.getDeviceTypeName());
             if(deviceType.getDeviceInformations() !=null) {
                 for (DeviceInformation deviceInformation : deviceType.getDeviceInformations()) {
