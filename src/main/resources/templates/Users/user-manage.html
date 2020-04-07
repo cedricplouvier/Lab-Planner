@@ -99,9 +99,9 @@
         </div>
 
         <p></p>
-        <div>
-            <input class="btn btn-primary" type="button" data-toggle="modal" data-target="#studentSelectModal" id="btnSelectStudents" th:value="#{users.selectStudents}" disabled  >
-        </div>
+<!--        <div>-->
+<!--            <input class="btn btn-primary" type="button" data-toggle="modal" data-target="#studentSelectModal" id="btnSelectStudents" th:value="#{users.selectStudents}" disabled  >-->
+<!--        </div>-->
         <p></p>
         <div class="form-group">
             <label class="control-label" th:text="#{users.email}"></label>
@@ -128,56 +128,7 @@
             <a href="/usermanagement/users" th:text="#{close}" class="btn btn-secondary">Close</a>
 
         </p>
-
     </form>
-
-    <form action="#" th:action="@{/usermanagement/users/{id}(id=${user.id})}"
-                th:object="${relation}" method="post">
-        <div th:object="${user}"></div>
-    <input th:type="hidden" th:field="*{id}"/>
-        <input th:type="hidden" th:field="*{description}" th:value="${user.lastName}"/>
-
-
-        <!-- Modal -->
-        <div class="modal fade" id="studentSelectModal" role="dialog">
-            <div class="modal-dialog">
-
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title" th:text="#{users.selectStudents}"></h4>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-check">
-                            <!-- th:field needs to be put back on -->
-                            <input class="form-check-input" type="checkbox" th:field = "*{students}"
-
-                                   th:each="user : ${allUsers}"
-                                   th:if="${#strings.contains(user.roles.iterator().next().name, 'student')}"
-
-                                   th:id="${{user.firstName}}"
-                                   th:value="${{user}}"
-                                   th:utext="${user.firstName} + ' ' + ${user.lastName} + ' : ' +  ${user.roles.iterator().next().name} +  '<br>'"
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <p>
-                            <button type="submit" name="RelationSave" th:text="#{save}" class="btn btn-outline-primary">Save</button>
-
-                        </p>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-    </form>
-
-
-
-
 </div>
 </body>
 </html>

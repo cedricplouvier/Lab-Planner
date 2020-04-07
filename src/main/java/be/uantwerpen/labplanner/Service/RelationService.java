@@ -28,6 +28,10 @@ public class RelationService {
         return this.relationRepository.findByResearcher(researcher);
     }
 
+    public Optional<Relation> findById(Long id) {
+        return this.relationRepository.findById(id);
+    }
+
     public void delete(long id){relationRepository.delete(relationRepository.findById(id).orElse(null));}
 
     public Relation save(Relation relation){

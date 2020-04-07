@@ -20,7 +20,7 @@ public class Relation extends AbstractPersistable<Long>
     @JoinColumn(name = "user")
     private User researcher;
 
-    @OneToMany(
+    @ManyToMany(
             fetch = FetchType.EAGER
     )
     private Set<User> students;
