@@ -1,6 +1,5 @@
 package be.uantwerpen.labplanner.Controller;
 
-import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Model.Step;
 import be.uantwerpen.labplanner.Service.RelationService;
 import be.uantwerpen.labplanner.Service.StepService;
@@ -48,9 +47,6 @@ public class UserController {
     @ModelAttribute("allRoles")
     public Iterable<Role> populateRoles() {return this.roleService.findAll();}
 
-    @ModelAttribute("allRelations")
-    public Iterable<Relation> populateRelations() {return this.relationService.findAll();}
-
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users",method = RequestMethod.GET)
     public String showUsers(final ModelMap model){
@@ -58,15 +54,18 @@ public class UserController {
         return "/Users/user-list";
     }
 
+
+
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users/put",method = RequestMethod.GET)
     public String viewCreateUser(@org.jetbrains.annotations.NotNull final ModelMap model){
         model.addAttribute("allRoles",roleService.findAll());
         model.addAttribute("allUsers",userService.findAll());
         model.addAttribute(new User("","","","","","","","",null,null,null));
-        model.addAttribute(new Relation(""));
         return "/Users/user-manage";
     }
+
+
 
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users/{id}",method = RequestMethod.GET)
@@ -74,13 +73,12 @@ public class UserController {
         model.addAttribute("allUsers",userService.findAll());
         model.addAttribute("allRoles",roleService.findAll());
         model.addAttribute("user",userService.findById(id).orElse(null));
-        model.addAttribute("relation",relationService.findByResearcher(userService.findById(id).orElse(null)));
         return "/Users/user-manage";
     }
 
 
     @PreAuthorize("hasAnyAuthority('User Management')")
-    @RequestMapping(value = {"/usermanagement/users/","/usermanagement/users/{id}"}, params = "UserSave",    method = RequestMethod.POST)
+    @RequestMapping(value = {"/usermanagement/users/","/usermanagement/users/{id}"}, method = RequestMethod.POST)
     public String addUser(@Valid User user,  BindingResult result, final ModelMap model) {
         if ((result.hasErrors())|| (user.getPassword() == null) || (user.getUsername() ==null) || (user.getUsername().trim().equals("")) || (user.getPassword().trim().equals(""))){
             model.addAttribute("allRoles", roleService.findAll());
@@ -126,56 +124,10 @@ public class UserController {
         return "redirect:/usermanagement/users";
     }
 
-    @PreAuthorize("hasAnyAuthority('User Management')")
-    @RequestMapping(value = {"/usermanagement/users/","/usermanagement/users/{id}"}, params = "RelationSave",method = RequestMethod.POST)
-    public String addRelation(@Valid Relation relation, @PathVariable(required = false) Long id, BindingResult result, final ModelMap model) {
-        //Check if this is a valid relation, otherwise return to the manage page with
-
-        //existing user
-        if (id != null) {
-
-            //find Researcher, double check if role Researcher
-//            User researcher = userService.findById(id).orElse(null);
-//            if (researcher != null){
-//                boolean ResearchTrue = false;
-//                for (Role role : researcher.getRoles()){
-//                    if (role.getName().equals("Researcher")){
-//                        ResearchTrue = true;
-//                    }
-//                }
-//                if (ResearchTrue){
-//                    relation.setResearcher(researcher);
-//                }
-//            }
-
-            //Check for all the students in list that they are only students
-            for (User student : relation.getStudents()){
-                Boolean studentTrue = false;
-                for (Role role : student.getRoles()){
-                    if (role.getName().toLowerCase().contains("student")){
-                        studentTrue = true;
-                    }
-                }
-
-                //delete every checked user from list which is not a student
-                if (!studentTrue){
-                    relation.deleteStudent(student);
-                }
-            }
-
-            relation.setResearcher(userService.findById(id).orElse(null));
-            model.addAttribute("allRoles", roleService.findAll());
-            model.addAttribute("allUsers", userService.findAll());
-
-            relationService.save(relation);
-            model.addAttribute("user",userService.findById(id).orElse(null));
-        }
-
-        //new user, first the relation
 
 
-        return "/Users/user-manage";
-    }
+
+
 
 
 
@@ -203,6 +155,8 @@ public class UserController {
         model.clear();
         return "redirect:/usermanagement/users";
     }
+
+
 
 
 
