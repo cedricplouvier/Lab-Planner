@@ -49,7 +49,6 @@ public class DatabaseLoader {
     private final ExperimentTypeRepository experimentTypeRepository;
     private final StepTypeRepository stepTypeRepository;
     private final ContinuityRepository continuityRepository;
-    private final CompositionRepository compositionRepository;
     private final RelationRepository relationRepository;
 
     @Autowired
@@ -491,13 +490,13 @@ public class DatabaseLoader {
         Step s5= new Step(u5,d9,"2020-03-19","2020-03-19","13:00","18:00","");
         stepRepository.save(s5);
 
-        Step s6= new Step(u7,d9,"2020-04-10","2020-04-10","13:00","18:00");
+        Step s6= new Step(u7,d9,"2020-04-10","2020-04-10","13:00","18:00","");
         stepRepository.save(s6);
-        Step s7= new Step(u7,d9,"2020-04-11","2020-04-11","13:00","18:00");
+        Step s7= new Step(u7,d9,"2020-04-11","2020-04-11","13:00","18:00","");
         stepRepository.save(s7);
-        Step s8= new Step(u8,d9,"2020-04-12","2020-04-12","13:00","18:00");
+        Step s8= new Step(u8,d9,"2020-04-12","2020-04-12","13:00","18:00","");
         stepRepository.save(s8);
-        Step s9= new Step(u8,d9,"2020-04-13","2020-04-13","13:00","18:00");
+        Step s9= new Step(u8,d9,"2020-04-13","2020-04-13","13:00","18:00","");
         stepRepository.save(s9);
         //Create compositions
 
