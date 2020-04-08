@@ -150,9 +150,11 @@
         <td>
 
         <td>
+            <a th:href="@{/planning/{id}/(id=${step.id})}"><span
+                class="fas fa-edit"></span></a>
+
             <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
                 <span class="fas fa-trash" style="color: red" ></span> </a>
-        </td>
         </td>
     </tr>
     <tr class='notfound' th:if="${userSteps.isEmpty()}" >

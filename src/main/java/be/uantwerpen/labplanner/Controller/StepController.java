@@ -23,10 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
@@ -132,6 +129,16 @@ public class StepController {
         ra.addFlashAttribute("Message", message);
         return "redirect:/planning";
     }
+    @PreAuthorize("hasAuthority('Planning - Book step/experiment')")
+    @RequestMapping(value = "planning/{id}",method = RequestMethod.GET)
+    public String viewEditStep(@PathVariable long id, final ModelMap model){
+        model.addAttribute("Step",stepService.findById(id).orElse(null));
+        model.addAttribute("allDevices", deviceService.findAll());
+        model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+        model.addAttribute("allSteps",stepService.findAll());
+        return "/PlanningTool/step-manage";
+    }
+
 
     @RequestMapping(value = "/planning/{id}/delete",method = RequestMethod.GET)
     public String deleteStep(@PathVariable long id, final ModelMap model){
