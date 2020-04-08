@@ -7,15 +7,48 @@
 
     }
 </script>
-<!--<script>-->
-<!--    $(document).ready(function () {-->
-<!--        $("#txt_username").keyup(function (-->
-<!--        ) {-->
-<!--            alert('fds');-->
-<!--        })-->
+<script th:inline="javascript">
 
-<!--    })-->
-<!--</script>-->
+    $(document).ready(function(){
+        var status= /*[[${Status}]]*/ null;
+        var messages =  /*[[${Message}]]*/ "";
+        console.log(messages);
+        if(status != null)
+        {
+            if (status=="Success")
+                toastr.success(messages);
+            if (status=="Error")
+                toastr.error(messages);
+        }
+
+        $('.js-example-basic-single').select2();
+        $('#sel').on('change', function() {
+            var devices =  /*[[${allDevices}]]*/ {};
+            console.log(this.value);
+            $('#deviceNames')
+                .empty()
+                .append(' <option value="none" selected disabled hidden> Device Name </option>')
+            ;
+            var id = this.value;
+            var count = 0;
+            $.each( devices, function(key,device ) {
+                if(id == device.deviceType.id){
+                    count++;
+                    optionText = device.devicename;
+                    optionValue =  device.id;
+                    $('#deviceNames').append($('<option>').val(optionValue).text(optionText));
+                }});
+            if (count == 0)
+                $('#deviceNames')
+                    .empty()
+                    .append(' <option value="none" selected disabled hidden> No Device </option>');
+
+
+        });
+
+    });
+
+</script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
@@ -29,14 +62,14 @@
 
 
         <label class="control-label" th:text="#{device.type}"></label>
-        <select required class=" form-control input-device"  id="sel">
+        <select required class=" form-control input-device"  id="sel" >
             <option th:value="none"  selected disabled hidden th:text="*{device.getDeviceType().getDeviceTypeName()}"> Device Type </option>
             <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.getDeviceTypeName()}">Device Type</option>
         </select>
 
         <label class="control-label" th:text="#{device}"></label>
-        <select required class=" form-control input-device"  id="deviceName" th:field="*{device}">
-            <option class="dropdown-item"  th:each="device : ${allDevices}" th:value="${device.getId()}" th:text="${device.getDevicename()}">Device</option>
+        <select required class=" form-control input-device"  id="deviceNames" th:field="*{device}">
+<!--            <option class="dropdown-item"  th:each="device : ${allDevices}" th:value="${device.getId()}" th:text="${device.getDevicename()}">Device</option>-->
         </select>
 
         <label class="control-label" text="Start data">Start data</label>
