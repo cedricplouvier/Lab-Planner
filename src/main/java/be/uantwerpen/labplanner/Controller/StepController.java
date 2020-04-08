@@ -118,6 +118,10 @@ public class StepController {
                 ra.addFlashAttribute("Message",new String("Device is already booked in this timeslot."));
             return "redirect:/planning";
         }
+
+        // check if a user is already assigned to the step
+
+
         step.setUser(currentUser);
         stepService.save(step);
         model.addAttribute("allDevices", deviceService.findAll());

@@ -7,47 +7,47 @@
 
     }
 </script>
-<script th:inline="javascript">
 
-    $(document).ready(function(){
-        var status= /*[[${Status}]]*/ null;
-        var messages =  /*[[${Message}]]*/ "";
-        console.log(messages);
-        if(status != null)
-        {
-            if (status=="Success")
-                toastr.success(messages);
-            if (status=="Error")
-                toastr.error(messages);
-        }
+<script>
+    $( document ).ready(function() {
+        var newSelect = document.getElementById("deviceNames");
+        // //if you want to remove this default option use newSel.innerHTML=""
+     //   newSelect.innerHTML="<option value=\"\">Select</option>"; // to reset the second list everytime
 
-        $('.js-example-basic-single').select2();
-        $('#sel').on('change', function() {
-            var devices =  /*[[${allDevices}]]*/ {};
-            console.log("test");
-            $('#deviceNames')
-                .empty()
-        //        .append(' <option value="none" selected disabled hidden> Device Name </option>')
-            ;
-            var id = this.value;
-            var count = 0;
-            // $.each( devices, function(key,device ) {
-            //     if(id == device.deviceType.id){
-            //         count++;
-            //         optionText = device.devicename;
-            //         optionValue =  device.id;
-            //         $('#deviceNames').append($('<option>').val(optionValue).text(optionText));
-            //     }});
-            if (count == 0)
-                $('#deviceNames')
-                    .empty()
-                    .append(' <option value="none" selected disabled hidden> No Device </option>')
-                ;
-
-
-        });
-
+        var id = document.getElementById("sel").value;
+        var devices =  /*[[${allDevices}]]*/ {};
+        var count = 0;
+        $.each(devices, function (key,device) {
+            if(id == device.deviceType.id){
+                opt = document.createElement("option");
+                count++;
+                opt.text = device.devicename;
+                opt.value = device.id;
+                newSelect.appendChild(opt);
+            }});
     });
+
+</script>
+
+<script th:inline="javascript">
+    function selectDevices(){
+
+         var newSelect = document.getElementById("deviceNames");
+        // //if you want to remove this default option use newSel.innerHTML=""
+         newSelect.innerHTML="<option value=\"\">Select</option>"; // to reset the second list everytime
+
+        var id = document.getElementById("sel").value;
+        var devices =  /*[[${allDevices}]]*/ {};
+        var count = 0;
+        $.each(devices, function (key,device) {
+            if(id == device.deviceType.id){
+                opt = document.createElement("option");
+                count++;
+                opt.text = device.devicename;
+                opt.value = device.id;
+                newSelect.appendChild(opt);
+        }});
+    }
 
 </script>
 
@@ -61,16 +61,16 @@
           th:object="${Step}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
 
-
         <label class="control-label" th:text="#{device.type}"></label>
-        <select required class=" form-control input-device"  id="sel" >
+        <select required class=" form-control input-device"  id="sel" onchange="selectDevices()">
             <option th:value="none"  selected disabled hidden th:text="*{device.getDeviceType().getDeviceTypeName()}"> Device Type </option>
             <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.getDeviceTypeName()}">Device Type</option>
         </select>
 
         <label class="control-label" th:text="#{device}"></label>
         <select required class=" form-control input-device"  id="deviceNames" th:field="*{device}">
-<!--            <option class="dropdown-item"  th:each="device : ${allDevices}" th:value="${device.getId()}" th:text="${device.getDevicename()}">Device</option>-->
+            <option class="dropdown-item"   th:value="*{device.getId()}" th:text="*{device.getDevicename()}">Device</option>
+            <option class="dropdown-item"   th:each="device : ${allDevices}" th:if="${device.deviceType.id} == *{device.getDeviceType().id} " th:value="${device.getId()}" th:text="${device.getDevicename()}">Device</option>
         </select>
 
         <label class="control-label" text="Start data">Start data</label>
@@ -101,7 +101,7 @@
 
         <p>
             <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
-            <a href="/usermanagement/users" th:text="#{close}" class="btn btn-secondary">Close</a>
+            <a href="/planning/" th:text="#{close}" class="btn btn-secondary">Close</a>
 
         </p>
     </form>
