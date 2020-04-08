@@ -40,7 +40,46 @@
             <td colspan='4' th:text="#{step.norecord}">No record found</td>
         </tr>
         </tbody>
-    </table></table>
+    </table>
+
+    <h5 sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')"> <span th:text="#{step.student}"></span></h5>
+
+    <table class="table table-hover"  sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')">
+        <thead>
+        <tr>
+            <th th:text="#{step.user.username}"></th>
+            <th th:text="#{step.device.devicename}">Device Name</th>
+            <th th:text="#{step.start}">Start Date</th>
+            <th th:text="#{step.startHour}">Start Hour</th>
+            <th th:text="#{step.end}">End Date</th>
+            <th th:text="#{step.endHour}">End Hour</th>
+        </tr>
+        </thead>
+        <!-- IMPORTANT, class="list" have to be at tbody -->
+        <tbody class="list" id="list-students">
+        <tr th:each="step : ${studentSteps}">
+            <td class="user" th:value="${step.getUser()}" th:text="${step.getUser().getFirstName() + ' ' + step.getUser().getLastName()}"></td>
+            <td class="devicename" th:value="${step.getDevice().getDevicename()}" th:text="${step.device.devicename }" >Device name</td>
+            <td class="startTime" th:value="${step.getStart()}" th:text="${step.start}"> Start Date</td>
+            <td class="startTime" th:value="${step.getStartHour()}" th:text="${step.startHour}"> Start Hour</td>
+            <td class="endTime" th:value="${step.getEnd()}" th:text="${step.end}">End Date</td>
+            <td class="endTime" th:value="${step.getEndHour()}" th:text="${step.endHour}">End Hour</td>
+            <td>
+                <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" th:text="#{device.info}" class="btn btn-primary"></a>
+            </td>
+            <td>
+            <td>
+                <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                    <span class="fas fa-trash" style="color: red" ></span> </a>
+            </td>
+            </td>
+
+        </tr>
+        <tr class='notfound' th:if="${studentSteps.isEmpty()}" >
+            <td colspan='4' th:text="#{step.norecord}">No record found</td>
+        </tr>
+        </tbody>
+    </table>
 
     <div th:replace="footer :: footer"></div>
 </div>
