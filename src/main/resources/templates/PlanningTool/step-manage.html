@@ -24,24 +24,25 @@
         $('.js-example-basic-single').select2();
         $('#sel').on('change', function() {
             var devices =  /*[[${allDevices}]]*/ {};
-            console.log(this.value);
+            console.log("test");
             $('#deviceNames')
                 .empty()
-                .append(' <option value="none" selected disabled hidden> Device Name </option>')
+        //        .append(' <option value="none" selected disabled hidden> Device Name </option>')
             ;
             var id = this.value;
             var count = 0;
-            $.each( devices, function(key,device ) {
-                if(id == device.deviceType.id){
-                    count++;
-                    optionText = device.devicename;
-                    optionValue =  device.id;
-                    $('#deviceNames').append($('<option>').val(optionValue).text(optionText));
-                }});
+            // $.each( devices, function(key,device ) {
+            //     if(id == device.deviceType.id){
+            //         count++;
+            //         optionText = device.devicename;
+            //         optionValue =  device.id;
+            //         $('#deviceNames').append($('<option>').val(optionValue).text(optionText));
+            //     }});
             if (count == 0)
                 $('#deviceNames')
                     .empty()
-                    .append(' <option value="none" selected disabled hidden> No Device </option>');
+                    .append(' <option value="none" selected disabled hidden> No Device </option>')
+                ;
 
 
         });
