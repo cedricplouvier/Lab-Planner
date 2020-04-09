@@ -54,6 +54,9 @@ public class StepController {
     private ExperimentTypeRepository experimentTypeRepository;
 
     @Autowired
+    private RelationService relationService;
+
+    @Autowired
     UserRepository userRepository;
 
     private Logger logger = LoggerFactory.getLogger(StepController.class);
@@ -78,6 +81,17 @@ public class StepController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
+        //crate list of all Promotor students
+        Set<User> students = new HashSet<>();
+
+        List<Relation> relations = relationService.findAll();
+        for (Relation relation : relations){
+            if (relation.getResearcher().equals(user)){
+                students.addAll(relation.getStudents());
+            }
+        }
+
+        List<Step> studentSteps = new ArrayList<>();
         List<Step> userSteps = new ArrayList<>();
         List<Step> allsteps = stepService.findAll();
         Set<Role> userRoles = user.getRoles();
@@ -99,16 +113,20 @@ public class StepController {
                 if(temp.getUser().equals(user)){
                 userSteps.add(temp);
                 }
+                else if(students.contains(temp.getUser())){
+                    studentSteps.add(temp);
+                }
             }
             model.addAttribute("userSteps", userSteps);
             model.addAttribute("Step", new Step());
+            model.addAttribute("studentSteps",studentSteps);
         }
 //        model.addAttribute("startformat", new String());
 //        model.addAttribute("endformat", new String());
         return "PlanningTool/planningtool";
     }
     @PreAuthorize("hasAuthority('Planning - Book step/experiment')")
-    @RequestMapping(value={"/planning" , "/planning/{id}"},method= RequestMethod.POST)
+    @RequestMapping(value={"/planning" , "/planning/{id}"},method =  RequestMethod.POST)
     public String addStep(@Valid Step step, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
         User currentUser =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(result.hasErrors() || overlapCheck(step) ){
@@ -148,10 +166,38 @@ public class StepController {
         Set<Role> userRoles = user.getRoles();
         Role adminRol = roleService.findByName("Administrator").get();
 
+        Role promotorRole = roleService.findByName("Researcher").get();
+
         boolean ownStep = false;
 
         if(userRoles.contains(adminRol)){
             stepService.delete(id);
+        }
+
+        else if (userRoles.contains(promotorRole)){
+            List<Relation> relations = relationService.findAll();
+            Set<User> students = new HashSet<>();
+            for (Relation relation : relations){
+                if (relation.getResearcher().equals(user)){
+                    students.addAll(relation.getStudents());
+                }
+            }
+
+            Iterator<Step> it = allsteps.iterator();
+            while (it.hasNext()) {
+                Step temp = it.next();
+                if(students.contains(temp.getUser()) && temp.getId().equals(id)){
+                    ownStep = true;
+                }
+            }
+            if(ownStep) {
+                stepService.delete(id);
+            }
+            else{
+                logger.error(user.getUsername()+" tried to delete someone elses step or step id doesn't exist");
+            }
+
+
         }
         else {
             Iterator<Step> it = allsteps.iterator();
