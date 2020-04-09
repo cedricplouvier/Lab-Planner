@@ -51,10 +51,17 @@ public class HomeController {
     public String showStockmanagementPage(){
         return "redirect:/products";
     }
+    @RequestMapping("/calendar")
+    public String showCalendarPage(){
+        logger.info("showCalendar");
+        return "redirect:/calendar/weekly";
+
+    }
+
     @RequestMapping("/planningtool")
     public String showPlanningtoolPage(){
-        logger.info("showPlanningtoolPage");
-        return "redirect:/calendar/weekly";
+        logger.info("showPlanning");
+        return "redirect:/planning/";
 
     }
     @RequestMapping("/devicemanagement")

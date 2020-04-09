@@ -60,7 +60,7 @@ public class StepController {
     public Iterable<Step> populateSteps() { return this.stepService.findAll();}
     //Mappings
     @PreAuthorize("hasAuthority('Planning - Overview')")
-    @RequestMapping(value="/planning", method= RequestMethod.GET)
+    @RequestMapping(value="/planning/", method= RequestMethod.GET)
     public String showStepPage(final ModelMap model){
             model.addAttribute("allDevices", deviceService.findAll());
             model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
