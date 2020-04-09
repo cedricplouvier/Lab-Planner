@@ -147,8 +147,39 @@ public class StepController {
         }
 
         //Current user can only be, user of the step, the promotor of the user or admin.
-        Role adminRole = roleService.findByName("Administrator").get();
-        if ((!currentUser.getRoles().contains(adminRole)) && (!currentUser.equals(step.getUser()))){
+
+        Role adminole = roleService.findByName("Administrator").get();
+        Role promotorRole = roleService.findByName("Researcher").get();
+        Boolean allowedToEdit = false;
+
+        //Admin can edit all the steps
+        if (currentUser.getRoles().contains(adminole)){
+            allowedToEdit =true;
+        }
+
+        //user can edit his own step
+        else if (step.getUser().equals(currentUser)){
+            allowedToEdit = true;
+        }
+
+        //researcher can edit step of one of his students.
+        else if (currentUser.getRoles().contains(promotorRole)){
+            //get all the relations of the specific researcher
+            List<Relation> relations = relationService.findAll();
+
+            for (Relation relation : relations){
+                //only select relation for specific researcher
+                if (relation.getResearcher().equals(currentUser)){
+                    //check if the student is part of the student scope
+                    if(relation.getStudents().contains(step.getUser())){
+                        allowedToEdit = true;
+                    }
+                }
+            }
+
+        }
+
+        if (!allowedToEdit){
             //no rights, so error message & save nothing
             ra.addFlashAttribute("Status", "Error");
             String message = new String("Student has no right to edit step");
@@ -168,7 +199,7 @@ public class StepController {
         model.addAttribute("allSteps",stepService.findAll());
         model.addAttribute("Step", new Step());
         ra.addFlashAttribute("Status", "Success");
-        String message = new String("New step has been added.");
+        String message = new String("Step has been added/edited.");
         ra.addFlashAttribute("Message", message);
         return "redirect:/planning/";
     }
@@ -178,9 +209,42 @@ public class StepController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
-        Role adminole = roleService.findByName("Administrator").get();
 
-        if ((user.getRoles().contains(adminole)) || (stepService.findById(id).get().getUser().equals(user)) ){
+
+
+        //also check for Researcher.
+        Role adminole = roleService.findByName("Administrator").get();
+        Role promotorRole = roleService.findByName("Researcher").get();
+        Boolean allowedToEdit = false;
+
+        //Admin can edit all the steps
+        if (user.getRoles().contains(adminole)){
+            allowedToEdit =true;
+        }
+
+        //user can edit his own step
+        else if (stepService.findById(id).get().getUser().equals(user)){
+            allowedToEdit = true;
+        }
+
+        //researcher can edit step of one of his students.
+        else if (user.getRoles().contains(promotorRole)){
+            //get all the relations of the specific researcher
+            List<Relation> relations = relationService.findAll();
+
+            for (Relation relation : relations){
+                //only select relation for specific researcher
+                if (relation.getResearcher().equals(user)){
+                    //check if the student is part of the student scope
+                    if(relation.getStudents().contains(stepService.findById(id).get().getUser())){
+                        allowedToEdit = true;
+                    }
+                }
+            }
+
+        }
+
+        if (allowedToEdit){
             model.addAttribute("Step",stepService.findById(id).orElse(null));
             model.addAttribute("allDevices", deviceService.findAll());
             model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
@@ -190,22 +254,17 @@ public class StepController {
 
 
 
-        else if (!stepService.findById(id).get().getUser().equals(user)){
+        else {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message",new String("user can not delete specific step!"));
+            ra.addFlashAttribute("Message",new String("user can not edit specific step!"));
             return "redirect:/planning/";
         }
 
-        model.addAttribute("Step",stepService.findById(id).orElse(null));
-        model.addAttribute("allDevices", deviceService.findAll());
-        model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
-        model.addAttribute("allSteps",stepService.findAll());
-        return "/PlanningTool/step-manage";
     }
 
 
     @RequestMapping(value = "/planning/{id}/delete",method = RequestMethod.GET)
-    public String deleteStep(@PathVariable long id, final ModelMap model){
+    public String deleteStep(@PathVariable long id, final ModelMap model, RedirectAttributes ra){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
@@ -241,6 +300,8 @@ public class StepController {
                 stepService.delete(id);
             }
             else{
+                ra.addFlashAttribute("Status",new String("Error"));
+                ra.addFlashAttribute("Message",new String(user.getFirstName()+ " " + user.getLastName() + " tried to delete someone elses step or step id doesn't exist"));
                 logger.error(user.getUsername()+" tried to delete someone elses step or step id doesn't exist");
             }
 
@@ -258,6 +319,8 @@ public class StepController {
                 stepService.delete(id);
             }
             else{
+                ra.addFlashAttribute("Status",new String("Error"));
+                ra.addFlashAttribute("Message",new String(user.getFirstName()+ " " + user.getLastName() + " tried to delete someone elses step or step id doesn't exist"));
                 logger.error(user.getUsername()+" tried to delete someone elses step or step id doesn't exist");
             }
         }
