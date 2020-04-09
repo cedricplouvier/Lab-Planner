@@ -125,10 +125,27 @@ public class StepController {
 //        model.addAttribute("endformat", new String());
         return "PlanningTool/planningtool";
     }
-    @PreAuthorize("hasAuthority('Planning - Book step/experiment')")
+    @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
     @RequestMapping(value={"/planning/" , "/planning/{id}"},method= RequestMethod.POST)
     public String addStep(@Valid Step step, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
         User currentUser =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        //if new step, add the current student to the step.
+        if (step.getUser() == null) {
+            step.setUser(currentUser);
+        }
+
+        //check for valid input
+        if (step.getStart().trim().equals("") || step.getEnd().trim().equals("")|| step.getStartHour().trim().equals("") ||step.getEndHour().trim().equals("") ){
+            model.addAttribute("allDevices", deviceService.findAll());
+            model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+            model.addAttribute("allSteps",stepService.findAll());
+            model.addAttribute("Step", new Step());
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message",new String("Error while trying to save step."));
+            return "redirect:/planning/";
+        }
+
         if(result.hasErrors() || overlapCheck(step) ){
             model.addAttribute("allDevices", deviceService.findAll());
             model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
@@ -142,7 +159,7 @@ public class StepController {
             }
 
             else
-                ra.addFlashAttribute("Message",new String("Device is already booked in this timeslot."));
+                ra.addFlashAttribute("Message",new String("Error while trying to save step."));
             return "redirect:/planning/";
         }
 
@@ -189,10 +206,6 @@ public class StepController {
         }
 
 
-        //if new step, add the current student to the step.
-        if (step.getUser() == null) {
-            step.setUser(currentUser);
-        }
         stepService.save(step);
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
@@ -203,7 +216,8 @@ public class StepController {
         ra.addFlashAttribute("Message", message);
         return "redirect:/planning/";
     }
-    @PreAuthorize("hasAuthority('Planning - Book step/experiment')")
+
+    @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
     @RequestMapping(value = "/planning/{id}",method = RequestMethod.GET)
     public String viewEditStep(@PathVariable long id, final ModelMap model, RedirectAttributes ra){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -262,7 +276,7 @@ public class StepController {
 
     }
 
-
+    @PreAuthorize("hasAuthority('Planning - Delete step/experiment own') or hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Delete step/experiment all')")
     @RequestMapping(value = "/planning/{id}/delete",method = RequestMethod.GET)
     public String deleteStep(@PathVariable long id, final ModelMap model, RedirectAttributes ra){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -443,13 +457,15 @@ public class StepController {
 
     public boolean overlapCheck(Step step) throws ParseException {
         Iterable<Step> allSteps=populateSteps();
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd hh:mm");
+        //in formatter Hours should be in capital letters, lowercase 'hh' is for AM - PM ( so from 0 to 12)
+        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date thisStepDateStart=formatter.parse(step.getStart()+" "+step.getStartHour());
         Date thisStepDateStop= formatter.parse(step.getEnd()+" "+step.getEndHour());
+
         if(thisStepDateStop.before(thisStepDateStart))
             return true;
         for (Step s : allSteps) {
-            if ((step.getDevice()==s.getDevice()) && (!step.getId().equals(s.getId())) )
+            if ((step.getDevice()==s.getDevice()) && ((step.getId() == null) || (!s.getId().equals(step.getId()))))
             {
                 Date startDate = formatter.parse(s.getStart()+" "+s.getStartHour());
                 Date stopDate = formatter.parse(s.getEnd()+" "+s.getEndHour());
