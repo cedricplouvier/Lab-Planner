@@ -136,7 +136,7 @@ public class StepController {
         }
 
         //check for valid input
-        if (step.getStart().trim().equals("") || step.getEnd().trim().equals("")|| step.getStartHour().trim().equals("") ||step.getEndHour().trim().equals("") ){
+        if ( (step.getStart() == null || step.getEnd() == null || step.getStartHour() == null || step.getEndHour() == null ) ||(step.getStart().trim().equals("") || step.getEnd().trim().equals("")|| step.getStartHour().trim().equals("") ||step.getEndHour().trim().equals("") )){
             model.addAttribute("allDevices", deviceService.findAll());
             model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
             model.addAttribute("allSteps",stepService.findAll());
@@ -225,52 +225,54 @@ public class StepController {
 
 
 
+        if (stepService.findById(id).isPresent()) {
+            //also check for Researcher.
+            Role adminole = roleService.findByName("Administrator").get();
+            Role promotorRole = roleService.findByName("Researcher").get();
+            Boolean allowedToEdit = false;
 
-        //also check for Researcher.
-        Role adminole = roleService.findByName("Administrator").get();
-        Role promotorRole = roleService.findByName("Researcher").get();
-        Boolean allowedToEdit = false;
-
-        //Admin can edit all the steps
-        if (user.getRoles().contains(adminole)){
-            allowedToEdit =true;
-        }
-
-        //user can edit his own step
-        else if (stepService.findById(id).get().getUser().equals(user)){
-            allowedToEdit = true;
-        }
-
-        //researcher can edit step of one of his students.
-        else if (user.getRoles().contains(promotorRole)){
-            //get all the relations of the specific researcher
-            List<Relation> relations = relationService.findAll();
-
-            for (Relation relation : relations){
-                //only select relation for specific researcher
-                if (relation.getResearcher().equals(user)){
-                    //check if the student is part of the student scope
-                    if(relation.getStudents().contains(stepService.findById(id).get().getUser())){
-                        allowedToEdit = true;
-                    }
-                }
+            //Admin can edit all the steps
+            if (user.getRoles().contains(adminole)) {
+                allowedToEdit = true;
             }
 
+            //user can edit his own step
+            else if (stepService.findById(id).get().getUser().equals(user)) {
+                allowedToEdit = true;
+            }
+
+            //researcher can edit step of one of his students.
+            else if (user.getRoles().contains(promotorRole)) {
+                //get all the relations of the specific researcher
+                List<Relation> relations = relationService.findAll();
+
+                for (Relation relation : relations) {
+                    //only select relation for specific researcher
+                    if (relation.getResearcher().equals(user)) {
+                        //check if the student is part of the student scope
+                        if (relation.getStudents().contains(stepService.findById(id).get().getUser())) {
+                            allowedToEdit = true;
+                        }
+                    }
+                }
+
+            }
+
+            if (allowedToEdit) {
+                model.addAttribute("Step", stepService.findById(id).orElse(null));
+                model.addAttribute("allDevices", deviceService.findAll());
+                model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+                model.addAttribute("allSteps", stepService.findAll());
+                return "/PlanningTool/step-manage";
+            } else {
+                ra.addFlashAttribute("Status", new String("Error"));
+                ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
+                return "redirect:/planning/";
+            }
         }
-
-        if (allowedToEdit){
-            model.addAttribute("Step",stepService.findById(id).orElse(null));
-            model.addAttribute("allDevices", deviceService.findAll());
-            model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
-            model.addAttribute("allSteps",stepService.findAll());
-            return "/PlanningTool/step-manage";
-        }
-
-
-
         else {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message",new String("user can not edit specific step!"));
+            ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
             return "redirect:/planning/";
         }
 
