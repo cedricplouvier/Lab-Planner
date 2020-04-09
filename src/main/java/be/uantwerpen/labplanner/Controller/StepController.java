@@ -119,10 +119,22 @@ public class StepController {
             return "redirect:/planning";
         }
 
-        // check if a user is already assigned to the step
+        //Current user can only be, user of the step, the promotor of the user or admin.
+        Role adminRole = roleService.findByName("Administrator").get();
+        if ((!currentUser.getRoles().contains(adminRole)) && (!currentUser.equals(step.getUser()))){
+            //no rights, so error message & save nothing
+            ra.addFlashAttribute("Status", "Error");
+            String message = new String("Student has no right to edit step");
+            ra.addFlashAttribute("Message", message);
+            return "redirect:/planning";
+
+        }
 
 
-        step.setUser(currentUser);
+        //if new step, add the current student to the step.
+        if (step.getUser() == null) {
+            step.setUser(currentUser);
+        }
         stepService.save(step);
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
@@ -135,7 +147,28 @@ public class StepController {
     }
     @PreAuthorize("hasAuthority('Planning - Book step/experiment')")
     @RequestMapping(value = "planning/{id}",method = RequestMethod.GET)
-    public String viewEditStep(@PathVariable long id, final ModelMap model){
+    public String viewEditStep(@PathVariable long id, final ModelMap model, RedirectAttributes ra){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+
+        Role adminole = roleService.findByName("Administrator").get();
+
+        if ((user.getRoles().contains(adminole)) || (stepService.findById(id).get().getUser().equals(user)) ){
+            model.addAttribute("Step",stepService.findById(id).orElse(null));
+            model.addAttribute("allDevices", deviceService.findAll());
+            model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+            model.addAttribute("allSteps",stepService.findAll());
+            return "/PlanningTool/step-manage";
+        }
+
+
+
+        else if (!stepService.findById(id).get().getUser().equals(user)){
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message",new String("user can not delete specific step!"));
+            return "redirect:/planning";
+        }
+
         model.addAttribute("Step",stepService.findById(id).orElse(null));
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());

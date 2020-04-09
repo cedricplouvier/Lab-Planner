@@ -61,6 +61,8 @@
           th:object="${Step}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
 
+        <input th:type="hidden" th:field="*{user}"/>
+
         <label class="control-label" th:text="#{device.type}"></label>
         <select required class=" form-control input-device"  id="sel" onchange="selectDevices()">
             <option th:value="none"  selected disabled hidden th:text="*{device.getDeviceType().getDeviceTypeName()}"> Device Type </option>
