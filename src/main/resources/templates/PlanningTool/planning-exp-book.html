@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{Experiment Management}')"></head>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+
+<script th:inline="javascript">
+
+
+    function choosedExperimentType(val) {
+        var experimentTypes =  /*[[${allExperimentTypes}]]*/ {};
+        var devices =  /*[[${allDevices}]]*/ {};
+
+
+        console.log(this.value);
+        $('#deviceNames')
+            .empty()
+            .append(' <option value="none" selected disabled hidden> Device Name </option>')
+        ;
+        var id = val;
+        var count = 0;
+
+        //reference table
+        var tableRef = document.getElementById('myTable').getElementsByTagName('tbody')[0];
+        tableRef.innerHTML = "";
+
+        //Find Experiment Type
+        $.each(experimentTypes, function (index, experimentType) {
+            //alert("id: "+experimentType.id +" name:"+ experimentType.name +" stepTypes:"+ experimentType.stepTypes);
+            if (id == experimentType.id) {
+                count++;
+                //Make rows in table "myTable" regarding to count of stepsTypes inside selected experimentType
+                $.each(experimentType.stepTypes, function (key, stepType) {
+                    //  alert("id: " + stepType.id + " name:" + stepType.stepTypeName + " deviceType name:" + stepType.deviceType.deviceTypeName);
+
+
+                    // Insert a row in the table
+                    var newRow = tableRef.insertRow();
+
+                    // Insert a step name in cell 0
+                    var cellStepName = newRow.insertCell(0);
+                    var newText = document.createTextNode(stepType.stepTypeName);
+                    cellStepName.appendChild(newText);
+
+
+                    //Create devices dropDown
+                    var dropDown = document.createElement("SELECT");
+                    var atLeastOneDeviceFound = 0;
+                    //Add the Options to the DropDownList.
+                    $.each(devices, function (key, device) {
+                        //alert(device.deviceType.id +" == "+ stepType.deviceType.id)
+                        if (device.deviceType.id == stepType.deviceType.id) {
+                            atLeastOneDeviceFound = 1;
+                            var option = document.createElement("OPTION");
+                            //Set Customer Name in Text part.
+                            option.innerHTML = device.devicename;
+                            //Set CustomerId in Value part.
+                            option.value = device.id;
+
+                            //Add the Option element to DropDownList.
+                            dropDown.options.add(option);
+                        }
+
+
+                    });
+                    if (atLeastOneDeviceFound == 0) {
+                        atLeastOneDeviceFound = 1;
+                        var option = document.createElement("OPTION");
+
+                        option.innerHTML = "No device found";
+                        //Set CustomerId in Value part.
+                        option.value = "none"
+                        //Add the Option element to DropDownList.
+                        dropDown.options.add(option);
+                    }
+                    var cellDeviceDropDown = newRow.insertCell(1);
+                    cellDeviceDropDown.appendChild(dropDown);
+
+
+                    // create Start date cell
+                    var cellStartDate = newRow.insertCell(2);
+                    var startDate = document.createElement("INPUT");
+                    startDate.setAttribute("type", "date");
+                    startDate.setAttribute("value", moment().format('YYYY-MM-DD'));
+                    cellStartDate.appendChild(startDate);
+
+                    // create Start time cell
+                    var cellStartTime = newRow.insertCell(3);
+                    var startTime = document.createElement("INPUT");
+                    startTime.setAttribute("value", "14:00");
+                    startTime.style.width = "100px";
+                    cellStartTime.appendChild(startTime);
+
+                    // create end date cell
+                    var cellEndDate = newRow.insertCell(4);
+                    var endDate = document.createElement("INPUT");
+                    endDate.setAttribute("type", "date");
+                    endDate.setAttribute("value", moment().format('YYYY-MM-DD'));
+                    cellEndDate.appendChild(endDate);
+
+                    // create end time cell
+                    var cellEndTime = newRow.insertCell(5);
+                    var endTime = document.createElement("INPUT");
+                    endTime.setAttribute("value", "14:00");
+                    endTime.style.width = "100px";
+                    cellEndTime.appendChild(endTime);
+
+                    // Insert a value of continuity in cell 6
+                    var cellContName = newRow.insertCell(6);
+                    var contText = document.createTextNode(stepType.continuity.hours + ":" + stepType.continuity.minutes);
+                    cellContName.appendChild(contText);
+
+
+                });
+            }
+        });
+        if (count == 0)
+            $('#deviceNames')
+                .empty()
+                .append(' <option value="none" selected disabled hidden> No Device </option>');
+
+
+        document.getElementById("deviceNames").style.visibility = "visible";
+    }
+</script>
+
+<style>
+    .input-date {
+        width: 37.5%;
+        position: absolute;
+        margin-top: 10px;
+        visibility: hidden;
+    }
+
+    .input-hour {
+        visibility: hidden;
+        width: 40%;
+        margin-top: 10px;
+    }
+
+    .input-device {
+        width: 40%;
+        margin-top: 10px;
+    }
+</style>
+<body>
+<div class="container">
+    <div th:replace="navbar :: navbar"></div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th th:text="#{experiment.type}">Experiment Type</th>
+        </tr>
+        </thead>
+        <!-- IMPORTANT, class="list" have to be at tbody -->
+        <tr>
+            <th>
+                <select required class=" form-control input-device" id="selectExperimentType"
+                        onchange="choosedExperimentType(this.value)">
+                    <option value="none" selected disabled hidden th:text="#{experiment.type}"> Experiment Type
+                    </option>
+                    <option class="dropdown-item" th:each="experimentType : ${allExperimentTypes}"
+                            th:value="${experimentType.getId()}"
+                            th:text="${experimentType.getExperimentTypeName()}">Experiment Type
+                    </option>
+                </select>
+            </th>
+        </tr>
+    </table>
+    <table class="table table-hover" id="myTable">
+        <thead>
+        <tr>
+            <th>Step</th>
+            <th>Device</th>
+            <th>Start date</th>
+            <th>Start time</th>
+            <th>End date</th>
+            <th>End time</th>
+            <th>Time to next step</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>

@@ -9,25 +9,25 @@ import javax.persistence.Entity;
 public class ContinuityAli extends AbstractPersistable<Long> {
 
 
-    @Column(name = "hour")
-    private int hour;
+    @Column(name = "hours")
+    private int hours;
     @Column(name = "minutes")
     private int minutes;
     @Column(name="type")
     private String type;
 
     public ContinuityAli(){}
-    public ContinuityAli(int hour,int minutes,String type){
-        this.hour=hour;
+    public ContinuityAli(int hours,int minutes,String type){
+        this.hours=hours;
         this.minutes=minutes;
         this.type=type;
     }
-    public int getHour() {
-        return hour;
+    public int getHours() {
+        return hours;
     }
 
-    public void setHour(int hour) {
-        this.hour = hour;
+    public void setHours(int hours) {
+        this.hours = hours;
     }
 
     public int getMinutes() {

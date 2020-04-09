@@ -10,20 +10,23 @@ import javax.persistence.OneToOne;
 @Entity
 public class StepType extends AbstractPersistable<Long> {
     @OneToOne
-    @JoinColumn(name = "deviceType",nullable = false)
+    @JoinColumn(name = "deviceType", nullable = false)
     private DeviceType deviceType;
-    @Column(name = "name")
-    private String name;
+    @Column(name = "stepTypeName")
+    private String stepTypeName;
     @OneToOne
     @JoinColumn(name = "continuity")
     private ContinuityAli continuity;
 
-    public StepType(){}
-    public StepType(DeviceType deviceType,ContinuityAli continuity,String stepTypeName){
-        this.deviceType=deviceType;
-        this.name=stepTypeName;
-        this.continuity=continuity;
+    public StepType() {
     }
+
+    public StepType(DeviceType deviceType, ContinuityAli continuity, String stepTypeName) {
+        this.deviceType = deviceType;
+        this.stepTypeName = stepTypeName;
+        this.continuity = continuity;
+    }
+
     public DeviceType getDeviceType() {
         return deviceType;
     }
@@ -33,12 +36,13 @@ public class StepType extends AbstractPersistable<Long> {
     }
 
     public String getStepTypeName() {
-        return name;
+        return stepTypeName;
     }
 
     public void setStepTypeName(String stepTypeName) {
-        this.name = stepTypeName;
+        this.stepTypeName = stepTypeName;
     }
+
     public ContinuityAli getContinuity() {
         return continuity;
     }
