@@ -57,6 +57,17 @@
                     </a>
                 </div>
             </div>
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"><a th:text="#{product.usages}">Used in:</a></h5>
+                    <ul>
+                        <th:block th:each="mixture : ${mixtures}">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/mixtures/info/{id}/(id=${mixture.id})}"  th:text="${mixture.getName()}">Name</a>
+                            </li>                        </th:block>
+                    </ul>
+                </div>
+            </div>
 
 
 

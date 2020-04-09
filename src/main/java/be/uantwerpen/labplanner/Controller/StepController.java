@@ -2,6 +2,7 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Repository.DeviceRepository;
+import be.uantwerpen.labplanner.Repository.ExperimentTypeRepository;
 import be.uantwerpen.labplanner.Service.*;
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
@@ -49,7 +50,11 @@ public class StepController {
     private MixtureService mixtureService;
     @Autowired
     private StepTypeService stepTypeService;
+    @Autowired
+    private ExperimentTypeRepository experimentTypeRepository;
 
+    @Autowired
+    private RelationService relationService;
 
     @Autowired
     UserRepository userRepository;
@@ -76,6 +81,17 @@ public class StepController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
+        //crate list of all Promotor students
+        Set<User> students = new HashSet<>();
+
+        List<Relation> relations = relationService.findAll();
+        for (Relation relation : relations){
+            if (relation.getResearcher().equals(user)){
+                students.addAll(relation.getStudents());
+            }
+        }
+
+        List<Step> studentSteps = new ArrayList<>();
         List<Step> userSteps = new ArrayList<>();
         List<Step> allsteps = stepService.findAll();
         Set<Role> userRoles = user.getRoles();
@@ -97,16 +113,20 @@ public class StepController {
                 if(temp.getUser().equals(user)){
                 userSteps.add(temp);
                 }
+                else if(students.contains(temp.getUser())){
+                    studentSteps.add(temp);
+                }
             }
             model.addAttribute("userSteps", userSteps);
             model.addAttribute("Step", new Step());
+            model.addAttribute("studentSteps",studentSteps);
         }
 //        model.addAttribute("startformat", new String());
 //        model.addAttribute("endformat", new String());
         return "PlanningTool/planningtool";
     }
     @PreAuthorize("hasAuthority('Planning - Book step/experiment')")
-    @RequestMapping(value={"/planning" , "/planning/{id}"},method= RequestMethod.POST)
+    @RequestMapping(value={"/planning" , "/planning/{id}"},method =  RequestMethod.POST)
     public String addStep(@Valid Step step, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
         User currentUser =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(result.hasErrors() || overlapCheck(step) ){
@@ -122,7 +142,7 @@ public class StepController {
             }
 
             else
-                ra.addFlashAttribute("Message",new String("Device is already booked in this timeslot."));
+                ra.addFlashAttribute("Message",new String("Device can't be booked in this timeslot."));
             return "redirect:/planning";
         }
         step.setUser(currentUser);
@@ -146,10 +166,38 @@ public class StepController {
         Set<Role> userRoles = user.getRoles();
         Role adminRol = roleService.findByName("Administrator").get();
 
+        Role promotorRole = roleService.findByName("Researcher").get();
+
         boolean ownStep = false;
 
         if(userRoles.contains(adminRol)){
             stepService.delete(id);
+        }
+
+        else if (userRoles.contains(promotorRole)){
+            List<Relation> relations = relationService.findAll();
+            Set<User> students = new HashSet<>();
+            for (Relation relation : relations){
+                if (relation.getResearcher().equals(user)){
+                    students.addAll(relation.getStudents());
+                }
+            }
+
+            Iterator<Step> it = allsteps.iterator();
+            while (it.hasNext()) {
+                Step temp = it.next();
+                if(students.contains(temp.getUser()) && temp.getId().equals(id)){
+                    ownStep = true;
+                }
+            }
+            if(ownStep) {
+                stepService.delete(id);
+            }
+            else{
+                logger.error(user.getUsername()+" tried to delete someone elses step or step id doesn't exist");
+            }
+
+
         }
         else {
             Iterator<Step> it = allsteps.iterator();
@@ -223,22 +271,28 @@ public class StepController {
         return "/PlanningTool/planning-exp-book";
     }
     @RequestMapping(value = "/planning/experiments/put",method = RequestMethod.GET)
-    public String viewCreateExperimentType(final ModelMap model){
+    public String viewCreateExperimentType( final ModelMap model){
+        List<String> options = new ArrayList<>();
+        options.add("No");options.add("Soft");options.add("Hard");
         model.addAttribute("allDevices",deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
         model.addAttribute("allMixtures",mixtureService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("experimentType",new ExperimentType());
+        model.addAttribute("allOptions",options);
         return "/PlanningTool/planning-exp-manage";
     }
 
     @RequestMapping(value = "/planning/experiments/{id}",method = RequestMethod.GET)
     public String viewEditExperimentType(@PathVariable Long id,final ModelMap model){
+        List<String> options = new ArrayList<>();
+        options.add("No");options.add("Soft");options.add("Hard");
         model.addAttribute("allDevices",deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
         model.addAttribute("allMixtures",mixtureService.findAll());
         model.addAttribute("allStepTypes",stepTypeService.findAll());
         model.addAttribute("experimentType",experimentTypeService.findById(id).get());
+        model.addAttribute("allOptions",options);
         return "/PlanningTool/planning-exp-manage";
     }
     @RequestMapping(value = {"/planning/experiments/","/planning/experiments/{id}"},method = RequestMethod.POST)
@@ -250,23 +304,51 @@ public class StepController {
             System.out.println(result.getFieldError().toString());
             return "redirect:/planning/experiments";
         }
-        for(StepType stepType : experimentType.getStepTypes()){stepTypeService.saveNewStepType(stepType);}
+        for(ExperimentType exptyp : experimentTypeService.findAll()) {
+            if(experimentType.getExpname().equals(exptyp.getExpname()))
+            {
+                ra.addFlashAttribute("Status", new String("Error"));
+                ra.addFlashAttribute("Message",new String("There was a problem in adding the Experiment Type:\nThis experiment type name is already occupied!"));
+                return "redirect:/planning/experiments";
+            }
+        }
+
+
+        for(StepType stepType : experimentType.getStepTypes()){
+            if(stepType.getContinuity().getHour()<0){
+                ra.addFlashAttribute("Status", new String("Error"));
+                ra.addFlashAttribute("Message",new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
+                return "redirect:/planning/experiments";
+            }
+            if(stepType.getContinuity().getMinutes()>59 || stepType.getContinuity().getMinutes()<0){
+                ra.addFlashAttribute("Status", new String("Error"));
+                ra.addFlashAttribute("Message",new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
+                return "redirect:/planning/experiments";
+            }
+            else
+                stepTypeService.saveNewStepType(stepType);
+        }
+        ExperimentType tempExperimentType = experimentType.getId() == null?null: experimentTypeRepository.findById( experimentType.getId()).orElse(null);
+        if(tempExperimentType!=null){
+            ra.addFlashAttribute("Status", new String("Success"));
+            ra.addFlashAttribute("Message",new String("Experiment type successfully edited."));
+        }
+        else{
+            ra.addFlashAttribute("Status", new String("Success"));
+            ra.addFlashAttribute("Message",new String("Experiment type successfully added."));
+        }
         experimentTypeService.saveExperimentType(experimentType);
-        ra.addFlashAttribute("Status", new String("Success"));
-        ra.addFlashAttribute("Message",new String("Experiment type successfully added."));
         return "redirect:/planning/experiments";
     }
-//    @RequestMapping(value = {"/planning/experiments/new"},method = RequestMethod.POST)
-//    public String addExperimentType( @RequestBody ExperimentJson experimentType, BindingResult result, ModelMap model, RedirectAttributes ra){
-//        String str= new String();
-//        return "redirect:/planning/experiments";
-//    }
+
 
     public boolean overlapCheck(Step step) throws ParseException {
         Iterable<Step> allSteps=populateSteps();
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd hh");
+        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd hh:mm");
         Date thisStepDateStart=formatter.parse(step.getStart()+" "+step.getStartHour());
         Date thisStepDateStop= formatter.parse(step.getEnd()+" "+step.getEndHour());
+        if(thisStepDateStop.before(thisStepDateStart))
+            return true;
         for (Step s : allSteps) {
             if (step.getDevice()==s.getDevice())
             {

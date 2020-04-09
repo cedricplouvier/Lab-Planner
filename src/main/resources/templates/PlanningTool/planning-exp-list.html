@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head th:replace="navbar :: head (title='#{Experiment Management}')"></head>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 <body>
@@ -44,8 +45,8 @@
         </tbody>
     </table>
 
-    <a href="/planning" class="btn btn-primary" th:text="#{experiments.return}" >Return to schedules</a>
-    <a  sec:authorize="hasAuthority('Planning - Make new experiment')" href="/planning/experiments/put" type="button" class="btn btn-outline-primary"th:text="#{experiment.type.create}">
+    <a style="margin-right: 10px" href="/planning" class="btn btn-outline-primary" th:text="#{experiments.return}" >Return to schedules</a>
+    <a style="margin-right: 10px" sec:authorize="hasAuthority('Planning - Make new experiment')" href="/planning/experiments/put" type="button" class="btn btn-primary"th:text="#{experiment.type.create}">
         Create new experiment
     </a>
 

@@ -8,8 +8,9 @@
         console.log(a);
         var rowCount = $('#list tr').length;
         $('#list')
-            .append('<tr> <td><input hidden class="steptype" value="'+a.id+'" id="stepTypes'+rowCount+'.deviceType" name="stepTypes['+rowCount+'].deviceType">'+a.deviceTypeName+'</td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.type" name="stepTypes['+rowCount+'].continuity.type"></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.hour" name="stepTypes['+rowCount+'].continuity.hour"></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.minutes" name="stepTypes['+rowCount+'].continuity.minutes"></td> </tr>')
+            .append('<tr class="row'+rowCount+'" id="row'+rowCount+'"> <td><input hidden class="steptype" value="'+a.id+'" id="stepTypes'+rowCount+'.deviceType" name="stepTypes['+rowCount+'].deviceType">'+a.deviceTypeName+'</td> <td><select required value="" id="stepTypes'+rowCount+'.continuity.type" name="stepTypes['+rowCount+'].continuity.type"><option class="dropdown-item" value="No">No</option><option class="dropdown-item" value="Soft">Soft</option><option class="dropdown-item" value="Hard">Hard</option> </select></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.hour" name="stepTypes['+rowCount+'].continuity.hour" placeholder="Hours"></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.minutes" name="stepTypes['+rowCount+'].continuity.minutes" placeholder="Minutes"></td><td><a onclick="removeRow(this)"> <span class="fas fa-trash" style="color: red" ></span> </a></td> </tr>')
     }
+
     function filterFunction() {
         var input, filter, ul, li, a, i;
         input = document.getElementById("myInput");
@@ -25,34 +26,14 @@
             }
         }
     }
-    function saveExperiment() {
-        var experimentName = $('#experimentTypeName').val();
-        var steps = [];
-        $('#list tr').each(function (i, row) {
 
-        var id = $(this)[0].childNodes[0].value;
-        var cont = $(this)[0].childNodes[2].children[0].value;
-        var dur =$(this)[0].childNodes[3].children[0].value;
-            var step = [id,cont,dur];
-            steps.push(step);
-    });
-        console.log(experimentName);
-        console.log(steps);
-        var data = [experimentName,steps];
-
-        $.ajax({
-
-            'url' : '/planning/experiments/new',
-            'type' : 'post',
-            'data' : data,
-            'success' : function(data) {
-                alert('Data: '+data);
-            },
-            'error' : function(request,error)
-            {
-                alert("Request: "+JSON.stringify(request));
-            }
-        });
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function myFunction() {
+        document.getElementById("myDropdown").classList.toggle("show");
+    }
+    function removeRow(r) {
+        $(r).closest('tr').remove();
     }
 </script>
 <style>
@@ -71,7 +52,6 @@
 
     #myInput {
         box-sizing: border-box;
-        background-image: url('searchicon.png');
         background-position: 14px 12px;
         background-repeat: no-repeat;
         font-size: 16px;
@@ -111,8 +91,8 @@
 <body>
 <div class = "container">
     <div th:replace="navbar :: navbar"></div>
-    <form th:action="@{/planning/experiments/{id} (id=${experimentType})}" th:object="${experimentType}" method="post">
-        <input th:field="*{id}" th:type="hidden">
+    <form action="#" th:action="@{/planning/experiments/{id} (id=${experimentType.id})}" th:object="${experimentType}" method="post">
+
     <table class="table table-hover">
         <div class="dropdown">
             <div  class="">
@@ -134,45 +114,30 @@
         <tbody id="list" class="list"  >
             <tr th:each="stepType, itemStat : *{stepTypes}">
                 <td ><input class="steptype" th:type="hidden" th:field="*{stepTypes[__${itemStat.index}__].deviceType}" th:value="${stepType.deviceType.deviceTypeName}" th:text="${stepType.deviceType.deviceTypeName}" ></td>
-                <td ><input th:field="*{stepTypes[__${itemStat.index}__].continuity.type}" th:value="${stepType.continuity.type}"></td>
+                <td >
+                    <select th:field="*{stepTypes[__${itemStat.index}__].continuity.type}">
+                        <option class="dropdown-item" th:each="option : ${allOptions}" th:value="${option}" th:text="${option}"></option>
+                    </select>
+                </td>
                 <td ><input th:field="*{stepTypes[__${itemStat.index}__].continuity.hour}" th:value="${stepType.continuity.hour}"></td>
                 <td ><input th:field="*{stepTypes[__${itemStat.index}__].continuity.minutes}" th:value="${stepType.continuity.minutes}"></td>
             </tr>
         </tbody>
     </table>
-    <input th:field="*{expname}" placeholder="Expirement Type Name">
+        <div>
+            <input th:field="*{expname}" placeholder="Expirement Type Name">
+            <input th:field="*{id}" th:type="hidden" th:value="experimentType.id">
+        </div>
 
-
-
-    <a href="/planning/experiments" class="btn btn-primary" th:text="#{experimentstype.return}" >Return</a>
-    <button type="submit"  class="btn btn-outline-primary"th:text="#{experiment.type.submit}">
-        Submit
-    </button>
+    <div style="margin-top: 10px">
+        <a style="margin-right: 10px" href="/planning/experiments" class="btn btn-outline-primary" th:text="#{experimentstype.return}" >Return</a>
+        <button style="margin-right: 10px" type="submit"  class="btn btn-primary"th:text="#{experiment.type.submit}">
+            Submit
+        </button>
+    </div>
     </form>
 </div>
 
-<script>
-    /* When the user clicks on the button,
-    toggle between hiding and showing the dropdown content */
-    function myFunction() {
-        document.getElementById("myDropdown").classList.toggle("show");
-    }
 
-    function filterFunction() {
-        var input, filter, ul, li, a, i;
-        input = document.getElementById("myInput");
-        filter = input.value.toUpperCase();
-        div = document.getElementById("myDropdown");
-        a = div.getElementsByTagName("a");
-        for (i = 0; i < a.length; i++) {
-            txtValue = a[i].textContent || a[i].innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                a[i].style.display = "";
-            } else {
-                a[i].style.display = "none";
-            }
-        }
-    }
-</script>
 </body>
 </html>

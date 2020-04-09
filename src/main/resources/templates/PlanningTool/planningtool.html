@@ -141,10 +141,11 @@
         <th th:text="#{step.endHour}">End Hour</th>
     </tr>
     </thead>
+
     <!-- IMPORTANT, class="list" have to be at tbody -->
     <tbody class="list" id="list">
     <tr th:each="step : ${userSteps}">
-        <td class='username'  th:value="${step.getUser().getUsername()}" th:text="${step.user.username}">Username</td>
+        <td class='username' th:value="${step.getUser().getUsername()}" th:text="${step.user.username}">Username</td>
         <td class="devicename" th:value="${step.getDevice().getDevicename()}" th:text="${step.device.devicename }" >Device name</td>
         <td class="startTime" th:value="${step.getStart()}" th:text="${step.start}"> Start Date</td>
         <td class="startTime" th:value="${step.getStartHour()}" th:text="${step.startHour}"> Start Hour</td>
@@ -162,8 +163,48 @@
         <td colspan='4' th:text="#{step.norecord}">No record found</td>
     </tr>
     </tbody>
-</table></table>
-        <a href="/planning/experiments" type="button" class="btn btn-outline-primary"th:text="#{experiment.types}">
+</table>
+
+        <h5 sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')"> <span th:text="#{step.student}"></span></h5>
+
+        <table class="table table-hover"  sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')">
+            <thead>
+            <tr>
+                <th th:text="#{step.user.username}"></th>
+                <th th:text="#{step.device.devicename}">Device Name</th>
+                <th th:text="#{step.start}">Start Date</th>
+                <th th:text="#{step.startHour}">Start Hour</th>
+                <th th:text="#{step.end}">End Date</th>
+                <th th:text="#{step.endHour}">End Hour</th>
+            </tr>
+            </thead>
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody class="list" id="list-students">
+            <tr th:each="step : ${studentSteps}">
+                <td class="user" th:value="${step.getUser()}" th:text="${step.getUser().getFirstName() + ' ' + step.getUser().getLastName()}"></td>
+                <td class="devicename" th:value="${step.getDevice().getDevicename()}" th:text="${step.device.devicename }" >Device name</td>
+                <td class="startTime" th:value="${step.getStart()}" th:text="${step.start}"> Start Date</td>
+                <td class="startTime" th:value="${step.getStartHour()}" th:text="${step.startHour}"> Start Hour</td>
+                <td class="endTime" th:value="${step.getEnd()}" th:text="${step.end}">End Date</td>
+                <td class="endTime" th:value="${step.getEndHour()}" th:text="${step.endHour}">End Hour</td>
+                <td>
+                    <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" th:text="#{device.info}" class="btn btn-primary"></a>
+                </td>
+                <td>
+                <td>
+                    <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                        <span class="fas fa-trash" style="color: red" ></span> </a>
+                </td>
+                </td>
+
+            </tr>
+            <tr class='notfound' th:if="${studentSteps.isEmpty()}" >
+                <td colspan='4' th:text="#{step.norecord}">No record found</td>
+            </tr>
+            </tbody>
+        </table></table>
+
+        <a href="/planning/experiments" type="button" class="btn btn-primary"th:text="#{experiment.types}">
             Experiment Types
         </a>
     </div>
@@ -180,8 +221,8 @@
             </div>
             <form th:action="@{/planning/{id} (id=${Step})}" th:object="${Step}" method="post">
 
-            <div class="modal-body" style="height: 240px;">
-                <input th:type="hidden" th:field="*{id}"/>
+            <div class="modal-body" style="height: 260px;">
+                <input th:field="*{id}" th:type="hidden"/>
                 <select required class=" form-control input-device"  id="sel">
                     <option value="none"  selected disabled hidden th:text="#{device.type}"> Device Type </option>
                     <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.getDeviceTypeName()}">Device Type</option>
@@ -192,11 +233,14 @@
                 </select>
                 <div style="display: flow-root;">
                     <input required id="startTime" type="date" th:field="*{start}" class="form-control input-date" placeholder="Start date">
-                    <input id="startHour" class="form-control float-right input-hour" th:field="*{startHour}" placeholder="Hour">
+                    <input type="time" id="startHour" class="form-control float-right input-hour" th:field="*{startHour}" placeholder="Hour">
                 </div>
                 <div>
                     <input required id="endTime" type="date" th:field="*{end}" class="form-control input-date"  placeholder="End date">
-                    <input id="endHour" class="form-control float-right input-hour" th:field="*{endHour}" placeholder="Hour">
+                    <input type="time" id="endHour" class="form-control float-right input-hour" th:field="*{endHour}" placeholder="Hour">
+                </div>
+                <div style="margin-top: 60px">
+                    <input th:field="*{comment}" placeholder="Comment">
                 </div>
             </div>
             <div class="modal-footer">

@@ -60,6 +60,15 @@ public class ExperimentType extends AbstractPersistable<Long> {
         return stepTypes;
     }
 
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Override
+    public void setId(Long id) {
+        super.setId(id);
+    }
 
     public void setStepTypes(List<StepType> stepTypes) {
         this.stepTypes = stepTypes;
