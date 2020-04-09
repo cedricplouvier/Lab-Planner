@@ -216,7 +216,7 @@ public class StepController {
         Date thisStepDateStart=formatter.parse(step.getStart()+" "+step.getStartHour());
         Date thisStepDateStop= formatter.parse(step.getEnd()+" "+step.getEndHour());
         for (Step s : allSteps) {
-            if (step.getDevice()==s.getDevice())
+            if ((step.getDevice()==s.getDevice()) && (step.getId() != s.getId()) )
             {
                 Date startDate = formatter.parse(s.getStart()+" "+s.getStartHour());
                 Date stopDate = formatter.parse(s.getEnd()+" "+s.getEndHour());
