@@ -96,12 +96,16 @@ public class HomeController {
                 }
             }
 
-
             model.addAttribute("userSteps", userSteps);
             model.addAttribute("Step", new Step());
             model.addAttribute("currentUser",user.getUsername());
             model.addAttribute("studentSteps",studentSteps);
 
         return "homepage";
+    }
+
+    @RequestMapping("/statistics")
+    public String showStatisticsPage() {
+        return "redirect:/statistics/statistics";
     }
 }
