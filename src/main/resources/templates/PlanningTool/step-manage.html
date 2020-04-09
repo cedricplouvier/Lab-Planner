@@ -84,19 +84,19 @@
         <label class="control-label" text="Start hour">Start Hour</label>
 
         <div>
-        <input id="startHour" class="form-control float-right input-hour" th:field="*{startHour}" placeholder="Hour">
+        <input required id="startHour" type="time" class="form-control float-right input-hour" th:field="*{startHour}" placeholder="Hour">
         </div>
 
-        <label class="control-label" text="End data">End data</label>
+        <label  class="control-label" text="End data">End data</label>
 
         <div>
-            <input required id="endTime" type="date" th:field="*{end}" class="form-control input-date"  placeholder="End date">
+            <input required id="endTime"  type="date" th:field="*{end}" class="form-control input-date"  placeholder="End date">
         </div>
 
         <label class="control-label" text="End hour">End Hour</label>
 
         <div>
-            <input id="endHour" class="form-control float-right input-hour" th:field="*{endHour}" placeholder="Hour">
+            <input required id="endHour" type="time" class="form-control float-right input-hour" th:field="*{endHour}" placeholder="Hour">
         </div>
 
         <!--        <div class="alert alert-danger" role="alert" th:if="${UserInUse}!=null" th:text="${UserInUse}"></div>-->

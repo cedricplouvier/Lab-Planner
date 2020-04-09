@@ -99,7 +99,7 @@ public class StepController {
         return "PlanningTool/planningtool";
     }
     @PreAuthorize("hasAuthority('Planning - Book step/experiment')")
-    @RequestMapping(value={"/planning" , "/planning/{id}"},method= RequestMethod.POST)
+    @RequestMapping(value={"/planning/" , "/planning/{id}"},method= RequestMethod.POST)
     public String addStep(@Valid Step step, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
         User currentUser =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(result.hasErrors() || overlapCheck(step) ){
@@ -116,7 +116,7 @@ public class StepController {
 
             else
                 ra.addFlashAttribute("Message",new String("Device is already booked in this timeslot."));
-            return "redirect:/planning";
+            return "redirect:/planning/";
         }
 
         //Current user can only be, user of the step, the promotor of the user or admin.
@@ -126,7 +126,7 @@ public class StepController {
             ra.addFlashAttribute("Status", "Error");
             String message = new String("Student has no right to edit step");
             ra.addFlashAttribute("Message", message);
-            return "redirect:/planning";
+            return "redirect:/planning/";
 
         }
 
@@ -143,10 +143,10 @@ public class StepController {
         ra.addFlashAttribute("Status", "Success");
         String message = new String("New step has been added.");
         ra.addFlashAttribute("Message", message);
-        return "redirect:/planning";
+        return "redirect:/planning/";
     }
     @PreAuthorize("hasAuthority('Planning - Book step/experiment')")
-    @RequestMapping(value = "planning/{id}",method = RequestMethod.GET)
+    @RequestMapping(value = "/planning/{id}",method = RequestMethod.GET)
     public String viewEditStep(@PathVariable long id, final ModelMap model, RedirectAttributes ra){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -166,7 +166,7 @@ public class StepController {
         else if (!stepService.findById(id).get().getUser().equals(user)){
             ra.addFlashAttribute("Status", new String("Error"));
             ra.addFlashAttribute("Message",new String("user can not delete specific step!"));
-            return "redirect:/planning";
+            return "redirect:/planning/";
         }
 
         model.addAttribute("Step",stepService.findById(id).orElse(null));
@@ -207,7 +207,7 @@ public class StepController {
             }
         }
         model.clear();
-        return "redirect:/planning";
+        return "redirect:/planning/";
     }
 
     public boolean overlapCheck(Step step) throws ParseException {
@@ -216,7 +216,7 @@ public class StepController {
         Date thisStepDateStart=formatter.parse(step.getStart()+" "+step.getStartHour());
         Date thisStepDateStop= formatter.parse(step.getEnd()+" "+step.getEndHour());
         for (Step s : allSteps) {
-            if ((step.getDevice()==s.getDevice()) && (step.getId() != s.getId()) )
+            if ((step.getDevice()==s.getDevice()) && (!step.getId().equals(s.getId())) )
             {
                 Date startDate = formatter.parse(s.getStart()+" "+s.getStartHour());
                 Date stopDate = formatter.parse(s.getEnd()+" "+s.getEndHour());

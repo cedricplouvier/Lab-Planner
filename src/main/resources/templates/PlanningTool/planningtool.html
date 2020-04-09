@@ -190,11 +190,11 @@
                 </select>
                 <div style="display: flow-root;">
                     <input required id="startTime" type="date" th:field="*{start}" class="form-control input-date" placeholder="Start date">
-                    <input id="startHour" class="form-control float-right input-hour" th:field="*{startHour}" placeholder="Hour">
+                    <input required id="startHour" type="time" class="form-control float-right input-hour" th:field="*{startHour}" placeholder="Hour">
                 </div>
                 <div>
                     <input required id="endTime" type="date" th:field="*{end}" class="form-control input-date"  placeholder="End date">
-                    <input id="endHour" class="form-control float-right input-hour" th:field="*{endHour}" placeholder="Hour">
+                    <input required id="endHour" type="time" class="form-control float-right input-hour" th:field="*{endHour}" placeholder="Hour">
                 </div>
             </div>
             <div class="modal-footer">
