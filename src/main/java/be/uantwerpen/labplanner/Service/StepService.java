@@ -37,6 +37,7 @@ public class StepService {
             tempStep.setStartHour(step.getStartHour());
             tempStep.setEndHour(step.getEndHour());
             tempStep.setUser(step.getUser());
+            tempStep.setComment(step.getComment());
             stepRepository.save(tempStep);
         } else{
             stepRepository.save(step);

@@ -42,6 +42,7 @@ public class UserControllerTests {
     @Mock
     private StepService stepService;
 
+
     @InjectMocks
     private UserController userController;
 
@@ -68,6 +69,7 @@ public class UserControllerTests {
 
     }
 
+
     @Test
     // Show user manage page test
     public void ViewCreateUserTest() throws Exception{
@@ -87,6 +89,8 @@ public class UserControllerTests {
                 .andExpect(view().name("/Users/user-manage"));
 
     }
+
+
 
     @Test
     //TEst the validity of editing the user page
@@ -119,6 +123,8 @@ public class UserControllerTests {
                 .andDo(print());
 
     }
+
+
 
     @Test
     //Add user with non valid name
