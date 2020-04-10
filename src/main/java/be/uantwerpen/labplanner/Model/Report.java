@@ -25,7 +25,7 @@ public class Report extends AbstractPersistable<Long> {
         this.creator = null;
     }
 
-    Report(String title, String description, User creator){
+    public Report(String title, String description, User creator){
         this.title = title;
         this.description = description;
         this.creator = creator;
