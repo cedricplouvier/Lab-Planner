@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"   xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<!-- Import header -->
+<head th:replace="navbar :: head (title='#{reports}')">
+
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+
+</head>
+<body onload="initPage()">
+
+<style>
+    .notfound{
+        display: none;
+    }
+</style>
+
+<div class="container">
+    <!-- Import menu bar -->
+    <div th:replace="navbar :: navbar"></div>
+    <div class="content">
+        <div id="mixture-list">
+            <h4 class="card-title"> <a th:text="#{report.list}">title</a>  </h4>
+
+            <div class="alert alert-success" role="alert" th:if="${success}!=null" th:text="${success}"></div>
+            <div class="alert alert-danger" role="alert" th:if="${error}!=null" th:text="${error}"></div>
+
+
+
+
+                <tbody class="list">
+
+                <tr th:each="report : ${allReports}">
+                    <div class="card bg-light mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a th:text="${report.title}">title</a>
+
+
+                            </h5>
+                            <a
+                                    th:utext="${report.description}+ '<br />'">
+                            </a>
+                            <a
+                                    th:utext="${report.creator.getFirstName()}+ ' ' +${report.creator.getLastName()}+ '   '">
+                            </a>
+                            <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/reports/{id}/delete(id=${report.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
+                                <span class="fas fa-trash"></span></a>
+
+                        </div>
+                    </div>
+
+
+
+                </tr>
+                </div>
+
+                </tbody>
+            </table>
+            <a th:href="@{/}" class="btn btn-primary" th:text="#{homepage}" >Return to Home</a>
+
+
+
+
+
+        </div>
+    </div>
+</div>
+<div th:replace="footer :: footer"></div>
+
+</body>
+</html>

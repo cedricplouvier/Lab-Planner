@@ -2,10 +2,7 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Model.Step;
-import be.uantwerpen.labplanner.Service.DeviceService;
-import be.uantwerpen.labplanner.Service.DeviceTypeService;
-import be.uantwerpen.labplanner.Service.RelationService;
-import be.uantwerpen.labplanner.Service.StepService;
+import be.uantwerpen.labplanner.Service.*;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
@@ -35,6 +32,9 @@ public class HomeController {
     private RoleService roleService;
     @Autowired
     private DeviceService deviceService;
+
+    @Autowired
+    private ReportService reportService;
 
     @Autowired
     private RelationService relationService;
@@ -96,7 +96,7 @@ public class HomeController {
                 }
             }
 
-
+            model.addAttribute("reportAmount", reportService.findAll().size());
             model.addAttribute("userSteps", userSteps);
             model.addAttribute("Step", new Step());
             model.addAttribute("currentUser",user.getUsername());
