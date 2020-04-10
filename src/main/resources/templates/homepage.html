@@ -29,10 +29,11 @@
                 <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" th:text="#{device.info}" class="btn btn-primary"></a>
             </td>
             <td>
-            <td>
+                <a th:href="@{/planning/{id}/(id=${step.id})}"><span
+                        class="fas fa-edit"></span></a>
+
                 <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
                     <span class="fas fa-trash" style="color: red" ></span> </a>
-            </td>
             </td>
 
         </tr>
@@ -68,10 +69,11 @@
                 <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" th:text="#{device.info}" class="btn btn-primary"></a>
             </td>
             <td>
-            <td>
+                <a th:href="@{/planning/{id}/(id=${step.id})}"><span
+                        class="fas fa-edit"></span></a>
+
                 <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
                     <span class="fas fa-trash" style="color: red" ></span> </a>
-            </td>
             </td>
 
         </tr>
