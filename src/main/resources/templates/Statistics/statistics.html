@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:display="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
-    <title>2.1 [Column Chart] basic</title>
+    <title>Device Statistics</title>
 
     <link rel="stylesheet" media="screen" href="http://cdn.jsdelivr.net/webjars/bootstrap/4.3.0/css/bootstrap.min.css"
           th:href="@{/webjars/bootstrap/4.3.0/css/bootstrap.min.css}"/>
@@ -15,10 +16,27 @@
 
 </head>
 <body>
-
 <div class ="container" >
     <div th:replace="navbar :: navbar"></div>
 </div>
+
+<div class ="container">
+    <form th:action="@{/statistics/statistics/submit}" th:object="${selectedDev}">
+        <select th:field="*{devicename}">
+            <option th:each="devices : ${allDevices}"
+                    th:value="${devices.getDevicename()}"
+                    th:text="${devices.getDevicename()}"
+                >Options</option>
+        </select>
+        <br><br>
+        <button class="btn btn-primary" type="submit">submit </button>
+        <a href="/statistics/statistics/clearList" class="btn btn-primary" th:text="#{statistics.clearList}"></a>
+        <br><br>
+    </form>
+    <p th:text="#{statistics.amountMessage}"></p>
+</div>
+
+<div class="container">
 <div class='wrap'>
     <div class='code-html' id='code-html'>
         <div id='chart-area'>
@@ -28,47 +46,221 @@
         <div id='error-dim'>
             <span id='error-text'></span>
             <div id='error-stack'></div>
-            <span id='go-to-dev-tool'>For more detail, open browser's developer tool and check it out.</span>
         </div>
     </div>
 </div>
+</div>
+
 <script type='text/javascript' src='https://uicdn.toast.com/tui.chart/latest/raphael.js'></script>
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/core-js/2.5.7/core.js'></script>
 <script src="https://uicdn.toast.com/tui.chart/latest/tui-chart.min.js"></script>
-<script class='code-js' id='code-js'>
+<script class='code-js' id='code-js' th:inline="javascript"> //inline allows us to access thymeleaf modelAttributes in the script
     var container = document.getElementById('chart-area');
-    var data = {
-        categories: ['June, 2015', 'July, 2015', 'August, 2015', 'September, 2015', 'October, 2015', 'November, 2015', 'December, 2015'],
+
+    var deviceCounter = "[(${deviceCounter})]";
+    var allDeviceNames = [];
+    var SelectedDevice1="[(${dev1.getDevicename()})]";
+    var selectedDeviceData1=["[(${totalHours1[0]})]",
+        "[(${totalHours1[1]})]",
+        "[(${totalHours1[2]})]",
+        "[(${totalHours1[3]})]",
+        "[(${totalHours1[4]})]",
+        "[(${totalHours1[5]})]",
+        "[(${totalHours1[6]})]",
+        "[(${totalHours1[7]})]",
+        "[(${totalHours1[8]})]",
+        "[(${totalHours1[9]})]",
+        "[(${totalHours1[10]})]",
+        "[(${totalHours1[11]})]"];
+
+    var SelectedDevice2="[(${dev2.getDevicename()})]";
+    var selectedDeviceData2=["[(${totalHours2[0]})]",
+        "[(${totalHours2[1]})]",
+        "[(${totalHours2[2]})]",
+        "[(${totalHours2[3]})]",
+        "[(${totalHours2[4]})]",
+        "[(${totalHours2[5]})]",
+        "[(${totalHours2[6]})]",
+        "[(${totalHours2[7]})]",
+        "[(${totalHours2[8]})]",
+        "[(${totalHours2[9]})]",
+        "[(${totalHours2[10]})]",
+        "[(${totalHours2[11]})]"];
+
+    var SelectedDevice3="[(${dev3.getDevicename()})]";
+    var selectedDeviceData3=["[(${totalHours3[0]})]",
+        "[(${totalHours3[1]})]",
+        "[(${totalHours3[2]})]",
+        "[(${totalHours3[3]})]",
+        "[(${totalHours3[4]})]",
+        "[(${totalHours3[5]})]",
+        "[(${totalHours3[6]})]",
+        "[(${totalHours3[7]})]",
+        "[(${totalHours3[8]})]",
+        "[(${totalHours3[9]})]",
+        "[(${totalHours3[10]})]",
+        "[(${totalHours3[11]})]"];
+
+    var SelectedDevice4="[(${dev4.getDevicename()})]";
+    var selectedDeviceData4=["[(${totalHours4[0]})]",
+        "[(${totalHours4[1]})]",
+        "[(${totalHours4[2]})]",
+        "[(${totalHours4[3]})]",
+        "[(${totalHours4[4]})]",
+        "[(${totalHours4[5]})]",
+        "[(${totalHours4[6]})]",
+        "[(${totalHours4[7]})]",
+        "[(${totalHours4[8]})]",
+        "[(${totalHours4[9]})]",
+        "[(${totalHours4[10]})]",
+        "[(${totalHours4[11]})]"];
+
+    var SelectedDevice5="[(${dev5.getDevicename()})]";
+    var selectedDeviceData5=["[(${totalHours5[0]})]",
+        "[(${totalHours5[1]})]",
+        "[(${totalHours5[2]})]",
+        "[(${totalHours5[3]})]",
+        "[(${totalHours5[4]})]",
+        "[(${totalHours5[5]})]",
+        "[(${totalHours5[6]})]",
+        "[(${totalHours5[7]})]",
+        "[(${totalHours5[8]})]",
+        "[(${totalHours5[9]})]",
+        "[(${totalHours5[10]})]",
+        "[(${totalHours5[11]})]"];
+
+    /*[# th:each="n : ${allDevices}"]*/
+    allDeviceNames.push("[(${n.getDevicename()})]");
+    /*[/]*/
+
+
+    var data0 = {
+
+        categories:
+            ['January','February','March', 'April', 'May', 'June', 'July', 'August', 'September','October', 'November', 'December'],
+
         series: [
             {
-                name: 'Budget',
-                data: [5000, 3000, 5000, 7000, 6000, 4000, 1000]
-            },
+            }
+            ]
+    };
+
+    var data1 = {
+
+        categories:
+            ['January','February','March', 'April', 'May', 'June', 'July', 'August', 'September','October', 'November', 'December'],
+
+        series: [
             {
-                name: 'Income',
-                data: [8000, 1000, 7000, 2000, 6000, 3000, 5000]
-            },
-            {
-                name: 'Expenses',
-                data: [4000, 4000, 6000, 3000, 4000, 5000, 7000]
-            },
-            {
-                name: 'Debt',
-                data: [6000, 3000, 3000, 1000, 2000, 4000, 3000]
+                name: SelectedDevice1,
+                data: selectedDeviceData1
             }
         ]
     };
+
+    var data2 = {
+
+        categories:
+            ['January','February','March', 'April', 'May', 'June', 'July', 'August', 'September','October', 'November', 'December'],
+
+        series: [
+            {
+                name: SelectedDevice1,
+                data: selectedDeviceData1
+            },
+            {
+                name: SelectedDevice2,
+                data: selectedDeviceData2
+            }
+        ]
+    };
+
+    var data3 = {
+
+        categories:
+            ['January','February','March', 'April', 'May', 'June', 'July', 'August', 'September','October', 'November', 'December'],
+
+        series: [
+            {
+                name: SelectedDevice1,
+                data: selectedDeviceData1
+            },
+            {
+                name: SelectedDevice2,
+                data: selectedDeviceData2
+            },
+            {
+                name: SelectedDevice3,
+                data: selectedDeviceData3
+            }
+        ]
+    };
+
+    var data4 = {
+
+        categories:
+            ['January','February','March', 'April', 'May', 'June', 'July', 'August', 'September','October', 'November', 'December'],
+
+        series: [
+            {
+                name: SelectedDevice1,
+                data: selectedDeviceData1
+            },
+            {
+                name: SelectedDevice2,
+                data: selectedDeviceData2
+            },
+            {
+                name: SelectedDevice3,
+                data: selectedDeviceData3
+            },
+            {
+                name: SelectedDevice4,
+                data: selectedDeviceData4
+            }
+        ]
+    };
+    var data5 = {
+
+        categories:
+            ['January','February','March', 'April', 'May', 'June', 'July', 'August', 'September','October', 'November', 'December'],
+
+        series: [
+            {
+                name: SelectedDevice1,
+                data: selectedDeviceData1
+            },
+            {
+                name: SelectedDevice2,
+                data: selectedDeviceData2
+            },
+            {
+                name: SelectedDevice3,
+                data: selectedDeviceData3
+            },
+            {
+                name: SelectedDevice4,
+                data: selectedDeviceData4
+            },
+            {
+                name: SelectedDevice5,
+                data: selectedDeviceData5
+            }
+        ]
+    };
+
+
     var options = {
         chart: {
-            width: 1160,
+            width: 1400,
             height: 650,
-            title: 'Monthly Revenue',
+            title: '',
             format: '1,000'
         },
         yAxis: {
-            title: 'Amount',
+            title: 'Hours used',
             min: 0,
-            max: 9000
+            max: 20
         },
         xAxis: {
             title: 'Month'
@@ -88,7 +280,24 @@
     // For apply theme
     // tui.chart.registerTheme('myTheme', theme);
     // options.theme = 'myTheme';
-    tui.chart.columnChart(container, data, options);
+    if(deviceCounter==0) {
+        tui.chart.columnChart(container, data0, options);
+    }
+    else if (deviceCounter==1){
+        tui.chart.columnChart(container, data1, options);
+    }
+    else if (deviceCounter==2){
+        tui.chart.columnChart(container, data2, options);
+    }
+    else if (deviceCounter==3){
+        tui.chart.columnChart(container, data3, options);
+    }
+    else if (deviceCounter==4){
+        tui.chart.columnChart(container, data4, options);
+    }
+    else if (deviceCounter==5){
+        tui.chart.columnChart(container, data5, options);
+    }
 </script>
 
 <!--For tutorial page-->
