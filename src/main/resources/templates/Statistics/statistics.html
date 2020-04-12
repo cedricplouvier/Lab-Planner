@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
-      xmlns:display="http://www.w3.org/1999/xhtml">
+      xmlns:display="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
@@ -21,6 +21,15 @@
 </div>
 
 <div class ="container">
+    <form th:action="@{/statistics/statistics/getSelectedYear}">
+        <select th:name="selectedYear">
+            <option th:each="years : ${selectableYears}" th:value="${years}" th:text="${years}"></option>
+        </select>
+        <button class="btn btn-primary" type="submit"> Change Year </button><p><span th:text="#{statistics.currentYearStandard}"></span></p>
+    </form>
+</div>
+
+<div class ="container">
     <form th:action="@{/statistics/statistics/submit}" th:object="${selectedDev}">
         <select th:field="*{devicename}">
             <option th:each="devices : ${allDevices}"
@@ -29,10 +38,11 @@
                 >Options</option>
         </select>
         <br><br>
-        <button class="btn btn-primary" type="submit">submit </button>
+        <button class="btn btn-primary" type="submit"> Add Device </button>
         <a href="/statistics/statistics/clearList" class="btn btn-primary" th:text="#{statistics.clearList}"></a>
         <br><br>
     </form>
+    <p> <span th:text="#{statistics.currentYearStandard}"> </span> <span th:text="${selectedYear}"></span> </p>
     <p th:text="#{statistics.amountMessage}"></p>
 </div>
 
@@ -254,7 +264,7 @@
         chart: {
             width: 1400,
             height: 650,
-            title: '',
+            title: ' Device monthly graph of year [(${selectedYear})]',
             format: '1,000'
         },
         yAxis: {

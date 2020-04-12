@@ -533,6 +533,9 @@ public class DatabaseLoader {
         Step s21= new Step(u8,d5,"2020-04-13","2020-04-13","11:00","18:00","");
         stepRepository.save(s21);
 
+        Step s22= new Step(u1,d2,"2019-05-18","2019-05-18","10:00","20:00","");
+        stepRepository.save(s22);
+
         //Create compositions
 
         //APT-C ingredients
