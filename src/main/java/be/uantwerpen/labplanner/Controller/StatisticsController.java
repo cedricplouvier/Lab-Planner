@@ -97,7 +97,7 @@ public class StatisticsController {
     }
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
-    @RequestMapping("/statistics/statistics/submit")
+    @RequestMapping(value ="/statistics/statistics/submit")
     public String submit(Device selectedDev){
 
         List<Step> allSteps = stepService.findAll();
@@ -133,7 +133,7 @@ public class StatisticsController {
 
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
-    @RequestMapping("statistics/statistics/clearList")
+    @RequestMapping("/statistics/statistics/clearList")
     public String clearList() {
         deviceCounter = 0;
         selectedDevices = Arrays.asList(new Device(),new Device(),new Device(),new Device(),new Device());
@@ -146,14 +146,14 @@ public class StatisticsController {
     }
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
-    @RequestMapping("statistics/statistics/getSelectedYear")
+    @RequestMapping("/statistics/statistics/getSelectedYear")
     public String getSelectedYear(String selectedYear){
         this.selectedYear=selectedYear;
         return "redirect:/statistics/statistics/refreshYear";
     }
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
-    @RequestMapping("statistics/statistics/getSelectedGraphType")
+    @RequestMapping("/statistics/statistics/getSelectedGraphType")
     public String getSelectedGraphType(String selectedTypeOfGraph){
         this.selectedTypeOfGraph=selectedTypeOfGraph;
         return "redirect:/statistics/statistics/refreshYear";
