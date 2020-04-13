@@ -39,6 +39,6 @@ public class CalendarController {
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
         model.addAttribute("Step", new Step());
-        return "/Calendar/weekly";
+        return "Calendar/weekly";
     }
 }

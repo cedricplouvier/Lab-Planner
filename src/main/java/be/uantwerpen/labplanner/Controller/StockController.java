@@ -114,7 +114,7 @@ public class StockController {
 
         model.addAttribute("agg_bit", agg_bit);
         model.addAttribute("con_oth", con_oth);
-        return "/Stock/products-list";
+        return "Stock/products-list";
     }
 
 
@@ -126,7 +126,7 @@ public class StockController {
         model.addAttribute("allTags", tagService.findAll());
         model.addAttribute("product",new Product("","",0.0, 0.0, 0.0, 0.0, null, "URL", "", null,null, LocalDateTime.now(), LocalDateTime.now(), null));
         model.addAttribute("units",Unit.values());
-        return "/Stock/products-manage";
+        return "Stock/products-manage";
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
@@ -136,7 +136,7 @@ public class StockController {
         model.addAttribute("allTags", tagService.findAll());
         model.addAttribute("product",productService.findById(id).orElse(null));
         model.addAttribute("units", Unit.values());
-        return "/Stock/products-manage";
+        return "Stock/products-manage";
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
@@ -161,7 +161,7 @@ public class StockController {
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.name"));
             model.addAttribute("units", Unit.values());
 
-            return "/Stock/products-manage";
+            return "Stock/products-manage";
         }
 
         if(product.getDescription().length() == 0 ){
@@ -169,7 +169,7 @@ public class StockController {
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.description"));
             model.addAttribute("units", Unit.values());
 
-            return "/Stock/products-manage";
+            return "Stock/products-manage";
         }
 
         if(product.getProperties().length() == 0 ){
@@ -177,7 +177,7 @@ public class StockController {
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.properties"));
             model.addAttribute("units", Unit.values());
 
-            return "/Stock/products-manage";
+            return "Stock/products-manage";
         }
 
         if(product.getStockLevel() < 0){
@@ -185,7 +185,7 @@ public class StockController {
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.stock"));
             model.addAttribute("units", Unit.values());
 
-            return "/Stock/products-manage";
+            return "Stock/products-manage";
         }
 
         if(product.getLowStockLevel() < 0){
@@ -193,7 +193,7 @@ public class StockController {
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.lowstock"));
             model.addAttribute("units", Unit.values());
 
-            return "/Stock/products-manage";
+            return "Stock/products-manage";
         }
 
         if(product.getReservedStockLevel() < 0){
@@ -201,7 +201,7 @@ public class StockController {
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.reservedstock"));
             model.addAttribute("units", Unit.values());
 
-            return "/Stock/products-manage";
+            return "Stock/products-manage";
         }
 
         if(product.getTags().size() == 0){
@@ -209,7 +209,7 @@ public class StockController {
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.tag"));
             model.addAttribute("units", Unit.values());
 
-            return "/Stock/products-manage";
+            return "Stock/products-manage";
         }
 
         if(NameIsUsed != null){
@@ -217,7 +217,7 @@ public class StockController {
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.duplicate"));
             model.addAttribute("units", Unit.values());
 
-            return "/Stock/products-manage";
+            return "Stock/products-manage";
         }
 
         if(result.hasErrors()){
@@ -225,7 +225,7 @@ public class StockController {
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.general"));
             model.addAttribute("units", Unit.values());
 
-            return "/Stock/products-manage";
+            return "Stock/products-manage";
         }
         productService.save(product);
         return "redirect:/products";
@@ -242,7 +242,7 @@ public class StockController {
         model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
         model.addAttribute("agg_bit", agg_bit);
         model.addAttribute("con_oth", con_oth);
-        return "/Stock/products-list";
+        return "Stock/products-list";
 
     }
 
@@ -271,7 +271,7 @@ public class StockController {
         model.addAttribute("product",productService.findById(id).orElse(null));
         model.addAttribute("allTags", tagService.findAll());
         model.addAttribute("mixtures",returnList);
-        return "/Stock/products-info";
+        return "Stock/products-info";
     }
 
 
@@ -280,7 +280,7 @@ public class StockController {
     @RequestMapping(value="/tags", method = RequestMethod.GET)
     public String showProductTags(final ModelMap model){
         model.addAttribute("allProductTags",tagService.findAll());
-        return "/Tags/tags-list";
+        return "Tags/tags-list";
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
@@ -305,12 +305,12 @@ public class StockController {
         if (isUsed){
             model.addAttribute("allProductTags",tagService.findAll());
             model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("tag.deleteError"));
-            return "/Tags/tags-list";
+            return "Tags/tags-list";
         }
         tagService.deleteById(id);
         model.addAttribute("allProductTags",tagService.findAll());
         model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
-        return "/Tags/tags-list";
+        return "Tags/tags-list";
     }
 
 
@@ -320,7 +320,7 @@ public class StockController {
     public String viewEditTag(@PathVariable Long id, final ModelMap model){
         model.addAttribute("allTags", tagService.findAll());
         model.addAttribute("tag",tagService.findById(id).orElse(null));
-        return "/Tags/tags-manage";
+        return "Tags/tags-manage";
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
@@ -367,13 +367,13 @@ public class StockController {
     public String viewCreateTags(final ModelMap model){
         model.addAttribute("allTags", tagService.findAll());
         model.addAttribute("tag", new Tag(""));
-        return "/Tags/tags-manage";
+        return "Tags/tags-manage";
     }
 
     @RequestMapping(value="/mixtures", method= RequestMethod.GET)
     public String viewMixturesList(final ModelMap model){
         model.addAttribute("allMixtures", mixtureService.findAll());
-        return "/Mixtures/mixtures-list";
+        return "Mixtures/mixtures-list";
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
@@ -384,7 +384,7 @@ public class StockController {
         model.clear();
         model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
         model.addAttribute("allMixtures", mixtureService.findAll());
-        return "/Mixtures/mixtures-list";
+        return "Mixtures/mixtures-list";
 
     }
 
@@ -398,7 +398,7 @@ public class StockController {
         model.addAttribute("allCompositions", compositionService.findAll());
         model.addAttribute("composition", new Composition());
 
-        return "/Mixtures/mixtures-manage";
+        return "Mixtures/mixtures-manage";
 
     }
 
@@ -496,7 +496,7 @@ public class StockController {
             model.addAttribute("composition", new Composition());
             model.addAttribute("allCompositions", compositionService.findAll());
 
-            return "/Mixtures/mixtures-manage";
+            return "Mixtures/mixtures-manage";
         }
 
         if(result.hasErrors()){
@@ -512,7 +512,7 @@ public class StockController {
 
         mixtureService.save(mixture);
         model.addAttribute("allMixtures", mixtureService.findAll());
-        return "/Mixtures/mixtures-list";
+        return "Mixtures/mixtures-list";
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
@@ -526,7 +526,7 @@ public class StockController {
         model.addAttribute("allTags", tagService.findAll());
         model.addAttribute("composition", new Composition());
 
-        return "/Mixtures/mixtures-manage";
+        return "Mixtures/mixtures-manage";
     }
 
 
@@ -536,7 +536,7 @@ public class StockController {
     public String viewMixtureInfo(@PathVariable Long id, final ModelMap model){
         model.addAttribute("mixture",mixtureService.findById(id).orElse(null));
         model.addAttribute("allProducts", productService.findAll());
-        return "/Mixtures/mixtures-info";
+        return "Mixtures/mixtures-info";
     }
 
 
@@ -545,7 +545,7 @@ public class StockController {
     @RequestMapping(value="/compositions", method = RequestMethod.GET)
     public String showCompositions(final ModelMap model){
         model.addAttribute("allCompositions",compositionService.findAll());
-        return "/Mixtures/compositions-list";
+        return "Mixtures/compositions-list";
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
@@ -567,12 +567,12 @@ public class StockController {
         if (isUsed){
             model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("composition.deleteError"));
             model.addAttribute("allCompositions",compositionService.findAll());
-            return "/Mixtures/compositions-list";
+            return "Mixtures/compositions-list";
         }
         compositionService.deleteById(id);
         model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
         model.addAttribute("allCompositions",compositionService.findAll());
-        return "/Mixtures/compositions-list";
+        return "Mixtures/compositions-list";
     }
 
 
@@ -597,13 +597,13 @@ public class StockController {
         if (isUsed){
             model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("composition.editError"));
             model.addAttribute("allCompositions",compositionService.findAll());
-            return "/Mixtures/compositions-list";
+            return "Mixtures/compositions-list";
         }
 
 
         model.addAttribute("allCompositions", compositionService.findAll());
         model.addAttribute("composition",compositionService.findById(id).orElse(null));
-        return "/Mixtures/compositions-manage";
+        return "Mixtures/compositions-manage";
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
@@ -617,12 +617,12 @@ public class StockController {
         if(composition.getAmount() == 0.0 || composition.getAmount() > 100.0){
             model.addAttribute("allCompositions", compositionService.findAll());
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.amount"));
-            return "/Mixtures/compositions-manage";
+            return "Mixtures/compositions-manage";
         }
         if(composition.getProduct() == null){
             model.addAttribute("allCompositions", compositionService.findAll());
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.product"));
-            return "/Mixtures/compositions-manage";
+            return "Mixtures/compositions-manage";
         }
 
 
@@ -630,11 +630,11 @@ public class StockController {
         if(result.hasErrors()){
             model.addAttribute("allCompositions", compositionService.findAll());
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.general"));
-            return "/Mixtures/compositions-manage";
+            return "Mixtures/compositions-manage";
         }
         compositionService.save(composition);
         model.addAttribute("allCompositions", compositionService.findAll());
-        return "/Mixtures/compositions-list";
+        return "Mixtures/compositions-list";
     }
 
 
@@ -642,7 +642,7 @@ public class StockController {
     @RequestMapping(value="/compositions/put", method= RequestMethod.GET)
     public String viewCreateCompostions(final ModelMap model){
         model.addAttribute("composition", new Composition());
-        return "/Mixtures/compositions-manage";
+        return "Mixtures/compositions-manage";
     }
 
 
