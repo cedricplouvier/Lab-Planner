@@ -5,7 +5,7 @@ import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.Composition;
 import be.uantwerpen.labplanner.Repository.CompositionRepository;
 import be.uantwerpen.labplanner.common.model.stock.Product;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

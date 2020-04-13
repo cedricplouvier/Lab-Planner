@@ -10,7 +10,7 @@ import be.uantwerpen.labplanner.common.repository.stock.TagRepository;
 import org.apache.tomcat.jni.Local;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;

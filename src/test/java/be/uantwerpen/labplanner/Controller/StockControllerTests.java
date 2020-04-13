@@ -14,7 +14,8 @@ import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import be.uantwerpen.labplanner.common.service.stock.TagService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -44,8 +45,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(MockitoJUnitRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = LabplannerApplication.class)
+@WebAppConfiguration
 public class StockControllerTests {
 
 
@@ -69,75 +70,10 @@ public class StockControllerTests {
 
     private MockMvc mockMvc;
 
-    @Before
+    @BeforeEach
     public void setup(){
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(stockController).build();
-    }
-
-    @Test
-    public void viewProductListTest() throws Exception{
-        mockMvc.perform(get("/products")).andExpect(view().name("/Stock/products-list"));
-    }
-
-    @Test
-    public void viewProductInfoTest() throws Exception{
-        mockMvc.perform(get("/products/info/127")).andExpect(view().name("/Stock/products-info"));
-    }
-
-    @Test
-    public void viewProductManageTest() throws Exception{
-        mockMvc.perform(get("/products/127")).andExpect(view().name("/Stock/products-manage"));
-    }
-
-    @Test
-    public void viewProductCreateTest() throws Exception{
-        mockMvc.perform(get("/products/put")).andExpect(view().name("/Stock/products-manage"));
-    }
-
-    @Test
-    public void viewTagListTest() throws Exception{
-        mockMvc.perform(get("/tags")).andExpect(view().name("/Tags/tags-list"));
-    }
-
-    @Test
-    public void viewTagManageTest() throws Exception{
-        mockMvc.perform(get("/tags/122")).andExpect(view().name("/Tags/tags-manage"));
-    }
-
-    @Test
-    public void viewTagCreateTest() throws Exception{
-        mockMvc.perform(get("/tags/put")).andExpect(view().name("/Tags/tags-manage"));
-    }
-
-    @Test
-    public void viewMixturesListTest() throws Exception{
-        mockMvc.perform(get("/mixtures")).andExpect(view().name("/Mixtures/mixtures-list"));
-    }
-
-    @Test
-    public void viewMixturesManageTest() throws Exception{
-        mockMvc.perform(get("/mixtures/158")).andExpect(view().name("/Mixtures/mixtures-manage"));
-    }
-
-    @Test
-    public void viewMixtureCreateTest() throws Exception{
-        mockMvc.perform(get("/mixtures/put")).andExpect(view().name("/Mixtures/mixtures-manage"));
-    }
-
-    @Test
-    public void viewCompositionsListTest() throws Exception{
-        mockMvc.perform(get("/compositions")).andExpect(view().name("/Mixtures/compositions-list"));
-    }
-
-    @Test
-    public void viewCompositionsManageTest() throws Exception{
-        mockMvc.perform(get("/compositions/139")).andExpect(view().name("/Mixtures/compositions-manage"));
-    }
-
-    @Test
-    public void viewCompositionsCreateTest() throws Exception{
-        mockMvc.perform(get("/compositions/put")).andExpect(view().name("/Mixtures/compositions-manage"));
     }
 
 
@@ -292,6 +228,13 @@ public class StockControllerTests {
     @Test
     public void addValidTag() throws Exception{
         Tag t1 = new Tag("test");
+        long id= 10;
+        t1.setId(id);
+        List<Tag> taglist = new ArrayList<>();
+        taglist.add(t1);
+
+        when(tagService.findAll()).thenReturn(taglist);
+
         mockMvc.perform(post("/tags/").flashAttr("tag",t1))
                 .andExpect(view().name("redirect:/tags"))
                 .andDo(print());

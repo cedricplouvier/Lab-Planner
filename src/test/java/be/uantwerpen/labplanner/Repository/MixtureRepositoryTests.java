@@ -8,7 +8,7 @@ import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.repository.stock.ProductRepository;
 import be.uantwerpen.labplanner.common.repository.stock.TagRepository;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
