@@ -15,35 +15,36 @@ public class Step extends AbstractPersistable<Long> {
     @JoinColumn(name= "device",nullable = false)
     private Device device;
 
-
-
-    /*@OneToOne
-        @Column(name="timeslot",nullable = false)
-        private Timeslot timeslot;*/
-    @Column(name = "start",nullable = false)
+    @Column(name = "start")
     private String start;
-    @Column(name = "end",nullable = false)
+    @Column(name = "end")
     private String end;
 
+    @ManyToOne
+    @JoinColumn(name = "stepType")
+    private StepType stepType;
 
 
-    @Column(name = "startHour", nullable = false)
+
+    @Column(name = "startHour")
     private String startHour;
-    @Column(name = "endHour", nullable = false)
+    @Column(name = "endHour")
     private String endHour;
-
+    @Column(name = "comment")
+    private String comment;
 
 
     public Step(){
     }
 
-    public Step(User user, Device device, String start, String end, String startHour, String endHour) {
+    public Step(User user, Device device, String start, String end, String startHour, String endHour,String comment) {
         this.user=  user;
         this.device = device;
         this.start=start;
         this.end=end;
         this.startHour=startHour;
         this.endHour=endHour;
+        this.comment=comment;
     }
 
     @Override
@@ -70,14 +71,6 @@ public class Step extends AbstractPersistable<Long> {
     public void setDevice(Device device) {
         this.device = device;
     }
-/*
-    public Timeslot getTimeslot() {
-        return timeslot;
-    }
-
-    public void setTimeslot(Timeslot timeslot) {
-        this.timeslot = timeslot;
-    }*/
 
     public String getStart() {
         return start;
@@ -108,5 +101,19 @@ public class Step extends AbstractPersistable<Long> {
 
     public void setEndHour(String endHour) {
         this.endHour = endHour;
+    }
+    public StepType getStepType() {
+        return stepType;
+    }
+
+    public void setStepType(StepType stepType) {
+        this.stepType = stepType;
+    }
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

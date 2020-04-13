@@ -25,7 +25,6 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.*;
 
-
 @Controller
 public class StockController {
 

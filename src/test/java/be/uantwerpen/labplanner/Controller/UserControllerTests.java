@@ -1,20 +1,20 @@
 package be.uantwerpen.labplanner.Controller;
 
 
+import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.Step;
 import be.uantwerpen.labplanner.Service.StepService;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -29,8 +29,8 @@ import java.util.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(MockitoJUnitRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = LabplannerApplication.class)
+@WebAppConfiguration
 public class UserControllerTests {
 
     @Mock
@@ -42,12 +42,13 @@ public class UserControllerTests {
     @Mock
     private StepService stepService;
 
+
     @InjectMocks
     private UserController userController;
 
     private MockMvc mockMvc;
 
-    @Before
+    @BeforeEach
     public void setup(){
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(this.userController).build();
@@ -68,6 +69,7 @@ public class UserControllerTests {
 
     }
 
+
     @Test
     // Show user manage page test
     public void ViewCreateUserTest() throws Exception{
@@ -87,6 +89,8 @@ public class UserControllerTests {
                 .andExpect(view().name("/Users/user-manage"));
 
     }
+
+
 
     @Test
     //TEst the validity of editing the user page
@@ -119,6 +123,8 @@ public class UserControllerTests {
                 .andDo(print());
 
     }
+
+
 
     @Test
     //Add user with non valid name

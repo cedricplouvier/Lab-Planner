@@ -19,6 +19,10 @@ public class DeviceType extends AbstractPersistable<Long>{
     private static Boolean DEFAULT_OVERNIGHTUSE = false;
     private static List<String> DEFAULT_INFORMATIONTYPES = Arrays.asList(new String[]{"Manual","Maintenance", "Calibration","Safety instruction card"});
 
+    @Column
+    private String color;
+
+
 
     //Variables
     @Column
@@ -134,5 +138,13 @@ public class DeviceType extends AbstractPersistable<Long>{
 
     public static String getDefaultDevicetypename() {
         return DEFAULT_DEVICETYPENAME;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }
