@@ -75,7 +75,7 @@
             <tbody class="list">
             <tr  sec:authorize="hasAuthority('Stock - Aggregates + Bitumen Read only - Basic') or hasAuthority('Stock - Aggregates + Bitumen Read only - Advanced') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced') or hasAuthority('Stock - Modify - All')" th:each="product : ${agg_bit}">
                 <td th:text="${product.name}"/>
-                <td th:text="${product.stockLevel} + ' '+${product.units.getSIString()}" />
+                <td th:style="${product.stockLevel >= product.lowStockLevel ? 'color: black' : 'color: red'}" th:text="${product.stockLevel} + ' '+${product.units.getSIString()}" />
                 <td class="Tags">
                     <a
                             th:each="tag : ${product.tags}"
