@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(classes = LabplannerApplication.class)
 @WebAppConfiguration
 public class ProductRepositoryTests {
+
     @Autowired
     private ProductRepository productRepository;
 
@@ -37,12 +38,14 @@ public class ProductRepositoryTests {
     @Test
     public void testSaveProduct(){
 
-        long precount = productRepository.count();
-
-
         //Setup products
         Product product = new Product();
         product.setName("testproduct");
+
+        long precount = productRepository.count();
+
+
+
 
         //Save product, verify it has ID value after save
         assertNull(product.getId()); //make sure it is null before save
