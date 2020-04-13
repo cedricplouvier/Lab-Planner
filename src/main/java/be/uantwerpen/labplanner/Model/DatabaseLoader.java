@@ -536,6 +536,26 @@ public class DatabaseLoader {
         Step s22= new Step(u1,d2,"2019-05-18","2019-05-18","10:00","20:00","");
         stepRepository.save(s22);
 
+        Step s23= new Step(u1,d8,"2020-01-13","2020-01-15","10:00","18:00","");
+        stepRepository.save(s23);
+        Step s24= new Step(u1,d8,"2020-02-13","2020-03-15","10:00","18:00","");
+        stepRepository.save(s24);
+        Step s25= new Step(u1,d8,"2020-04-13","2020-06-15","10:00","18:00","");
+        stepRepository.save(s25);
+        Step s26= new Step(u1,d8,"2020-09-13","2020-12-15","10:00","18:00","");
+        stepRepository.save(s26);
+        Step s27= new Step(u1,d8,"2020-05-13","2020-07-15","10:00","18:00","");
+        //stepRepository.save(s27);
+        Step s28= new Step(u1,d8,"2020-09-13","2020-11-15","10:00","18:00","");
+        //stepRepository.save(s28);
+        Step s29= new Step(u1,d8,"2020-05-13","2020-07-15","10:00","18:00","");
+        //stepRepository.save(s29);
+        Step s30= new Step(u1,d8,"2020-09-13","2020-11-15","10:00","18:00","");
+        //stepRepository.save(s30);
+
+        Step s31= new Step(u1,d2,"2021-01-01","2021-12-30","10:00","20:00","");
+        stepRepository.save(s31);
+
         //Create compositions
 
         //APT-C ingredients
