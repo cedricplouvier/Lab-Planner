@@ -468,13 +468,13 @@ public class DatabaseLoader {
         tagRepository.save(tag4);
         Product pr1 = new Product("placeholder1",lorem.getWords(20),1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
         productRepository.save(pr1);
-        Product pr2 = new Product("placeholder2",lorem.getWords(20),1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        Product pr2 = new Product("placeholder2",lorem.getWords(20),1.0, 100.0, 500.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
         productRepository.save(pr2);
         Product pr3 = new Product("placeholder3",lorem.getWords(20),1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
         productRepository.save(pr3);
         Product pr4 = new Product("placeholder4",lorem.getWords(20),1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
         productRepository.save(pr4);
-        Product pr5 = new Product("placeholder5",lorem.getWords(20),1.0, 1000.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
+        Product pr5 = new Product("placeholder5",lorem.getWords(20),1.0, 20.0, 50.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
         productRepository.save(pr5);
         Product pr6 = new Product("placeholder6",lorem.getWords(20),1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr6);
