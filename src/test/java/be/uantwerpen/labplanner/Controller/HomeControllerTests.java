@@ -85,11 +85,14 @@ public class HomeControllerTests {
     @WithUserDetails("Cedric")
     public void showStepsHomePageTest() throws Exception{
 
-        User testuser = new User("admin","admin");
+        User testuser = new User("Cedric","PW");
+        long ID = 32;
         Step step = new Step();
         step.setUser(testuser);
+        step.setId(ID);
         List<Step> steps = new ArrayList<>();
         steps.add(step);
+        testuser.setId(ID);
 
         when(stepService.findAll()).thenReturn(steps);
 

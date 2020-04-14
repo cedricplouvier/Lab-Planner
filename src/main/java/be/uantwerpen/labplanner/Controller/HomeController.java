@@ -58,6 +58,7 @@ public class HomeController {
 
     @RequestMapping(value={"/","/home"},method= RequestMethod.GET)
     public String showStepsHomePage(final ModelMap model){
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
