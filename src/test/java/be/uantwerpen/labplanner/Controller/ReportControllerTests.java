@@ -66,7 +66,7 @@ public class ReportControllerTests {
                 .andExpect(view().name("Reports/report-form"));
 
     }
-
+/*
     @Test
     public void addValidReport() throws Exception{
         Report report = new Report("title", "description", null);
@@ -107,7 +107,7 @@ public class ReportControllerTests {
                 .andExpect(view().name("Reports/report-form"))
                 .andDo(print());
     }
-
+*/
 
     @Test
     // create valid report
