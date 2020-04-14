@@ -6,6 +6,7 @@ import be.uantwerpen.labplanner.Service.DeviceService;
 import be.uantwerpen.labplanner.Service.DeviceTypeService;
 import be.uantwerpen.labplanner.Service.RelationService;
 import be.uantwerpen.labplanner.Service.StepService;
+import be.uantwerpen.labplanner.Service.ReportService;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
