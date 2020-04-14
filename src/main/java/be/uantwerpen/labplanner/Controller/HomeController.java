@@ -39,11 +39,6 @@ public class HomeController {
     @Autowired
     private RelationService relationService;
 
-    @RequestMapping({"/","/home"})
-    public String showHomepage(){
-        return "homepage";
-    }
-
     //@PreAuthorize("hasAuthority('User Management')")
     @RequestMapping("/usermanagement")
     public String showUsermanagementPage(){
@@ -110,5 +105,10 @@ public class HomeController {
             model.addAttribute("studentSteps",studentSteps);
 
         return "homepage";
+    }
+
+    @RequestMapping("/statistics")
+    public String showStatisticsPage() {
+        return "redirect:/statistics/statistics";
     }
 }
