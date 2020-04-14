@@ -50,9 +50,10 @@ public class DatabaseLoader {
     private final StepTypeRepository stepTypeRepository;
     private final ContinuityRepository continuityRepository;
     private final RelationRepository relationRepository;
+    private final ReportRepository reportRepository;
 
     @Autowired
-    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository,ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository) {
+    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository,ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository) {
 
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
@@ -76,6 +77,8 @@ public class DatabaseLoader {
         this.experimentTypeRepository=experimentTypeRepository;
         this.stepTypeRepository=stepTypeRepository;
         this.continuityRepository=continuityRepository;
+
+        this.reportRepository = reportRepository;
 
     }
 
@@ -664,6 +667,21 @@ public class DatabaseLoader {
         experimentTypeRepository.save(experimentType1);
         ExperimentType experimentType2= new ExperimentType("Wheel Tracking Test",WhlTrkTest);
         experimentTypeRepository.save(experimentType2);
+
+        Report r1 = new Report("Autosaw is broken", lorem.getWords(25), userRepository.findByUsername("Timo").orElse(null));
+        Report r2 = new Report("Fancy Title", lorem.getWords(10), userRepository.findByUsername("Ali").orElse(null));
+        Report r3 = new Report("Sand mixture is not in stock", lorem.getWords(30), userRepository.findByUsername("Ruben").orElse(null));
+        Report r4 = new Report("Lab was closed yesterday", lorem.getWords(20), userRepository.findByUsername("Master").orElse(null));
+        Report r5 = new Report("Placeholder title", lorem.getWords(25), userRepository.findByUsername("Researcher").orElse(null));
+
+        reportRepository.save(r1);
+        reportRepository.save(r2);
+        reportRepository.save(r3);
+        reportRepository.save(r4);
+        reportRepository.save(r5);
+
+
+
 
 
 

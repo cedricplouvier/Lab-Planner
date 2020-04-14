@@ -37,12 +37,10 @@ public class HomeController {
     private DeviceService deviceService;
 
     @Autowired
-    private RelationService relationService;
+    private ReportService reportService;
 
-    @RequestMapping({"/","/home"})
-    public String showHomepage(){
-        return "homepage";
-    }
+    @Autowired
+    private RelationService relationService;
 
     //@PreAuthorize("hasAuthority('User Management')")
     @RequestMapping("/usermanagement")
@@ -53,10 +51,15 @@ public class HomeController {
     public String showStockmanagementPage(){
         return "redirect:/products";
     }
+    @RequestMapping("/calendar")
+    public String showCalendarPage(){
+        return "redirect:/calendar/weekly";
+
+    }
+
     @RequestMapping("/planningtool")
     public String showPlanningtoolPage(){
-        logger.info("showPlanningtoolPage");
-        return "redirect:/calendar/weekly";
+        return "redirect:/planning/";
 
     }
     @RequestMapping("/devicemanagement")
@@ -96,6 +99,7 @@ public class HomeController {
                 }
             }
 
+            model.addAttribute("reportAmount", reportService.findAll().size());
             model.addAttribute("userSteps", userSteps);
             model.addAttribute("Step", new Step());
             model.addAttribute("currentUser",user.getUsername());
