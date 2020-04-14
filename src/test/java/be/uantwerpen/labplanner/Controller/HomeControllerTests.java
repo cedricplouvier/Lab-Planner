@@ -1,7 +1,11 @@
 package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.LabplannerApplication;
+import be.uantwerpen.labplanner.Model.Relation;
+import be.uantwerpen.labplanner.Model.Report;
 import be.uantwerpen.labplanner.Model.Step;
+import be.uantwerpen.labplanner.Service.RelationService;
+import be.uantwerpen.labplanner.Service.ReportService;
 import be.uantwerpen.labplanner.Service.StepService;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
@@ -24,7 +28,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @SpringBootTest(classes = LabplannerApplication.class)
 @WebAppConfiguration
@@ -34,14 +40,14 @@ public class HomeControllerTests {
     private StepService stepService;
 
     @Mock
-    private RoleService roleService;
+    private RelationService relationService;
+
+    @Mock
+    private ReportService reportService;
 
     @InjectMocks
     private HomeController mockHomeController;
     private MockMvc mockMvc;
-
-    @Autowired
-    private HomeController wiredHomeController;
 
     @BeforeEach
     public void setup() {
@@ -67,10 +73,17 @@ public class HomeControllerTests {
     }
 
     @Test
+    public void showCalendarPageTest() throws Exception{
+        mockMvc.perform(get("/calendar"))
+                .andExpect(status().is(302))
+                .andExpect(view().name("redirect:/calendar/weekly"));
+    }
+
+    @Test
     public void showPlanningtoolPageTest() throws Exception {
         mockMvc.perform(get("/planningtool"))
                 .andExpect(status().is(302))
-                .andExpect(view().name("redirect:/calendar/weekly"));
+                .andExpect(view().name("redirect:/planning/"));
     }
 
     @Test
@@ -85,16 +98,36 @@ public class HomeControllerTests {
     @WithUserDetails("Cedric")
     public void showStepsHomePageTest() throws Exception{
 
-        User testuser = new User("Cedric","PW");
         long ID = 32;
+        long ID2 = 66;
+
+        User testuser = new User("Cedric","PW");
+        User user2 = new User();
+        testuser.setId(ID);
         Step step = new Step();
+        Step step2 = new Step();
         step.setUser(testuser);
         step.setId(ID);
+        step2.setUser(user2);
+        step2.setId(ID2);
         List<Step> steps = new ArrayList<>();
         steps.add(step);
+        steps.add(step2);
         testuser.setId(ID);
 
+        Set<User> students = new HashSet<>();
+        Relation relation = new Relation();
+        relation.setResearcher(testuser);
+        relation.setStudents(students);
+        List<Relation> relations = new ArrayList<>();
+        relations.add(relation);
+
+        List<Report> reports = new ArrayList<>();
+        students.add(user2);
+
         when(stepService.findAll()).thenReturn(steps);
+        when(relationService.findAll()).thenReturn(relations);
+        when(reportService.findAll()).thenReturn(reports);
 
         mockMvc.perform(get(("/"),("/home")))
                 .andExpect(status().isOk())
