@@ -16,12 +16,12 @@ public class StepType extends AbstractPersistable<Long> {
     private String stepTypeName;
     @OneToOne
     @JoinColumn(name = "continuity")
-    private ContinuityAli continuity;
+    private Continuity continuity;
 
     public StepType() {
     }
 
-    public StepType(DeviceType deviceType, ContinuityAli continuity, String stepTypeName) {
+    public StepType(DeviceType deviceType, Continuity continuity, String stepTypeName) {
         this.deviceType = deviceType;
         this.stepTypeName = stepTypeName;
         this.continuity = continuity;
@@ -43,11 +43,11 @@ public class StepType extends AbstractPersistable<Long> {
         this.stepTypeName = stepTypeName;
     }
 
-    public ContinuityAli getContinuity() {
+    public Continuity getContinuity() {
         return continuity;
     }
 
-    public void setContinuity(ContinuityAli continuity) {
+    public void setContinuity(Continuity continuity) {
         this.continuity = continuity;
     }
 }

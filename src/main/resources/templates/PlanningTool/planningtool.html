@@ -4,170 +4,184 @@
 
 </head>
 <div onload="initPage()">
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-<script th:inline="javascript" type="text/javascript">
-    function initPage(){
+    <script th:inline="javascript" type="text/javascript">
+        function initPage() {
 
-    }
-</script>
-<script th:inline="javascript">
-
-    $(document).ready(function(){
-        var status= /*[[${Status}]]*/ null;
-        var messages =  /*[[${Message}]]*/ "";
-        console.log(messages);
-        if(status != null)
-        {
-            if (status=="Success")
-                toastr.success(messages);
-            if (status=="Error")
-                toastr.error(messages);
         }
+    </script>
+    <script th:inline="javascript">
 
-        $('.js-example-basic-single').select2();
-        $('#sel').on('change', function() {
-            var devices =  /*[[${allDevices}]]*/ {};
-            console.log(this.value);
-            $('#deviceNames')
-                .empty()
-                .append(' <option value="none" selected disabled hidden> Device Name </option>')
-            ;
-            var id = this.value;
-            var count = 0;
-            $.each( devices, function(key,device ) {
-                if(id == device.deviceType.id){
-                    count++;
-                    optionText = device.devicename;
-                    optionValue =  device.id;
-                    $('#deviceNames').append($('<option>').val(optionValue).text(optionText));
-                }});
+        $(document).ready(function () {
+            var status = /*[[${Status}]]*/ null;
+            var messages =  /*[[${Message}]]*/ "";
+            console.log(messages);
+            if (status != null) {
+                if (status == "Success")
+                    toastr.success(messages);
+                if (status == "Error")
+                    toastr.error(messages);
+            }
+
+            $('.js-example-basic-single').select2();
+            $('#sel').on('change', function () {
+                var devices =  /*[[${allDevices}]]*/ {};
+                console.log(this.value);
+                $('#deviceNames')
+                    .empty()
+                    .append(' <option value="none" selected disabled hidden> Device Name </option>')
+                ;
+                var id = this.value;
+                var count = 0;
+                $.each(devices, function (key, device) {
+                    if (id == device.deviceType.id) {
+                        count++;
+                        optionText = device.devicename;
+                        optionValue = device.id;
+                        $('#deviceNames').append($('<option>').val(optionValue).text(optionText));
+                    }
+                });
                 if (count == 0)
                     $('#deviceNames')
                         .empty()
                         .append(' <option value="none" selected disabled hidden> No Device </option>');
 
 
-
-            document.getElementById("deviceNames").style.visibility="visible";
-        $('#deviceNames').on('change', function () {
-            document.getElementById("startTime").style.visibility="visible";
-            document.getElementById("startHour").style.visibility="visible";
-        })
-        $('#startTime').on('change',function () {
-            document.getElementById("endTime").style.visibility="visible";
-            document.getElementById("endHour").style.visibility="visible";
-        })
-        $('#staticBackdrop').on('hidden.bs.modal', function () {
-            document.getElementById("deviceNames").style.visibility="hidden";
-            document.getElementById("startTime").style.visibility="hidden";
-            document.getElementById("startHour").style.visibility="hidden";
-            document.getElementById("endTime").style.visibility="hidden";
-            document.getElementById("endHour").style.visibility="hidden";
-            $('#sel')
-                .append(' <option value="none" selected disabled hidden> Device Type </option>');
-        });
-        });
-        // Search on name column only
-        $('#txt_name').keyup(function(){
-            // Search Text
-            var search = $(this).val();
-            // Hide all table tbody rows
-            $('table tbody tr').hide();
-
-            // Count total search result
-            var len = $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').length;
-
-            if(len > 0){
-                // Searching text in columns and show match row
-                $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').each(function(){
-                    $(this).closest('tr').show();
+                document.getElementById("deviceNames").style.visibility = "visible";
+                $('#deviceNames').on('change', function () {
+                    document.getElementById("startTime").style.visibility = "visible";
+                    document.getElementById("startHour").style.visibility = "visible";
+                })
+                $('#startTime').on('change', function () {
+                    document.getElementById("endTime").style.visibility = "visible";
+                    document.getElementById("endHour").style.visibility = "visible";
+                })
+                $('#staticBackdrop').on('hidden.bs.modal', function () {
+                    document.getElementById("deviceNames").style.visibility = "hidden";
+                    document.getElementById("startTime").style.visibility = "hidden";
+                    document.getElementById("startHour").style.visibility = "hidden";
+                    document.getElementById("endTime").style.visibility = "hidden";
+                    document.getElementById("endHour").style.visibility = "hidden";
+                    $('#sel')
+                        .append(' <option value="none" selected disabled hidden> Device Type </option>');
                 });
-            }else{
-                $('.notfound').show();
-            }
+            });
+            // Search on name column only
+            $('#txt_name').keyup(function () {
+                // Search Text
+                var search = $(this).val();
+                // Hide all table tbody rows
+                $('table tbody tr').hide();
+
+                // Count total search result
+                var len = $('table tbody tr:not(.notfound) td:nth-child(1):contains("' + search + '")').length;
+
+                if (len > 0) {
+                    // Searching text in columns and show match row
+                    $('table tbody tr:not(.notfound) td:nth-child(1):contains("' + search + '")').each(function () {
+                        $(this).closest('tr').show();
+                    });
+                } else {
+                    $('.notfound').show();
+                }
+            });
         });
-    });
-    // Case-insensitive searching (Note - remove the below script for Case sensitive search )
-    $.expr[":"].contains = $.expr.createPseudo(function(arg) {
-        return function( elem ) {
-            return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
-        };
-    });
+        // Case-insensitive searching (Note - remove the below script for Case sensitive search )
+        $.expr[":"].contains = $.expr.createPseudo(function (arg) {
+            return function (elem) {
+                return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+            };
+        });
 
-    function onDeviceTypeSelected(id) {
-        alert(id);
-        document.getElementById("DeviceNameDropDown").style.visibility="visible";
-    }
-</script>
-<style>
-    .input-date{
-        width: 37.5%;
-        position: absolute;
-        margin-top: 10px;
-        visibility: hidden;}
-    .input-hour{
-        visibility: hidden;
-        width: 40%;
-        margin-top: 10px;
-    }
-    .input-device{
-        width: 40%;
-        margin-top: 10px;
-    }
-</style>
-    <div class ="container">
-<div th:replace="navbar :: navbar"></div>
-<h1>Planning Tool
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary float-right" style="" data-toggle="modal" data-target="#staticBackdrop" th:text="#{book.step}">
-    Book new Step
-</button>
-<a  href="/planning/experiments/book"><button type="button" class="btn btn-primary float-right" style="" data-toggle="modal" th:text="#{book.Experiment}">
-    Book new Step
-</button></a>
-</h1>
-<table class="table table-hover">
-    <thead>
-    <tr>
-        <th th:text="#{step.user.username}">Username</th>
-        <th th:text="#{step.device.devicename}">Device Name</th>
-        <th th:text="#{step.start}">Start Date</th>
-        <th th:text="#{step.startHour}">Start Hour</th>
-        <th th:text="#{step.end}">End Date</th>
-        <th th:text="#{step.endHour}">End Hour</th>
-    </tr>
-    </thead>
+        function onDeviceTypeSelected(id) {
+            alert(id);
+            document.getElementById("DeviceNameDropDown").style.visibility = "visible";
+        }
+    </script>
+    <style>
+        .input-date {
+            width: 37.5%;
+            position: absolute;
+            margin-top: 10px;
+            visibility: hidden;
+        }
 
-    <!-- IMPORTANT, class="list" have to be at tbody -->
-    <tbody class="list" id="list">
-    <tr th:each="step : ${userSteps}">
-        <td class='username' th:value="${step.getUser().getUsername()}" th:text="${step.user.username}">Username</td>
-        <td class="devicename" th:value="${step.getDevice().getDevicename()}" th:text="${step.device.devicename }" >Device name</td>
-        <td class="startTime" th:value="${step.getStart()}" th:text="${step.start}"> Start Date</td>
-        <td class="startTime" th:value="${step.getStartHour()}" th:text="${step.startHour}"> Start Hour</td>
-        <td class="endTime" th:value="${step.getEnd()}" th:text="${step.end}">End Date</td>
-        <td class="endTime" th:value="${step.getEndHour()}" th:text="${step.endHour}">End Hour</td>
-        <td>
+        .input-hour {
+            visibility: hidden;
+            width: 40%;
+            margin-top: 10px;
+        }
 
-        <td>
-            <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
-                <span class="fas fa-trash" style="color: red" ></span> </a>
-        </td>
-        </td>
-    </tr>
-    <tr class='notfound' th:if="${userSteps.isEmpty()}" >
-        <td colspan='4' th:text="#{step.norecord}">No record found</td>
-    </tr>
-    </tbody>
-</table>
+        .input-device {
+            width: 40%;
+            margin-top: 10px;
+        }
+    </style>
+    <div class="container">
+        <div th:replace="navbar :: navbar"></div>
+        <h1>Planning Tool
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal"
+                    data-target="#staticBackdrop" th:text="#{book.step}">
+                Book new Step
+            </button>
+            <a th:href="@{/planning/experiments/book/}">
+            <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal"
+                    data-target="#staticBackdropExperiment" th:text="#{book.Experiment}">
+                Book new Experiment
+            </button>
+            </a>
 
-        <h5 sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')"> <span th:text="#{step.student}"></span></h5>
+        </h1>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th th:text="#{step.user.username}">Username</th>
+                <th th:text="#{step.device.devicename}">Device Name</th>
+                <th th:text="#{step.start}">Start Date</th>
+                <th th:text="#{step.startHour}">Start Hour</th>
+                <th th:text="#{step.end}">End Date</th>
+                <th th:text="#{step.endHour}">End Hour</th>
+            </tr>
+            </thead>
 
-        <table class="table table-hover"  sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')">
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody class="list" id="list">
+            <tr th:each="step : ${userSteps}">
+                <td class='username' th:value="${step.getUser().getUsername()}" th:text="${step.user.username}">
+                    Username
+                </td>
+                <td class="devicename" th:value="${step.getDevice().getDevicename()}"
+                    th:text="${step.device.devicename }">Device name
+                </td>
+                <td class="startTime" th:value="${step.getStart()}" th:text="${step.start}"> Start Date</td>
+                <td class="startTime" th:value="${step.getStartHour()}" th:text="${step.startHour}"> Start Hour</td>
+                <td class="endTime" th:value="${step.getEnd()}" th:text="${step.end}">End Date</td>
+                <td class="endTime" th:value="${step.getEndHour()}" th:text="${step.endHour}">End Hour</td>
+                <td>
+
+                <td>
+                    <a th:href="@{/planning/{id}/delete(id=${step.id})}"
+                       th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
+                        <span class="fas fa-trash" style="color: red"></span> </a>
+                </td>
+                </td>
+            </tr>
+            <tr class='notfound' th:if="${userSteps.isEmpty()}">
+                <td colspan='4' th:text="#{step.norecord}">No record found</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h5 sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')">
+            <span th:text="#{step.student}"></span></h5>
+
+        <table class="table table-hover"
+               sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')">
             <thead>
             <tr>
                 <th th:text="#{step.user.username}"></th>
@@ -181,76 +195,91 @@
             <!-- IMPORTANT, class="list" have to be at tbody -->
             <tbody class="list" id="list-students">
             <tr th:each="step : ${studentSteps}">
-                <td class="user" th:value="${step.getUser()}" th:text="${step.getUser().getFirstName() + ' ' + step.getUser().getLastName()}"></td>
-                <td class="devicename" th:value="${step.getDevice().getDevicename()}" th:text="${step.device.devicename }" >Device name</td>
+                <td class="user" th:value="${step.getUser()}"
+                    th:text="${step.getUser().getFirstName() + ' ' + step.getUser().getLastName()}"></td>
+                <td class="devicename" th:value="${step.getDevice().getDevicename()}"
+                    th:text="${step.device.devicename }">Device name
+                </td>
                 <td class="startTime" th:value="${step.getStart()}" th:text="${step.start}"> Start Date</td>
                 <td class="startTime" th:value="${step.getStartHour()}" th:text="${step.startHour}"> Start Hour</td>
                 <td class="endTime" th:value="${step.getEnd()}" th:text="${step.end}">End Date</td>
                 <td class="endTime" th:value="${step.getEndHour()}" th:text="${step.endHour}">End Hour</td>
                 <td>
-                    <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" th:text="#{device.info}" class="btn btn-primary"></a>
+                    <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" th:text="#{device.info}"
+                       class="btn btn-primary"></a>
                 </td>
                 <td>
                 <td>
-                    <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
-                        <span class="fas fa-trash" style="color: red" ></span> </a>
+                    <a th:href="@{/planning/{id}/delete(id=${step.id})}"
+                       th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
+                        <span class="fas fa-trash" style="color: red"></span> </a>
                 </td>
                 </td>
 
             </tr>
-            <tr class='notfound' th:if="${studentSteps.isEmpty()}" >
+            <tr class='notfound' th:if="${studentSteps.isEmpty()}">
                 <td colspan='4' th:text="#{step.norecord}">No record found</td>
             </tr>
             </tbody>
-        </table></table>
+        </table>
+        </table>
 
-        <a href="/planning/experiments" type="button" class="btn btn-primary"th:text="#{experiment.types}">
+        <a href="/planning/experiments" type="button" class="btn btn-primary" th:text="#{experiment.types}">
             Experiment Types
         </a>
     </div>
 
-<!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">New Step</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form th:action="@{/planning/{id} (id=${Step})}" th:object="${Step}" method="post">
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">New Step</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form th:action="@{/planning/{id} (id=${Step})}" th:object="${Step}" method="post">
 
-            <div class="modal-body" style="height: 260px;">
-                <input th:field="*{id}" th:type="hidden"/>
-                <select required class=" form-control input-device"  id="sel">
-                    <option value="none"  selected disabled hidden th:text="#{device.type}"> Device Type </option>
-                    <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.getDeviceTypeName()}">Device Type</option>
-                </select>
-                <!--Dropdown-->
-                <select required id="deviceNames" th:field="*{device}" class="form-control input-device" style="visibility: hidden;">
-                    <option value="none" selected disabled hidden >Device Name</option>
-                </select>
-                <div style="display: flow-root;">
-                    <input required id="startTime" type="date" th:field="*{start}" class="form-control input-date" placeholder="Start date">
-                    <input type="time" id="startHour" class="form-control float-right input-hour" th:field="*{startHour}" placeholder="Hour">
-                </div>
-                <div>
-                    <input required id="endTime" type="date" th:field="*{end}" class="form-control input-date"  placeholder="End date">
-                    <input type="time" id="endHour" class="form-control float-right input-hour" th:field="*{endHour}" placeholder="Hour">
-                </div>
-                <div style="margin-top: 60px">
-                    <input th:field="*{comment}" placeholder="Comment">
-                </div>
+                    <div class="modal-body" style="height: 260px;">
+                        <input th:field="*{id}" th:type="hidden"/>
+                        <select required class=" form-control input-device" id="sel">
+                            <option value="none" selected disabled hidden th:text="#{device.type}"> Device Type</option>
+                            <option class="dropdown-item" th:each="deviceType : ${allDeviceTypes}"
+                                    th:value="${deviceType.getId()}" th:text="${deviceType.getDeviceTypeName()}">Device
+                                Type
+                            </option>
+                        </select>
+                        <!--Dropdown-->
+                        <select required id="deviceNames" th:field="*{device}" class="form-control input-device"
+                                style="visibility: hidden;">
+                            <option value="none" selected disabled hidden>Device Name</option>
+                        </select>
+                        <div style="display: flow-root;">
+                            <input required id="startTime" type="date" th:field="*{start}"
+                                   class="form-control input-date" placeholder="Start date">
+                            <input type="time" id="startHour" class="form-control float-right input-hour"
+                                   th:field="*{startHour}" placeholder="Hour">
+                        </div>
+                        <div>
+                            <input required id="endTime" type="date" th:field="*{end}" class="form-control input-date"
+                                   placeholder="End date">
+                            <input type="time" id="endHour" class="form-control float-right input-hour"
+                                   th:field="*{endHour}" placeholder="Hour">
+                        </div>
+                        <div style="margin-top: 60px">
+                            <input th:field="*{comment}" placeholder="Comment">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
-            </form>
         </div>
     </div>
-</div>
 </div>
 </body>
 </div>
