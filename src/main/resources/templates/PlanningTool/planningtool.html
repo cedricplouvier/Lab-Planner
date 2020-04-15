@@ -130,12 +130,11 @@
                 Book new Step
             </button>
             <a th:href="@{/planning/experiments/book/}">
-            <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal"
-                    data-target="#staticBackdropExperiment" th:text="#{book.Experiment}">
-                Book new Experiment
-            </button>
+                <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal"
+                        data-target="#staticBackdropExperiment" th:text="#{book.Experiment}">
+                    Book new Experiment
+                </button>
             </a>
-
         </h1>
         <table class="table table-hover">
             <thead>
@@ -148,7 +147,6 @@
                 <th th:text="#{step.endHour}">End Hour</th>
             </tr>
             </thead>
-
             <!-- IMPORTANT, class="list" have to be at tbody -->
             <tbody class="list" id="list">
             <tr th:each="step : ${userSteps}">
@@ -163,12 +161,17 @@
                 <td class="endTime" th:value="${step.getEnd()}" th:text="${step.end}">End Date</td>
                 <td class="endTime" th:value="${step.getEndHour()}" th:text="${step.endHour}">End Hour</td>
                 <td>
+                    <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" th:text="#{device.info}"
+                       class="btn btn-primary"></a>
+                </td>
 
                 <td>
+                    <a th:href="@{/planning/{id}/(id=${step.id})}"><span
+                            class="fas fa-edit"></span></a>
+
                     <a th:href="@{/planning/{id}/delete(id=${step.id})}"
                        th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
                         <span class="fas fa-trash" style="color: red"></span> </a>
-                </td>
                 </td>
             </tr>
             <tr class='notfound' th:if="${userSteps.isEmpty()}">
@@ -209,7 +212,9 @@
                        class="btn btn-primary"></a>
                 </td>
                 <td>
-                <td>
+                    <a th:href="@{/planning/{id}/(id=${step.id})}"><span
+                            class="fas fa-edit"></span></a>
+
                     <a th:href="@{/planning/{id}/delete(id=${step.id})}"
                        th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
                         <span class="fas fa-trash" style="color: red"></span> </a>
@@ -259,13 +264,13 @@
                         <div style="display: flow-root;">
                             <input required id="startTime" type="date" th:field="*{start}"
                                    class="form-control input-date" placeholder="Start date">
-                            <input type="time" id="startHour" class="form-control float-right input-hour"
+                            <input required id="startHour" type="time" class="form-control float-right input-hour"
                                    th:field="*{startHour}" placeholder="Hour">
                         </div>
                         <div>
                             <input required id="endTime" type="date" th:field="*{end}" class="form-control input-date"
                                    placeholder="End date">
-                            <input type="time" id="endHour" class="form-control float-right input-hour"
+                            <input required id="endHour" type="time" class="form-control float-right input-hour"
                                    th:field="*{endHour}" placeholder="Hour">
                         </div>
                         <div style="margin-top: 60px">

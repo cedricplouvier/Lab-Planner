@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{Product Management}')"></head>
+<body onload = "initPage()">
+
+<div class = "container">
+    <div th:replace="navbar :: navbar"></div>
+    <h4 th:text="#{report.problem}">Report problem</h4>
+    <form action="#" th:action="@{/reports/{id}(id=${report})}"
+          th:object="${report}" method="post">
+        <input th:type="hidden" th:field="*{id}"/>
+
+        <div class="form-group">
+            <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>
+            <label class="control-label" th:text="#{report.title}"></label>
+            <input class="form-control" type = text th:field="*{title}"/>
+
+            <label class="control-label" th:text="#{report.description}"></label>
+            <input class="form-control" type = text th:field="*{description}"/>
+
+
+            <p>
+                <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
+                <a th:href="@{/}" th:text="#{close}" class="btn btn-secondary">Close</a>
+
+            </p>
+        </div>
+    </form>
+
+
+
+
+</div>
+</body>
+</html>

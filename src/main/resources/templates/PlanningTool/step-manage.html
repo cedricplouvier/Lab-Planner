@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{Planning Tool}')"></head>
+<body onload = "initPage()">
+<script type="text/javascript">
+    function initPage(){
+
+    }
+</script>
+
+<script>
+    $( document ).ready(function() {
+        var newSelect = document.getElementById("deviceNames");
+        // //if you want to remove this default option use newSel.innerHTML=""
+     //   newSelect.innerHTML="<option value=\"\">Select</option>"; // to reset the second list everytime
+
+        var id = document.getElementById("sel").value;
+        var devices =  /*[[${allDevices}]]*/ {};
+        var count = 0;
+        $.each(devices, function (key,device) {
+            if(id == device.deviceType.id){
+                opt = document.createElement("option");
+                count++;
+                opt.text = device.devicename;
+                opt.value = device.id;
+                newSelect.appendChild(opt);
+            }});
+    });
+
+</script>
+
+<script th:inline="javascript">
+    function selectDevices(){
+
+         var newSelect = document.getElementById("deviceNames");
+        // //if you want to remove this default option use newSel.innerHTML=""
+         newSelect.innerHTML="<option value=\"\">Select</option>"; // to reset the second list everytime
+
+        var id = document.getElementById("sel").value;
+        var devices =  /*[[${allDevices}]]*/ {};
+        var count = 0;
+        $.each(devices, function (key,device) {
+            if(id == device.deviceType.id){
+                opt = document.createElement("option");
+                count++;
+                opt.text = device.devicename;
+                opt.value = device.id;
+                newSelect.appendChild(opt);
+        }});
+    }
+
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+
+<div class = "container">
+    <div th:replace="navbar :: navbar"></div>
+    <form action="#" th:action="@{/planning/{id}(id=${Step.id})}"
+          th:object="${Step}" method="post">
+        <input th:type="hidden" th:field="*{id}"/>
+
+        <input th:type="hidden" th:field="*{user}"/>
+
+        <label class="control-label" th:text="#{device.type}"></label>
+        <select required class=" form-control input-device"  id="sel" onchange="selectDevices()">
+            <option th:value="none"  selected disabled hidden th:text="*{device.getDeviceType().getDeviceTypeName()}"> Device Type </option>
+            <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.getDeviceTypeName()}">Device Type</option>
+        </select>
+
+        <label class="control-label" th:text="#{device}"></label>
+        <select required class=" form-control input-device"  id="deviceNames" th:field="*{device}">
+            <option class="dropdown-item"   th:value="*{device.getId()}" th:text="*{device.getDevicename()}">Device</option>
+            <option class="dropdown-item"   th:each="device : ${allDevices}" th:if="${device.deviceType.id} == *{device.getDeviceType().id} " th:value="${device.getId()}" th:text="${device.getDevicename()}">Device</option>
+        </select>
+
+        <label class="control-label" text="Start data">Start data</label>
+
+        <div>
+            <input required id="startTime" type="date" th:field="*{start}" class="form-control input-date" placeholder="Start date">
+        </div>
+
+        <label class="control-label" text="Start hour">Start Hour</label>
+
+        <div>
+        <input required id="startHour" type="time" class="form-control float-right input-hour" th:field="*{startHour}" placeholder="Hour">
+        </div>
+
+        <label  class="control-label" text="End data">End data</label>
+
+        <div>
+            <input required id="endTime"  type="date" th:field="*{end}" class="form-control input-date"  placeholder="End date">
+        </div>
+
+        <label class="control-label" text="End hour">End Hour</label>
+
+        <div>
+            <input required id="endHour" type="time" class="form-control float-right input-hour" th:field="*{endHour}" placeholder="Hour">
+        </div>
+
+        <!--        <div class="alert alert-danger" role="alert" th:if="${UserInUse}!=null" th:text="${UserInUse}"></div>-->
+
+        <p>
+            <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
+            <a href="/planning/" th:text="#{close}" class="btn btn-secondary">Close</a>
+
+        </p>
+    </form>
+
+
+
+
+</div>
+</body>
+</html>

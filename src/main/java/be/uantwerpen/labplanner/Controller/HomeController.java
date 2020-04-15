@@ -2,10 +2,7 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Model.Step;
-import be.uantwerpen.labplanner.Service.DeviceService;
-import be.uantwerpen.labplanner.Service.DeviceTypeService;
-import be.uantwerpen.labplanner.Service.RelationService;
-import be.uantwerpen.labplanner.Service.StepService;
+import be.uantwerpen.labplanner.Service.*;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
@@ -37,6 +34,9 @@ public class HomeController {
     private DeviceService deviceService;
 
     @Autowired
+    private ReportService reportService;
+
+    @Autowired
     private RelationService relationService;
 
     @RequestMapping({"/","/home"})
@@ -53,10 +53,17 @@ public class HomeController {
     public String showStockmanagementPage(){
         return "redirect:/products";
     }
+    @RequestMapping("/calendar")
+    public String showCalendarPage(){
+        logger.info("showCalendar");
+        return "redirect:/calendar/weekly";
+
+    }
+
     @RequestMapping("/planningtool")
     public String showPlanningtoolPage(){
-        logger.info("showPlanningtoolPage");
-        return "redirect:/calendar/weekly";
+        logger.info("showPlanning");
+        return "redirect:/planning/";
 
     }
     @RequestMapping("/devicemanagement")
@@ -96,7 +103,7 @@ public class HomeController {
                 }
             }
 
-
+            model.addAttribute("reportAmount", reportService.findAll().size());
             model.addAttribute("userSteps", userSteps);
             model.addAttribute("Step", new Step());
             model.addAttribute("currentUser",user.getUsername());

@@ -46,7 +46,7 @@ public class Mixture extends AbstractPersistable<Long> {
     )
     private List<Tag> tags;
 
-    Mixture(String name, List<Composition> compositions, String description, List<Tag> tags){
+    public Mixture(String name, List<Composition> compositions, String description, List<Tag> tags){
         this.name = name;
         this.compositions = compositions;
         this.description = description;
