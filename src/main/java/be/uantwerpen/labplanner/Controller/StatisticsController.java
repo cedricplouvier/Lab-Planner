@@ -131,6 +131,11 @@ public class StatisticsController {
         return "redirect:/statistics/statistics";
     }
 
+    @PreAuthorize("hasAnyAuthority('Statistics Access')")
+    @RequestMapping("/statistics/stockStatistics")
+    public String showStockStatisticsPage() {
+        return "/Statistics/stockStatistics";
+    }
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/clearList")
