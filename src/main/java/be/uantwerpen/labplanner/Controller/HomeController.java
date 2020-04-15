@@ -39,6 +39,11 @@ public class HomeController {
     @Autowired
     private RelationService relationService;
 
+    @RequestMapping({"/","/home"})
+    public String showHomepage(){
+        return "homepage";
+    }
+
     //@PreAuthorize("hasAuthority('User Management')")
     @RequestMapping("/usermanagement")
     public String showUsermanagementPage(){
