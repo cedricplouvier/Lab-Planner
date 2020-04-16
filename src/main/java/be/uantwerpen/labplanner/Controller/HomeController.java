@@ -1,12 +1,15 @@
 package be.uantwerpen.labplanner.Controller;
 
+import be.uantwerpen.labplanner.Model.Experiment;
 import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Model.Step;
-import be.uantwerpen.labplanner.Service.*;
-import be.uantwerpen.labplanner.common.model.users.Role;
+import be.uantwerpen.labplanner.Service.DeviceService;
+import be.uantwerpen.labplanner.Service.ExperimentService;
+import be.uantwerpen.labplanner.Service.RelationService;
+import be.uantwerpen.labplanner.Service.ReportService;
+import be.uantwerpen.labplanner.Service.StepService;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
-import be.uantwerpen.labplanner.common.service.users.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
@@ -28,6 +29,8 @@ public class HomeController {
 
     @Autowired
     private StepService stepService;
+    @Autowired
+    private ExperimentService experimentService;
     @Autowired
     private RoleService roleService;
     @Autowired
@@ -101,11 +104,32 @@ public class HomeController {
                 }
             }
 
+
+
+        List<Experiment> studentExperiments = new ArrayList<>();
+        List<Experiment> userExperiments = new ArrayList<>();
+
+        List<Experiment> allExperiments = experimentService.findAll();
+
+        Iterator<Experiment> itExp = allExperiments.iterator();
+        while (itExp.hasNext()) {
+            Experiment tempExp = itExp.next();
+            if(tempExp.getUser().equals(user)) {
+                userExperiments.add(tempExp);
+            }
+            else if (students.contains(tempExp.getUser())){
+                studentExperiments.add(tempExp);
+            }
+        }
+
             model.addAttribute("reportAmount", reportService.findAll().size());
             model.addAttribute("userSteps", userSteps);
             model.addAttribute("Step", new Step());
             model.addAttribute("currentUser",user.getUsername());
             model.addAttribute("studentSteps",studentSteps);
+
+        model.addAttribute("userExperiments", userExperiments);
+        model.addAttribute("studentExperiments", studentExperiments);
 
         return "homepage";
     }

@@ -571,15 +571,15 @@ public class DatabaseLoader {
         //Continuities
         Continuity cont1 = new Continuity(0,0,"No");
         continuityRepository.save(cont1);
-        Continuity cont2 = new Continuity(8,0,"Soft");
+        Continuity cont2 = new Continuity(8,0,"Soft (at least)");
         continuityRepository.save(cont2);
         Continuity cont3 = new Continuity(24,0,"Hard");
         continuityRepository.save(cont3);
-        Continuity cont4 = new Continuity(12,0,"Soft");
+        Continuity cont4 = new Continuity(12,0,"Soft (at least)");
         continuityRepository.save(cont4);
         Continuity cont5 = new Continuity(0,0,"Hard");
         continuityRepository.save(cont5);
-        Continuity cont6 = new Continuity(24,0,"Soft");
+        Continuity cont6 = new Continuity(24,0,"Soft (at most)");
         continuityRepository.save(cont6);
 
         //Steptypes
@@ -630,6 +630,7 @@ public class DatabaseLoader {
         reportRepository.save(r5);
 
         //fill experimentRepository
+        /*
         List<Step> stepList = new ArrayList<Step>();
         stepList.add(s1);
         stepList.add(s2);
@@ -637,7 +638,7 @@ public class DatabaseLoader {
         stepList.add(s4);
         stepList.add(s5);
         stepList.add(s6);
-        Experiment ex = new Experiment(experimentType2, stepList, u1, "experiment1", m1, "ads", 5,"2020-03-18","2020-03-19");
-        experimentRepository.save(ex);
+        Experiment ex = new Experiment(experimentType2, stepList, u6, "experiment1", m1, "ads", 5,"2020-03-18","2020-03-19");
+        experimentRepository.save(ex);*/
     }
 }
