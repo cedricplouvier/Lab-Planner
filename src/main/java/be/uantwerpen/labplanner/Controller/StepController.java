@@ -10,6 +10,7 @@ import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.repository.users.UserRepository;
+import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
 
@@ -17,6 +18,7 @@ import org.h2.util.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -53,6 +55,8 @@ public class StepController {
     private StepTypeService stepTypeService;
     @Autowired
     private ExperimentTypeRepository experimentTypeRepository;
+    @Autowired
+    private ProductService productService;
 
     @Autowired
     private RelationService relationService;
@@ -410,26 +414,76 @@ public class StepController {
 
     @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
     @RequestMapping(value = {"/planning/experiments/book", "/planning/experiments/book/{id}"}, method = RequestMethod.POST)
-    public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model) {
+    public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model, RedirectAttributes ra) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         experiment.setUser(currentUser);
-        //set ExperimentType by ExperimentType id
-        for (ExperimentType expType : experimentTypeService.findAll()) {
-            System.out.println(expType.getId());
-            System.out.println(experiment.getExperimentType().getId());
-            if (expType.getId().equals(experiment.getExperimentType().getId())) {
-                experiment.setExperimentType(expType);
+        Locale current = LocaleContextHolder.getLocale();
+
+
+        boolean enoughStock = true;
+
+
+
+
+        //check if there is enough materials in stock
+        Mixture mix = experiment.getMixture();
+        List<Composition> compositions = mix.getCompositions();
+        for (Composition comp :compositions){
+            Product prod = comp.getProduct();
+            double stocklevel = prod.getStockLevel();
+            stocklevel -= comp.getAmount()*experiment.getMixtureAmount()/100;
+            if (stocklevel<0) {
+                enoughStock = false;
             }
+
         }
-        List<Step> tmpListSteps = new ArrayList<Step>();
-        for (Step step : experiment.getSteps()) {
-            step.setUser(currentUser);
-            stepService.saveSomeAttributes(step);
-            tmpListSteps.add(step);
+
+        if (enoughStock) {
+
+            //set ExperimentType by ExperimentType id
+            for (ExperimentType expType : experimentTypeService.findAll()) {
+                System.out.println(expType.getId());
+                System.out.println(experiment.getExperimentType().getId());
+                if (expType.getId().equals(experiment.getExperimentType().getId())) {
+                    experiment.setExperimentType(expType);
+                }
+            }
+            List<Step> tmpListSteps = new ArrayList<Step>();
+            for (Step step : experiment.getSteps()) {
+                step.setUser(currentUser);
+                stepService.saveSomeAttributes(step);
+                tmpListSteps.add(step);
+            }
+
+
+            experiment.setSteps(tmpListSteps);
+            experimentService.saveExperiment(experiment);
+
+            //reduce stock levels
+            for (Composition comp :compositions){
+                Product prod = comp.getProduct();
+                double stocklevel = prod.getStockLevel();
+                stocklevel -= comp.getAmount()*experiment.getMixtureAmount()/100;
+                if (stocklevel>=0) {
+                    prod.setStockLevel(stocklevel);
+                    productService.save(prod);
+                }
+                else{
+                    enoughStock = false;
+                }
+
+            }
+
+            return "redirect:/planning/";
+
         }
-        experiment.setSteps(tmpListSteps);
-        experimentService.saveExperiment(experiment);
-        return "redirect:/planning/";
+        else{
+            ra.addFlashAttribute("Status",new String("Error"));
+            ra.addFlashAttribute("Message",ResourceBundle.getBundle("messages",current).getString("enough.stock"));
+            return "redirect:/planning/";
+        }
+
+
     }
 
     @RequestMapping(value = "/planning/experiments/put", method = RequestMethod.GET)
