@@ -1,11 +1,8 @@
 package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.LabplannerApplication;
-import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Model.Report;
 import be.uantwerpen.labplanner.Service.ReportService;
-import be.uantwerpen.labplanner.common.model.users.Role;
-import be.uantwerpen.labplanner.common.model.users.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,16 +13,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(classes = LabplannerApplication.class)
