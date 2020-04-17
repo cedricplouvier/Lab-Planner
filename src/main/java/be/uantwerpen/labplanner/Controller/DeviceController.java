@@ -77,7 +77,6 @@ public class DeviceController {
     }
 
     //Edit
-
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices/{id}", method= RequestMethod.GET)
     public String viewEdiDevice(@PathVariable Long id, final ModelMap model){

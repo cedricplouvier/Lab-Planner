@@ -15,6 +15,13 @@
             <th th:text="#{step.startHour}">Start Hour</th>
             <th th:text="#{step.end}">End Date</th>
             <th th:text="#{step.endHour}">End Hour</th>
+            <th>
+                <form method = "GET" action = "/calendar/user">
+                    <button class="btn btn-default btn-block lnb-new-schedule-btn "  id="btn-new-schedule" type="submit" >
+                        Go to personal calendar
+                    </button>
+                </form>
+            </th>
         </tr>
         </thead>
         <!-- IMPORTANT, class="list" have to be at tbody -->

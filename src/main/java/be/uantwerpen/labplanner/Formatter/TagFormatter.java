@@ -27,5 +27,4 @@ public class TagFormatter implements Formatter<Tag> {
     public String print(final Tag object, final Locale locale)
     { return (object != null ? object.getId().toString() : "");
     }
-
 }

@@ -1,6 +1,7 @@
 package be.uantwerpen.labplanner.Model;
 
 import be.uantwerpen.labplanner.common.model.users.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.util.Date;
 @Entity
 public class Step extends AbstractPersistable<Long> {
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "user")
     private User user;
     @OneToOne
