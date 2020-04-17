@@ -48,13 +48,12 @@ function hexToRGBA(hex) {
 
     deviceTypes.forEach(function (deviceType) {
         let calendar = new CalendarInfo();
-
         calendar.id = String(deviceType['id']);
         calendar.name = deviceType['deviceTypeName'];
         calendar.color = '#ffffff';
-        calendar.bgColor = '#9e5fff';
-        calendar.dragBgColor = '#9e5fff';
-        calendar.borderColor = '#9e5fff';
+        calendar.bgColor = deviceType['color'];
+        calendar.dragBgColor = deviceType['color'];
+        calendar.borderColor = deviceType['color'];
         addCalendar(calendar);
     })
 })();
@@ -129,8 +128,8 @@ function generateSchedule(viewName, renderStart, renderEnd) {
     })
 
 }
-function getInit() {
-    let options = [];
-   options.isReadOnly = false;
-   return options
-}
+// function getInit() {
+//     let options = [];
+//    options.isReadOnly = false;
+//    return options
+// }

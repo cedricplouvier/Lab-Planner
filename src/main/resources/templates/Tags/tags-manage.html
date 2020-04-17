@@ -18,9 +18,9 @@
         <input th:type="hidden" th:field="*{id}"/>
 
         <div class="form-group">
+            <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>
             <label class="control-label" th:text="#{tag.name}"></label>
             <input class="form-control" type = text th:field="*{name}"/>
-            <div class="alert alert-danger" role="alert" th:if="${NameIsUsed}!=null" th:text="${NameIsUsed}"></div>
 
 
         <p>
@@ -28,6 +28,7 @@
             <a href="/products" th:text="#{close}" class="btn btn-secondary">Close</a>
 
         </p>
+        </div>
     </form>
 
 

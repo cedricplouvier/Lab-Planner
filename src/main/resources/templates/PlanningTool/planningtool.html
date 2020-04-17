@@ -7,12 +7,26 @@
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 <script th:inline="javascript" type="text/javascript">
     function initPage(){
+
     }
 </script>
 <script th:inline="javascript">
+
     $(document).ready(function(){
+        var status= /*[[${Status}]]*/ null;
+        var messages =  /*[[${Message}]]*/ "";
+        console.log(messages);
+        if(status != null)
+        {
+            if (status=="Success")
+                toastr.success(messages);
+            if (status=="Error")
+                toastr.error(messages);
+        }
 
         $('.js-example-basic-single').select2();
         $('#sel').on('change', function() {
@@ -134,20 +148,68 @@
         <td class="endTime" th:value="${step.getEnd()}" th:text="${step.end}">End Date</td>
         <td class="endTime" th:value="${step.getEndHour()}" th:text="${step.endHour}">End Hour</td>
         <td>
+            <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" th:text="#{device.info}" class="btn btn-primary"></a>
+        </td>
 
         <td>
+            <a th:href="@{/planning/{id}/(id=${step.id})}"><span
+                class="fas fa-edit"></span></a>
+
             <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
                 <span class="fas fa-trash" style="color: red" ></span> </a>
-        </td>
         </td>
     </tr>
     <tr class='notfound' th:if="${userSteps.isEmpty()}" >
         <td colspan='4' th:text="#{step.norecord}">No record found</td>
     </tr>
     </tbody>
-</table></table>
+</table>
+
+        <h5 sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')"> <span th:text="#{step.student}"></span></h5>
+
+        <table class="table table-hover"  sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')">
+            <thead>
+            <tr>
+                <th th:text="#{step.user.username}"></th>
+                <th th:text="#{step.device.devicename}">Device Name</th>
+                <th th:text="#{step.start}">Start Date</th>
+                <th th:text="#{step.startHour}">Start Hour</th>
+                <th th:text="#{step.end}">End Date</th>
+                <th th:text="#{step.endHour}">End Hour</th>
+            </tr>
+            </thead>
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody class="list" id="list-students">
+            <tr th:each="step : ${studentSteps}">
+                <td class="user" th:value="${step.getUser()}" th:text="${step.getUser().getFirstName() + ' ' + step.getUser().getLastName()}"></td>
+                <td class="devicename" th:value="${step.getDevice().getDevicename()}" th:text="${step.device.devicename }" >Device name</td>
+                <td class="startTime" th:value="${step.getStart()}" th:text="${step.start}"> Start Date</td>
+                <td class="startTime" th:value="${step.getStartHour()}" th:text="${step.startHour}"> Start Hour</td>
+                <td class="endTime" th:value="${step.getEnd()}" th:text="${step.end}">End Date</td>
+                <td class="endTime" th:value="${step.getEndHour()}" th:text="${step.endHour}">End Hour</td>
+                <td>
+                    <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" th:text="#{device.info}" class="btn btn-primary"></a>
+                </td>
+                <td>
+                    <a th:href="@{/planning/{id}/(id=${step.id})}"><span
+                            class="fas fa-edit"></span></a>
+
+                    <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                        <span class="fas fa-trash" style="color: red" ></span> </a>
+                </td>
+
+            </tr>
+            <tr class='notfound' th:if="${studentSteps.isEmpty()}" >
+                <td colspan='4' th:text="#{step.norecord}">No record found</td>
+            </tr>
+            </tbody>
+        </table></table>
+
+        <a href="/planning/experiments" type="button" class="btn btn-primary"th:text="#{experiment.types}">
+            Experiment Types
+        </a>
     </div>
-</div>
+
 <!-- Modal -->
 <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -160,15 +222,11 @@
             </div>
             <form th:action="@{/planning/{id} (id=${Step})}" th:object="${Step}" method="post">
 
-            <div class="modal-body" style="height: 240px;">
-                <input th:type="hidden" th:field="*{id}"/>
+            <div class="modal-body" style="height: 260px;">
+                <input th:field="*{id}" th:type="hidden"/>
                 <select required class=" form-control input-device"  id="sel">
                     <option value="none"  selected disabled hidden th:text="#{device.type}"> Device Type </option>
-<<<<<<< HEAD
                     <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.getDeviceTypeName()}">Device Type</option>
-=======
-                    <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.deviceTypeName}">Device Type</option>
->>>>>>> 2f805d6d777466e4d604ccf88d06d5ed9aa5b67b
                 </select>
                 <!--Dropdown-->
                 <select required id="deviceNames" th:field="*{device}" class="form-control input-device" style="visibility: hidden;">
@@ -176,11 +234,14 @@
                 </select>
                 <div style="display: flow-root;">
                     <input required id="startTime" type="date" th:field="*{start}" class="form-control input-date" placeholder="Start date">
-                    <input id="startHour" class="form-control float-right input-hour" th:field="*{startHour}" placeholder="Hour">
+                    <input required id="startHour" type="time" class="form-control float-right input-hour" th:field="*{startHour}" placeholder="Hour">
                 </div>
                 <div>
                     <input required id="endTime" type="date" th:field="*{end}" class="form-control input-date"  placeholder="End date">
-                    <input id="endHour" class="form-control float-right input-hour" th:field="*{endHour}" placeholder="Hour">
+                    <input required id="endHour" type="time" class="form-control float-right input-hour" th:field="*{endHour}" placeholder="Hour">
+                </div>
+                <div style="margin-top: 60px">
+                    <input th:field="*{comment}" placeholder="Comment">
                 </div>
             </div>
             <div class="modal-footer">
@@ -193,4 +254,5 @@
 </div>
 </div>
 </body>
+</div>
 </html>

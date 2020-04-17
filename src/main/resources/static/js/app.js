@@ -6,11 +6,11 @@
 /* global findCalendar, CalendarList, ScheduleList, generateSchedule */
 
 (function(window, Calendar) {
-    var cal, resizeThrottled;
-    var useCreationPopup = false;
-    var useDetailPopup = true;
-    var datePicker, selectedCalendar;
-    let options = getInit();
+    let cal, resizeThrottled;
+    let useCreationPopup = false;
+    let useDetailPopup = true;
+    let datePicker, selectedCalendar;
+    // let options = getInit();
     cal = new Calendar('#calendar', {
         defaultView: 'week',
         useCreationPopup: useCreationPopup,
@@ -19,7 +19,7 @@
         taskView: false,
         disableDblClick: true,
         disableClick: true,
-        isReadOnly:options.isReadOnly,
+        isReadOnly:false,
         scheduleView: ['time'],
         template: {
             time: function(schedule) {
@@ -50,7 +50,6 @@
             CalendarList.forEach(function (calendar) {
                 if(calendar.checked){
                     devicetype = calendar.name
-                    console.log(calendar)
                 }
             });
 

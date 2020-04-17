@@ -1,45 +1,69 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
-<head th:replace="navbar :: head (title='#{Mixture  Management}')"></head>
-<body onload = "initPage()">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"   xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
-<div class = "container">
+<!-- Import header -->
+<head th:replace="navbar :: head (title='#{compositions}')"></head>
+<body onload="initPage()">
+
+<style>
+    .notfound{
+        display: none;
+    }
+</style>
+
+<div class="container">
+    <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
-    <table class="table table-hover">
+    <div class="content">
+        <div id="mixture-list">
 
-        <thead>
-        <tr>
-            <th th:text="#{mixtures.ingredients}">Mixture Ingredients</th>
-            <th th:text="#{mixtures.amount}">Ingredients amount</th>
-
-        </tr>
-        </thead>
-        <!-- IMPORTANT, class="list" have to be at tbody -->
-        <tbody class="list">
-        <tr th:each="ingred : ${allCompositions}">
-            <td class='ingredients' th:value="${ingred.getProduct().getName()}"
-                th:text="${ingred.getProduct().getName()}" >Ingredient Name</td>
-            <td class="amount" th:value="${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()}"
-                th:text="${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()} "></a>
-            </td>
-            <td>
-                <a th:href="@{/compositions/{id}/(id=${ingred.id})}"><span
-                        class="fas fa-edit"></span></a>&nbsp;
-                <a th:href="@{/compositions/{id}/delete(id=${ingred.id})}">
-                    <span class="fas fa-trash"></span></a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <a href="/mixtures" class="btn btn-primary" th:text="#{mixtures.return}" >Return to mixtures</a>
-    <a href="/compositions/put" type="button" class="btn btn-outline-primary"th:text="#{composition.create}">
-        Create new composition
-    </a>
+            <div class="alert alert-success" role="alert" th:if="${success}!=null" th:text="${success}"></div>
+            <div class="alert alert-danger" role="alert" th:if="${error}!=null" th:text="${error}"></div>
 
 
 
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th th:text="#{product.productName}">Product</th>
+                    <th th:text="#{composition.amount}">Amount</th>
 
+
+
+                </tr>
+                </thead>
+                <!-- IMPORTANT, class="list" have to be at tbody -->
+                <tbody class="list">
+                <tr th:each="composition : ${allCompositions}">
+                    <td class='compositionName'  th:text="${composition.product.getName()}" >Product Name</td>
+
+                    <td class='compositionAmount' th:text="${composition.amount}"></td>
+
+                    <td>
+                        <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  th:href="@{/compositions/{id}/(id=${composition.id})}"><span
+                                class="fas fa-edit"></span></a>&nbsp;
+                        <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/compositions/{id}/delete(id=${composition.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
+                            <span class="fas fa-trash"></span></a>
+
+                    </td>
+                </tr>
+                <tr class='notfound'>
+                    <td colspan='4' th:text="#{tag.norecord}">No record found</td>
+                </tr>
+                </tbody>
+            </table>
+            <a href="/mixtures" class="btn btn-primary" th:text="#{mixtures.return}" >Return to mixtures</a>
+            <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  href="/compositions/put" type="button" class="btn btn-outline-primary"th:text="#{composition.create}">
+                Create new composition
+            </a>
+
+
+
+
+        </div>
+    </div>
 </div>
+<div th:replace="footer :: footer"></div>
+
 </body>
 </html>

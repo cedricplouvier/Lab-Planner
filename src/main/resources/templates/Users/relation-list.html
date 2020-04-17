@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{usermanagement}')"></head>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<body onload="initPage()">
+<script type="text/javascript">
+    function initPage(){
+        var options = {
+            valueNames: [ 'description', 'Researcher', 'Students']
+        };
+        var relationList = new List('relation-list', options);
+    }
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Script to go over a total table and search for any match-->
+<script>
+    $(document).ready(function(){
+        $("#search").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#RelationTable tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+
+
+<div class="container">
+    <!-- Import menu bar -->
+    <div th:replace="navbar :: navbar"></div>
+    <div class="content">
+        <div id="relation-list">
+            <a href="/usermanagement/users/relations/put" class="btn btn-primary"
+               th:text="#{relation.create}">
+                text   </a>
+            <a href="/usermanagement/users/" class="btn btn-outline-secondary"
+               th:text="#{users.page}"></a>
+
+            <input class="float-right" id="search" placeholder="Search" />
+            <div class="alert alert-danger" role="alert" th:if="${inUseError}!=null" th:text="${inUseError}"></div>
+
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th th:text="#{users.id}"></th>
+                    <th th:text="#{relation.description}"></th>
+                    <th th:text="#{relation.researcher}"></th>
+                    <th th:text="#{relation.students}"></th>
+                    <th th:text="#{quickEdit}"></th>
+
+
+                </tr>
+                </thead>
+
+                <!-- IMPORTANT, class="list" have to be at tbody -->
+
+                <tbody class="list" id="UserTable">
+                <tr th:each="relation : ${allRelations}">
+                    <td class="ID" th:value="${relation.id}" th:text="${relation.id }"></td>
+                    <td class="Description" th:value="${relation.description}" th:text="${relation.description }"></td>
+                    <td class="Researcher" th:value="${relation.researcher}" th:text="${relation.researcher.firstName
+                    +  ' ' + relation.researcher.firstName}"></td>
+
+                    <td class="Students">
+                        <a
+                                th:each="student : ${relation.students}"
+                                th:value="${student}"
+                                th:utext="${student.firstName + ' ' + student.lastName} + '<br />'"></a>
+                    </td>
+                    <td>
+                        <a th:href="@{/usermanagement/users/relations/{id}/(id=${relation.id})}"><span
+                                class="fas fa-edit"></span></a>&nbsp;
+                        <a th:href="@{/usermanagement/users/relations/{id}/delete(id=${relation.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                            <span class="fas fa-trash" style="color: red" ></span> </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <br>
+
+
+    </div>
+
+
+    <div th:replace="footer :: footer"></div>
+</div>
+</div>
+</body>
+</html>

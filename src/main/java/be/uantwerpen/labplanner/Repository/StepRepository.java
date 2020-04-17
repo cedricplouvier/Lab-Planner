@@ -8,9 +8,7 @@ import java.util.List;
 
 @Repository
 public interface StepRepository extends CrudRepository <Step,Long> {
-     //void save(Step tempStep);
 
-     //Step findByUserName(String userName);
 
      List<Step> findAll();
 }

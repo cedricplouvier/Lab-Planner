@@ -1,11 +1,13 @@
 package be.uantwerpen.labplanner.Service;
 
+import be.uantwerpen.labplanner.Model.Device;
 import be.uantwerpen.labplanner.Model.Step;
 import be.uantwerpen.labplanner.Repository.StepRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StepService {
@@ -17,20 +19,34 @@ public class StepService {
         return this.stepRepository.findAll();
     }
 
-    /*public Iterable<Step> findAllByUserName(String User) {
-        return this.stepRepository.findAllByUserName(User);
-    }*/
+    public Optional<Step> findById(Long id){
+        return this.stepRepository.findById(id);
+    }
+
+
 
     public void save(Step step) {
             stepRepository.save(step);
+    }
+    public void saveSomeAttributes(Step step) {
+        Step tempStep = step.getId() == null?null: stepRepository.findById( step.getId()).orElse(null);
+        if (tempStep != null){
+            tempStep.setDevice(step.getDevice());
+            tempStep.setStart(step.getStart());
+            tempStep.setEnd(step.getEnd());
+            tempStep.setStartHour(step.getStartHour());
+            tempStep.setEndHour(step.getEndHour());
+            tempStep.setUser(step.getUser());
+            tempStep.setComment(step.getComment());
+            stepRepository.save(tempStep);
+        } else{
+            stepRepository.save(step);
+        }
     }
 
     public void delete(Long id) {
         this.stepRepository.deleteById(id);
     }
 
-    /*public Step findByUserName(String userName) {
-        return stepRepository.findByUserName(userName);
-    }*/
 
 }
