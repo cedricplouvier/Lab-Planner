@@ -32,6 +32,7 @@ public class ExperimentService {
             tempExperiment.setExperimentType(experiment.getExperimentType());
             tempExperiment.setExperimentname(experiment.getExperimentname());
             tempExperiment.setStartDate(experiment.getStartDate());
+            tempExperiment.setEndDate(experiment.getEndDate());
             experimentRepository.save(tempExperiment);
         }
         else{

@@ -72,7 +72,7 @@ public class StepControllerTests {
 
 
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(this.stepController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(stepController).build();
     }
 
     @Test
