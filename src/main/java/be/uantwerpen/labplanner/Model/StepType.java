@@ -46,4 +46,14 @@ public class StepType extends AbstractPersistable<Long> {
     public void setContinuity(Continuity continuity) {
         this.continuity = continuity;
     }
+
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Override
+    protected void setId(Long id) {
+        super.setId(id);
+    }
 }
