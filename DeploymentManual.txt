@@ -1,0 +1,101 @@
+============================================================================================================
+  _            ___       _       _____    _            ___       ___     _   ___     _   ______   ____
+ | |          / _ \     | |     |     \  | |          / _ \     |   \   | | |   \   | | |  ____| |    \
+ | |         / /_\ \    | |_    |  |>  | | |         / /_\ \    | |\ \  | | | |\ \  | | | |____  | |> /
+ | |        / _____ \   |   \   |  ___/  | |        / _____ \   | | \ \ | | | | \ \ | | |  ____| |  _ \
+ | |____   / /     \ \  | |> |  | |      | |____   / /     \ \  | |  \ \| | | |  \ \| | | |____  | | \ \
+ |______| /_/       \_\ |___/   |_|      |______| /_/       \_\ |_|   \___| |_|   \___| |______| |_|  \_\
+
+============================================================================================================
+Welcome to Labplanner!
+
+This application can be used to: - Manage your devices in your laboratory
+				 - Plan the usage of each device
+				 - Keep track of the used materials
+				 - Report defect devices or problems
+				 - Design new experiments
+
+
+##How to deploy?
+
+To deploy this application on your server, you need to set up a MySQL database and configure the firewall of your server.
+
+#MySQL
+
+We assume you are using a Red Hat Enterprise Linux operating system, such as CentOS 7.
+First we need to get the MySQL repository and configure it for installing MySQL later on.
+Downloading the MySQL repository can be done through:
+
+  sudo wget https://dev.mysql.com/get/mysql80-community-release-el7-1.noarch.rpm
+
+and configure it by:
+
+  sudo rpm -Uvh mysql80-community-release-el7-1.noarch.rpm
+
+Now install MySQL by:
+
+  sudo yum install mysql-server
+
+Start the MySQL service by:
+
+  systemctl start mysqld
+
+Now in the MySQL service should be active, you can check it with 
+
+  systemctl status mysqld
+
+If this is done we need to get the temporary password that is given for initial login into mysql. You can find it in /var/log/mysqld.log
+or use the command:
+
+  grep "A temporary password" /var/log/mysqld.log
+
+Now you have the password, so you can start the installation of mysql by:
+
+  mysql_secure_installation 
+
+Here you will be asked to provide the temporary password that has been given in the file previously mentioned.
+Afterwards, you will have to enter a new password for the root user. There will be some questions prompted to you with some additional information,
+so answer these to your preferences.
+
+Now you can restart the mysql service and the mysdl database is set up. 
+
+Connect to the database by doing:
+
+  mysql -u root -p
+
+When you are connected it is necessary to make a new database and a new user since our application reffers to these.
+
+  create database lab_db;
+  create user 'labuser'@'%' identified by 'Tent@cool3';
+
+You can assign permissions to this user. It is best to give all permissions to this user since it will be used by our application.
+
+  grant all on lab_db.* 'labuser'@'%';
+
+At this point you will have an empty mysql database so you still have to add the information to it.
+You can prepare your own .sql file or you can use the provided one in the project by using:
+
+  mysql -u labuser -p lab_db < Labplanner.sql
+
+#Firewall
+
+The application operates at port 8080 and uses a http service which means we need to add following configuration to our firewall:
+
+  sudo firewall-cmd --zone=public --permanent --add-service=http
+  sudo firewall-cmd --zone=public --permanent --add-port=8080/tcp
+
+#Running the Application
+
+To run the application you need to have the java run time environment 8 (or higher versions) installed, so check if you have it installed by:
+
+  java -version
+
+ or install it by:
+
+  sudo yum install java-11-openjdk
+
+If this is installed you can run the jar file of this application by:
+
+  java -jar spring-mvc.jar
+
+There are possibilities to run this in the background (add & at the end of the command) or even run it when logged out (add nohup in the beginning of the command).

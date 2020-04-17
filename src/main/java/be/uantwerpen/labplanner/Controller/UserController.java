@@ -49,7 +49,7 @@ public class UserController {
     @RequestMapping(value = "/usermanagement/users",method = RequestMethod.GET)
     public String showUsers(final ModelMap model){
         model.addAttribute("allUsers",userService.findAll());
-        return "/Users/user-list";
+        return "Users/user-list";
     }
 
 
@@ -60,7 +60,7 @@ public class UserController {
         model.addAttribute("allRoles",roleService.findAll());
         model.addAttribute("allUsers",userService.findAll());
         model.addAttribute(new User("","","","","","","","",null,null,null));
-        return "/Users/user-manage";
+        return "Users/user-manage";
     }
 
 
@@ -71,7 +71,7 @@ public class UserController {
         model.addAttribute("allUsers",userService.findAll());
         model.addAttribute("allRoles",roleService.findAll());
         model.addAttribute("user",userService.findById(id).orElse(null));
-        return "/Users/user-manage";
+        return "Users/user-manage";
     }
 
 
@@ -83,7 +83,7 @@ public class UserController {
             model.addAttribute("allUsers",userService.findAll());
             model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.addError") );
 
-            return "/Users/user-manage";
+            return "Users/user-manage";
         }
 
         if (user.getId() == null) {
@@ -92,7 +92,7 @@ public class UserController {
                 model.addAttribute("allRoles", roleService.findAll());
                 model.addAttribute("allUsers",userService.findAll());
                 model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.uniqueError") );
-                return "/Users/user-manage";
+                return "Users/user-manage";
             }
             //trim input and save
             user.setUsername(user.getUsername().trim());
@@ -108,7 +108,7 @@ public class UserController {
                 model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.uniqueError") );
                 model.addAttribute("allRoles", roleService.findAll());
                 model.addAttribute("allUsers",userService.findAll());
-                return "/Users/user-manage";
+                return "Users/user-manage";
             }
             //trim input and save
             user.setUsername(user.getUsername().trim());
@@ -147,7 +147,7 @@ public class UserController {
         if (isUsed){
             model.addAttribute("allUsers",userService.findAll());
             model.addAttribute("inUseError", ResourceBundle.getBundle("messages",current).getString("user.deleteError"));
-            return "/Users/user-list";
+            return "Users/user-list";
         }
 
         userService.deleteById(id);

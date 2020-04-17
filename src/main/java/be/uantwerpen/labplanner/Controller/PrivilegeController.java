@@ -38,21 +38,21 @@ public class PrivilegeController {
     @RequestMapping(value = "/usermanagement/privileges",method = RequestMethod.GET)
     public String showPrivileges(final ModelMap model){
         model.addAttribute("allPrivileges",privilegeService.findAll());
-        return "/Privileges/privilege-list";
+        return "Privileges/privilege-list";
     }
 
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/privileges/put", method = RequestMethod.GET)
     public String ViewCreatePrivilege(final ModelMap model){
         model.addAttribute(new Privilege("",""));
-        return "/Privileges/privilege-manage";
+        return "Privileges/privilege-manage";
     }
 
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/privileges/{id}",method = RequestMethod.GET)
     public String viewEditPrivilege(@PathVariable long id, final ModelMap model){
         model.addAttribute("privilege",privilegeService.findById(id));
-        return "/Privileges/privilege-manage";
+        return "Privileges/privilege-manage";
     }
 
     @PreAuthorize("hasAnyAuthority('User Management')")
@@ -61,13 +61,13 @@ public class PrivilegeController {
         if ((result.hasErrors()) || (privilege.getName() == null) || (privilege.getName().trim().equals(""))) {
             //validate on empty input name
             model.addAttribute("PrivilegeInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("privilege.errorAdd"));
-            return "/Privileges/privilege-manage";
+            return "Privileges/privilege-manage";
         }
         //id = null, so not yet in database
         if (privilege.getId() == null) {
             if (privilegeService.findByName(privilege.getName()).isPresent()) {
                 model.addAttribute("PrivilegeInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("privilege.errorUnique"));
-                return "/Privileges/privilege-manage";
+                return "Privileges/privilege-manage";
             }
             //trim input and save
             privilege.setName(privilege.getName().trim());
@@ -81,7 +81,7 @@ public class PrivilegeController {
             //if new name is an alraedy existing name
             if(privilegeService.findByName(privilege.getName()).isPresent()){
                 model.addAttribute("PrivilegeInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("privilege.errorUnique"));
-                return "/Privileges/privilege-manage";
+                return "Privileges/privilege-manage";
             }
 
             //otherwise the new name is a correct name
