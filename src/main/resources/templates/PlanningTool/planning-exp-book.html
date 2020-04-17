@@ -167,7 +167,7 @@
             <th>
                 <select required class=" form-control input-device" id="selectExperimentType" onchange="addrow()"
                         th:field="*{experimentType.id}">
-                    <option selected hidden th:text="#{experiment.type.select}" th:value="null"> Select
+                    <option selected hidden th:text="#{experiment.type.select}" value=""> Select
                         experiment type
                     </option>
                     <option class="dropdown-item"
@@ -182,7 +182,7 @@
             </th>
             <th>
                 <select required class=" form-control input-device" id="selectMixture" th:field="*{mixture}">
-                    <option selected hidden th:text="#{mixture.select}" th:value="null"> Select mixture
+                    <option selected hidden th:text="#{mixture.select}" value=""> Select mixture
                     </option>
                     <option class="dropdown-item"
                             th:each="mixture : ${allMixtures}"
@@ -217,6 +217,9 @@
             <div th:if="(*{experimentType}!=null)">
 
                 <tr th:each="stepType, itemStat : *{experimentType.stepTypes}">
+                    <input id="step" th:type="hidden"
+                           th:field="*{{steps[__${itemStat.index}__]}}"
+                           th:value="*{{steps[__${itemStat.index}__]}}">
                     <td style="text-align:left;"
                         th:text="${stepType.stepTypeName}" th:value="${{stepType}}"
                         th:field="*{steps[__${itemStat.index}__].stepType}">

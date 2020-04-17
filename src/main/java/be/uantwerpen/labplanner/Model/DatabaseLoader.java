@@ -54,7 +54,7 @@ public class DatabaseLoader {
     private final ReportRepository reportRepository;
 
     @Autowired
-    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository,ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository,ExperimentRepository experimentRepository) {
+    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository, DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository, ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository, ExperimentRepository experimentRepository) {
 
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
@@ -63,7 +63,7 @@ public class DatabaseLoader {
         this.deviceTypeRepository = deviceTypeRepository;
         this.deviceRepository = deviceRepository;
 
-        this.stepRepository= stepRepository;
+        this.stepRepository = stepRepository;
 
         this.deviceInformationRepository = deviceInformationRepository;
         //ProductRepositories
@@ -120,7 +120,7 @@ public class DatabaseLoader {
         privilegeRepository.save(p15);
         Privilege p16 = new Privilege("Stock - Aggregates + Bitumen Modify - Advanced");
         privilegeRepository.save(p16);
-        Privilege p17= new Privilege("Stock - Modify - All");
+        Privilege p17 = new Privilege("Stock - Modify - All");
         privilegeRepository.save(p17);
         Privilege p18 = new Privilege("Stock - Consumables + Other Read only - Advanced");
         privilegeRepository.save(p18);
@@ -268,16 +268,16 @@ public class DatabaseLoader {
         roleRepository.save(administrator);
 
 
-        User u1 = new User("Cedric","PW","","Cedric","Plouvier","20152267","","",null,null,null);
-        User u2 = new User("Ruben","PW","","Ruben","Joosen","20164473","","",null,null,null);
-        User u3 = new User("Jaimie","PW","","Jaimie","Vranckx","20155797","","",null,null,null);
-        User u4 = new User("Ali","PW","","Ali","Amir","20163446","","",null,null,null);
-        User u5 = new User("Timo","PW","","Timo","Nelen","S0162117","","",null,null,null);
-        User u6 = new User("Ondrej","PW","","Ondrej","Bures","20160002","","",null,null,null);
-        User u7 = new User("Bachelor","PW","","Bach","Student","20170001","","",null,null,null);
-        User u8 = new User("Master","PW","","Mas","Student","20160009","","",null,null,null);
-        User u9 = new User("Researcher","PW","","Researcher","Developper","20100001","","",null,null,null);
-        User admin = new User("admin","admin","","admin","admin",null,"","",null,null,null);
+        User u1 = new User("Cedric", "PW", "", "Cedric", "Plouvier", "20152267", "", "", null, null, null);
+        User u2 = new User("Ruben", "PW", "", "Ruben", "Joosen", "20164473", "", "", null, null, null);
+        User u3 = new User("Jaimie", "PW", "", "Jaimie", "Vranckx", "20155797", "", "", null, null, null);
+        User u4 = new User("Ali", "PW", "", "Ali", "Amir", "20163446", "", "", null, null, null);
+        User u5 = new User("Timo", "PW", "", "Timo", "Nelen", "S0162117", "", "", null, null, null);
+        User u6 = new User("Ondrej", "PW", "", "Ondrej", "Bures", "20160002", "", "", null, null, null);
+        User u7 = new User("Bachelor", "PW", "", "Bach", "Student", "20170001", "", "", null, null, null);
+        User u8 = new User("Master", "PW", "", "Mas", "Student", "20160009", "", "", null, null, null);
+        User u9 = new User("Researcher", "PW", "", "Researcher", "Developper", "20100001", "", "", null, null, null);
+        User admin = new User("admin", "admin", "", "admin", "admin", null, "", "", null, null, null);
         //Set<Role> roles = new HashSet<>();
         Set<Role> roles = new HashSet<>();
         roles.add(administrator);
@@ -324,55 +324,55 @@ public class DatabaseLoader {
         students.add(u8);
 
         relation.setStudents(students);
-        Relation f =  relationRepository.save(relation);
-      //  Relation fetch = relationRepository.findById((long) 42).orElse(null);
+        Relation f = relationRepository.save(relation);
+        //  Relation fetch = relationRepository.findById((long) 42).orElse(null);
 
-     //   Relation fetchByRes = relationRepository.findByResearcher(u9).orElse(null);
-     //   relation.setResearcher(u1);
-     //   relationRepository.save(relation);
+        //   Relation fetchByRes = relationRepository.findByResearcher(u9).orElse(null);
+        //   relation.setResearcher(u1);
+        //   relationRepository.save(relation);
 
         //Create all Device Types
         ArrayList<DeviceType> deviceTypes = new ArrayList<>();
-        DeviceType t1 = new DeviceType("Autosaw",true);
+        DeviceType t1 = new DeviceType("Autosaw", true);
         t1.setColor("#FF00FF");
         deviceTypes.add(t1);
-        DeviceType t2 = new DeviceType("Balance",false);
+        DeviceType t2 = new DeviceType("Balance", false);
         t2.setColor("#FFAFAF");
         deviceTypes.add(t2);
-        DeviceType t3 = new DeviceType("Big Mixer",true);
+        DeviceType t3 = new DeviceType("Big Mixer", true);
         t3.setColor("#00FF00");
         deviceTypes.add(t3);
-        DeviceType t4 = new DeviceType("Caliper",true);
+        DeviceType t4 = new DeviceType("Caliper", true);
         t4.setColor("#000000");
         deviceTypes.add(t4);
-        DeviceType t5 = new DeviceType("Cooling chamber",true);
+        DeviceType t5 = new DeviceType("Cooling chamber", true);
         t5.setColor("#FFFF00");
         deviceTypes.add(t5);
-        DeviceType t6 = new DeviceType("Gyratory",false);
+        DeviceType t6 = new DeviceType("Gyratory", false);
         t6.setColor("#00FFFF");
         deviceTypes.add(t6);
-        DeviceType t7 = new DeviceType("Oven",true);
+        DeviceType t7 = new DeviceType("Oven", true);
         t7.setColor("#404040");
         deviceTypes.add(t7);
-        DeviceType t8 = new DeviceType("Plate Compactor",false);
+        DeviceType t8 = new DeviceType("Plate Compactor", false);
         t8.setColor("#FF0000");
         deviceTypes.add(t8);
-        DeviceType t9 = new DeviceType("Small Mixer",true);
+        DeviceType t9 = new DeviceType("Small Mixer", true);
         t9.setColor("#FFC800");
         deviceTypes.add(t9);
-        DeviceType t10 = new DeviceType("SVM Setup",false);
+        DeviceType t10 = new DeviceType("SVM Setup", false);
         t10.setColor("#808080");
         deviceTypes.add(t10);
-        DeviceType t11 = new DeviceType("Uniframe",false);
+        DeviceType t11 = new DeviceType("Uniframe", false);
         t11.setColor("#FFFFFF");
         deviceTypes.add(t11);
-        DeviceType t12 = new DeviceType("Vacuum Setup",true);
+        DeviceType t12 = new DeviceType("Vacuum Setup", true);
         t12.setColor("#0000FF");
         deviceTypes.add(t12);
-        DeviceType t13 = new DeviceType("Water Bath",false);
+        DeviceType t13 = new DeviceType("Water Bath", false);
         t13.setColor("#222222");
         deviceTypes.add(t13);
-        DeviceType t14 = new DeviceType("Wheel Tracking Test",true);
+        DeviceType t14 = new DeviceType("Wheel Tracking Test", true);
         t14.setColor("#C0C0C0");
         deviceTypes.add(t14);
 
@@ -389,10 +389,10 @@ public class DatabaseLoader {
                 DeviceInformation i = new DeviceInformation(DeviceType.getDefaultInformationtypes().get(current), lorem.getWords(20));
 
                 //Adding some files for Oven type , files were already loaded into the correct directory
-                if(devicetype.getDeviceTypeName().equals("Oven")){
-                    if(current==0){
+                if (devicetype.getDeviceTypeName().equals("Oven")) {
+                    if (current == 0) {
                         i.addFile("placeholder.pdf");
-                    }else if(current==2){
+                    } else if (current == 2) {
                         i.addFile("placeholder.xlsx");
                         i.addFile("placeholder.jpg");
                     }
@@ -402,12 +402,12 @@ public class DatabaseLoader {
             }
 
             //Add an extra block of info for oven to show full possibilities
-            if(devicetype.getDeviceTypeName().equals("Oven")) {
+            if (devicetype.getDeviceTypeName().equals("Oven")) {
                 DeviceInformation i = new DeviceInformation("Other", lorem.getWords(10));
                 deviceinformations.add(i);
                 deviceInformationRepository.save(i);
             }
-                devicetype.setDeviceInformation(deviceinformations);
+            devicetype.setDeviceInformation(deviceinformations);
         }
 
         //Set the oven profile pic , the picture is already placed in the root directory /upload-dir/images where all device pictures are kept
@@ -429,24 +429,24 @@ public class DatabaseLoader {
         deviceTypeRepository.save(t13);
         deviceTypeRepository.save(t14);
         //Add devices for some device types
-        Device d1 = new Device("Autosaw 1",t1);
+        Device d1 = new Device("Autosaw 1", t1);
         deviceRepository.save(d1);
-        Device d2 = new Device("Autosaw 2",t1);
+        Device d2 = new Device("Autosaw 2", t1);
         deviceRepository.save(d2);
-        Device d3 = new Device("Uniframe 1",t11);
+        Device d3 = new Device("Uniframe 1", t11);
         deviceRepository.save(d3);
-        Device d4 = new Device("Vacuum Setup 1",t12);
+        Device d4 = new Device("Vacuum Setup 1", t12);
         deviceRepository.save(d4);
-        Device d5 = new Device("Water Bath 1",t13);
+        Device d5 = new Device("Water Bath 1", t13);
         deviceRepository.save(d5);
-        Device d6 = new Device("Wheel Tracking Test 1",t14);
+        Device d6 = new Device("Wheel Tracking Test 1", t14);
         deviceRepository.save(d6);
-        Device d7 = new Device("Oven 1",t7);
+        Device d7 = new Device("Oven 1", t7);
         d7.setComment("Perfect oven to bake a pizza in your spare times");
         deviceRepository.save(d7);
-        Device d8 = new Device("Oven 2",t7);
+        Device d8 = new Device("Oven 2", t7);
         deviceRepository.save(d8);
-        Device d9 = new Device("Oven 3",t7);
+        Device d9 = new Device("Oven 3", t7);
         deviceRepository.save(d9);
         Device d10 = new Device("Gyratory 1", t6);
         deviceRepository.save(d10);
@@ -473,49 +473,49 @@ public class DatabaseLoader {
         List<Tag> tags4 = new ArrayList<>();
         tags4.add(tag4);
         tagRepository.save(tag4);
-        Product pr1 = new Product("placeholder1",lorem.getWords(20),1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        Product pr1 = new Product("placeholder1", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
         productRepository.save(pr1);
-        Product pr2 = new Product("placeholder2",lorem.getWords(20),1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        Product pr2 = new Product("placeholder2", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
         productRepository.save(pr2);
-        Product pr3 = new Product("placeholder3",lorem.getWords(20),1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        Product pr3 = new Product("placeholder3", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
         productRepository.save(pr3);
-        Product pr4 = new Product("placeholder4",lorem.getWords(20),1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        Product pr4 = new Product("placeholder4", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
         productRepository.save(pr4);
-        Product pr5 = new Product("placeholder5",lorem.getWords(20),1.0, 1000.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
+        Product pr5 = new Product("placeholder5", lorem.getWords(20), 1.0, 1000.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
         productRepository.save(pr5);
-        Product pr6 = new Product("placeholder6",lorem.getWords(20),1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        Product pr6 = new Product("placeholder6", lorem.getWords(20), 1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr6);
-        Product pr7 = new Product("placeholder7",lorem.getWords(20),1.0, 200.0, 25.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        Product pr7 = new Product("placeholder7", lorem.getWords(20), 1.0, 200.0, 25.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr7);
-        Product pr8 = new Product("placeholder8",lorem.getWords(20),1.0, 90.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        Product pr8 = new Product("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr8);
-        Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","11:00","12:00","");
+        Step s1 = new Step(u6, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
         stepRepository.save(s1);
-        Step s2= new Step(u1,d7,"2020-03-17","2020-03-17","08:00","18:00","");
+        Step s2 = new Step(u6, d7, "2020-03-17", "2020-03-17", "08:00", "18:00", "");
         stepRepository.save(s2);
-        Step s3= new Step(u4,d1,"2020-03-16","2020-03-16","14:00","16:00","");
+        Step s3 = new Step(u6, d1, "2020-03-16", "2020-03-16", "14:00", "16:00", "");
         stepRepository.save(s3);
-        Step s4= new Step(u4,d7,"2020-03-15","2020-03-15","16:00","18:00","");
+        Step s4 = new Step(u6, d7, "2020-03-15", "2020-03-15", "16:00", "18:00", "");
         stepRepository.save(s4);
-        Step s5= new Step(u5,d9,"2020-03-19","2020-03-19","13:00","18:00","");
+        Step s5 = new Step(u6, d9, "2020-03-19", "2020-03-19", "13:00", "18:00", "");
         stepRepository.save(s5);
 
-        Step s6= new Step(u7,d9,"2020-04-10","2020-04-10","13:00","18:00","");
+        Step s6 = new Step(u7, d9, "2020-04-10", "2020-04-10", "13:00", "18:00", "");
         stepRepository.save(s6);
-        Step s7= new Step(u7,d9,"2020-04-11","2020-04-11","13:00","18:00","");
+        Step s7 = new Step(u7, d9, "2020-04-11", "2020-04-11", "13:00", "18:00", "");
         stepRepository.save(s7);
-        Step s8= new Step(u8,d9,"2020-04-12","2020-04-12","13:00","18:00","");
+        Step s8 = new Step(u8, d9, "2020-04-12", "2020-04-12", "13:00", "18:00", "");
         stepRepository.save(s8);
-        Step s9= new Step(u8,d9,"2020-04-13","2020-04-13","13:00","18:00","");
+        Step s9 = new Step(u8, d9, "2020-04-13", "2020-04-13", "13:00", "18:00", "");
         stepRepository.save(s9);
         //Create compositions
 
         //APT-C ingredients
-        Composition c1 = new Composition(46.67,pr1);
+        Composition c1 = new Composition(46.67, pr1);
         Composition c2 = new Composition(10.10, pr2);
-        Composition c3 = new Composition(8.29,pr3);
+        Composition c3 = new Composition(8.29, pr3);
         Composition c4 = new Composition(23.89, pr4);
-        Composition c5 = new Composition(2.45,pr5);
+        Composition c5 = new Composition(2.45, pr5);
         Composition c6 = new Composition(8.60, pr6);
         Composition c7 = new Composition(6.50, pr7);
         compositionRepository.save(c1);
@@ -525,15 +525,21 @@ public class DatabaseLoader {
         compositionRepository.save(c5);
         compositionRepository.save(c6);
         compositionRepository.save(c7);
-        List<Composition> mix1= new ArrayList<>();
-        mix1.add(c1);mix1.add(c2);mix1.add(c3);mix1.add(c4);mix1.add(c5);mix1.add(c6);mix1.add(c7);
+        List<Composition> mix1 = new ArrayList<>();
+        mix1.add(c1);
+        mix1.add(c2);
+        mix1.add(c3);
+        mix1.add(c4);
+        mix1.add(c5);
+        mix1.add(c6);
+        mix1.add(c7);
 
         //Ab-4C ingredients
-        Composition c11 = new Composition(20.72,pr1);
+        Composition c11 = new Composition(20.72, pr1);
         Composition c12 = new Composition(14.20, pr2);
-        Composition c13 = new Composition(21.24,pr3);
+        Composition c13 = new Composition(21.24, pr3);
         Composition c14 = new Composition(23.84, pr4);
-        Composition c15 = new Composition(12.91,pr5);
+        Composition c15 = new Composition(12.91, pr5);
         Composition c16 = new Composition(7.10, pr6);
         Composition c17 = new Composition(6.50, pr7);
         compositionRepository.save(c11);
@@ -543,78 +549,99 @@ public class DatabaseLoader {
         compositionRepository.save(c15);
         compositionRepository.save(c16);
         compositionRepository.save(c17);
-        List<Composition> mix2= new ArrayList<>();
-        mix2.add(c11);mix2.add(c12);mix2.add(c13);mix2.add(c14);mix2.add(c15);mix2.add(c16);mix2.add(c17);
+        List<Composition> mix2 = new ArrayList<>();
+        mix2.add(c11);
+        mix2.add(c12);
+        mix2.add(c13);
+        mix2.add(c14);
+        mix2.add(c15);
+        mix2.add(c16);
+        mix2.add(c17);
 
         //SMA ingredients
-        Composition c21 = new Composition(61.70,pr1);
+        Composition c21 = new Composition(61.70, pr1);
         Composition c22 = new Composition(11.20, pr2);
         Composition c24 = new Composition(17.80, pr4);
-        Composition c25 = new Composition(9.30,pr5);
+        Composition c25 = new Composition(9.30, pr5);
         Composition c27 = new Composition(6.90, pr7);
         compositionRepository.save(c21);
         compositionRepository.save(c22);
         compositionRepository.save(c24);
         compositionRepository.save(c25);
         compositionRepository.save(c27);
-        List<Composition> mix3= new ArrayList<>();
-        mix3.add(c21);mix3.add(c22);mix3.add(c24);mix3.add(c25);mix3.add(c27);
+        List<Composition> mix3 = new ArrayList<>();
+        mix3.add(c21);
+        mix3.add(c22);
+        mix3.add(c24);
+        mix3.add(c25);
+        mix3.add(c27);
 
 
         //create mixtures and save them
-        Mixture m1 = new Mixture("APT-C", mix1, lorem.getWords(20),tags2);
+        Mixture m1 = new Mixture("APT-C", mix1, lorem.getWords(20), tags2);
         mixtureRepository.save(m1);
-        Mixture m2 = new Mixture("AB-4C", mix2,lorem.getWords(20), tags1);
+        Mixture m2 = new Mixture("AB-4C", mix2, lorem.getWords(20), tags1);
         mixtureRepository.save(m2);
-        Mixture m3 = new Mixture("SMA", mix3,lorem.getWords(20), tags4);
+        Mixture m3 = new Mixture("SMA", mix3, lorem.getWords(20), tags4);
         mixtureRepository.save(m3);
         //Continuities
-        Continuity cont1 = new Continuity(0,0,"No");
+        Continuity cont1 = new Continuity(0, 0, "No");
         continuityRepository.save(cont1);
-        Continuity cont2 = new Continuity(8,0,"Soft (at least)");
+        Continuity cont2 = new Continuity(8, 0, "Soft (at least)");
         continuityRepository.save(cont2);
-        Continuity cont3 = new Continuity(24,0,"Hard");
+        Continuity cont3 = new Continuity(24, 0, "Hard");
         continuityRepository.save(cont3);
-        Continuity cont4 = new Continuity(12,0,"Soft (at least)");
+        Continuity cont4 = new Continuity(12, 0, "Soft (at least)");
         continuityRepository.save(cont4);
-        Continuity cont5 = new Continuity(0,0,"Hard");
+        Continuity cont5 = new Continuity(0, 0, "Hard");
         continuityRepository.save(cont5);
-        Continuity cont6 = new Continuity(24,0,"Soft (at most)");
+        Continuity cont6 = new Continuity(24, 0, "Soft (at most)");
         continuityRepository.save(cont6);
 
         //Steptypes
-        StepType styp1 = new StepType(t2,cont1,t2.getDeviceTypeName());
+        StepType styp1 = new StepType(t2, cont1, t2.getDeviceTypeName());
         stepTypeRepository.save(styp1);
-        StepType styp2 = new StepType(t8,cont2,t8.getDeviceTypeName());
+        StepType styp2 = new StepType(t8, cont2, t8.getDeviceTypeName());
         stepTypeRepository.save(styp2);
-        StepType styp3 = new StepType(t3,cont1,"Mixer");
+        StepType styp3 = new StepType(t3, cont1, "Mixer");
         stepTypeRepository.save(styp3);
-        StepType styp4= new StepType(t6,cont3,t6.getDeviceTypeName());
+        StepType styp4 = new StepType(t6, cont3, t6.getDeviceTypeName());
         stepTypeRepository.save(styp4);
-        StepType styp5 = new StepType(t1,cont4,t1.getDeviceTypeName());
+        StepType styp5 = new StepType(t1, cont4, t1.getDeviceTypeName());
         stepTypeRepository.save(styp5);
-        StepType styp6= new StepType(t4,cont1,t4.getDeviceTypeName());
+        StepType styp6 = new StepType(t4, cont1, t4.getDeviceTypeName());
         stepTypeRepository.save(styp6);
-        StepType styp7= new StepType(t10,cont1,t10.getDeviceTypeName());
+        StepType styp7 = new StepType(t10, cont1, t10.getDeviceTypeName());
         stepTypeRepository.save(styp7);
-        StepType styp8= new StepType(t12,cont5,t12.getDeviceTypeName());
+        StepType styp8 = new StepType(t12, cont5, t12.getDeviceTypeName());
         stepTypeRepository.save(styp8);
-        StepType styp9= new StepType(t13,cont1,t13.getDeviceTypeName());
+        StepType styp9 = new StepType(t13, cont1, t13.getDeviceTypeName());
         stepTypeRepository.save(styp9);
-        StepType styp10= new StepType(t14,cont1,t14.getDeviceTypeName());
+        StepType styp10 = new StepType(t14, cont1, t14.getDeviceTypeName());
         stepTypeRepository.save(styp10);
-        StepType styp11= new StepType(t8,cont6,t8.getDeviceTypeName());
+        StepType styp11 = new StepType(t8, cont6, t8.getDeviceTypeName());
         stepTypeRepository.save(styp11);
         List<StepType> ITSRStyps = new ArrayList<StepType>();
-        ITSRStyps.add(styp1);ITSRStyps.add(styp2);ITSRStyps.add(styp1);ITSRStyps.add(styp3);
-        ITSRStyps.add(styp4);ITSRStyps.add(styp5);ITSRStyps.add(styp6);ITSRStyps.add(styp7);
-        ITSRStyps.add(styp8);ITSRStyps.add(styp9);
+        ITSRStyps.add(styp1);
+        ITSRStyps.add(styp2);
+        ITSRStyps.add(styp1);
+        ITSRStyps.add(styp3);
+        ITSRStyps.add(styp4);
+        ITSRStyps.add(styp5);
+        ITSRStyps.add(styp6);
+        ITSRStyps.add(styp7);
+        ITSRStyps.add(styp8);
+        ITSRStyps.add(styp9);
         List<StepType> WhlTrkTest = new ArrayList<StepType>();
-        WhlTrkTest.add(styp1); WhlTrkTest.add(styp2); WhlTrkTest.add(styp1); WhlTrkTest.add(styp3);
-        WhlTrkTest.add(styp11); WhlTrkTest.add(styp10);
-        ExperimentType experimentType1 = new ExperimentType("ITSR",ITSRStyps);
+        WhlTrkTest.add(styp1);
+        WhlTrkTest.add(styp2);
+        WhlTrkTest.add(styp1);
+        WhlTrkTest.add(styp3);
+        WhlTrkTest.add(styp11);
+        WhlTrkTest.add(styp10);
+        ExperimentType experimentType1 = new ExperimentType("ITSR", ITSRStyps);
         experimentTypeRepository.save(experimentType1);
-        ExperimentType experimentType2= new ExperimentType("Wheel Tracking Test",WhlTrkTest);
+        ExperimentType experimentType2 = new ExperimentType("Wheel Tracking Test", WhlTrkTest);
         experimentTypeRepository.save(experimentType2);
 
         Report r1 = new Report("Autosaw is broken", lorem.getWords(25), userRepository.findByUsername("Timo").orElse(null));
@@ -630,15 +657,31 @@ public class DatabaseLoader {
         reportRepository.save(r5);
 
         //fill experimentRepository
-        /*
+        Step step1 = new Step(u6, d10, "2020-03-16", "2020-03-16", "11:00", "12:00", "");
+        Step step2 = new Step(u6, d1, "2020-03-17", "2020-03-17", "12:00", "13:00", "");
+        Step step3 = new Step(u6, d11, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
+        Step step4 = new Step(u6, d12, "2020-03-19", "2020-03-19", "09:00", "10:00", "");
+        Step step5 = new Step(u6, d4, "2020-03-19", "2020-03-19", "10:00", "11:00", "");
+        Step step6 = new Step(u6, d5, "2020-03-19", "2020-03-19", "11:00", "12:00", "");
+        stepRepository.save(step1);
+        stepRepository.save(step2);
+        stepRepository.save(step3);
+        stepRepository.save(step4);
+        stepRepository.save(step5);
+        stepRepository.save(step6);
+
         List<Step> stepList = new ArrayList<Step>();
-        stepList.add(s1);
-        stepList.add(s2);
-        stepList.add(s3);
-        stepList.add(s4);
-        stepList.add(s5);
-        stepList.add(s6);
-        Experiment ex = new Experiment(experimentType2, stepList, u6, "experiment1", m1, "ads", 5,"2020-03-18","2020-03-19");
-        experimentRepository.save(ex);*/
+        stepList.add(step1);
+        stepList.add(step2);
+        stepList.add(step3);
+        stepList.add(step4);
+        stepList.add(step5);
+        stepList.add(step6);
+
+        for (int i = 0; i < stepList.size(); i++) {
+            stepList.get(i).setStepType(experimentType1.getStepTypes().get(i));
+        }
+        Experiment ex = new Experiment(experimentType1, stepList, u6, "experiment1", m1, "ads", 5, "2020-03-18", "2020-03-19");
+        experimentRepository.save(ex);
     }
 }

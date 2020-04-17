@@ -102,10 +102,13 @@
             <td class="mixture" th:value="${experiment.getMixture().getName()}" th:text="${experiment.getMixture().getName()}"> Mixture</td>
             <td class="comment" th:value="${experiment.getMixtureAmount()}" th:text="${experiment.getMixtureAmount()}"> ammount</td>
             <td>
-                <a th:href="@{/experiment/book/{id}/(id=${experiment.id})}"><span
+                <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}" th:text="#{experiment.info}" class="btn btn-primary"></a>
+            </td>
+            <td>
+                <a th:href="@{/planning/experiments/book/{id}/(id=${experiment.id})}"><span
                         class="fas fa-edit"></span></a>
 
-                <a th:href="@{/experiment/book/{id}/delete(id=${experiment.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
                     <span class="fas fa-trash" style="color: red" ></span> </a>
             </td>
         </tr>

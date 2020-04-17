@@ -1,7 +1,5 @@
 package be.uantwerpen.labplanner.Service;
 
-import be.uantwerpen.labplanner.Model.DeviceInformation;
-import be.uantwerpen.labplanner.Model.DeviceType;
 import be.uantwerpen.labplanner.Model.Experiment;
 import be.uantwerpen.labplanner.Repository.ExperimentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +29,12 @@ public class ExperimentService {
             tempExperiment.setUser(experiment.getUser());
             tempExperiment.setExperimentType(experiment.getExperimentType());
             tempExperiment.setExperimentname(experiment.getExperimentname());
+            tempExperiment.setMixture(experiment.getMixture());
+            tempExperiment.setMixtureAmount(experiment.getMixtureAmount());
+            tempExperiment.setMixtureComment(experiment.getMixtureComment());
             tempExperiment.setStartDate(experiment.getStartDate());
             tempExperiment.setEndDate(experiment.getEndDate());
+            tempExperiment.setSteps(experiment.getSteps());
             experimentRepository.save(tempExperiment);
         }
         else{

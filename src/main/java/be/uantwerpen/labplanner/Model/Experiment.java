@@ -10,22 +10,25 @@ public class Experiment extends AbstractPersistable<Long> {
 
 
     @ManyToOne
-    @JoinColumn(name = "user", unique = true)
+    @JoinColumn(name = "user")
     private User user;
+
     @OneToOne
     @JoinColumn(name = "experimentType")
     private ExperimentType experimentType;
 
     @Column(name = "experimentname", unique = true, nullable = false)
     private String experimentname;
+
     @OneToOne
     @JoinColumn(name = "expMixture")
     private Mixture mixture;
+
     @Column(name = "expMixtureComment")
     private String mixtureComment;
+
     @Column(name = "expmixtureAmount")
     private int mixtureAmount;
-
 
     @OneToMany
     @JoinColumn(name = "steps")
@@ -33,6 +36,7 @@ public class Experiment extends AbstractPersistable<Long> {
 
     @Column(name = "startDate")
     private String startDate;
+
     @Column(name = "endDate")
     private String endDate;
 

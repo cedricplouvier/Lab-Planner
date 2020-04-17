@@ -9,7 +9,6 @@ import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.repository.users.UserRepository;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -25,12 +24,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -196,7 +198,6 @@ public class StepController {
         }
 
         //Current user can only be, user of the step, the promotor of the user or admin.
-
         Role adminole = roleService.findByName("Administrator").get();
         Role promotorRole = roleService.findByName("Researcher").get();
         Boolean allowedToEdit = false;
@@ -447,6 +448,55 @@ public class StepController {
             ra.addFlashAttribute("Message", new String("Error while trying to save Experiment."));
             return "redirect:/planning/";
         }
+
+
+        //if new Experiment, add the current student to the step.
+        if (experiment.getUser() == null) {
+            experiment.setUser(currentUser);
+        }
+
+        //Current user can only be, user of the Experiment, the promotor of the user or admin.
+        Role adminole = roleService.findByName("Administrator").get();
+        Role promotorRole = roleService.findByName("Researcher").get();
+        Boolean allowedToEdit = false;
+
+        //Admin can edit all the experiments
+        if (currentUser.getRoles().contains(adminole)) {
+            allowedToEdit = true;
+        }
+
+        //user can edit his own experiments
+        else if (experiment.getUser().equals(currentUser)) {
+            allowedToEdit = true;
+        }
+
+        //researcher can edit experiment of one of his students.
+        else if (currentUser.getRoles().contains(promotorRole)) {
+            //get all the relations of the specific researcher
+            List<Relation> relations = relationService.findAll();
+
+            for (Relation relation : relations) {
+                //only select relation for specific researcher
+                if (relation.getResearcher().equals(currentUser)) {
+                    //check if the student is part of the student scope
+                    if (relation.getStudents().contains(experiment.getUser())) {
+                        allowedToEdit = true;
+                    }
+                }
+            }
+
+        }
+
+        if (!allowedToEdit) {
+            //no rights, so error message & save nothing
+            ra.addFlashAttribute("Status", "Error");
+            String message = new String("Student has no right to edit experiment");
+            ra.addFlashAttribute("Message", message);
+            return "redirect:/planning/";
+
+        }
+
+
         //check correctness of steps
         List<Step> tmpListSteps = new ArrayList<Step>();
         for (Step step : experiment.getSteps()) {
@@ -461,14 +511,14 @@ public class StepController {
                 return "redirect:/planning/";
             }
 
-            //check, double booking, holidays, weekend and opening hours
+            //check, double booking
             if (overlapCheck(step)) {
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message", new String("Error while trying to save Experiment. Problem with double booking of device " + step.getDevice().getDevicename()));
                 return "redirect:/planning/";
             }
 
-            //check, double booking, holidays, weekend and opening hours
+            //check holidays, weekend and opening hours
             if (dateTimeIsUnavailable(step, ra)) {
                 return "redirect:/planning/";
             }
@@ -487,18 +537,94 @@ public class StepController {
         }
 
         //Save steps and experiment into database
-        for (Step step : tmpListSteps) {
+        for (
+                Step step : tmpListSteps) {
             stepService.saveSomeAttributes(step);
         }
-        experiment.setStartDate(tmpListSteps.get(0).getStart());
-        experiment.setEndDate(tmpListSteps.get(tmpListSteps.size() - 1).getEnd());
+        experiment.setStartDate(tmpListSteps.get(0).
+
+                getStart());
+        experiment.setEndDate(tmpListSteps.get(tmpListSteps.size() - 1).
+
+                getEnd());
         experiment.setSteps(tmpListSteps);
         //save experiment into database
-        Experiment ex = new Experiment(experiment.getExperimentType(), experiment.getSteps(), experiment.getUser(), experiment.getExperimentname(), experiment.getMixture(), experiment.getMixtureComment(), experiment.getMixtureAmount(),experiment.getStartDate(),experiment.getEndDate());
-
-        experimentService.saveExperiment(ex);
+        experimentService.saveExperiment(experiment);
+        ra.addFlashAttribute("Status", "Success");
+        String message = new String("Experiment has been added/edited.");
+        ra.addFlashAttribute("Message", message);
         return "redirect:/planning/";
     }
+
+    @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
+    @RequestMapping(value = "/planning/experiments/book/{id}", method = RequestMethod.GET)
+    public String viewEditExperiment(@PathVariable long id, final ModelMap model, RedirectAttributes ra) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+
+
+        if (experimentService.findById(id).isPresent()) {
+            //also check for Researcher.
+            Role adminole = roleService.findByName("Administrator").get();
+            Role promotorRole = roleService.findByName("Researcher").get();
+            Boolean allowedToEdit = false;
+
+            //Admin can edit all the experiments
+            if (user.getRoles().contains(adminole)) {
+                allowedToEdit = true;
+            }
+
+            //user can edit his own experiments
+            else if (experimentService.findById(id).get().getUser().equals(user)) {
+                allowedToEdit = true;
+            }
+
+            //researcher can edit experiments of one of his students.
+            else if (user.getRoles().contains(promotorRole)) {
+                //get all the relations of the specific researcher
+                List<Relation> relations = relationService.findAll();
+
+                for (Relation relation : relations) {
+                    //only select relation for specific researcher
+                    if (relation.getResearcher().equals(user)) {
+                        //check if the student is part of the student scope
+                        if (relation.getStudents().contains(experimentService.findById(id).get().getUser())) {
+                            allowedToEdit = true;
+                        }
+                    }
+                }
+
+            }
+
+            if (allowedToEdit) {
+                model.addAttribute("experiment", experimentService.findById(id).orElse(null));
+                model.addAttribute("allDevices", deviceService.findAll());
+                model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+                model.addAttribute("allExperiments", experimentService.findAll());
+                model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
+                model.addAttribute("allMixtures", mixtureService.findAll());
+                return "/PlanningTool/planning-exp-book";
+            } else {
+                ra.addFlashAttribute("Status", new String("Error"));
+                ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
+                return "redirect:/planning/";
+            }
+        } else {
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
+            return "/PlanningTool/planning-exp-book";
+        }
+    }
+
+
+    //Info page for experiment
+    @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
+    @RequestMapping(value = "/planning/experiments/book/info/{id}", method = RequestMethod.GET)
+    public String viewExperimentInfo(@PathVariable Long id, final ModelMap model) throws IOException {
+        model.addAttribute("experiment", experimentService.findById(id).orElse(null));
+        return "/PlanningTool/planning-exp-info";
+    }
+
 
     @RequestMapping(value = "/planning/experiments/put", method = RequestMethod.GET)
     public String viewCreateExperimentType(final ModelMap model) {
@@ -522,7 +648,7 @@ public class StepController {
         options.add("Soft");
         options.add("Hard");
         model.addAttribute("allDevices", deviceService.findAll());
-            model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+        model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("experimentType", experimentTypeService.findById(id).get());
@@ -661,37 +787,35 @@ public class StepController {
             nextStartDate = formatter.parseDateTime(steps.get(i + 1).getStart() + " " + steps.get(i + 1).getStartHour());
             nextEndDate = formatter.parseDateTime(steps.get(i + 1).getEnd() + " " + steps.get(i + 1).getEndHour());
             //previousDates are not set when i == 0.
-            if (i > 0) {
-                //check chronology - current start date shouldn't be after next start date.
-                if (currentStartDate.isAfter(nextStartDate) || currentEndDate.isAfter(nextEndDate)) {
-                    return true;
-                }
-
-                switch (steps.get(i).getStepType().getContinuity().getType()) {
-                    case "Soft (at least)":
-                        //nextStartDate - currentStartTime >= currentStartTime
-                        if (!(nextStartDate.getMillis() - (currentEndDate.getMillis()) >= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
-                            return true;
-                        }
-                        break;
-                    case "Soft (at most)":
-                        //nextStartDate - currentStartTime <= currentStartTime
-                        if (!(nextStartDate.getMillis() - (currentEndDate.getMillis()) <= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
-                            return true;
-                        }
-                        break;
-                    case "Hard":
-                        //nextStartDate - currentStartTime == currentStartTime
-                        if (!(nextStartDate.getMillis() - (currentEndDate.getMillis()) == 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
-                            return true;
-                        }
-                        break;
-                    case "No":
-                        // no continuity
-                        break;
-                    default:
+            //check chronology - current start date shouldn't be after next start date.
+            if (currentStartDate.isAfter(nextStartDate) || currentEndDate.isAfter(nextEndDate)) {
+                return true;
+            }
+            System.out.println("left:" + (nextStartDate.getMillis() - (currentEndDate.getMillis())) + "right" + 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes());
+            switch (steps.get(i).getStepType().getContinuity().getType()) {
+                case "Soft (at least)":
+                    //nextStartDate - currentStartTime >= currentStartTime
+                    if (!(nextStartDate.getMillis() - (currentEndDate.getMillis()) >= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
                         return true;
-                }
+                    }
+                    break;
+                case "Soft (at most)":
+                    //nextStartDate - currentStartTime <= currentStartTime
+                    if (!(nextStartDate.getMillis() - (currentEndDate.getMillis()) <= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
+                        return true;
+                    }
+                    break;
+                case "Hard":
+                    //nextStartDate - currentStartTime == currentStartTime
+                    if (!(nextStartDate.getMillis() - (currentEndDate.getMillis()) == 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
+                        return true;
+                    }
+                    break;
+                case "No":
+                    // no continuity
+                    break;
+                default:
+                    return true;
             }
         }
         return false;
@@ -714,7 +838,7 @@ public class StepController {
     //Based on https://www.expatica.com/be/about/culture-history/belgiums-national-holidays-and-other-important-belgian-holidays-2018-103619/
     public boolean isInsideHoliday(DateTime dateTime) {
 
-        //Fixed dates
+        //Fixed dates every year
         switch (dateTime.getMonthOfYear()) {
             case 1:
                 //New Year’s Day
@@ -753,8 +877,8 @@ public class StepController {
                 if (dateTime.getDayOfMonth() == 1)
                     return true;
 
-                // All Saints’ Day
-                if (dateTime.getDayOfMonth() == 1)
+                //  Armistice Day
+                if (dateTime.getDayOfMonth() == 11)
                     return true;
                 break;
             case 12:
@@ -773,29 +897,27 @@ public class StepController {
         int c = year % 7;
         int d = (19 * a + 24) % 30;
         int e = (2 * b + 4 * c + 6 * d + 5) % 7;
-        int month = 3 + (22 + d + e) / 30;
-        int day = (22 + d + e) % 30;
 
         // Easter Monday
-        if ((dateTime.getMonthOfYear() == month) && (dateTime.getDayOfMonth() == day)) {
-            return true;
-        }
+        int month = 3 + (22 + d + e) / 30;
+        int day = (22 + d + e) % 30;
+        DateTime easterMonday = new DateTime(dateTime.getYear(), month, day, 0, 0);
 
         // Easter Sunday
         month = 3 + (22 + d + e - 1) / 30;
         day = (22 + d + e - 1) % 30;
-        if ((dateTime.getMonthOfYear() == month) && (dateTime.getDayOfMonth() == day)) {
-            return true;
-        }
+        DateTime easterSunday = new DateTime(dateTime.getYear(), month, day, 0, 0);
 
-        //Ascension Day (40 days after Easter)
-        DateTime easterEgg = new DateTime(dateTime.getYear(), month, day, 0, 0);
-        if ((dateTime.getDayOfYear() == easterEgg.getDayOfYear() + 40)) {
-            return true;
-        }
+        //Ascension Day (40 days after Easter sunday)
+        DateTime ascensionDay = new DateTime(easterSunday.getMillis() + (long) 1000 * 60 * 60 * 24 * 39/*39 days*/);
 
         //Whit Monday – the seventh Monday after Easter
-        if ((dateTime.getDayOfYear() == easterEgg.getDayOfYear() + 7 * 7)) {
+        DateTime whitMonday = new DateTime(easterMonday.getMillis() + (long) 1000 * 60 * 60 * 24 * 49/*49 days*/);
+
+        if (dateTime.getDayOfYear() == easterMonday.getDayOfYear() ||
+                dateTime.getDayOfYear() == easterSunday.getDayOfYear() ||
+                dateTime.getDayOfYear() == ascensionDay.getDayOfYear() ||
+                dateTime.getDayOfYear() == whitMonday.getDayOfYear()) {
             return true;
         }
         return false;

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+<head th:replace="navbar :: head (title='#{Experiment Management}')"></head>
+<style>
+    .dropbtn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 16px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .dropbtn:hover, .dropbtn:focus {
+        background-color: #3e8e41;
+    }
+
+    #myInput {
+        box-sizing: border-box;
+        background-position: 14px 12px;
+        background-repeat: no-repeat;
+        padding: 14px 20px 12px 45px;
+        border: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    #myInput:focus {
+        outline: 3px solid #ddd;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f6f6f6;
+        min-width: 230px;
+        overflow: auto;
+        border: 1px solid #ddd;
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown a:hover {
+        background-color: #ddd;
+    }
+
+    .show {
+        display: block;
+    }
+</style>
+<body>
+<div class="container">
+    <div th:replace="navbar :: navbar"></div>
+    <form id="MyForm" th:object="${experiment}">
+        <input th:field="*{id}" th:type="hidden"/>
+        <input id="experimentType" th:type="hidden"
+               th:field="*{experimentType}">
+        <table class="table table-hover" style="text-align:center; font-size:90%;">
+            <thead>
+            <tr>
+                <th th:text="#{experiment.type}">Experiment Type</th>
+                <th th:text="#{experiment.name}">Experiment Name</th>
+                <th th:text="#{mixtures}">Mixture</th>
+                <th th:text="#{mixtures.amount}">Amount</th>
+            </tr>
+            </thead>
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody>
+
+            <th>
+
+                <input class=" form-control input-device"
+                       id="experimentName"
+                       th:value="*{experimentType.expname}" disabled>
+            </th>
+            <th>
+                <input class=" form-control input-device"
+                       id="mixtureType"
+                       th:value="*{experimentname}" disabled>
+            </th>
+            <th>
+                <input class=" form-control input-device"
+                       id="mixtureType"
+                       th:value="*{mixture.getName()}" disabled>
+            </th>
+            <th>
+                <input class=" form-control input-device"
+                       th:value="*{mixtureAmount}" disabled>
+            </th>
+            </tbody>
+        </table>
+        <table class="table table-hover" style=" font-size:100%; text-align:center;">
+
+            <thead>
+            <tr>
+                <th>Step Type</th>
+                <th>Device</th>
+                <th>Start date</th>
+                <th>Start time</th>
+                <th>End date</th>
+                <th>End time</th>
+                <th>Continuity</th>
+                <th>Comment</th>
+            </tr>
+            </thead>
+
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody id="list" class="list" style=" font-size:100%;">
+
+            <div th:if="(*{experimentType}!=null)">
+
+                <tr th:each="stepType, itemStat : *{experimentType.stepTypes}">
+                    <td>
+                        <input style="font-size:80%;" class=" form-control input-device"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].stepTypeName}" disabled>
+                    </td>
+                    <td>
+                        <input style="font-size:80%;" class=" form-control input-device"
+                               id="selectDevice"
+                               th:value="*{steps[__${itemStat.index}__].device.devicename}" disabled>
+                    </td>
+                    <td>
+                        <input required style="font-size:80%;" id="startDate" type="text"
+                               th:value="*{steps[__${itemStat.index}__].start}"
+                               class="form-control " disabled>
+                    </td>
+                    <td>
+                        <input required style="width: 50%; font-size:80%;" type="text" id="startHour"
+                               class="form-control float-right "
+                               th:value="*{steps[__${itemStat.index}__].startHour}"  disabled>
+
+                    </td>
+
+                    <td>
+                        <input required style="font-size:80%;" id="endDate" type="text"
+                               th:value="*{steps[__${itemStat.index}__].end}"
+                               class="form-control " disabled>
+                    </td>
+                    <td>
+
+                        <input required style="width: 50%;font-size:80%;" type="text" id="endHour"
+                               class="form-control float-right "
+                               th:value="*{steps[__${itemStat.index}__].endHour}" disabled>
+                    </td>
+
+                    <td style="width: 10%; font-size:80%; text-align:center" id="continuity" name="continuity"
+                        th:utext="*{experimentType.stepTypes[__${itemStat.index}__].continuity.hours} + ':' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}+
+                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.type}">
+                    </td>
+                    <td>
+                        <input style="font-size:80%; " type="text" id="comment"
+                               class="form-control float-right"
+                               th:value="*{steps[__${itemStat.index}__].comment}" disabled>
+                    </td>
+                </tr>
+            </div>
+            </tbody>
+        </table>
+
+        <div>
+            <a style="margin-right: 10px" href="/" class="btn btn-outline-primary"
+               th:text="#{experimentstype.return}">return to HomePage</a>
+
+            <a style="margin-right: 10px" th:href="@{/planning/experiments/book/{id}/(id=${experiment.id})}" class="btn btn-outline-primary"
+               th:text="#{experiment.edit}">Edit</a>
+        </div>
+    </form>
+</div>
+
+
+</body>
+</html>
