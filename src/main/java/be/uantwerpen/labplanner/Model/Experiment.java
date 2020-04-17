@@ -28,7 +28,7 @@ public class Experiment extends AbstractPersistable<Long> {
     private String mixtureComment;
 
     @Column(name = "expmixtureAmount")
-    private int mixtureAmount;
+    private double mixtureAmount;
 
     @OneToMany
     @JoinColumn(name = "steps")
@@ -143,11 +143,11 @@ public class Experiment extends AbstractPersistable<Long> {
         return steps;
     }
 
-    public int getMixtureAmount() {
+    public double getMixtureAmount() {
         return mixtureAmount;
     }
 
-    public void setMixtureAmount(int mixtureAmount) {
+    public void setMixtureAmount(double mixtureAmount) {
         this.mixtureAmount = mixtureAmount;
     }
 
