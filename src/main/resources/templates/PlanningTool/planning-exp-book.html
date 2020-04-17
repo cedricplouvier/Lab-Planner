@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+<head th:replace="navbar :: head (title='#{Experiment Management}')"></head>
+<script th:inline="javascript">
+
+    function addrow() {
+        //reference table
+        var experimentTypeId = $('#selectExperimentType :selected').val();
+
+        //a = experimentType
+        var a;
+        var tableRef = document.getElementById('list');
+        tableRef.innerHTML = "";
+        let devices = [[${allDevices}]];
+        let experimentTypes = [[${allExperimentTypes}]];
+        for (let i = 0; i < experimentTypes.length; i++) {
+            if (experimentTypeId == experimentTypes[i].id) {
+                a = experimentTypes[i];
+            }
+        }
+        for (let i = 0; i < a.stepTypes.length; i++) {
+            var deviceOprions = '';
+            for (let j = 0; j < devices.length; j++) {
+                if (devices[j].deviceType.id == a.stepTypes[i].deviceType.id) {
+                    deviceOprions += '<option class="dropdown-item" value="' + devices[j].id + '">'
+                        + devices[j].devicename +
+                        '</option>';
+                }
+
+            }
+            $('#list')
+                .append(
+                    '<tr class="row' + i + '" id="row' + i + '">' +
+                    '<td value="' + a.stepTypes[i].id + '">' + a.stepTypes[i].stepTypeName + '</td>' +
+                    '<td>' +
+                    '<select required class=" form-control input-device" id="selectDevice" name="steps[' + i + '].device" style=" width: 110%;font-size:90%;">' +
+                    '<option hidden selected disabled value="">Select device</option>' +
+                    deviceOprions +
+                    '</select>' +
+                    '</td>' +
+                    '<td>' +
+                    '<input required style="width: 85%; font-size:80%;" required="" id="startDate" type="date" class="form-control input-date" placeholder="Start date" name="steps[' + i + '].start" value="' + moment().format('YYYY-MM-DD') + '">' +
+                    '</td>' +
+                    '<td>' +
+                    '<input required style="width: 100%; font-size:80%;" type="time" id="startHour" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + i + '].startHour" value="11:00"  min="09:00" max="18:00">' +
+                    '</td>' +
+                    '<td>' +
+                    '<input required style="width: 85%; font-size:80%; " required="" id="endDate" type="date" class="form-control input-date" placeholder="End date" name="steps[' + i + '].end" value="' + moment().format('YYYY-MM-DD') + '">' +
+                    '</td>' +
+                    '<td>' +
+                    '<input required style="width: 100%; font-size:80%; " type="time" id="endHour" size="2" class="form-control float-right input-hour" placeholder="End hour" name="steps[' + i + '].endHour" value="12:00"  min="09:00" max="18:00" >' +
+                    '</td> ' +
+                    '<td>' +
+                    '<input style="width: 65%; font-size:80%; text-align:center" id="continuity"  class="form-control float-right "  name="continuity" value="' + a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '" disabled>' +
+                    '</td> ' +
+                    '<td>' +
+                    '<input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + i + '].comment" value="" >' +
+                    '</td> ' +
+                    '</tr>');
+        }
+    }
+
+    function filterFunction() {
+        var input, filter, ul, li, a, i;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        div = document.getElementById("myDropdown");
+        a = div.getElementsByTagName("a");
+        for (i = 0; i < a.length; i++) {
+            txtValue = a[i].textContent || a[i].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                a[i].style.display = "";
+            } else {
+                a[i].style.display = "none";
+            }
+        }
+    }
+
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function myFunction() {
+        document.getElementById("myDropdown").classList.toggle("show");
+    }
+
+    function removeRow(r) {
+        $(r).closest('tr').remove();
+    }
+</script>
+<style>
+    .dropbtn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 16px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .dropbtn:hover, .dropbtn:focus {
+        background-color: #3e8e41;
+    }
+
+    #myInput {
+        box-sizing: border-box;
+        background-position: 14px 12px;
+        background-repeat: no-repeat;
+        padding: 14px 20px 12px 45px;
+        border: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    #myInput:focus {
+        outline: 3px solid #ddd;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f6f6f6;
+        min-width: 230px;
+        overflow: auto;
+        border: 1px solid #ddd;
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown a:hover {
+        background-color: #ddd;
+    }
+
+    .show {
+        display: block;
+    }
+</style>
+<body>
+<div class="container">
+    <div th:replace="navbar :: navbar"></div>
+    <form id="MyForm" action="#" th:action="@{/planning/experiments/book/{id}  (id=${{experiment}})}"
+          th:object="${experiment}" method="post">
+        <input th:field="*{id}" th:type="hidden"/>
+        <input id="experimentType" th:type="hidden"
+               th:field="*{experimentType}">
+        <table class="table table-hover" style="text-align:center; font-size:90%;">
+            <thead>
+            <tr>
+                <th th:text="#{experiment.type}">Experiment Type</th>
+                <th th:text="#{experiment.name}">Experiment Name</th>
+                <th th:text="#{mixtures}">Mixture</th>
+                <th th:text="#{mixtures.amount}">Amount</th>
+            </tr>
+            </thead>
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody>
+
+            <th>
+                <select required class=" form-control input-device" id="selectExperimentType" onchange="addrow()" th:field="*{experimentType.id}">
+                    <option selected hidden th:text="#{experiment.type.select}" th:value="null"> Select
+                        experiment type
+                    </option>
+                    <option class="dropdown-item"
+                            th:each="experimentTypep : ${allExperimentTypes}"
+                            th:value="${{experimentTypep}}"
+                            th:text="${experimentTypep.getExperimentTypeName()}">
+                    </option>
+                </select>
+            </th>
+            <th>
+                <input th:field="*{experimentname}" placeholder="Expirement Name" required>
+            </th>
+            <th>
+                <select required class=" form-control input-device" id="selectMixture" th:field="*{mixture}">
+                    <option selected hidden th:text="#{mixture.select}" th:value="null"> Select mixture
+                    </option>
+                    <option class="dropdown-item"
+                            th:each="mixture : ${allMixtures}"
+                            th:value="${{mixture}}"
+                            th:text="${mixture.getName()}">
+                    </option>
+                </select>
+            </th>
+            <th>
+                <input th:field="*{mixtureAmount}" placeholder="Amount of mixture">
+            </th>
+            </tbody>
+        </table>
+        <table class="table table-hover" style=" font-size:100%; text-align:center;">
+
+            <thead>
+            <tr>
+                <th>Step Type</th>
+                <th>Device</th>
+                <th>Start date</th>
+                <th>Start time</th>
+                <th>End date</th>
+                <th>End time</th>
+                <th>Time to next step</th>
+                <th>Comment</th>
+            </tr>
+            </thead>
+
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody id="list" class="list" style=" font-size:100%;">
+
+            <div th:if="(*{experimentType}!=null)">
+
+                <tr th:each="stepType, itemStat : *{experimentType.stepTypes}">
+                    <td style="text-align:left;"
+                        th:text="${stepType.stepTypeName}" th:value="${{stepType}}"
+                        th:field="*{steps[__${itemStat.index}__].stepType}">
+                    </td>
+                    <td>
+                        <select class=" form-control input-device" id="selectDeviceType"
+                                th:field="*{steps[__${itemStat.index}__].device}">
+                            <option selected hidden th:text="#{device.select}" th:value="null"> Select device
+                            </option>
+                            <option th:each="device : ${allDevices}"
+                                    th:if="${device.deviceType.id} == ${stepType.deviceType.id} " class="dropdown-item"
+                                    th:value="${{device}}"
+                                    th:text="${{device}}">
+                            </option>
+                        </select>
+                    </td>
+                    <td>
+                        <input required id="startDate" type="date" th:field="*{steps[__${itemStat.index}__].start}"
+                               class="form-control input-date"
+                               placeholder="Start date">
+                    </td>
+                    <td>
+                        <input type="time" id="startHour" class="form-control float-right input-hour"
+                               th:field="*{steps[__${itemStat.index}__].startHour}" placeholder="Start hour">
+
+                    </td>
+
+                    <td>
+                        <input required id="endDate" type="date" th:field="*{steps[__${itemStat.index}__].end}"
+                               class="form-control input-date"
+                               placeholder="End date">
+                    </td>
+                    <td>
+                        <input type="time" id="endHour" class="form-control float-right input-hour"
+                               th:field="*{steps[__${itemStat.index}__].endHour}" placeholder="End hour">
+                    </td>
+                </tr>
+            </div>
+            </tbody>
+        </table>
+
+        <div>
+            <a style="margin-right: 10px" href="/planning/experiments" class="btn btn-outline-primary"
+               th:text="#{experimentstype.return}">Return</a>
+            <button style="margin-right: 10px" type="submit" class="btn btn-primary"
+                    th:text="#{experiment.type.submit}">
+                Submit
+            </button>
+        </div>
+    </form>
+</div>
+
+
+</body>
+</html>

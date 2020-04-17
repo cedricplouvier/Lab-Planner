@@ -1,11 +1,9 @@
 package be.uantwerpen.labplanner.Model;
 
 import be.uantwerpen.labplanner.common.model.stock.Product;
-import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
@@ -18,7 +16,7 @@ public class Composition extends AbstractPersistable<Long> {
     @ManyToOne
     private Product product;
 
-    Composition(Double amount, Product prod){
+    public Composition(Double amount, Product prod){
         this.amount = amount;
         this.product = prod;
     }
