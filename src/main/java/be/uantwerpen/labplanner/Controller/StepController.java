@@ -4,9 +4,11 @@ import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Repository.ExperimentRepository;
 import be.uantwerpen.labplanner.Repository.ExperimentTypeRepository;
 import be.uantwerpen.labplanner.Service.*;
+import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.repository.users.UserRepository;
+import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import de.jollyday.Holiday;
 import de.jollyday.HolidayCalendar;
@@ -17,6 +19,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,6 +62,8 @@ public class StepController {
     private ExperimentTypeRepository experimentTypeRepository;
     @Autowired
     private PieceOfMixtureService pieceOfMixtureService;
+    @Autowired
+    private ProductService productService;
 
     @Autowired
     private RelationService relationService;
@@ -468,6 +473,35 @@ public class StepController {
             for (Step step : experiment.getSteps()) {
                 stepService.delete(step.getId());
             }
+
+            //add amounts back to the stock.
+            Map<Product, Double> productMap = new HashMap<>();
+
+            for (PieceOfMixture piece : experiment.getPiecesOfMixture()){
+                Mixture mix = piece.getMixture();
+                List<Composition> compositions = mix.getCompositions();
+                for (Composition comp :compositions){
+                    Product prod = comp.getProduct();
+                    if(!productMap.containsKey(prod)) {
+                        productMap.put(prod, prod.getStockLevel());
+                    }
+                    double stocklevel = productMap.get(prod);
+                    stocklevel += comp.getAmount()*piece.getMixtureAmount()/100;
+                    productMap.put(prod, stocklevel);
+                }
+            }
+            Iterator it = productMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry)it.next();
+                Product prod = (Product)pair.getKey();
+                prod.setStockLevel((Double)pair.getValue());
+                productService.save(prod);
+            }
+
+
+
+
+
             experimentService.delete(id);
             ra.addFlashAttribute("Status", new String("Success"));
             ra.addFlashAttribute("Message", new String("Experiment successfully deleted."));
@@ -499,6 +533,8 @@ public class StepController {
     @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
     @RequestMapping(value = {"/planning/experiments/book", "/planning/experiments/book/{id}"}, method = RequestMethod.POST)
     public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
+        Locale current = LocaleContextHolder.getLocale();
+
 
         if (experiment == null) {
             ra.addFlashAttribute("Status", new String("Error"));
@@ -506,7 +542,36 @@ public class StepController {
             return "redirect:/planning/";
         }
 
-        //prepare experiment entity for checking of conditions and to save it into database
+        Map<Product, Double> productMap = new HashMap<>();
+
+        //In case of edit experiment, reset stocklevels, so that eventuel new stock levels can be saved, and stock is not withdrawn multiple times.
+        if (experimentService.findByExperimentName(experiment.getExperimentname()).isPresent()) {
+            //add amounts back to the stock.
+            Experiment previousExperiment = experimentService.findByExperimentName(experiment.getExperimentname()).orElse(null);
+            for (PieceOfMixture piece : previousExperiment.getPiecesOfMixture()){
+                Mixture mix = piece.getMixture();
+                List<Composition> compositions = mix.getCompositions();
+                for (Composition comp :compositions){
+                    Product prod = comp.getProduct();
+                    if(!productMap.containsKey(prod)) {
+                        productMap.put(prod, prod.getStockLevel());
+                    }
+                    double stocklevel = productMap.get(prod);
+                    stocklevel += comp.getAmount()*piece.getMixtureAmount()/100;
+                    productMap.put(prod, stocklevel);
+                }
+            }
+        }
+        else{
+            for(Product prod:productService.findAll()){
+                productMap.put(prod, prod.getStockLevel());
+            }
+
+
+        }
+
+
+            //prepare experiment entity for checking of conditions and to save it into database
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         experiment.setUser(currentUser);
         //set ExperimentType by ExperimentType id
@@ -531,6 +596,8 @@ public class StepController {
         Role adminole = roleService.findByName("Administrator").get();
         Role promotorRole = roleService.findByName("Researcher").get();
         Boolean allowedToEdit = false;
+        boolean enoughStock = true;
+
 
         //Admin can edit all the experiments
         if (currentUser.getRoles().contains(adminole)) {
@@ -607,6 +674,55 @@ public class StepController {
             ra.addFlashAttribute("Message", new String("Error while trying to save Experiment. Problem with continuity"));
             return "redirect:/planning/";
         }
+
+
+        //check if enough stock available (if not enoughstock= false)
+        //put al the stocklevels in a map
+
+        //withdraw amounts from temp stock
+        for (PieceOfMixture piece : experiment.getPiecesOfMixture()){
+            Mixture mix = piece.getMixture();
+            List<Composition> compositions = mix.getCompositions();
+            for (Composition comp :compositions){
+                Product prod = comp.getProduct();
+                if(!productMap.containsKey(prod)) {
+                    productMap.put(prod, prod.getStockLevel());
+                }
+                double stocklevel = productMap.get(prod);
+                stocklevel -= comp.getAmount()*piece.getMixtureAmount()/100;
+                productMap.put(prod, stocklevel);
+            }
+        }
+        //check if a temp stock level in map is <0, if so, there is unsuficient stock.
+        Iterator it = productMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            if((Double)pair.getValue()<0){
+                enoughStock = false;
+            }
+        }
+
+
+        if(!enoughStock){
+            //if not enough stock, change stock levels back to previous edit
+
+
+                ra.addFlashAttribute("Status",new String("Error"));
+                ra.addFlashAttribute("Message",ResourceBundle.getBundle("messages",current).getString("enough.stock"));
+                return "redirect:/planning/";
+        }
+
+
+
+        //withdraw amounts from temp stock
+        Iterator it2 = productMap.entrySet().iterator();
+        while (it2.hasNext()) {
+            Map.Entry pair = (Map.Entry) it2.next();
+            Product prod = (Product) pair.getKey();
+            prod.setStockLevel((Double) pair.getValue());
+            productService.save(prod);
+        }
+
 
         //Save steps and experiment into database
         for (Step step : tmpListSteps) {
