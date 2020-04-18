@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-
+@Profile("!prod")
 public class DatabaseLoader {
 
     private final PrivilegeRepository privilegeRepository;
@@ -50,10 +50,11 @@ public class DatabaseLoader {
     private final StepTypeRepository stepTypeRepository;
     private final ContinuityRepository continuityRepository;
     private final RelationRepository relationRepository;
+    private final ExperimentRepository experimentRepository;
     private final ReportRepository reportRepository;
 
     @Autowired
-    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository,ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository) {
+    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository,ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository,ExperimentRepository experimentRepository) {
 
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
@@ -74,9 +75,10 @@ public class DatabaseLoader {
         this.relationRepository = relationRepository;
 
 
-        this.experimentTypeRepository=experimentTypeRepository;
-        this.stepTypeRepository=stepTypeRepository;
-        this.continuityRepository=continuityRepository;
+        this.experimentTypeRepository = experimentTypeRepository;
+        this.stepTypeRepository = stepTypeRepository;
+        this.continuityRepository = continuityRepository;
+        this.experimentRepository = experimentRepository;
 
         this.reportRepository = reportRepository;
 
@@ -451,7 +453,12 @@ public class DatabaseLoader {
         deviceRepository.save(d8);
         Device d9 = new Device("Oven 3",t7);
         deviceRepository.save(d9);
-
+        Device d10 = new Device("Gyratory 1", t6);
+        deviceRepository.save(d10);
+        Device d11 = new Device("Caliper 1", t4);
+        deviceRepository.save(d11);
+        Device d12 = new Device("SVM Setup 1", t10);
+        deviceRepository.save(d12);
 
 
         //create some products
@@ -680,14 +687,15 @@ public class DatabaseLoader {
         reportRepository.save(r4);
         reportRepository.save(r5);
 
-
-
-
-
-
-
-
-
-
+        //fill experimentRepository
+        List<Step> stepList = new ArrayList<Step>();
+        stepList.add(s1);
+        stepList.add(s2);
+        stepList.add(s3);
+        stepList.add(s4);
+        stepList.add(s5);
+        stepList.add(s6);
+        Experiment ex = new Experiment(experimentType2, stepList, u1, "experiment1", m1, "ads", 5,"2020-03-18","2020-03-19");
+        experimentRepository.save(ex);
     }
 }

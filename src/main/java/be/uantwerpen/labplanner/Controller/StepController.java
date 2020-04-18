@@ -2,6 +2,7 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Repository.DeviceRepository;
+import be.uantwerpen.labplanner.Repository.ExperimentRepository;
 import be.uantwerpen.labplanner.Repository.ExperimentTypeRepository;
 import be.uantwerpen.labplanner.Service.*;
 import be.uantwerpen.labplanner.common.model.stock.Product;
@@ -58,6 +59,8 @@ public class StepController {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    ExperimentRepository experimentservice;
 
     private Logger logger = LoggerFactory.getLogger(StepController.class);
 
@@ -263,7 +266,7 @@ public class StepController {
                 model.addAttribute("allDevices", deviceService.findAll());
                 model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
                 model.addAttribute("allSteps", stepService.findAll());
-                return "/PlanningTool/step-manage";
+                return "PlanningTool/step-manage";
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
@@ -347,7 +350,7 @@ public class StepController {
     public String viewShowExperiments(final ModelMap model){
         model.addAttribute("allExperiments",experimentService.findAll());
         model.addAttribute("allExperimentTypes",experimentTypeService.findAll());
-        return "/PlanningTool/planning-exp-list";
+        return "PlanningTool/planning-exp-list";
     }
     @RequestMapping(value = "/planning/experiments/{id}/delete",method = RequestMethod.GET)
     public String deleteExperimentType(@PathVariable Long id, final ModelMap model,RedirectAttributes ra){
@@ -386,8 +389,51 @@ public class StepController {
         return "redirect:/planning/experiments";
 
     }
-    @RequestMapping(value = "/planning/experiments/put",method = RequestMethod.GET)
-    public String viewCreateExperimentType( final ModelMap model){
+
+    @RequestMapping(value = "/planning/experiments/book", method = RequestMethod.GET)
+    public String viewBookNewExperiment(final ModelMap model) {
+        List<Step> stepList = new ArrayList<Step>();
+        //prepare list of empty steps
+        for (int i = 0; i < 100; i++) {
+            stepList.add(new Step());
+        }
+        model.addAttribute("allDevices", deviceService.findAll());
+        model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+        model.addAttribute("allMixtures", mixtureService.findAll());
+        model.addAttribute("allStepTypes", stepTypeService.findAll());
+        model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
+        model.addAttribute("experiment", new Experiment());
+        return "/PlanningTool/planning-exp-book";
+    }
+
+
+
+    @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
+    @RequestMapping(value = {"/planning/experiments/book", "/planning/experiments/book/{id}"}, method = RequestMethod.POST)
+    public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        experiment.setUser(currentUser);
+        //set ExperimentType by ExperimentType id
+        for (ExperimentType expType : experimentTypeService.findAll()) {
+            System.out.println(expType.getId());
+            System.out.println(experiment.getExperimentType().getId());
+            if (expType.getId().equals(experiment.getExperimentType().getId())) {
+                experiment.setExperimentType(expType);
+            }
+        }
+        List<Step> tmpListSteps = new ArrayList<Step>();
+        for (Step step : experiment.getSteps()) {
+            step.setUser(currentUser);
+            stepService.saveSomeAttributes(step);
+            tmpListSteps.add(step);
+        }
+        experiment.setSteps(tmpListSteps);
+        experimentService.saveExperiment(experiment);
+        return "redirect:/planning/";
+    }
+
+    @RequestMapping(value = "/planning/experiments/put", method = RequestMethod.GET)
+    public String viewCreateExperimentType(final ModelMap model) {
         List<String> options = new ArrayList<>();
         options.add("No");options.add("Soft");options.add("Hard");
         model.addAttribute("allDevices",deviceService.findAll());
@@ -408,10 +454,10 @@ public class StepController {
         model.addAttribute("allStepTypes",stepTypeService.findAll());
         model.addAttribute("experimentType",experimentTypeService.findById(id).get());
         model.addAttribute("allOptions",options);
-        return "/PlanningTool/planning-exp-manage";
+        return "PlanningTool/planning-exp-manage";
     }
     @RequestMapping(value = {"/planning/experiments/","/planning/experiments/{id}"},method = RequestMethod.POST)
-    public String addNewExperimentType(@Valid ExperimentType experimentType, BindingResult result, ModelMap model, RedirectAttributes ra){
+    public String addNewExperimentType(@Valid ExperimentType experimentType, BindingResult result, RedirectAttributes ra){
 
         if (result.hasErrors()) {
             ra.addFlashAttribute("Status", new String("Error"));
@@ -419,18 +465,20 @@ public class StepController {
             System.out.println(result.getFieldError().toString());
             return "redirect:/planning/experiments";
         }
-        for(ExperimentType exptyp : experimentTypeService.findAll()) {
-            if(experimentType.getExpname().equals(exptyp.getExpname()))
-            {
-                ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message",new String("There was a problem in adding the Experiment Type:\nThis experiment type name is already occupied!"));
-                return "redirect:/planning/experiments";
+        ExperimentType tempExperimentType = experimentType.getId() == null?null: experimentTypeRepository.findById( experimentType.getId()).orElse(null);
+        if(tempExperimentType==null) {
+            for (ExperimentType exptyp : experimentTypeService.findAll()) {
+                if (experimentType.getExpname().equals(exptyp.getExpname())) {
+                    ra.addFlashAttribute("Status", new String("Error"));
+                    ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nThis experiment type name is already occupied!"));
+                    return "redirect:/planning/experiments";
+                }
             }
         }
 
 
         for(StepType stepType : experimentType.getStepTypes()){
-            if(stepType.getContinuity().getHour()<0){
+            if(stepType.getContinuity().getHours()<0){
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message",new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
                 return "redirect:/planning/experiments";
@@ -443,7 +491,7 @@ public class StepController {
             else
                 stepTypeService.saveNewStepType(stepType);
         }
-        ExperimentType tempExperimentType = experimentType.getId() == null?null: experimentTypeRepository.findById( experimentType.getId()).orElse(null);
+
         if(tempExperimentType!=null){
             ra.addFlashAttribute("Status", new String("Success"));
             ra.addFlashAttribute("Message",new String("Experiment type successfully edited."));
