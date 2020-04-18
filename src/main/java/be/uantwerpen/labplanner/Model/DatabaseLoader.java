@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@Profile("!prod")
+//@Profile("!prod")
 public class DatabaseLoader {
 
     private final PrivilegeRepository privilegeRepository;
