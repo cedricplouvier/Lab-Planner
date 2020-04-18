@@ -121,7 +121,7 @@ public class StatisticsController {
             totalHours.set(i,totalHoursSelectedDevice);
             //get highest absolute value to scale the y axis
             for(int j=0; j<totalHoursSelectedDevice.length;j++){
-                if(totalHoursSelectedDevice[j] > highestAbsoluteValueHours){
+                if(totalHoursSelectedDevice[j] >= highestAbsoluteValueHours){
                     highestAbsoluteValueHours = totalHoursSelectedDevice[j];
                 }
             }
@@ -153,7 +153,7 @@ public class StatisticsController {
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/getSelectedYear")
     public String getSelectedYear(String selectedYear){
-        this.selectedYear=selectedYear;
+        setSelectedYear(selectedYear);
         return "redirect:/statistics/statistics/refreshYear";
     }
 
@@ -187,7 +187,7 @@ public class StatisticsController {
             totalHours.set(i,totalHoursSelectedDevice);
             //get highest absolute value to scale the y axis
             for(int j=0; j<totalHoursSelectedDevice.length;j++){
-                if(totalHoursSelectedDevice[j] > highestAbsoluteValueHours){
+                if(totalHoursSelectedDevice[j] >= highestAbsoluteValueHours){
                     highestAbsoluteValueHours = totalHoursSelectedDevice[j];
                 }
             }
@@ -288,7 +288,13 @@ public class StatisticsController {
                         }
                         //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
                         else{
-                            int fullDaysThisMonth= 31 - Integer.parseInt(startDay);
+                            int fullDaysThisMonth;
+                            if(Integer.parseInt(startMonth) % 2 == 0) {
+                                fullDaysThisMonth = 30 - Integer.parseInt(startDay);
+                            }
+                            else{
+                                fullDaysThisMonth=31- Integer.parseInt(startDay);
+                            }
                             int fullDaysLastMonth= Integer.parseInt(endDay)-1;
                             float fullDaysMonthsInbetween = (float)30.5;
                             totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime-Integer.parseInt(startHour)) + (fullDaysThisMonth*(labClosingTime-labOpeningTime)));
@@ -390,18 +396,18 @@ public class StatisticsController {
 
 
                 //If not same startDate and not same endDate as other step and same month just do (end - start)+1
-                if((bookedDaysStart.contains(stepDateStart)==false) && (bookedDaysEnd.contains(stepDateEnd)==false) && (startMonth.matches(endMonth)==true)){
+                if((bookedDaysEnd.contains(stepDateStart)==false) && (bookedDaysStart.contains(stepDateEnd)==false) && (startMonth.matches(endMonth)==true)){
                     int dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay))+1;
                     totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                 }
                 // if same startDate but not same endDate as other step and same month do (end - start) OR not same startDate but same endDate
-                else if(((bookedDaysStart.contains(stepDateStart)==true) && (bookedDaysEnd.contains(stepDateEnd)==false) && (startMonth.matches(endMonth)==true))
-                        || ((bookedDaysStart.contains(stepDateStart)==false) && (bookedDaysEnd.contains(stepDateEnd)==true) && (startMonth.matches(endMonth)==true))){
+                else if(((bookedDaysEnd.contains(stepDateStart)==true) && (bookedDaysStart.contains(stepDateEnd)==false) && (startMonth.matches(endMonth)==true))
+                        || ((bookedDaysEnd.contains(stepDateStart)==false) && (bookedDaysStart.contains(stepDateEnd)==true) && (startMonth.matches(endMonth)==true))){
                     float dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay));
                     totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                 }
                 // if same startDate and same endDate as other step and same month do (end- start)-1 BUT look out for values smaller than 0 (occurs when step duration one day)
-                else if((bookedDaysStart.contains(stepDateStart)==true) && (bookedDaysEnd.contains(stepDateEnd)==true) && (startMonth.matches(endMonth)==true)){
+                else if((bookedDaysEnd.contains(stepDateStart)==true) && (bookedDaysStart.contains(stepDateEnd)==true) && (startMonth.matches(endMonth)==true)){
                     float dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay))-1;
                     if(dayDiff >=0) {
                         totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
@@ -410,7 +416,7 @@ public class StatisticsController {
                     }
                 }
                 // If not same startDate and not same endDate as other step and different month just do (end - start)+1
-                else if((bookedDaysStart.contains(stepDateStart)==false) && (bookedDaysEnd.contains(stepDateEnd)==false) && (startMonth.matches(endMonth)==false)){
+                else if((bookedDaysEnd.contains(stepDateStart)==false) && (bookedDaysStart.contains(stepDateEnd)==false) && (startMonth.matches(endMonth)==false)){
                     float monthsDifference = (Integer.parseInt(endMonth))-(Integer.parseInt(startMonth));
                     if(monthsDifference==1) {
                         // If february -> march
@@ -448,8 +454,8 @@ public class StatisticsController {
                     }
                 }
                 // if same startDate but not same endDate as other step and not same month do (end - start) OR not same startDate but same endDate
-                else if(((bookedDaysStart.contains(stepDateStart)==true) && (bookedDaysEnd.contains(stepDateEnd)==false) && (startMonth.matches(endMonth)==false))
-                        || ((bookedDaysStart.contains(stepDateStart)==false) && (bookedDaysEnd.contains(stepDateEnd)==true) && (startMonth.matches(endMonth)==false))){
+                else if(((bookedDaysEnd.contains(stepDateStart)==true) && (bookedDaysStart.contains(stepDateEnd)==false) && (startMonth.matches(endMonth)==false))
+                        || ((bookedDaysEnd.contains(stepDateStart)==false) && (bookedDaysStart.contains(stepDateEnd)==true) && (startMonth.matches(endMonth)==false))){
                     float monthsDifference = (Integer.parseInt(endMonth))-(Integer.parseInt(startMonth));
                     if(monthsDifference==1) {
                         // If february -> march
@@ -487,7 +493,7 @@ public class StatisticsController {
                     }
                 }
                 // If same startDate and same endDate as other step and different month just do (end - start)-1
-                else if((bookedDaysStart.contains(stepDateStart)==true) && (bookedDaysEnd.contains(stepDateEnd)==true) && (startMonth.matches(endMonth)==false)){
+                else if((bookedDaysEnd.contains(stepDateStart)==true) && (bookedDaysStart.contains(stepDateEnd)==true) && (startMonth.matches(endMonth)==false)){
                     float monthsDifference = (Integer.parseInt(endMonth))-(Integer.parseInt(startMonth));
                     if(monthsDifference==1) {
                         // If february -> march
@@ -622,13 +628,6 @@ public class StatisticsController {
         return hour;
     }
 
-    public static void getCurrentTimeUsingDate() {
-        Date date = new Date();
-        String strDateFormat = "yyyy-MM-dd";
-        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
-        String formattedDate = dateFormat.format(date);
-    }
-
     public static String getCurrentYear() {
         Date date = new Date();
         String strDateFormat = "yyyy";
@@ -637,4 +636,15 @@ public class StatisticsController {
         return formattedDate;
     }
 
+    public void setSelectedYear(String year) {
+         this.selectedYear=year;
+    }
+
+    public float getLabOpeningHoursInYear(){
+        return labOpeningHoursInYear;
+    }
+
+    public float getAmountOfWorkDaysInYear(){
+        return amountOfWorkDaysInYear;
+    }
 }

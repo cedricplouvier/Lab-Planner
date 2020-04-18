@@ -53,7 +53,7 @@ public class RoleController {
     @RequestMapping(value = "/usermanagement/roles",method = RequestMethod.GET)
     public String showRoles(final ModelMap model){
         model.addAttribute("allRoles",roleService.findAll());
-        return "/Roles/role-list";
+        return "Roles/role-list";
     }
 
     @PreAuthorize("hasAnyAuthority('User Management')")
@@ -61,7 +61,7 @@ public class RoleController {
     public String ViewCreateRole(final ModelMap model){
         model.addAttribute("allPrivileges",privilegeService.findAll());
         model.addAttribute(new Role(""));
-        return "/Roles/role-manage";
+        return "Roles/role-manage";
     }
 
     @PreAuthorize("hasAnyAuthority('User Management')")
@@ -69,7 +69,7 @@ public class RoleController {
     public String viewEditRole(@PathVariable long id, final ModelMap model){
         model.addAttribute("allPrivileges",privilegeService.findAll());
         model.addAttribute("role",roleService.findById(id));
-        return "/Roles/role-manage";
+        return "Roles/role-manage";
     }
 
     @PreAuthorize("hasAnyAuthority('User Management')")
@@ -78,13 +78,13 @@ public class RoleController {
         if ((result.hasErrors()) || (role.getName() == null)||( role.getName().trim().equals(""))) {
             model.addAttribute("allPrivileges", privilegeService.findAll());
             model.addAttribute("roleInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("roles.errorAdd"));
-            return "/Roles/role-manage";
+            return "Roles/role-manage";
         }
         if (role.getId() == null) {
             if (roleService.findByName(role.getName()).isPresent()) {
                 model.addAttribute("allPrivileges", privilegeService.findAll());
                 model.addAttribute("roleInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("roles.errorUnique"));
-                return "/Roles/role-manage";
+                return "Roles/role-manage";
             }
             //trim input and save
             role.setName(role.getName().trim());
@@ -97,7 +97,7 @@ public class RoleController {
             if (roleService.findByName(role.getName()).isPresent()){
                 model.addAttribute("allPrivileges", privilegeService.findAll());
                 model.addAttribute("roleInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("roles.errorUnique"));
-                return "/Roles/role-manage";
+                return "Roles/role-manage";
             }
             //trim input and save
             role.setName(role.getName().trim());
@@ -128,7 +128,7 @@ public class RoleController {
 
             //get message from resourceBundle
             model.addAttribute("inUseError",ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("roles.errorDelete"));
-            return "/Roles/role-list";
+            return "Roles/role-list";
         }
         roleService.deleteById(id);
         model.clear();

@@ -1,6 +1,5 @@
 package be.uantwerpen.labplanner.Service;
 
-import be.uantwerpen.labplanner.Model.Mixture;
 import be.uantwerpen.labplanner.Model.Report;
 import be.uantwerpen.labplanner.Repository.ReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
