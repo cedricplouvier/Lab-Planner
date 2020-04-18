@@ -5,27 +5,25 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.*;
 import java.util.List;
+
 @Entity
 public class Experiment extends AbstractPersistable<Long> {
 
 
     @ManyToOne
-    @JoinColumn(name = "user", unique = true)
+    @JoinColumn(name = "user")
     private User user;
+
     @OneToOne
     @JoinColumn(name = "experimentType")
     private ExperimentType experimentType;
 
     @Column(name = "experimentname", unique = true, nullable = false)
     private String experimentname;
-    @OneToOne
-    @JoinColumn(name = "expMixture")
-    private Mixture mixture;
-    @Column(name = "expMixtureComment")
-    private String mixtureComment;
-    @Column(name = "expmixtureAmount")
-    private double mixtureAmount;
 
+    @OneToMany
+    @JoinColumn(name = "piecesOfMixture")
+    private List<PieceOfMixture> piecesOfMixture;
 
     @OneToMany
     @JoinColumn(name = "steps")
@@ -33,6 +31,7 @@ public class Experiment extends AbstractPersistable<Long> {
 
     @Column(name = "startDate")
     private String startDate;
+
     @Column(name = "endDate")
     private String endDate;
 
@@ -42,9 +41,7 @@ public class Experiment extends AbstractPersistable<Long> {
         this.steps = experiment.steps;
         this.user = experiment.user;
         this.experimentname = experiment.experimentname;
-        this.mixtureAmount = experiment.mixtureAmount;
-        this.mixture = experiment.mixture;
-        this.mixtureComment = experiment.mixtureComment;
+        this.piecesOfMixture=experiment.piecesOfMixture;
         this.startDate = experiment.startDate;
         this.endDate = experiment.endDate;
     }
@@ -63,14 +60,12 @@ public class Experiment extends AbstractPersistable<Long> {
     public Experiment() {
     }
 
-    public Experiment(ExperimentType experimentType, List<Step> steps, User user, String experimentname, Mixture mixture, String mixtureComment,int mixtureAmount, String startDate, String endDate) {
-       this.experimentType = experimentType;
+    public Experiment(ExperimentType experimentType, List<Step> steps, User user, String experimentname, List<PieceOfMixture> piecesOfMixture, String startDate, String endDate) {
+        this.experimentType = experimentType;
         this.steps = steps;
         this.user = user;
         this.experimentname = experimentname;
-        this.mixtureAmount = mixtureAmount;
-        this.mixture = mixture;
-        this.mixtureComment = mixtureComment;
+        this.piecesOfMixture = piecesOfMixture;
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -115,22 +110,6 @@ public class Experiment extends AbstractPersistable<Long> {
         this.endDate = endDate;
     }
 
-    public Mixture getMixture() {
-        return mixture;
-    }
-
-    public void setMixture(Mixture mixture) {
-        this.mixture = mixture;
-    }
-
-    public String getMixtureComment() {
-        return mixtureComment;
-    }
-
-    public void setMixtureComment(String mixtureComment) {
-        this.mixtureComment = mixtureComment;
-    }
-
     public void setSteps(List<Step> steps) {
         this.steps = steps;
     }
@@ -139,12 +118,11 @@ public class Experiment extends AbstractPersistable<Long> {
         return steps;
     }
 
-    public double getMixtureAmount() {
-        return mixtureAmount;
+    public List<PieceOfMixture> getPiecesOfMixture() {
+        return piecesOfMixture;
     }
 
-    public void setMixtureAmount(double mixtureAmount) {
-        this.mixtureAmount = mixtureAmount;
+    public void setPiecesOfMixture(List<PieceOfMixture> piecesOfMixture) {
+        this.piecesOfMixture = piecesOfMixture;
     }
-
 }
