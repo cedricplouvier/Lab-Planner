@@ -43,7 +43,7 @@ public class RelationController {
     @RequestMapping(value = "/usermanagement/users/relations",method = RequestMethod.GET)
     public String showRelations(final ModelMap model){
         model.addAttribute("allRelations",relationService.findAll());
-        return "/Users/relation-list";
+        return "Users/relation-list";
     }
 
     @PreAuthorize("hasAnyAuthority('User Management')")
@@ -51,7 +51,7 @@ public class RelationController {
     public String viewCreateRelation(@org.jetbrains.annotations.NotNull final ModelMap model){
         model.addAttribute("allUsers",userService.findAll());
         model.addAttribute(new Relation(""));
-        return "/Users/relation-manage";
+        return "Users/relation-manage";
     }
 
     @PreAuthorize("hasAnyAuthority('User Management')")
@@ -59,7 +59,7 @@ public class RelationController {
     public String viewEditRelation(@PathVariable("id") long id, final ModelMap model){
         model.addAttribute("allUsers",userService.findAll());
         model.addAttribute("relation",relationService.findById(id).orElse(null));
-        return "/Users/relation-manage";
+        return "Users/relation-manage";
     }
 
     @PreAuthorize("hasAnyAuthority('User Management')")
@@ -78,7 +78,7 @@ public class RelationController {
             //with return statement
             model.addAttribute("RelationError", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("relation.researcherError"));
             model.addAttribute("allUsers", userService.findAll());
-            return "/Users/relation-manage";
+            return "Users/relation-manage";
         }
 
 
@@ -118,7 +118,7 @@ public class RelationController {
         if (isUsed){
             model.addAttribute("allUsers",userService.findAll());
             model.addAttribute("inUseError", ResourceBundle.getBundle("messages",current).getString("user.deleteError"));
-            return "/Users/relation-list";
+            return "Users/relation-list";
         }
 
         relationService.deleteById(id);
