@@ -1,10 +1,5 @@
 package be.uantwerpen.labplanner.Model;
 
-import be.uantwerpen.labplanner.Repository.DeviceInformationRepository;
-import be.uantwerpen.labplanner.Repository.DeviceRepository;
-import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
-
-import be.uantwerpen.labplanner.Repository.StepRepository;
 import be.uantwerpen.labplanner.Repository.*;
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.stock.Tag;
@@ -20,6 +15,7 @@ import be.uantwerpen.labplanner.common.repository.users.UserRepository;
 import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -31,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@Profile("!prod")
 public class DatabaseLoader {
 
     private final PrivilegeRepository privilegeRepository;
