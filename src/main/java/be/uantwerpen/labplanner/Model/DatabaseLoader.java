@@ -50,10 +50,11 @@ public class DatabaseLoader {
     private final StepTypeRepository stepTypeRepository;
     private final ContinuityRepository continuityRepository;
     private final RelationRepository relationRepository;
+    private final ExperimentRepository experimentRepository;
     private final ReportRepository reportRepository;
 
     @Autowired
-    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository,ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository) {
+    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository,DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository,ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository,ExperimentRepository experimentRepository) {
 
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
@@ -74,9 +75,10 @@ public class DatabaseLoader {
         this.relationRepository = relationRepository;
 
 
-        this.experimentTypeRepository=experimentTypeRepository;
-        this.stepTypeRepository=stepTypeRepository;
-        this.continuityRepository=continuityRepository;
+        this.experimentTypeRepository = experimentTypeRepository;
+        this.stepTypeRepository = stepTypeRepository;
+        this.continuityRepository = continuityRepository;
+        this.experimentRepository = experimentRepository;
 
         this.reportRepository = reportRepository;
 
@@ -446,7 +448,12 @@ public class DatabaseLoader {
         deviceRepository.save(d8);
         Device d9 = new Device("Oven 3",t7);
         deviceRepository.save(d9);
-
+        Device d10 = new Device("Gyratory 1", t6);
+        deviceRepository.save(d10);
+        Device d11 = new Device("Caliper 1", t4);
+        deviceRepository.save(d11);
+        Device d12 = new Device("SVM Setup 1", t10);
+        deviceRepository.save(d12);
 
 
         //create some products
@@ -482,15 +489,15 @@ public class DatabaseLoader {
         productRepository.save(pr7);
         Product pr8 = new Product("placeholder8",lorem.getWords(20),1.0, 90.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr8);
-        Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","11:00","12:00","");
+        Step s1= new Step(u1,d1,"2020-04-18","2020-04-18","11:00","12:00","");
         stepRepository.save(s1);
-        Step s2= new Step(u1,d7,"2020-03-17","2020-03-17","08:00","18:00","");
+        Step s2= new Step(u1,d7,"2020-04-17","2020-04-17","08:00","18:00","");
         stepRepository.save(s2);
-        Step s3= new Step(u4,d1,"2020-03-16","2020-03-16","14:00","16:00","");
+        Step s3= new Step(u4,d1,"2020-04-16","2020-04-16","14:00","16:00","");
         stepRepository.save(s3);
-        Step s4= new Step(u4,d7,"2020-03-15","2020-03-15","16:00","18:00","");
+        Step s4= new Step(u4,d7,"2020-04-15","2020-04-15","16:00","18:00","");
         stepRepository.save(s4);
-        Step s5= new Step(u5,d9,"2020-03-19","2020-03-19","13:00","18:00","");
+        Step s5= new Step(u5,d9,"2020-04-19","2020-04-19","13:00","18:00","");
         stepRepository.save(s5);
 
         Step s6= new Step(u7,d9,"2020-04-10","2020-04-10","13:00","18:00","");
@@ -622,14 +629,15 @@ public class DatabaseLoader {
         reportRepository.save(r4);
         reportRepository.save(r5);
 
-
-
-
-
-
-
-
-
-
+        //fill experimentRepository
+        List<Step> stepList = new ArrayList<Step>();
+        stepList.add(s1);
+        stepList.add(s2);
+        stepList.add(s3);
+        stepList.add(s4);
+        stepList.add(s5);
+        stepList.add(s6);
+        Experiment ex = new Experiment(experimentType2, stepList, u1, "experiment1", m1, "ads", 5,"2020-03-18","2020-03-19");
+        experimentRepository.save(ex);
     }
 }

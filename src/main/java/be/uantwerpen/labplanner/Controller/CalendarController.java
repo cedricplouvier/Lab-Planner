@@ -8,6 +8,9 @@ import be.uantwerpen.labplanner.Service.DeviceService;
 import be.uantwerpen.labplanner.Service.DeviceTypeService;
 import be.uantwerpen.labplanner.Service.StepService;
 import be.uantwerpen.labplanner.common.model.users.User;
+import de.jollyday.Holiday;
+import de.jollyday.HolidayCalendar;
+import de.jollyday.HolidayManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class CalendarController {
@@ -39,6 +43,12 @@ public class CalendarController {
     //Mappings
     @RequestMapping(value = "/calendar/user", method = RequestMethod.GET)
     public String showUserCalendar(final ModelMap model) {
+        HolidayManager m = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
+        Set<Holiday> holidays = m.getHolidays(2020);
+        System.out.println(holidays.size());
+        for(Holiday holiday:holidays){
+            System.out.println(holiday.getDate());
+        }
         User user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         List<Step> userSteps = new ArrayList<Step>();
         for (Step step: stepService.findAll()) {
@@ -52,22 +62,23 @@ public class CalendarController {
         return "/Calendar/userCalendar";
     }
 
-    @RequestMapping(value = "/calendar/book", method = RequestMethod.GET)
-    public String showStepCalendar(final ModelMap model) {
-        User user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        List<Step> userSteps = new ArrayList<Step>();
-        for (Step step: stepService.findAll()) {
-            if (step.getUser().getId() ==user.getId()){
-                userSteps.add(step);
-            }
-        }
-        model.addAttribute("allUsersSteps", userSteps);
-        model.addAttribute("allSteps", stepService.findAll());
-        model.addAttribute("allDevices", deviceService.findAll());
-        model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
-        model.addAttribute("Step",new Step());
-
-        return "/Calendar/bookCalendar";
-    }
+//    @RequestMapping(value = "/calendar/book", method = RequestMethod.GET)
+//    public String showStepCalendar(final ModelMap model) {
+//
+//        User user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+//        List<Step> userSteps = new ArrayList<Step>();
+//        for (Step step: stepService.findAll()) {
+//            if (step.getUser().getId() ==user.getId()){
+//                userSteps.add(step);
+//            }
+//        }
+//        model.addAttribute("allUsersSteps", userSteps);
+//        model.addAttribute("allSteps", stepService.findAll());
+//        model.addAttribute("allDevices", deviceService.findAll());
+//        model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+//        model.addAttribute("Step",new Step());
+//
+//        return "/Calendar/bookCalendar";
+//    }
 
 }

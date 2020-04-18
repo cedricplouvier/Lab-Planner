@@ -16,18 +16,13 @@ public class Step extends AbstractPersistable<Long> {
     @OneToOne
     @JoinColumn(name= "device",nullable = false)
     private Device device;
-
     @Column(name = "start")
     private String start;
     @Column(name = "end")
     private String end;
-
     @ManyToOne
     @JoinColumn(name = "stepType")
     private StepType stepType;
-
-
-
     @Column(name = "startHour")
     private String startHour;
     @Column(name = "endHour")
@@ -120,3 +115,4 @@ public class Step extends AbstractPersistable<Long> {
         this.comment = comment;
     }
 }
+

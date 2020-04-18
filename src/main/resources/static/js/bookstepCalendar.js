@@ -20,7 +20,9 @@ function CalendarInfo() {
 function addCalendar(calendar) {
     CalendarList.push(calendar);
 }
-
+function removeLastSchedule() {
+    ScheduleList.pop();
+}
 function findCalendar(id) {
     var found;
 
@@ -103,30 +105,61 @@ function ScheduleInfo() {
     };
 }
 
-function generateSchedule(viewName, renderStart, renderEnd) {
+function generateSchedule() {
     ScheduleList = [];
-    steps.forEach(function (step) {
-        let schedule = new ScheduleInfo();
-        let calendar = findCalendar(String(step['device']['deviceType']['id']));
-        schedule.id = chance.guid();
-        schedule.calendarId = calendar.id;
-        schedule.title = 'schedule ' + step['id'];
-        schedule.body = 'name:    ' + step['device']['devicename'] + "<br>"
-            + 'type:    ' + step['device']['deviceType']['deviceTypeName'] + "<br>"
-            + 'comment: ' + step['device']['comment'] + "<br>";
-        ;
-        schedule.isReadOnly = false;
-        schedule.start = new Date(step['start'] + 'T' + step['startHour']);
-        schedule.end = new Date(step['end'] + 'T' + step['endHour']);
-        schedule.color = calendar.color;
-        schedule.bgColor = calendar.bgColor;
-        schedule.dragBgColor = calendar.dragBgColor;
-        schedule.borderColor = calendar.borderColor;
-        schedule.category = 'time';
+    //Add all users steps of the devicetype
+    userSteps.forEach(function (step) {
+        if(step['device']['deviceType']['id'] === allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['id']) {
+            let schedule = new ScheduleInfo();
+            let calendar = findCalendar(String(step['device']['deviceType']['id']));
+            schedule.id = chance.guid();
+            schedule.calendarId = calendar.id;
+            schedule.title = step['device']['deviceType']['deviceTypeName'];
+            schedule.body = 'name:    ' + step['device']['devicename'] + "<br>"
+                + 'type:    ' + step['device']['deviceType']['deviceTypeName'] + "<br>"
+                + 'comment: ' + step['device']['comment'] + "<br>";
+            ;
+            schedule.isReadOnly = true;
+            schedule.start = new Date(step['start'] + 'T' + step['startHour']);
+            schedule.end = new Date(step['end'] + 'T' + step['endHour']);
+            schedule.isReadOnly = true;
+            schedule.color = calendar.color;
+                schedule.bgColor = '#0275d8';
+                schedule.dragBgColor = '#0275d8';
+                schedule.borderColor = '#0275d8';
 
-        ScheduleList.push(schedule);
 
+            schedule.category = 'time';
+
+            ScheduleList.push(schedule);
+        }
     })
 
+    //Add all other steps of devicetpye
+    otherSteps.forEach(function (step) {
+        if(step['device']['deviceType']['id'] === allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['id']) {
+            let schedule = new ScheduleInfo();
+            let calendar = findCalendar(String(step['device']['deviceType']['id']));
+            schedule.id = chance.guid();
+            schedule.calendarId = calendar.id;
+            schedule.title = step['device']['deviceType']['deviceTypeName'];
+            schedule.body = 'name:    ' + step['device']['devicename'] + "<br>"
+                + 'type:    ' + step['device']['deviceType']['deviceTypeName'] + "<br>"
+                + 'comment: ' + step['device']['comment'] + "<br>";
+            ;
+            schedule.isReadOnly = true;
+            schedule.start = new Date(step['start'] + 'T' + step['startHour']);
+            schedule.end = new Date(step['end'] + 'T' + step['endHour']);
+            schedule.color = calendar.color;
+            schedule.bgColor = '#292b2c';
+            schedule.dragBgColor = '#292b2c';
+            schedule.borderColor = '#292b2c';
+
+
+            schedule.category = 'time';
+
+            ScheduleList.push(schedule);
+        }
+    })
 }
 

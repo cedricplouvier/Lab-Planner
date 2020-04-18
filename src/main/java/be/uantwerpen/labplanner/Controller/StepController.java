@@ -2,6 +2,7 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Repository.DeviceRepository;
+import be.uantwerpen.labplanner.Repository.ExperimentRepository;
 import be.uantwerpen.labplanner.Repository.ExperimentTypeRepository;
 import be.uantwerpen.labplanner.Service.*;
 import be.uantwerpen.labplanner.common.model.stock.Product;
@@ -58,6 +59,8 @@ public class StepController {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    ExperimentRepository experimentservice;
 
     private Logger logger = LoggerFactory.getLogger(StepController.class);
 
@@ -386,8 +389,67 @@ public class StepController {
         return "redirect:/planning/experiments";
 
     }
-    @RequestMapping(value = "/planning/experiments/put",method = RequestMethod.GET)
-    public String viewCreateExperimentType( final ModelMap model){
+
+    @RequestMapping(value = "/planning/experiments/book", method = RequestMethod.GET)
+    public String viewBookNewExperiment(final ModelMap model) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<Step> stepList = new ArrayList<Step>();
+        //prepare list of empty steps
+        for (int i = 0; i < 100; i++) {
+            stepList.add(new Step());
+        }
+
+        List<Step> userSteps = new ArrayList<Step>();
+        List<Step> otherSteps = new ArrayList<Step>();
+
+        for (Step step: stepService.findAll()) {
+            if (step.getUser().getId() ==currentUser.getId()){
+                userSteps.add(step);
+            }else{
+                otherSteps.add(step);
+            }
+        }
+
+        model.addAttribute("allDevices", deviceService.findAll());
+        model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+        model.addAttribute("allMixtures", mixtureService.findAll());
+        model.addAttribute("allStepTypes", stepTypeService.findAll());
+        model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
+        model.addAttribute("userSteps", userSteps);
+        model.addAttribute("otherSteps", otherSteps);
+        model.addAttribute("experiment", new Experiment());
+        return "/PlanningTool/planning-exp-book";
+    }
+
+
+
+    @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
+    @RequestMapping(value = {"/planning/experiments/book", "/planning/experiments/book/{id}"}, method = RequestMethod.POST)
+    public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        experiment.setUser(currentUser);
+        //set ExperimentType by ExperimentType id
+        for (ExperimentType expType : experimentTypeService.findAll()) {
+            System.out.println(expType.getId());
+            System.out.println(experiment.getExperimentType().getId());
+            if (expType.getId().equals(experiment.getExperimentType().getId())) {
+                experiment.setExperimentType(expType);
+            }
+        }
+        List<Step> tmpListSteps = new ArrayList<Step>();
+        for (Step step : experiment.getSteps()) {
+            step.setUser(currentUser);
+            stepService.saveSomeAttributes(step);
+            tmpListSteps.add(step);
+        }
+        experiment.setSteps(tmpListSteps);
+        experimentService.saveExperiment(experiment);
+        return "redirect:/planning/";
+    }
+
+    @RequestMapping(value = "/planning/experiments/put", method = RequestMethod.GET)
+    public String viewCreateExperimentType(final ModelMap model) {
         List<String> options = new ArrayList<>();
         options.add("No");options.add("Soft");options.add("Hard");
         model.addAttribute("allDevices",deviceService.findAll());
@@ -430,11 +492,12 @@ public class StepController {
 
 
         for(StepType stepType : experimentType.getStepTypes()){
-            if(stepType.getContinuity().getHour()<0){
+            if(stepType.getContinuity().getHours()<0){
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message",new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
                 return "redirect:/planning/experiments";
             }
+
             if(stepType.getContinuity().getMinutes()>59 || stepType.getContinuity().getMinutes()<0){
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message",new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
