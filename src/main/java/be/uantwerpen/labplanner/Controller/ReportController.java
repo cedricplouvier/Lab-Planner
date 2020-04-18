@@ -37,7 +37,7 @@ public class ReportController {
     @RequestMapping(value="/reports/list", method= RequestMethod.GET)
     public String showReportList(final ModelMap model){
         model.addAttribute("allReports", reportService.findAll());
-        return "/Reports/report-list";
+        return "Reports/report-list";
     }
 
     @PreAuthorize("hasAuthority('Console Access')")
@@ -48,7 +48,7 @@ public class ReportController {
         model.clear();
         model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
         model.addAttribute("allReports", reportService.findAll());
-        return "/Reports/report-list";
+        return "Reports/report-list";
 
     }
 
