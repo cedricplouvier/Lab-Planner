@@ -492,7 +492,7 @@ public class StepController {
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
         model.addAttribute("experiment", new Experiment());
-        return "/PlanningTool/planning-exp-book";
+        return "PlanningTool/planning-exp-book";
     }
 
 
@@ -687,7 +687,7 @@ public class StepController {
         } else {
             ra.addFlashAttribute("Status", new String("Error"));
             ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
-            return "/PlanningTool/planning-exp-book";
+            return "PlanningTool/planning-exp-book";
         }
     }
 
@@ -697,7 +697,7 @@ public class StepController {
     @RequestMapping(value = "/planning/experiments/book/info/{id}", method = RequestMethod.GET)
     public String viewExperimentInfo(@PathVariable Long id, final ModelMap model) throws IOException {
         model.addAttribute("experiment", experimentService.findById(id).orElse(null));
-        return "/PlanningTool/planning-exp-info";
+        return "PlanningTool/planning-exp-info";
     }
 
 
@@ -730,7 +730,7 @@ public class StepController {
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("experimentType", experimentTypeService.findById(id).get());
         model.addAttribute("allOptions", options);
-        return "/PlanningTool/planning-exp-manage";
+        return "PlanningTool/planning-exp-manage";
     }
     @RequestMapping(value = {"/planning/experiments/", "/planning/experiments/{id}"}, method = RequestMethod.POST)
     public String addNewExperimentType(@Valid ExperimentType experimentType, BindingResult result, ModelMap model, RedirectAttributes ra) {

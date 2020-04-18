@@ -15,7 +15,7 @@
         }
     </script>
     <script th:inline="javascript">
-
+        toastr.options.extendedTimeOut = 5000;
         $(document).ready(function () {
             var status = /*[[${Status}]]*/ null;
             var messages =  /*[[${Message}]]*/ "";
