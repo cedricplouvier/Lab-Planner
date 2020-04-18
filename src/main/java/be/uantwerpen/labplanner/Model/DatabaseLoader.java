@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@Profile("!prod")
 public class DatabaseLoader {
 
     private final PrivilegeRepository privilegeRepository;
@@ -689,7 +688,7 @@ public class DatabaseLoader {
         List<PieceOfMixture> pomList = new ArrayList<>();
         pomList.add(pom);
 
-        Experiment ex = new Experiment(experimentType1, stepList, u6, "experiment1", pomList, "2020-03-18", "2020-03-19");
+        Experiment ex = new Experiment(experimentType1, stepList, u6, "experiment1", pomList, "2020-03-16", "2020-03-19");
         experimentRepository.save(ex);
     }
 }
