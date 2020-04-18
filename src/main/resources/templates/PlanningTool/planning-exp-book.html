@@ -6,7 +6,43 @@
 <head th:replace="navbar :: head (title='#{Experiment Management}')"></head>
 <script th:inline="javascript">
 
-    function addrow() {
+
+    function addMixtureRow(mixtures) {
+        console.log();
+        var i = $('#mixtureList tr').length;
+
+        var deviceOptions = null;
+        for (let j = 0; j < mixtures.length; j++) {
+            deviceOptions += '<option class="dropdown-item" value="' + mixtures[j].id + '" selected="selected">' + mixtures[j].name + '</option>'
+        }
+        $('#mixtureList')
+            .append(
+                '<tr>\n' +
+                '   <th>\n' +
+                '   <select required="" class=" form-control input-device" id="selectMixture" name="piecesOfMixture[' + i + '].mixture">' +
+                '       <option hidden="" value="">Select mixture</option>' +
+                deviceOptions +
+                '   </select>' +
+                '   </th>' +
+                '   <th>' +
+                '       <input class=" form-control input-device" placeholder="Amount of mixture" id="piecesOfMixture' + i + '.mixtureAmount" name="piecesOfMixture[' + i + '].mixtureAmount" required>' +
+                '   </th>' +
+                '   <th>' +
+                '       <input class=" form-control input-device" placeholder="Mixture comment" id="piecesOfMixture' + i + '.mixtureComment" name="piecesOfMixture[' + i + '].mixtureComment">' +
+                '   </th>' +
+                '</tr>');
+    }
+
+
+    function removeMixtureRow() {
+
+        var i = $('#mixtureList tr').length;
+        if (i > 0) {
+            document.getElementById("mixtureList").deleteRow(i - 1);
+        }
+    }
+
+    function addStepsRows() {
         //reference table
         var experimentTypeId = $('#selectExperimentType :selected').val();
 
@@ -152,20 +188,21 @@
         <input th:field="*{id}" th:type="hidden"/>
         <input id="experimentType" th:type="hidden"
                th:field="*{experimentType}">
+
+
+        <h3><span th:text="#{experiment.info}"></span></h3>
         <table class="table table-hover" style="text-align:center; font-size:90%;">
             <thead>
             <tr>
                 <th th:text="#{experiment.type}">Experiment Type</th>
                 <th th:text="#{experiment.name}">Experiment Name</th>
-                <th th:text="#{mixtures}">Mixture</th>
-                <th th:text="#{mixtures.amount}">Amount</th>
             </tr>
             </thead>
             <!-- IMPORTANT, class="list" have to be at tbody -->
             <tbody>
 
             <th>
-                <select required class=" form-control input-device" id="selectExperimentType" onchange="addrow()"
+                <select required class=" form-control input-device" id="selectExperimentType" onchange="addStepsRows()"
                         th:field="*{experimentType.id}">
                     <option selected hidden th:text="#{experiment.type.select}" value=""> Select
                         experiment type
@@ -178,24 +215,66 @@
                 </select>
             </th>
             <th>
-                <input th:field="*{experimentname}" placeholder="Expirement Name" required>
-            </th>
-            <th>
-                <select required class=" form-control input-device" id="selectMixture" th:field="*{mixture}">
-                    <option selected hidden th:text="#{mixture.select}" value=""> Select mixture
-                    </option>
-                    <option class="dropdown-item"
-                            th:each="mixture : ${allMixtures}"
-                            th:value="${{mixture}}"
-                            th:text="${mixture.getName()}">
-                    </option>
-                </select>
-            </th>
-            <th>
-                <input th:field="*{mixtureAmount}" placeholder="Amount of mixture">
+                <input class=" form-control input-device" th:field="*{experimentname}" placeholder="Expirement Name"
+                       required>
             </th>
             </tbody>
         </table>
+
+        <h3><span th:text="#{mixture.info}"></span></h3>
+        <table class="table table-hover" style="text-align:center; font-size:90%;">
+            <thead>
+            <tr>
+                <th th:text="#{mixture}">Mixture</th>
+                <th th:text="#{mixtures.amount}">Amount</th>
+                <th>Comment</th>
+            </tr>
+            </thead>
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody id="mixtureList">
+            <div th:if="(*{piecesOfMixture}!=null)">
+                <tr th:each="mixture, itemStat : *{piecesOfMixture}">
+                    <th>
+                        <select required class=" form-control input-device" id="selectMixture"
+                                th:field="*{piecesOfMixture[__${itemStat.index}__].mixture}">
+                            <option selected hidden th:text="#{mixture.select}" value=""> Select mixture
+                            </option>
+                            <option class="dropdown-item"
+                                    th:each="mixture  : ${allMixtures}"
+                                    th:value="${{mixture}}"
+                                    th:text="${mixture.name}">
+                            </option>
+                        </select>
+                    </th>
+                    <th>
+                        <input class=" form-control input-device"
+                               th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
+                               placeholder="Amount of mixture" required>
+                    </th>
+                    <th>
+                        <input class=" form-control input-device"
+                               th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureComment}"
+                               placeholder="Mixture comment">
+                    </th>
+                </tr>
+
+            </div>
+            </tbody>
+        </table>
+        <button style="margin-right: 10px;font-size: 90%" class="btn btn-primary "
+                type="button"
+                th:text="#{mixture.add}"
+                th:onclick="addMixtureRow([[${allMixtures}]])">
+        </button>
+
+        <button style="margin-right: 10px;font-size: 90%" class="btn btn-outline-primary"
+                type="button"
+                th:text="#{mixture.remove}"
+                th:onclick="removeMixtureRow()">
+        </button>
+
+        <h3><span th:text="#{step.info}"></span></h3>
+
         <table class="table table-hover" style=" font-size:100%; text-align:center;">
 
             <thead>

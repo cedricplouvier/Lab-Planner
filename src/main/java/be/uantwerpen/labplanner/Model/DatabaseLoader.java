@@ -20,7 +20,6 @@ import be.uantwerpen.labplanner.common.repository.users.UserRepository;
 import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -46,6 +45,7 @@ public class DatabaseLoader {
     private final StepRepository stepRepository;
     private final CompositionRepository compositionRepository;
     private final MixtureRepository mixtureRepository;
+    private final PieceOfMixtureRepository pieceOfMixtureRepository;
     private final ExperimentTypeRepository experimentTypeRepository;
     private final StepTypeRepository stepTypeRepository;
     private final ContinuityRepository continuityRepository;
@@ -54,7 +54,7 @@ public class DatabaseLoader {
     private final ReportRepository reportRepository;
 
     @Autowired
-    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository, DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository, ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository, ExperimentRepository experimentRepository) {
+    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository, DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository, PieceOfMixtureRepository pieceOfMixtureRepository, ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository, ExperimentRepository experimentRepository) {
 
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
@@ -73,6 +73,7 @@ public class DatabaseLoader {
         this.mixtureRepository = mixtureRepository;
         this.compositionRepository = compositionRepository;
         this.relationRepository = relationRepository;
+        this.pieceOfMixtureRepository = pieceOfMixtureRepository;
 
 
         this.experimentTypeRepository = experimentTypeRepository;
@@ -81,6 +82,7 @@ public class DatabaseLoader {
         this.experimentRepository = experimentRepository;
 
         this.reportRepository = reportRepository;
+
 
     }
 
@@ -681,7 +683,13 @@ public class DatabaseLoader {
         for (int i = 0; i < stepList.size(); i++) {
             stepList.get(i).setStepType(experimentType1.getStepTypes().get(i));
         }
-        Experiment ex = new Experiment(experimentType1, stepList, u6, "experiment1", m1, "ads", 5, "2020-03-18", "2020-03-19");
+        PieceOfMixture pom = new PieceOfMixture(m1, "Best part of mixture!", 6.6666);
+        pieceOfMixtureRepository.save(pom);
+
+        List<PieceOfMixture> pomList = new ArrayList<>();
+        pomList.add(pom);
+
+        Experiment ex = new Experiment(experimentType1, stepList, u6, "experiment1", pomList, "2020-03-18", "2020-03-19");
         experimentRepository.save(ex);
     }
 }

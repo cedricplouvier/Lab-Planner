@@ -29,9 +29,7 @@ public class ExperimentService {
             tempExperiment.setUser(experiment.getUser());
             tempExperiment.setExperimentType(experiment.getExperimentType());
             tempExperiment.setExperimentname(experiment.getExperimentname());
-            tempExperiment.setMixture(experiment.getMixture());
-            tempExperiment.setMixtureAmount(experiment.getMixtureAmount());
-            tempExperiment.setMixtureComment(experiment.getMixtureComment());
+            tempExperiment.setPiecesOfMixture(experiment.getPiecesOfMixture());
             tempExperiment.setStartDate(experiment.getStartDate());
             tempExperiment.setEndDate(experiment.getEndDate());
             tempExperiment.setSteps(experiment.getSteps());

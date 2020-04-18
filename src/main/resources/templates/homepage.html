@@ -88,8 +88,6 @@
             <th th:text="#{experiment.type}">Experiment Type</th>
             <th th:text="#{step.start}">Start Date</th>
             <th th:text="#{step.end}">End Date</th>
-            <th th:text="#{mixture}">Mixture</th>
-            <th th:text="#{mixtures.amount}">Mixture amount</th>
         </tr>
         </thead>
         <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -99,8 +97,6 @@
             <td class="experimentType" th:value="${experiment.getExperimentType().getExperimentTypeName()}" th:text="${experiment.getExperimentType().getExperimentTypeName()}">Experiment Type name</td>
             <td class="startTime" th:value="${experiment.getStartDate()}" th:text="${experiment.getStartDate()}"> Start Date</td>
             <td class="endTime" th:value="${experiment.getEndDate()}" th:text="${experiment.getEndDate()}"> End Date</td>
-            <td class="mixture" th:value="${experiment.getMixture().getName()}" th:text="${experiment.getMixture().getName()}"> Mixture</td>
-            <td class="comment" th:value="${experiment.getMixtureAmount()}" th:text="${experiment.getMixtureAmount()}"> ammount</td>
             <td>
                 <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}" th:text="#{experiment.info}" class="btn btn-primary"></a>
             </td>
