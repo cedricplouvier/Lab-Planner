@@ -10,8 +10,7 @@ public class ExperimentType extends AbstractPersistable<Long> {
 
 
 
-
-    @Column(name = "expname",unique = true,nullable = false)
+    @Column(name = "expname",nullable = false)
     private String expname;
 
     @OneToMany
