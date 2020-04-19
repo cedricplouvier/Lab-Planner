@@ -19,7 +19,6 @@
         $(document).ready(function () {
             var status = /*[[${Status}]]*/ null;
             var messages =  /*[[${Message}]]*/ "";
-            console.log(messages);
             if (status != null) {
                 if (status == "Success")
                     toastr.success(messages);
@@ -30,7 +29,6 @@
             $('.js-example-basic-single').select2();
             $('#sel').on('change', function () {
                 var devices =  /*[[${allDevices}]]*/ {};
-                console.log(this.value);
                 $('#deviceNames')
                     .empty()
                     .append(' <option value="none" selected disabled hidden> Device Name </option>')
@@ -281,7 +279,6 @@
                     </button>
                 </div>
                 <form th:action="@{/planning/{id} (id=${Step})}" th:object="${Step}" method="post">
-
                     <div class="modal-body" style="height: 260px;">
                         <input th:field="*{id}" th:type="hidden"/>
                         <select required class=" form-control input-device" id="sel">
@@ -291,7 +288,6 @@
                                 Type
                             </option>
                         </select>
-                        <!--Dropdown-->
                         <select required id="deviceNames" th:field="*{device}" class="form-control input-device"
                                 style="visibility: hidden;">
                             <option value="none" selected disabled hidden>Device Name</option>

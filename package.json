@@ -1,0 +1,7 @@
+{
+  "name": "labplanner",
+  "version": "1.0.0",
+  "dependencies": {
+    "date-holidays": "^1.5.0"
+  }
+}

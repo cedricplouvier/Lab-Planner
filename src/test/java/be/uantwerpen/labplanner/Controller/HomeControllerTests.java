@@ -86,7 +86,7 @@ public class HomeControllerTests {
     public void showPlanningtoolPageTest() throws Exception {
         mockMvc.perform(get("/planningtool"))
                 .andExpect(status().is(302))
-                .andExpect(view().name("redirect:/planning/"));
+                .andExpect(view().name("redirect:/calendar/user"));
     }
 
     @Test
