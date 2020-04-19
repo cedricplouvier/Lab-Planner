@@ -232,9 +232,9 @@ public class DeviceController {
     @RequestMapping(value="/devices/info/{id}/{typeid}/delete")
     public String deleteDeviceInfo(@PathVariable Long id, final ModelMap model, @PathVariable Long typeid){
         DeviceType deviceType = deviceTypeService.findById(typeid).get();
-        List<DeviceInformation> informations = deviceType.getDeviceInformations();
+        List<DeviceInformation> informations = deviceType.getDeviceInformation();
         informations.remove(deviceInformationService.findById(id).get());
-        deviceType.setDeviceInformations(informations);
+        deviceType.setDeviceInformation(informations);
         deviceTypeService.saveNewDeviceType(deviceType);
         deviceInformationService.deleteById(id);
         model.clear();

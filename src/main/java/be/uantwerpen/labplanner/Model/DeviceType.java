@@ -16,7 +16,6 @@ import java.util.List;
 public class DeviceType extends AbstractPersistable<Long>{
     //Default Variables
     private static String DEFAULT_DEVICETYPENAME = "default_deviceTypeName";
-    private static Boolean DEFAULT_OVERNIGHTUSE = false;
     private static List<String> DEFAULT_INFORMATIONTYPES = Arrays.asList(new String[]{"Manual","Maintenance", "Calibration","Safety instruction card"});
 
     @Column
@@ -28,7 +27,7 @@ public class DeviceType extends AbstractPersistable<Long>{
     @Column
     private String deviceTypeName;
     @Column
-    private Boolean overnightuse;
+    private Boolean overnightuse =false;
     @Column
     private String devicePictureName;
     @ManyToMany(
@@ -52,7 +51,6 @@ public class DeviceType extends AbstractPersistable<Long>{
     //Constructors
     public DeviceType() {
         this.deviceTypeName = DEFAULT_DEVICETYPENAME;
-        this.overnightuse = DEFAULT_OVERNIGHTUSE;
         initDirectory();
     }
     public DeviceType(String deviceTypeName,Boolean overnightuse) {
@@ -92,7 +90,7 @@ public class DeviceType extends AbstractPersistable<Long>{
         if(!this.deviceTypeName.equals(deviceTypeName)){
             File dir = new File("upload-dir/"+this.deviceTypeName);
             if (!dir.isDirectory()) {
-                // 
+                //
             } else {
                 String newDirName = deviceTypeName;
                 File newDir = new File(dir.getParent() + "/" + newDirName);
@@ -120,9 +118,6 @@ public class DeviceType extends AbstractPersistable<Long>{
         this.devicePictureName = devicePictureName;
     }
 
-    public List<DeviceInformation> getDeviceInformations() {
-        return deviceInformations;
-    }
     @Override
     public Long getId() {
         return super.getId();
@@ -132,9 +127,7 @@ public class DeviceType extends AbstractPersistable<Long>{
     public void setId(Long id) {
         super.setId(id);
     }
-    public void setDeviceInformations(List<DeviceInformation> deviceInformations) {
-        this.deviceInformations = deviceInformations;
-    }
+
 
     public static String getDefaultDevicetypename() {
         return DEFAULT_DEVICETYPENAME;
