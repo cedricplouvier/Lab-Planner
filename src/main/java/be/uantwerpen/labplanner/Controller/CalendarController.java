@@ -59,7 +59,10 @@ public class CalendarController {
         model.addAttribute("allSteps", userSteps);
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
+        model.addAttribute("Step", new Step());
+
         return "/Calendar/userCalendar";
+
     }
 
 //    @RequestMapping(value = "/calendar/book", method = RequestMethod.GET)

@@ -8,7 +8,7 @@
         console.log(a);
         var rowCount = $('#list tr').length;
         $('#list')
-            .append('<tr class="row'+rowCount+'" id="row'+rowCount+'"> <td><input hidden class="steptype" value="'+a.id+'" id="stepTypes'+rowCount+'.deviceType" name="stepTypes['+rowCount+'].deviceType">'+a.deviceTypeName+'</td> <td><select required value="" id="stepTypes'+rowCount+'.continuity.type" name="stepTypes['+rowCount+'].continuity.type"><option class="dropdown-item" value="No">No</option><option class="dropdown-item" value="Soft">Soft</option><option class="dropdown-item" value="Hard">Hard</option> </select></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.hour" name="stepTypes['+rowCount+'].continuity.hour" placeholder="Hours"></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.minutes" name="stepTypes['+rowCount+'].continuity.minutes" placeholder="Minutes"></td><td><a onclick="removeRow(this)"> <span class="fas fa-trash" style="color: red" ></span> </a></td> </tr>')
+            .append('<tr class="row'+rowCount+'" id="row'+rowCount+'"> <td><input hidden class="steptype" value="'+a.id+'" id="stepTypes'+rowCount+'.deviceType" name="stepTypes['+rowCount+'].deviceType">'+a.deviceTypeName+'<input hidden class="steptypename" value="'+a.deviceTypeName+'" id="stepTypes'+rowCount+'.stepTypeName" name="stepTypes['+rowCount+'].stepTypeName"> </td><td><select required value="" id="stepTypes'+rowCount+'.continuity.type" name="stepTypes['+rowCount+'].continuity.type"><option class="dropdown-item" value="No">No</option><option class="dropdown-item" value="Soft (at least)">Soft (at least)</option><option class="dropdown-item" value="Soft (at most)">Soft (at most)</option><option class="dropdown-item" value="Hard">Hard</option> </select></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.hour" name="stepTypes['+rowCount+'].continuity.hours" placeholder="Hours"></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.minutes" name="stepTypes['+rowCount+'].continuity.minutes" placeholder="Minutes"></td><td><a onclick="removeRow(this)"> <span class="fas fa-trash" style="color: red" ></span> </a></td> </tr>')
     }
 
     function filterFunction() {
@@ -113,13 +113,15 @@
         <!-- IMPORTANT, class="list" have to be at tbody -->
         <tbody id="list" class="list"  >
             <tr th:each="stepType, itemStat : *{stepTypes}">
-                <td ><input class="steptype" th:type="hidden" th:field="*{stepTypes[__${itemStat.index}__].deviceType}" th:value="${stepType.deviceType.deviceTypeName}" th:text="${stepType.deviceType.deviceTypeName}" ></td>
+                <td ><input class="steptype" th:type="hidden" th:field="*{stepTypes[__${itemStat.index}__].deviceType}" th:value="${stepType.deviceType.deviceTypeName}" th:text="${stepType.deviceType.deviceTypeName}" >
+                    <input class="steptypename" th:type="hidden" th:field="*{stepTypes[__${itemStat.index}__].stepTypeName}" th:value="${stepType.stepTypeName}">
+                </td>
                 <td >
                     <select th:field="*{stepTypes[__${itemStat.index}__].continuity.type}">
                         <option class="dropdown-item" th:each="option : ${allOptions}" th:value="${option}" th:text="${option}"></option>
                     </select>
                 </td>
-                <td ><input th:field="*{stepTypes[__${itemStat.index}__].continuity.hour}" th:value="${stepType.continuity.hour}"></td>
+                <td ><input th:field="*{stepTypes[__${itemStat.index}__].continuity.hours}" th:value="${stepType.continuity.hours}"></td>
                 <td ><input th:field="*{stepTypes[__${itemStat.index}__].continuity.minutes}" th:value="${stepType.continuity.minutes}"></td>
             </tr>
         </tbody>

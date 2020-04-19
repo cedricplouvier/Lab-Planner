@@ -28,6 +28,7 @@
     let tempStepIndex = 0;
     let userSteps = [[${userSteps}]];
     let otherSteps = [[${otherSteps}]];
+    let holidays = [[${holidays}]];
 
     let calendarUpdate = {
         experimentIndex : 0,
@@ -37,7 +38,43 @@
         startHour:0,
         endHour:0,
     }
-    function addrow() {
+
+    function addMixtureRow(mixtures) {
+        console.log();
+        var i = $('#mixtureList tr').length;
+
+        var deviceOptions = null;
+        for (let j = 0; j < mixtures.length; j++) {
+            deviceOptions += '<option class="dropdown-item" value="' + mixtures[j].id + '" selected="selected">' + mixtures[j].name + '</option>'
+        }
+        $('#mixtureList')
+            .append(
+                '<tr>\n' +
+                '   <th>\n' +
+                '   <select required="" class=" form-control input-device" id="selectMixture" name="piecesOfMixture[' + i + '].mixture">' +
+                '       <option hidden="" value="">Select mixture</option>' +
+                deviceOptions +
+                '   </select>' +
+                '   </th>' +
+                '   <th>' +
+                '       <input type="number"  class=" form-control input-device" placeholder="Amount of mixture" id="piecesOfMixture' + i + '.mixtureAmount" name="piecesOfMixture[' + i + '].mixtureAmount" required>' +
+                '   </th>' +
+                '   <th>' +
+                '       <input class=" form-control input-device" placeholder="Mixture comment" id="piecesOfMixture' + i + '.mixtureComment" name="piecesOfMixture[' + i + '].mixtureComment">' +
+                '   </th>' +
+                '</tr>');
+    }
+
+
+    function removeMixtureRow() {
+
+        var i = $('#mixtureList tr').length;
+        if (i > 0) {
+            document.getElementById("mixtureList").deleteRow(i - 1);
+        }
+    }
+
+    function addStepsRows() {
         //reference table
         var experimentTypeId = $('#selectExperimentType :selected').val();
 
@@ -55,6 +92,7 @@
         }
         for (let i = 0; i < a.stepTypes.length; i++) {
             tempStepIndex = i;
+
             var deviceOprions = '';
             for (let j = 0; j < devices.length; j++) {
                 if (devices[j].deviceType.id == a.stepTypes[i].deviceType.id) {
@@ -62,11 +100,12 @@
                         + devices[j].devicename +
                         '</option>';
                 }
+
             }
             $('#list')
                 .append(
                     '<tr class="row' + i + '" id="row' + i + '">' +
-                    '<td value="' + a.stepTypes[i].id + '">' + a.stepTypes[i].stepTypeName + '</td>' +
+                    '<td style="text-align:left;" value="' + a.stepTypes[i].id + '">' + a.stepTypes[i].stepTypeName + '</td>' +
                     '<td>' +
                     '<select required class=" form-control input-device" id="selectDevice' + i + '" name="steps[' + i + '].device" style=" width: 110%;font-size:90%;">' +
                     '<option hidden selected disabled value="">Select device</option>' +
@@ -74,30 +113,29 @@
                     '</select>' +
                     '</td>' +
                     '<td>' +
-                    '<input required style="width: 85%; font-size:80%;" required="" id="startDate' + i + '" type="date" class="form-control input-date" placeholder="Start date" name="steps[' + i + '].start" >' +
+                    '<input required style="width: 90%; font-size:80%;" required="" id="startDate' + i + '" type="date" class="form-control input-date" placeholder="Start date" name="steps[' + i + '].start">' +
                     '</td>' +
                     '<td>' +
                     '<input required style="width: 100%; font-size:80%;" type="time" id="startHour' + i + '" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + i + '].startHour" >' +
                     '</td>' +
                     '<td>' +
-                    '<input required style="width: 85%; font-size:80%; " required="" id="endDate' + i + '" type="date" class="form-control input-date" placeholder="End date" name="steps[' + i + '].end" >' +
+                    '<input required style="width: 90%; font-size:80%; " required="" id="endDate' + i + '" type="date" class="form-control input-date" placeholder="End date" name="steps[' + i + '].end" >' +
                     '</td>' +
                     '<td>' +
                     '<input required style="width: 100%; font-size:80%; " type="time" id="endHour' + i + '" size="2" class="form-control float-right input-hour" placeholder="End hour" name="steps[' + i + '].endHour" >' +
                     '</td> ' +
-                    '<td>' +
-                    '<input style="width: 65%; font-size:80%; text-align:center" id="continuity"  class="form-control float-right "  name="continuity" value="' + a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '" disabled>' +
+                    '<td style="width: 10%; font-size:80%; text-align:center" id="continuity' + i + '" name="continuity" value=""> ' + a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '<br />' + a.stepTypes[i].continuity.type + '' +
                     '</td> ' +
                     '<td>' +
                     '<input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + i + '].comment" value="" >' +
                     '</td> ' +
                     '<td>' +
-                    ' <button class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,\'' + i + '\')" >Choose in calendar</button>'+
+                    '<button  style="width: 100%; font-size:80%; class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,\'' + i + '\')" >Choose in calendar</button>' +
                     '</td>' +
-                    '</tr>') ;
+                    '</tr>');
         }
     }
-//onclick="openCalendar(tempExpIndex,\'' + i + '\')"
+
     function filterFunction() {
         var input, filter, ul, li, a, i;
         input = document.getElementById("myInput");
@@ -116,6 +154,13 @@
 
     /* When the user clicks on the button,
     toggle between hiding and showing the dropdown content */
+    function myFunction() {
+        document.getElementById("myDropdown").classList.toggle("show");
+    }
+
+    function removeRow(r) {
+        $(r).closest('tr').remove();
+    }
     function openCalendar(expInd,stepInd) {
         calendarUpdate.experimentIndex = expInd;
         calendarUpdate.stepIndex = stepInd;
@@ -123,10 +168,6 @@
         calendarUpdate.end = document.getElementById('endDate' + stepInd + '').value
         calendarUpdate.startHour = document.getElementById('startHour' + stepInd + '').value
         calendarUpdate.endHour = document.getElementById('endHour' + stepInd + '').value
-        }
-
-    function removeRow(r) {
-        $(r).closest('tr').remove();
     }
 </script>
 <style>
@@ -181,6 +222,7 @@
         background-color: #ddd;
     }
 
+
     .show {
         display: block;
     }
@@ -208,24 +250,27 @@
 <div class="container">
     <div th:replace="navbar :: navbar"></div>
     <form id="MyForm" action="#" th:action="@{/planning/experiments/book/{id}  (id=${{experiment}})}"
-          th:object="${experiment}" method="post" >
+          th:object="${experiment}" method="post">
         <input th:field="*{id}" th:type="hidden"/>
         <input id="experimentType" th:type="hidden"
                th:field="*{experimentType}">
+
+
+        <h3><span th:text="#{experiment.info}"></span></h3>
         <table class="table table-hover" style="text-align:center; font-size:90%;">
             <thead>
             <tr>
                 <th th:text="#{experiment.type}">Experiment Type</th>
                 <th th:text="#{experiment.name}">Experiment Name</th>
-                <th th:text="#{mixtures}">Mixture</th>
-                <th th:text="#{mixtures.amount}">Amount</th>
             </tr>
             </thead>
+            <!-- IMPORTANT, class="list" have to be at tbody -->
             <tbody>
 
             <th>
-                <select required class=" form-control input-device" id="selectExperimentType" onchange="addrow()" th:field="*{experimentType.id}">
-                    <option selected hidden th:text="#{experiment.type.select}" th:value="null"> Select
+                <select required class=" form-control input-device" id="selectExperimentType" onchange="addStepsRows()"
+                        th:field="*{experimentType.id}">
+                    <option selected hidden th:text="#{experiment.type.select}" value=""> Select
                         experiment type
                     </option>
                     <option class="dropdown-item"
@@ -236,25 +281,68 @@
                 </select>
             </th>
             <th>
-                <input th:field="*{experimentname}" placeholder="Expirement Name" required>
-            </th>
-            <th>
-                <select required class=" form-control input-device" id="selectMixture" th:field="*{mixture}">
-                    <option selected hidden th:text="#{mixture.select}" th:value="null"> Select mixture
-                    </option>
-                    <option class="dropdown-item"
-                            th:each="mixture : ${allMixtures}"
-                            th:value="${{mixture}}"
-                            th:text="${mixture.getName()}">
-                    </option>
-                </select>
-            </th>
-            <th>
-                <input th:field="*{mixtureAmount}" placeholder="Amount of mixture">
+                <input class=" form-control input-device" th:field="*{experimentname}" placeholder="Expirement Name"
+                       required>
             </th>
             </tbody>
         </table>
-        <table id="table2" class="table table-hover" style=" font-size:100%; text-align:center;">
+
+        <h3><span th:text="#{mixture.info}"></span></h3>
+        <table class="table table-hover" style="text-align:center; font-size:90%;">
+            <thead>
+            <tr>
+                <th th:text="#{mixture}">Mixture</th>
+                <th th:text="#{mixtures.amount}">Amount</th>
+                <th>Comment</th>
+            </tr>
+            </thead>
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody id="mixtureList">
+            <div th:if="(*{piecesOfMixture}!=null)">
+                <tr th:each="mixture, itemStat : *{piecesOfMixture}">
+                    <th>
+                        <select required class=" form-control input-device" id="selectMixture"
+                                th:field="*{piecesOfMixture[__${itemStat.index}__].mixture}">
+                            <option selected hidden th:text="#{mixture.select}" value=""> Select mixture
+                            </option>
+                            <option class="dropdown-item"
+                                    th:each="mixture  : ${allMixtures}"
+                                    th:value="${{mixture}}"
+                                    th:text="${mixture.name}">
+                            </option>
+                        </select>
+                    </th>
+                    <th>
+                        <input type="number" class=" form-control input-device"
+                               th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
+                               placeholder="Amount of mixture" required>
+                    </th>
+                    <th>
+                        <input class=" form-control input-device"
+                               th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureComment}"
+                               placeholder="Mixture comment">
+                    </th>
+                </tr>
+
+            </div>
+            </tbody>
+        </table>
+        <button style="margin-right: 10px;font-size: 90%" class="btn btn-primary "
+                type="button"
+                th:text="#{mixture.add}"
+                th:onclick="addMixtureRow([[${allMixtures}]])">
+        </button>
+
+        <button style="margin-right: 10px;font-size: 90%" class="btn btn-outline-primary"
+                type="button"
+                th:text="#{mixture.remove}"
+                th:onclick="removeMixtureRow()">
+        </button>
+
+        <h3><span th:text="#{step.info}"></span></h3>
+
+        <table class="table table-hover" style=" font-size:100%; text-align:center;">
+
             <thead>
             <tr>
                 <th>Step Type</th>
@@ -263,49 +351,75 @@
                 <th>Start time</th>
                 <th>End date</th>
                 <th>End time</th>
-                <th>Time to next step</th>
+                <th>Continuity</th>
                 <th>Comment</th>
-                <th>Choose in calendar</th>
+                <th>Choose in Calendar</th>
             </tr>
             </thead>
+
             <!-- IMPORTANT, class="list" have to be at tbody -->
             <tbody id="list" class="list" style=" font-size:100%;">
+
             <div th:if="(*{experimentType}!=null)">
+
                 <tr th:each="stepType, itemStat : *{experimentType.stepTypes}">
+                    <input id="step" th:type="hidden"
+                           th:field="*{{steps[__${itemStat.index}__]}}"
+                           th:value="*{{steps[__${itemStat.index}__]}}">
                     <td style="text-align:left;"
                         th:text="${stepType.stepTypeName}" th:value="${{stepType}}"
                         th:field="*{steps[__${itemStat.index}__].stepType}">
                     </td>
                     <td>
-                        <select class=" form-control input-device" id="selectDeviceType"
+                        <select style="width: 110%;font-size:90%;" class=" form-control input-device"
+                                id="selectDevice"
                                 th:field="*{steps[__${itemStat.index}__].device}">
-                            <option selected hidden th:text="#{device.select}" th:value="null"> Select device
+                            <option hidden selected th:text="#{device.select}" value=""> Select device
                             </option>
                             <option th:each="device : ${allDevices}"
                                     th:if="${device.deviceType.id} == ${stepType.deviceType.id} " class="dropdown-item"
                                     th:value="${{device}}"
-                                    th:text="${{device}}">
+                                    th:text="${device.devicename}">
                             </option>
                         </select>
                     </td>
                     <td>
-                        <input required id="startDate" type="date" th:field="*{steps[__${itemStat.index}__].start}"
+                        <input required style="width: 90%; font-size:80%;" id="startDate" type="date"
+                               th:field="*{steps[__${itemStat.index}__].start}"
                                class="form-control input-date"
                                placeholder="Start date">
                     </td>
                     <td>
-                        <input type="time" id="startHour" class="form-control float-right input-hour"
+                        <input required style="width: 100%; font-size:80%;" type="time" id="startHour"
+                               class="form-control float-right input-hour"
+                               th:value="*{steps[__${itemStat.index}__].startHour}"
                                th:field="*{steps[__${itemStat.index}__].startHour}" placeholder="Start hour">
+
                     </td>
 
                     <td>
-                        <input required id="endDate" type="date" th:field="*{steps[__${itemStat.index}__].end}"
+                        <input required style="width: 90%; font-size:80%; " id="endDate" type="date"
+                               th:value="*{steps[__${itemStat.index}__].end}"
+                               th:field="*{steps[__${itemStat.index}__].end}"
                                class="form-control input-date"
                                placeholder="End date">
                     </td>
                     <td>
-                        <input type="time" id="endHour" class="form-control float-right input-hour"
+                        <input required style="width: 100%; font-size:80%; " type="time" id="endHour"
+                               class="form-control float-right input-hour"
+                               th:value="*{steps[__${itemStat.index}__].endHour}"
                                th:field="*{steps[__${itemStat.index}__].endHour}" placeholder="End hour">
+                    </td>
+
+                    <td style="width: 10%; font-size:80%; text-align:center" id="continuity" name="continuity"
+                        th:utext="*{experimentType.stepTypes[__${itemStat.index}__].continuity.hours} + ':' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}+
+                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.type}"
+                    >
+                    </td>
+                    <td>
+                        <input style="width: 100%; font-size:80%; " type="text" id="comment"
+                               class="form-control float-right" placeholder="comment"
+                               th:field="*{steps[__${itemStat.index}__].comment}">
                     </td>
                 </tr>
             </div>
@@ -313,7 +427,7 @@
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Extra Large Modal</h5>
+                            <h5 class="modal-title">Schedule picker</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         </div>
                         <div class="modal-body">
@@ -390,22 +504,20 @@
                             </div>
                                 <div id="calendar" style="overflow-y: auto"></div>
                         </div>
-                        <div class="modal-footer">
-                            <div class="alert alert-info" id="help" role="alert">
-                                Drag and release to create a schedule.
+                        <div class="modal-footer" style="flex-direction: column;display: flex;">
+                            <div id="legend" style="display: flex; flex-direction: row;">
+                                <div class="alert alert-info" id="help" role="alert">
+                                    Drag and release to create a schedule.
+                                </div>
                             </div>
-                            <select required id="deviceTypeDropdown" class="form-control input-device" style="visibility: visible;">
-                                <option value="none" selected disabled hidden >Device Name</option>
-                            </select>
-<!--                            <div class="dropdown">-->
-<!--                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-<!--                                    No options-->
-<!--                                </button>-->
-<!--                                <div class="dropdown-menu"   id="deviceTypeDropdown" aria-labelledby="dropdownMenuButton">-->
 
-<!--                                </div>-->
-<!--                            </div>-->
+                            <div style="display: flex;
+  flex-direction: row;">
+                            <select required id="deviceTypeDropdown" class="form-control input-device" style="visibility: visible;">
+                                <option value="none" selected disabled hidden >No available device</option>
+                            </select>
                             <button type="button" id="selectStep" data-dismiss="modal" class="btn btn-primary" disabled>Select</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -413,7 +525,7 @@
             </tbody>
         </table>
         <div>
-            <a style="margin-right: 10px" href="/planning/experiments" class="btn btn-outline-primary"
+            <a style="margin-right: 10px" href="/planning/" class="btn btn-outline-primary"
                th:text="#{experimentstype.return}">Return</a>
 
             <button style="margin-right: 10px" type="submit" class="btn btn-primary"
