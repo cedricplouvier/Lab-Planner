@@ -24,7 +24,7 @@ public class Device extends AbstractPersistable<Long> {
     private String devicename;
 
     @OneToOne
-    @JoinColumn(name = "deviceType", nullable = false)
+    @JoinColumn(name = "deviceType", nullable = true)
     private DeviceType deviceType;
     @Column
     private String Comment;

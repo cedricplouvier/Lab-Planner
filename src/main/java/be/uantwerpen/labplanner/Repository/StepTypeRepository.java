@@ -10,5 +10,6 @@ import java.util.Optional;
 @Repository
 public interface StepTypeRepository extends CrudRepository<StepType,Long> {
     List<StepType> findAll();
+    Optional<StepType> findStepTypeByName(String name);
     Optional<StepType> findStepTypeById(Long id);
 }

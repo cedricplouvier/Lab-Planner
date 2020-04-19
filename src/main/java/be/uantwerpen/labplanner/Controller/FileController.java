@@ -38,18 +38,14 @@ public class FileController {
 
 	@PostMapping("/upload/typeimage/{typeid}")
 	public String handleTypeImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long typeid) {
-//		if(storageService.getFileExtension(file.getOriginalFilename()).equals("png"))
-		System.out.println("Failed to store image");
 		DeviceType tempDeviceType =  deviceTypeService.findById( typeid).orElse(null);
 		if(tempDeviceType!=null) {
 			String filename = tempDeviceType.getDeviceTypeName()+"."+file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 			storageService.store(file,"images",filename);
 			tempDeviceType.setDevicePictureName(filename);
 			deviceTypeService.saveNewDeviceType(tempDeviceType);
-			System.out.println("Succesfully stored image");
 
 		}else{
-			System.out.println("Failed to store image");
 		}
 
 		return "redirect:/devices/types/"+typeid;

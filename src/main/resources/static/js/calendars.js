@@ -7,7 +7,7 @@ var CalendarList = [];
 function CalendarInfo() {
     this.id = null;
     this.name = null;
-    this.checked = false;
+    this.checked = true;
     this.color = null;
     this.bgColor = null;
     this.borderColor = null;
@@ -42,21 +42,15 @@ function hexToRGBA(hex) {
 }
 
 (function() {
-    var calendar;
-    var id = 0;
 
-    calendar = new CalendarInfo();
-    id += 1;
-    calendar.id = String(id);
-    calendar.name = 'My Calendar';
-    calendar.color = '#ffffff';
-    calendar.bgColor = '#9e5fff';
-    calendar.dragBgColor = '#9e5fff';
-    calendar.borderColor = '#9e5fff';
-    addCalendar(calendar);
-
-<<<<<<< HEAD
-=======
-
->>>>>>> 7ac6b3749502331ef289a1822c1c895cf3be3e8c
+    deviceTypes.forEach(function (deviceType) {
+        let calendar = new CalendarInfo();
+        calendar.id = String(deviceType['id']);
+        calendar.name = deviceType['deviceTypeName'];
+        calendar.color = '#ffffff';
+        calendar.bgColor = deviceType['color'];
+        calendar.dragBgColor = deviceType['color'];
+        calendar.borderColor = deviceType['color'];
+        addCalendar(calendar);
+    })
 })();

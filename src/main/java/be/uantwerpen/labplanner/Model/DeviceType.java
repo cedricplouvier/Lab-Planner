@@ -46,8 +46,6 @@ public class DeviceType extends AbstractPersistable<Long>{
     )
     private List<DeviceInformation> deviceInformations;
 
-
-
     //Constructors
     public DeviceType() {
         this.deviceTypeName = DEFAULT_DEVICETYPENAME;
