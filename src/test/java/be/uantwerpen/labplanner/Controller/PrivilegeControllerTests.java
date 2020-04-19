@@ -57,7 +57,7 @@ public class PrivilegeControllerTests {
         when(privilegeService.findAll()).thenReturn(privileges);
         mockMvc.perform(get("/usermanagement/privileges"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/Privileges/privilege-list"))
+                .andExpect(view().name("Privileges/privilege-list"))
                 .andExpect(model().attribute("allPrivileges", hasSize(1)));
     }
 
@@ -67,7 +67,7 @@ public class PrivilegeControllerTests {
         mockMvc.perform(get("/usermanagement/privileges/put"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("privilege",instanceOf(Privilege.class)))
-                .andExpect(view().name("/Privileges/privilege-manage"));
+                .andExpect(view().name("Privileges/privilege-manage"));
     }
 
     //test for viewEditPrivilege with wrong path
@@ -86,7 +86,7 @@ public class PrivilegeControllerTests {
         //test with correct path
         mockMvc.perform(get("/usermanagement/privileges/{id}","10"))
                 .andExpect(status().is(200))
-                .andExpect(view().name("/Privileges/privilege-manage"))
+                .andExpect(view().name("Privileges/privilege-manage"))
                 .andDo(print());
     }
 
@@ -106,7 +106,7 @@ public class PrivilegeControllerTests {
                 .flashAttr("privilege",p1))
                 .andExpect(status().is(200))
                 .andExpect(model().attribute("PrivilegeInUse",notNullValue()))
-                .andExpect(view().name("/Privileges/privilege-manage"))
+                .andExpect(view().name("Privileges/privilege-manage"))
                 .andDo(print());
 
         //privilege name is empty string
@@ -115,7 +115,7 @@ public class PrivilegeControllerTests {
                 .flashAttr("privilege",p1))
                 .andExpect(status().is(200))
                 .andExpect(model().attribute("PrivilegeInUse",notNullValue()))
-                .andExpect(view().name("/Privileges/privilege-manage"))
+                .andExpect(view().name("Privileges/privilege-manage"))
                 .andDo(print());
 
     }
@@ -145,7 +145,7 @@ public class PrivilegeControllerTests {
         when(privilegeService.findByName("test")).thenReturn(Optional.of(p2));
         mockMvc.perform(post("/usermanagement/privileges/").flashAttr("privilege",p2))
                 .andExpect(status().is(200))
-                .andExpect(view().name("/Privileges/privilege-manage"))
+                .andExpect(view().name("Privileges/privilege-manage"))
                 .andExpect(model().attribute("PrivilegeInUse",notNullValue()))
                 .andDo(print());
     }
@@ -178,7 +178,7 @@ public class PrivilegeControllerTests {
         mockMvc.perform(post("/usermanagement/privileges/{id}","10").flashAttr("privilege",p1))
                 .andExpect(status().is(200))
                 .andExpect(model().attribute("PrivilegeInUse",notNullValue()))
-                .andExpect(view().name("/Privileges/privilege-manage"))
+                .andExpect(view().name("Privileges/privilege-manage"))
                 .andDo(print());
     }
 
