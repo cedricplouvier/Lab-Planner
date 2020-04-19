@@ -62,7 +62,7 @@ public class DeviceTypeService {
         return (DeviceType)this.deviceTypeRepository.save(deviceType);
     }
 
-    public void delete(Long id){deviceTypeRepository.delete(deviceTypeRepository.findById(id).orElse(null));};
+
     public Boolean deleteById(Long id) {
         if (this.exists(id)) {
             this.deviceTypeRepository.deleteById(id);

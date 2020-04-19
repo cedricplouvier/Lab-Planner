@@ -106,9 +106,7 @@ public class DeviceType extends AbstractPersistable<Long>{
         }
         this.deviceTypeName = deviceTypeName;
     }
-    public static void setDefaultInformationtypes(List<String> defaultInformationtypes) {
-        DEFAULT_INFORMATIONTYPES = defaultInformationtypes;
-    }
+
 
     public String getDevicePictureName() {
         return devicePictureName;

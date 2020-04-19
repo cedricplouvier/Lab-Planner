@@ -56,7 +56,8 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Read only - Basic') or hasAuthority('Device - Modify - All') ")
     @RequestMapping(value="/devices/types", method= RequestMethod.GET)
     public String showDeviceTypes(final ModelMap model){
-        model.addAttribute("allDeviceTypes", deviceTypeService.findAll()); return "/Devices/list-device-types";
+        model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+        return "/Devices/list-device-types";
     }
 
     //Info page for device
@@ -203,7 +204,7 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices/{id}/delete")
     public String deleteDevice(@PathVariable Long id, final ModelMap
-            model){ deviceService.delete(id);
+            model){ deviceService.deleteById(id);
         model.clear();
         return "redirect:/devices";
     }
@@ -223,7 +224,7 @@ public class DeviceController {
             model.addAttribute("errormessage", "There are devices of type "+deviceTypeService.findById(id).orElse(null).getDeviceTypeName());
             return "Devices/list-device-types";
         }
-        deviceTypeService.delete(id);
+        deviceTypeService.deleteById(id);
         model.clear();
         return "redirect:/devices";
     }

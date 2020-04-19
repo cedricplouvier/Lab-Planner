@@ -54,6 +54,11 @@ public class DeviceTypeTests {
         deviceType.setId(id);
         assertEquals(deviceType.getId(),id);
 
+        deviceType.setColor("#123456");
+        assertEquals(deviceType.getColor(),"#123456");
+        assertEquals(DeviceType.getDefaultDevicetypename(),"default_deviceTypeName");
+
+
         Files.createDirectories(Paths.get("upload-dir/" + DeviceType.getDefaultDevicetypename()));
 
         thrown.expect(StorageException.class);
@@ -65,6 +70,8 @@ public class DeviceTypeTests {
         deviceType.setDevicePictureName("test");
         deviceType.setDeviceTypeName("newname");
         assertEquals(deviceType.getDeviceTypeName(),"newname");
+
+
 
     }
 
