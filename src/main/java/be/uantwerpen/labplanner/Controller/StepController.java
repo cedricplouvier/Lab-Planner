@@ -419,8 +419,14 @@ public class StepController {
         Set<Role> userRoles = currentUser.getRoles();
         Role adminRol = roleService.findByName("Administrator").get();
         boolean isUsed = false;
+        boolean hasAdmin = false;
+        for (Role userRole :userRoles){
+            if(userRole.getName().equals(adminRol.getName())){
+                hasAdmin=true;
+            }
+        }
 
-        if (userRoles.contains(adminRol)) {
+        if (hasAdmin) {
             Iterator<Experiment> it = Experiments.iterator();
             while (it.hasNext()) {
                 Experiment temp = it.next();
@@ -442,6 +448,10 @@ public class StepController {
                 ra.addFlashAttribute("Status", new String("Success"));
                 ra.addFlashAttribute("Message", new String("Experiment type successfully deleted."));
             }
+        }
+        else{
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String("You have no rights to delete experiment."));
         }
         model.clear();
         return "redirect:/planning/experiments";

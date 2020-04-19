@@ -7,6 +7,7 @@ import be.uantwerpen.labplanner.Repository.ExperimentTypeRepository;
 import be.uantwerpen.labplanner.Service.*;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
+import be.uantwerpen.labplanner.common.repository.users.RoleRepository;
 import be.uantwerpen.labplanner.common.repository.users.UserRepository;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +61,8 @@ public class StepControllerTests {
 
     @Mock
     UserRepository userRepository;
+    @Mock
+    RoleRepository roleRepository;
 
     @InjectMocks
     private StepController stepController;
@@ -418,6 +421,7 @@ public class StepControllerTests {
         when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
         when(stepService.findAll()).thenReturn(steps);
         when(relationService.findAll()).thenReturn(rels);
+        when(stepService.findById((long)39)).thenReturn(Optional.of(step));
         role.setId((long) 31);
         //   when(relationService.findAll()).thenReturn(relations);
         mockMvc.perform(get("/planning/{id}",5))
