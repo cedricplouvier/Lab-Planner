@@ -674,19 +674,20 @@ public class StepController {
         //put al the stocklevels in a map
 
         //withdraw amounts from temp stock
-        for (PieceOfMixture piece : experiment.getPiecesOfMixture()) {
-            Mixture mix = piece.getMixture();
-            List<Composition> compositions = mix.getCompositions();
-            for (Composition comp : compositions) {
-                Product prod = comp.getProduct();
-                if (!productMap.containsKey(prod)) {
-                    productMap.put(prod, prod.getStockLevel());
+        if (experiment.getPiecesOfMixture() != null)
+            for (PieceOfMixture piece : experiment.getPiecesOfMixture()) {
+                Mixture mix = piece.getMixture();
+                List<Composition> compositions = mix.getCompositions();
+                for (Composition comp : compositions) {
+                    Product prod = comp.getProduct();
+                    if (!productMap.containsKey(prod)) {
+                        productMap.put(prod, prod.getStockLevel());
+                    }
+                    double stocklevel = productMap.get(prod);
+                    stocklevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
+                    productMap.put(prod, stocklevel);
                 }
-                double stocklevel = productMap.get(prod);
-                stocklevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
-                productMap.put(prod, stocklevel);
             }
-        }
         //check if a temp stock level in map is <0, if so, there is unsuficient stock.
         Iterator it = productMap.entrySet().iterator();
         while (it.hasNext()) {
@@ -728,8 +729,10 @@ public class StepController {
         experiment.setSteps(tmpListSteps);
 
         //Save piecesOfExperiment in database
-        for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
-            pieceOfMixtureService.save(pom);
+        if (experiment.getPiecesOfMixture() != null) {
+            for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
+                pieceOfMixtureService.save(pom);
+            }
         }
 
         //save experiment into database
