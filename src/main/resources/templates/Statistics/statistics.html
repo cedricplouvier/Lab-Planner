@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:display="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <title>Device Statistics</title>
+
+    <div th:insert="navbar :: head"></div>
+    <link rel="stylesheet" media="screen" href="http://cdn.jsdelivr.net/webjars/bootstrap/4.3.0/css/bootstrap.min.css"
+          th:href="@{/webjars/bootstrap/4.3.0/css/bootstrap.min.css}"/>
+
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui.chart/latest/tui-chart.min.css">
+    <link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/codemirror.css'/>
+    <link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/addon/lint/lint.css'/>
+    <link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/theme/neo.css'/>
+
+</head>
+<body>
+<div class ="container" >
+    <div th:replace="navbar :: navbar"></div>
+</div>
+<div class="container">
+<hr style="color:rgb(0,115,250); background-color:rgb(0,115,250); height:1px">
+    <div class ="row">
+        <div class="col-sm-4">
+            <form th:action="@{/statistics/statistics/getSelectedGraphType}">
+                <br>
+                <ul>
+                    <ul th:each="graphType : ${selectableGraphTypes}">
+                        <div>
+                            <input type="radio" th:name="selectedTypeOfGraph" th:value="${graphType}">
+                            <label th:text="${graphType}"></label>
+                        </div>
+                    </ul >
+                </ul>
+                <button class="btn btn-primary" type="submit" th:text="#{statistics.selectGraph}"></button><p><span th:text="#{statistics.reselectTypeToRefresh}"></span></p>
+            </form>
+        </div>
+        <div class="col-sm-4">
+            <form th:action="@{/statistics/statistics/getSelectedYear}">
+                <br>
+                <ul>
+                    <ul th:each="years : ${selectableYears}">
+                        <div>
+                            <input type="radio" th:name="selectedYear" th:value="${years}">
+                            <label th:text="${years}"></label>
+                        </div>
+                    </ul >
+                </ul>
+                <button class="btn btn-primary" type="submit" th:text="#{statistics.selectYear}"></button><p><span th:text="#{statistics.currentYearStandard}"></span></p>
+            </form>
+        </div>
+    </div>
+    <hr style="color:rgb(0,115,250); background-color:rgb(0,115,250); height:1px">
+</div>
+
+<div class ="container">
+    <form th:action="@{/statistics/statistics/submit}" th:object="${selectedDev}">
+        <select th:field="*{devicename}">
+            <option th:each="devices : ${allDevices}"
+                    th:value="${devices.getDevicename()}"
+                    th:text="${devices.getDevicename()}"
+                >Options</option>
+        </select>
+        <br><br>
+        <button class="btn btn-primary" type="submit" th:text="#{statistics.addDevice}"></button>
+        <a href="/statistics/statistics/clearList" class="btn btn-primary" th:text="#{statistics.clearList}"></a>
+        <br><br>
+    </form>
+    <p th:text="#{statistics.amountMessage}"></p>
+    <hr style="color:rgb(0,115,250); background-color:rgb(0,115,250); height:1px">
+</div>
+
+<div class="container">
+<div class='wrap'>
+    <div class='code-html' id='code-html'>
+        <div id='chart-area'>
+        </div>
+    </div>
+    <div class='custom-area'>
+        <div id='error-dim'>
+            <span id='error-text'></span>
+            <div id='error-stack'></div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script type='text/javascript' src='https://uicdn.toast.com/tui.chart/latest/raphael.js'></script>
+<script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/core-js/2.5.7/core.js'></script>
+<script src="https://uicdn.toast.com/tui.chart/latest/tui-chart.min.js"></script>
+<script class='code-js' id='code-js' th:inline="javascript"> //inline allows us to access thymeleaf modelAttributes in the script
+    var typeOfGraph = "[(${selectedTypeOfGraph})]";
+    var deviceCounter = "[(${deviceCounter})]";
+
+    var selectedDeviceDataOccupancy1 = "[(${occupancyDevices1})]";
+    var selectedDeviceDataOccupancy2 = "[(${occupancyDevices2})]";
+    var selectedDeviceDataOccupancy3 = "[(${occupancyDevices3})]";
+    var selectedDeviceDataOccupancy4 = "[(${occupancyDevices4})]";
+    var selectedDeviceDataOccupancy5 = "[(${occupancyDevices5})]";
+
+    var selectedDeviceDataOccupancyDays1 = "[(${occupancyDevicesHours1})]";
+    var selectedDeviceDataOccupancyDays2 = "[(${occupancyDevicesHours2})]";
+    var selectedDeviceDataOccupancyDays3 = "[(${occupancyDevicesHours3})]";
+    var selectedDeviceDataOccupancyDays4 = "[(${occupancyDevicesHours4})]";
+    var selectedDeviceDataOccupancyDays5 = "[(${occupancyDevicesHours5})]";
+
+    var SelectedDevice1 = "[(${dev1.getDevicename()})]";
+    var selectedDeviceData1 = ["[(${totalHours1[0]})]",
+        "[(${totalHours1[1]})]",
+        "[(${totalHours1[2]})]",
+        "[(${totalHours1[3]})]",
+        "[(${totalHours1[4]})]",
+        "[(${totalHours1[5]})]",
+        "[(${totalHours1[6]})]",
+        "[(${totalHours1[7]})]",
+        "[(${totalHours1[8]})]",
+        "[(${totalHours1[9]})]",
+        "[(${totalHours1[10]})]",
+        "[(${totalHours1[11]})]"];
+
+    var SelectedDevice2 = "[(${dev2.getDevicename()})]";
+    var selectedDeviceData2 = ["[(${totalHours2[0]})]",
+        "[(${totalHours2[1]})]",
+        "[(${totalHours2[2]})]",
+        "[(${totalHours2[3]})]",
+        "[(${totalHours2[4]})]",
+        "[(${totalHours2[5]})]",
+        "[(${totalHours2[6]})]",
+        "[(${totalHours2[7]})]",
+        "[(${totalHours2[8]})]",
+        "[(${totalHours2[9]})]",
+        "[(${totalHours2[10]})]",
+        "[(${totalHours2[11]})]"];
+
+    var SelectedDevice3 = "[(${dev3.getDevicename()})]";
+    var selectedDeviceData3 = ["[(${totalHours3[0]})]",
+        "[(${totalHours3[1]})]",
+        "[(${totalHours3[2]})]",
+        "[(${totalHours3[3]})]",
+        "[(${totalHours3[4]})]",
+        "[(${totalHours3[5]})]",
+        "[(${totalHours3[6]})]",
+        "[(${totalHours3[7]})]",
+        "[(${totalHours3[8]})]",
+        "[(${totalHours3[9]})]",
+        "[(${totalHours3[10]})]",
+        "[(${totalHours3[11]})]"];
+
+    var SelectedDevice4 = "[(${dev4.getDevicename()})]";
+    var selectedDeviceData4 = ["[(${totalHours4[0]})]",
+        "[(${totalHours4[1]})]",
+        "[(${totalHours4[2]})]",
+        "[(${totalHours4[3]})]",
+        "[(${totalHours4[4]})]",
+        "[(${totalHours4[5]})]",
+        "[(${totalHours4[6]})]",
+        "[(${totalHours4[7]})]",
+        "[(${totalHours4[8]})]",
+        "[(${totalHours4[9]})]",
+        "[(${totalHours4[10]})]",
+        "[(${totalHours4[11]})]"];
+
+    var SelectedDevice5 = "[(${dev5.getDevicename()})]";
+    var selectedDeviceData5 = ["[(${totalHours5[0]})]",
+        "[(${totalHours5[1]})]",
+        "[(${totalHours5[2]})]",
+        "[(${totalHours5[3]})]",
+        "[(${totalHours5[4]})]",
+        "[(${totalHours5[5]})]",
+        "[(${totalHours5[6]})]",
+        "[(${totalHours5[7]})]",
+        "[(${totalHours5[8]})]",
+        "[(${totalHours5[9]})]",
+        "[(${totalHours5[10]})]",
+        "[(${totalHours5[11]})]"];
+
+    if(typeOfGraph === "Device hours by month") {
+        var container = document.getElementById('chart-area');
+        var allDeviceNames = [];
+        var highesValueMonth = "[(${highestAbsoluteValueHours})]";
+
+        /*[# th:each="n : ${allDevices}"]*/
+        allDeviceNames.push("[(${n.getDevicename()})]");
+        /*[/]*/
+
+
+        var data0 = {
+
+            categories:
+                ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+
+            series: [
+                {}
+            ]
+        };
+
+        var data1 = {
+
+            categories:
+                ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+
+            series: [
+                {
+                    name: SelectedDevice1,
+                    data: selectedDeviceData1
+                }
+            ]
+        };
+
+        var data2 = {
+
+            categories:
+                ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+
+            series: [
+                {
+                    name: SelectedDevice1,
+                    data: selectedDeviceData1
+                },
+                {
+                    name: SelectedDevice2,
+                    data: selectedDeviceData2
+                }
+            ]
+        };
+
+        var data3 = {
+
+            categories:
+                ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+
+            series: [
+                {
+                    name: SelectedDevice1,
+                    data: selectedDeviceData1
+                },
+                {
+                    name: SelectedDevice2,
+                    data: selectedDeviceData2
+                },
+                {
+                    name: SelectedDevice3,
+                    data: selectedDeviceData3
+                }
+            ]
+        };
+
+        var data4 = {
+
+            categories:
+                ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+
+            series: [
+                {
+                    name: SelectedDevice1,
+                    data: selectedDeviceData1
+                },
+                {
+                    name: SelectedDevice2,
+                    data: selectedDeviceData2
+                },
+                {
+                    name: SelectedDevice3,
+                    data: selectedDeviceData3
+                },
+                {
+                    name: SelectedDevice4,
+                    data: selectedDeviceData4
+                }
+            ]
+        };
+        var data5 = {
+
+            categories:
+                ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+
+            series: [
+                {
+                    name: SelectedDevice1,
+                    data: selectedDeviceData1
+                },
+                {
+                    name: SelectedDevice2,
+                    data: selectedDeviceData2
+                },
+                {
+                    name: SelectedDevice3,
+                    data: selectedDeviceData3
+                },
+                {
+                    name: SelectedDevice4,
+                    data: selectedDeviceData4
+                },
+                {
+                    name: SelectedDevice5,
+                    data: selectedDeviceData5
+                }
+            ]
+        };
+
+
+        var options = {
+            chart: {
+                width: 1400,
+                height: 650,
+                title: '[(#{statistics.deviceHoursByMonth})]',
+                format: '1,000'
+            },
+            yAxis: {
+                title: 'Hours used',
+                min: 0,
+                max: highesValueMonth
+            },
+            xAxis: {
+                title: 'Month'
+            },
+            legend: {
+                align: 'top'
+            }
+        };
+        var theme = {
+            series: {
+                colors: [
+                    '#83b14e', '#ff0000', '#295ba0', '#2a4175', '#289399',
+                    '#289399', '#617178', '#8a9a9a', '#516f7d', '#dddddd'
+                ]
+            }
+        };
+        // For apply theme
+        //tui.chart.registerTheme('myTheme', theme);
+        //options.theme = 'myTheme';
+        if (deviceCounter == 0) {
+            tui.chart.columnChart(container, data0, options);
+        } else if (deviceCounter == 1) {
+            tui.chart.columnChart(container, data1, options);
+        } else if (deviceCounter == 2) {
+            tui.chart.columnChart(container, data2, options);
+        } else if (deviceCounter == 3) {
+            tui.chart.columnChart(container, data3, options);
+        } else if (deviceCounter == 4) {
+            tui.chart.columnChart(container, data4, options);
+        } else if (deviceCounter == 5) {
+            tui.chart.columnChart(container, data5, options);
+        }
+    }
+
+    else if(typeOfGraph==="Device occupancy rate in hours"){
+        var container2 = document.getElementById('chart-area');
+
+        var data0 = {
+
+            categories:
+                [],
+
+            series: [
+                {}
+            ]
+        };
+
+        var data1 = {
+
+            categories:
+                [SelectedDevice1],
+
+            series: [
+                {
+                    name: '[(#{statistics.occupancy})]',
+                    data: selectedDeviceDataOccupancy1
+                }
+            ]
+        };
+
+        var data2 = {
+
+            categories:
+                [SelectedDevice1,SelectedDevice2],
+
+            series: [
+                {
+                    name: '[(#{statistics.occupancy})]',
+                    data: [selectedDeviceDataOccupancy1,
+                        selectedDeviceDataOccupancy2]
+                }
+            ]
+        };
+
+        var data3 = {
+
+            categories:
+                [SelectedDevice1,SelectedDevice2,SelectedDevice3],
+
+            series: [
+                {
+                    name: '[(#{statistics.occupancy})]',
+                    data: [selectedDeviceDataOccupancy1,
+                        selectedDeviceDataOccupancy2,
+                        selectedDeviceDataOccupancy3]
+                }
+            ]
+        };
+
+        var data4 = {
+
+            categories:
+                [SelectedDevice1,SelectedDevice2,SelectedDevice3,SelectedDevice4],
+
+            series: [
+                {
+                    name: '[(#{statistics.occupancy})]',
+                    data: [selectedDeviceDataOccupancy1,
+                        selectedDeviceDataOccupancy2,
+                        selectedDeviceDataOccupancy3,
+                        selectedDeviceDataOccupancy4]
+                }
+            ]
+        };
+        var data5 = {
+
+            categories:
+                [SelectedDevice1,SelectedDevice2,SelectedDevice3,SelectedDevice4,SelectedDevice5],
+
+            series: [
+                {
+                    name: '[(#{statistics.occupancy})]',
+                    data: [selectedDeviceDataOccupancy1,
+                        selectedDeviceDataOccupancy2,
+                        selectedDeviceDataOccupancy3,
+                        selectedDeviceDataOccupancy4,
+                        selectedDeviceDataOccupancy5]
+                }
+            ]
+        };
+
+
+        var options2 = {
+            chart: {
+                width: 1400,
+                height: 650,
+                title: '[(#{statistics.occupancyRateInHours})]',
+                format: '1,000'
+            },
+            yAxis: {
+                title: 'Percentage',
+                min: 0,
+                max: 100
+            },
+            xAxis: {
+                title: 'Device'
+            },
+            legend: {
+                align: 'top'
+            }
+        };
+        var theme = {
+            series:{
+                    colors: [
+                        '#83b14e', '#000000', '#295ba0', '#2a4175', '#289399',
+                        '#289399', '#617178', '#8a9a9a', '#516f7d', '#dddddd'
+                    ]
+                }
+        };
+        // For apply theme
+         //tui.chart.registerTheme('myTheme', theme);
+         //options2.theme = 'myTheme';
+        if (deviceCounter == 0) {
+            tui.chart.columnChart(container2, data0, options2);
+        } else if (deviceCounter == 1) {
+            tui.chart.columnChart(container2, data1, options2);
+        } else if (deviceCounter == 2) {
+            tui.chart.columnChart(container2, data2, options2);
+        } else if (deviceCounter == 3) {
+            tui.chart.columnChart(container2, data3, options2);
+        } else if (deviceCounter == 4) {
+            tui.chart.columnChart(container2, data4, options2);
+        } else if (deviceCounter == 5) {
+            tui.chart.columnChart(container2, data5, options2);
+        }
+    }
+
+    else if(typeOfGraph==="Device occupancy rate in days"){
+        var container2 = document.getElementById('chart-area');
+
+        var data0 = {
+
+            categories:
+                [],
+
+            series: [
+                {}
+            ]
+        };
+
+        var data1 = {
+
+            categories:
+                [SelectedDevice1],
+
+            series: [
+                {
+                    name: '[(#{statistics.occupancy})]',
+                    data: selectedDeviceDataOccupancyDays1
+                }
+            ]
+        };
+
+        var data2 = {
+
+            categories:
+                [SelectedDevice1,SelectedDevice2],
+
+            series: [
+                {
+                    name: '[(#{statistics.occupancy})]',
+                    data: [selectedDeviceDataOccupancyDays1,
+                        selectedDeviceDataOccupancyDays2]
+                }
+            ]
+        };
+
+        var data3 = {
+
+            categories:
+                [SelectedDevice1,SelectedDevice2,SelectedDevice3],
+
+            series: [
+                {
+                    name: '[(#{statistics.occupancy})]',
+                    data: [selectedDeviceDataOccupancyDays1,
+                        selectedDeviceDataOccupancyDays2,
+                        selectedDeviceDataOccupancyDays3]
+                }
+            ]
+        };
+
+        var data4 = {
+
+            categories:
+                [SelectedDevice1,SelectedDevice2,SelectedDevice3,SelectedDevice4],
+
+            series: [
+                {
+                    name: '[(#{statistics.occupancy})]',
+                    data: [selectedDeviceDataOccupancyDays1,
+                        selectedDeviceDataOccupancyDays2,
+                        selectedDeviceDataOccupancyDays3,
+                        selectedDeviceDataOccupancyDays4]
+                }
+            ]
+        };
+        var data5 = {
+
+            categories:
+                [SelectedDevice1,SelectedDevice2,SelectedDevice3,SelectedDevice4,SelectedDevice5],
+
+            series: [
+                {
+                    name: '[(#{statistics.occupancy})]',
+                    data: [selectedDeviceDataOccupancyDays1,
+                        selectedDeviceDataOccupancyDays2,
+                        selectedDeviceDataOccupancyDays3,
+                        selectedDeviceDataOccupancyDays4,
+                        selectedDeviceDataOccupancyDays5]
+                }
+            ]
+        };
+
+
+        var options3 = {
+            chart: {
+                width: 1400,
+                height: 650,
+                title: '[(#{statistics.occupancyRateInDays})]',
+                format: '1,000'
+            },
+            yAxis: {
+                title: 'Occupancy(%)',
+                min: 0,
+                max: 100
+            },
+            xAxis: {
+                title: 'Device'
+            },
+            legend: {
+                align: 'top'
+            }
+        };
+        var theme = {
+            series:{
+                colors: [
+                    '#83b14e', '#000000', '#295ba0', '#2a4175', '#289399',
+                    '#289399', '#617178', '#8a9a9a', '#516f7d', '#dddddd'
+                ]
+            }
+        };
+        // For apply theme
+        //tui.chart.registerTheme('myTheme', theme);
+        //options2.theme = 'myTheme';
+        if (deviceCounter == 0) {
+            tui.chart.columnChart(container2, data0, options3);
+        } else if (deviceCounter == 1) {
+            tui.chart.columnChart(container2, data1, options3);
+        } else if (deviceCounter == 2) {
+            tui.chart.columnChart(container2, data2, options3);
+        } else if (deviceCounter == 3) {
+            tui.chart.columnChart(container2, data3, options3);
+        } else if (deviceCounter == 4) {
+            tui.chart.columnChart(container2, data4, options3);
+        } else if (deviceCounter == 5) {
+            tui.chart.columnChart(container2, data5, options3);
+        }
+    }
+</script>
+
+<!--For tutorial page-->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/codemirror.js'></script>
+<script src='//ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/addon/edit/matchbrackets.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/addon/selection/active-line.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/mode/javascript/javascript.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/addon/lint/lint.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/addon/lint/javascript-lint.js'></script>
+
+<div th:replace="footer :: footer"></div>
+</body>
+</html>

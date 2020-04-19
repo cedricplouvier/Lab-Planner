@@ -140,6 +140,8 @@ public class DatabaseLoader {
         privilegeRepository.save(p26);
         Privilege p27 = new Privilege("Console Access");
         privilegeRepository.save(p27);
+        Privilege p28 = new Privilege("Statistics Access");
+        privilegeRepository.save(p28);
 
         //Create all the roles
         Role bachelorstudent = new Role("Bachelorstudent");
@@ -261,6 +263,9 @@ public class DatabaseLoader {
 
         //Console privilege
         privileges.add(p27);
+
+        //Statistics privileges
+        privileges.add(p28);
 
         administrator.setPrivileges(privileges);
         roleRepository.save(administrator);
@@ -487,25 +492,75 @@ public class DatabaseLoader {
         productRepository.save(pr7);
         Product pr8 = new Product("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr8);
-        Step s1 = new Step(u6, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
+        Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","11:00","12:00","");
         stepRepository.save(s1);
-        Step s2 = new Step(u6, d7, "2020-03-17", "2020-03-17", "08:00", "18:00", "");
+        Step s2= new Step(u1,d7,"2020-03-17","2020-03-17","08:00","18:00","");
         stepRepository.save(s2);
-        Step s3 = new Step(u6, d1, "2020-03-16", "2020-03-16", "14:00", "16:00", "");
+        Step s3= new Step(u4,d1,"2020-03-16","2020-03-16","14:00","16:00","");
         stepRepository.save(s3);
-        Step s4 = new Step(u6, d7, "2020-03-15", "2020-03-15", "16:00", "18:00", "");
+        Step s4= new Step(u4,d7,"2020-03-15","2020-03-15","16:00","18:00","");
         stepRepository.save(s4);
-        Step s5 = new Step(u6, d9, "2020-03-19", "2020-03-19", "13:00", "18:00", "");
+        Step s5= new Step(u5,d9,"2020-03-19","2020-03-19","13:00","18:00","");
         stepRepository.save(s5);
 
-        Step s6 = new Step(u7, d9, "2020-04-10", "2020-04-10", "13:00", "18:00", "");
+        Step s6= new Step(u7,d9,"2020-04-10","2020-04-10","13:00","18:00","");
         stepRepository.save(s6);
-        Step s7 = new Step(u7, d9, "2020-04-11", "2020-04-11", "13:00", "18:00", "");
+        Step s7= new Step(u7,d9,"2020-04-11","2020-04-11","13:00","18:00","");
         stepRepository.save(s7);
-        Step s8 = new Step(u8, d9, "2020-04-12", "2020-04-12", "13:00", "18:00", "");
+        Step s8= new Step(u8,d9,"2020-04-12","2020-04-12","13:00","18:00","");
         stepRepository.save(s8);
-        Step s9 = new Step(u8, d9, "2020-04-13", "2020-04-13", "13:00", "18:00", "");
+        Step s9= new Step(u8,d9,"2020-04-13","2020-04-13","13:00","18:00","");
         stepRepository.save(s9);
+
+        Step s10= new Step(u1,d1,"2020-05-18","2020-05-18","11:00","13:00","");
+        stepRepository.save(s10);
+        Step s11= new Step(u1,d1,"2020-06-17","2020-06-17","08:00","19:00","");
+        stepRepository.save(s11);
+        Step s12= new Step(u4,d1,"2020-07-16","2020-07-16","11:00","16:00","");
+        stepRepository.save(s12);
+        Step s13= new Step(u4,d1,"2020-08-15","2020-08-15","12:00","18:00","");
+        stepRepository.save(s13);
+        Step s14= new Step(u5,d1,"2020-09-19","2020-09-19","14:00","18:00","");
+        stepRepository.save(s14);
+        Step s15= new Step(u4,d1,"2020-10-16","2020-10-16","11:00","16:00","");
+        stepRepository.save(s15);
+        Step s16= new Step(u4,d1,"2020-11-15","2020-11-15","12:00","18:00","");
+        stepRepository.save(s16);
+        Step s17= new Step(u5,d1,"2020-12-19","2020-12-19","14:00","18:00","");
+        stepRepository.save(s17);
+
+        Step s18= new Step(u7,d2,"2020-04-10","2020-04-10","09:00","18:00","");
+        stepRepository.save(s18);
+        Step s19= new Step(u7,d3,"2020-04-11","2020-04-11","13:00","20:00","");
+        stepRepository.save(s19);
+        Step s20= new Step(u8,d4,"2020-04-12","2020-04-12","13:00","15:00","");
+        stepRepository.save(s20);
+        Step s21= new Step(u8,d5,"2020-04-13","2020-04-13","11:00","18:00","");
+        stepRepository.save(s21);
+
+        Step s22= new Step(u1,d2,"2019-05-18","2019-05-18","10:00","20:00","");
+        stepRepository.save(s22);
+
+        Step s23= new Step(u1,d8,"2020-01-13","2020-01-15","10:00","18:00","");
+        stepRepository.save(s23);
+        Step s24= new Step(u1,d8,"2020-02-13","2020-03-15","10:00","18:00","");
+        stepRepository.save(s24);
+        Step s25= new Step(u1,d8,"2020-04-13","2020-06-15","10:00","18:00","");
+        stepRepository.save(s25);
+        Step s26= new Step(u1,d8,"2020-09-13","2020-12-15","10:00","18:00","");
+        stepRepository.save(s26);
+        Step s27= new Step(u1,d8,"2020-05-13","2020-07-15","10:00","18:00","");
+        //stepRepository.save(s27);
+        Step s28= new Step(u1,d8,"2020-09-13","2020-11-15","10:00","18:00","");
+        //stepRepository.save(s28);
+        Step s29= new Step(u1,d8,"2020-05-13","2020-07-15","10:00","18:00","");
+        //stepRepository.save(s29);
+        Step s30= new Step(u1,d8,"2020-09-13","2020-11-15","10:00","18:00","");
+        //stepRepository.save(s30);
+
+        Step s31= new Step(u1,d2,"2021-01-01","2021-12-30","10:00","20:00","");
+        stepRepository.save(s31);
+
         //Create compositions
 
         //APT-C ingredients
