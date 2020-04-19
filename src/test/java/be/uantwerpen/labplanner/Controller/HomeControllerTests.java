@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -67,7 +68,7 @@ public class HomeControllerTests {
     }
 
     @Test
-    public void showStockmanagementPageTest() throws Exception{
+    public void showStockmanagementPageTest() throws Exception {
 
         mockMvc.perform(get("/stockmanagement"))
                 .andExpect(status().is(302))
@@ -75,7 +76,7 @@ public class HomeControllerTests {
     }
 
     @Test
-    public void showCalendarPageTest() throws Exception{
+    public void showCalendarPageTest() throws Exception {
         mockMvc.perform(get("/calendar"))
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/calendar/weekly"));
@@ -89,7 +90,7 @@ public class HomeControllerTests {
     }
 
     @Test
-    public void showDevicemanagementPageTest() throws Exception{
+    public void showDevicemanagementPageTest() throws Exception {
         mockMvc.perform(get("/devicemanagement"))
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/devices"))
@@ -98,12 +99,12 @@ public class HomeControllerTests {
 
     @Test
     @WithUserDetails("Cedric")
-    public void showStepsHomePageTest() throws Exception{
+    public void showStepsHomePageTest() throws Exception {
 
-        long ID = 32;
+        long ID = 33;
         long ID2 = 66;
 
-        User testuser = new User("Cedric","PW");
+        User testuser = new User("Cedric", "PW");
         User user2 = new User();
         testuser.setId(ID);
         Step step = new Step();
@@ -139,10 +140,14 @@ public class HomeControllerTests {
         when(relationService.findAll()).thenReturn(relations);
         when(reportService.findAll()).thenReturn(reports);
 
-        mockMvc.perform(get(("/"),("/home")))
+        mockMvc.perform(get(("/"), ("/home")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("homepage"))
-                .andExpect(model().attribute("currentUser","Cedric"));
+                .andExpect(model().attribute("currentUser", "Cedric"))
+                .andExpect(model().attribute("userSteps", hasSize(1)))
+                .andExpect(model().attribute("studentSteps",hasSize(1)))
+                .andExpect(model().attribute("userExperiments", hasSize(1)))
+                .andExpect(model().attribute("studentExperiments",hasSize(0)));
     }
 
 }
