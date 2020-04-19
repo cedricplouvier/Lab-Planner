@@ -8,6 +8,12 @@ import be.uantwerpen.labplanner.Service.ExperimentService;
 import be.uantwerpen.labplanner.Service.RelationService;
 import be.uantwerpen.labplanner.Service.ReportService;
 import be.uantwerpen.labplanner.Service.StepService;
+import be.uantwerpen.labplanner.Service.DeviceService;
+import be.uantwerpen.labplanner.Service.DeviceTypeService;
+import be.uantwerpen.labplanner.Service.RelationService;
+import be.uantwerpen.labplanner.Service.StepService;
+import be.uantwerpen.labplanner.Service.ReportService;
+import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import org.slf4j.Logger;
@@ -41,11 +47,6 @@ public class HomeController {
 
     @Autowired
     private RelationService relationService;
-
-    @RequestMapping({"/","/home"})
-    public String showHomepage(){
-        return "homepage";
-    }
 
     //@PreAuthorize("hasAuthority('User Management')")
     @RequestMapping("/usermanagement")
@@ -132,5 +133,10 @@ public class HomeController {
         model.addAttribute("studentExperiments", studentExperiments);
 
         return "homepage";
+    }
+
+    @RequestMapping("/statistics")
+    public String showStatisticsPage() {
+        return "redirect:/statistics/statistics";
     }
 }

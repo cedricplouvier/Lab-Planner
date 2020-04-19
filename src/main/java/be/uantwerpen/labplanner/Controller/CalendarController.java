@@ -43,12 +43,6 @@ public class CalendarController {
     //Mappings
     @RequestMapping(value = "/calendar/user", method = RequestMethod.GET)
     public String showUserCalendar(final ModelMap model) {
-        HolidayManager m = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
-        Set<Holiday> holidays = m.getHolidays(2020);
-        System.out.println(holidays.size());
-        for(Holiday holiday:holidays){
-            System.out.println(holiday.getDate());
-        }
         User user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         List<Step> userSteps = new ArrayList<Step>();
         for (Step step: stepService.findAll()) {
@@ -64,24 +58,4 @@ public class CalendarController {
         return "/Calendar/userCalendar";
 
     }
-
-//    @RequestMapping(value = "/calendar/book", method = RequestMethod.GET)
-//    public String showStepCalendar(final ModelMap model) {
-//
-//        User user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-//        List<Step> userSteps = new ArrayList<Step>();
-//        for (Step step: stepService.findAll()) {
-//            if (step.getUser().getId() ==user.getId()){
-//                userSteps.add(step);
-//            }
-//        }
-//        model.addAttribute("allUsersSteps", userSteps);
-//        model.addAttribute("allSteps", stepService.findAll());
-//        model.addAttribute("allDevices", deviceService.findAll());
-//        model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
-//        model.addAttribute("Step",new Step());
-//
-//        return "/Calendar/bookCalendar";
-//    }
-
 }

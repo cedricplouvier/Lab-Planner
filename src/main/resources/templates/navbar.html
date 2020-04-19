@@ -94,6 +94,14 @@
                             <span class="sr-only">(Book experiment)</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <div sec:authorize="hasAuthority('Statistics Access')">
+                        <a class="nav-link" th:href="@{/statistics}" th:text="#{navbar.statistics}">
+                            Statistics
+                            <span class="sr-only">(Statistics)</span>
+                        </a>
+                        </div>
+                    </li>
                     <!--
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/report}" th:text="#{navbar.report}">

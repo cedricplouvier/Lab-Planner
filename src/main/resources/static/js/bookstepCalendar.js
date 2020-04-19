@@ -197,9 +197,6 @@ function checkOverlap() {
                 $('#deviceTypeDropdown').append($('<option>').val(optionValue).text(optionText));
                 document.getElementById('selectStep').disabled = false;
 
-            }else{
-                console.log(devices[current]['devicename']);
-
             }
         }
     }

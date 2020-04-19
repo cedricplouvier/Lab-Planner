@@ -19,7 +19,6 @@
         $(document).ready(function () {
             var status = /*[[${Status}]]*/ null;
             var messages =  /*[[${Message}]]*/ "";
-            console.log(messages);
             if (status != null) {
                 if (status == "Success")
                     toastr.success(messages);
@@ -30,7 +29,6 @@
             $('.js-example-basic-single').select2();
             $('#sel').on('change', function () {
                 var devices =  /*[[${allDevices}]]*/ {};
-                console.log(this.value);
                 $('#deviceNames')
                     .empty()
                     .append(' <option value="none" selected disabled hidden> Device Name </option>')
