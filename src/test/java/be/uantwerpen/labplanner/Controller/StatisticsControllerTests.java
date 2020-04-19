@@ -7,8 +7,10 @@ import be.uantwerpen.labplanner.Model.Step;
 import be.uantwerpen.labplanner.Service.DeviceService;
 import be.uantwerpen.labplanner.Service.DeviceTypeService;
 import be.uantwerpen.labplanner.Service.StepService;
+import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
+import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
 import org.junit.Assert;
@@ -57,6 +59,9 @@ public class StatisticsControllerTests {
     @Mock
     private StepService stepService;
 
+    @Mock
+    private ProductService productService;
+
     @InjectMocks
     private StatisticsController statisticsController;
 
@@ -100,6 +105,20 @@ public class StatisticsControllerTests {
                 .andExpect(model().attribute("dev4", notNullValue()))
                 .andExpect(model().attribute("dev5", notNullValue()))
                 .andExpect(view().name("/Statistics/statistics"))
+                .andDo(print());
+    }
+
+    @Test
+    public void showStatisticsStockPageTest() throws Exception{
+        List<Product> products = new ArrayList<>();
+        Product productTest = new Product();
+        products.add(productTest);
+
+        when(productService.findAll()).thenReturn(products);
+        mockMvc.perform(get("/statistics/stockStatistics").with(user("test").password("test")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("/Statistics/stockStatistics"))
+                .andExpect(model().attribute("products",hasSize(1)))
                 .andDo(print());
     }
 
