@@ -98,7 +98,6 @@ public class StepController {
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("Step", new Step());
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
@@ -218,7 +217,6 @@ public class StepController {
         if (result.hasErrors()) {
             ra.addFlashAttribute("Status", new String("Error"));
             if (result.hasErrors()) {
-                System.out.println(result.getFieldError().toString());
                 ra.addFlashAttribute("Message", new String(result.getFieldError().toString()));
             } else
                 ra.addFlashAttribute("Message", new String("Error while trying to save step."));
@@ -419,8 +417,14 @@ public class StepController {
         Set<Role> userRoles = currentUser.getRoles();
         Role adminRol = roleService.findByName("Administrator").get();
         boolean isUsed = false;
+        boolean hasAdmin = false;
+        for (Role userRole :userRoles){
+            if(userRole.getName().equals(adminRol.getName())){
+                hasAdmin=true;
+            }
+        }
 
-        if (userRoles.contains(adminRol)) {
+        if (hasAdmin) {
             Iterator<Experiment> it = Experiments.iterator();
             while (it.hasNext()) {
                 Experiment temp = it.next();
@@ -442,6 +446,10 @@ public class StepController {
                 ra.addFlashAttribute("Status", new String("Success"));
                 ra.addFlashAttribute("Message", new String("Experiment type successfully deleted."));
             }
+        }
+        else{
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String("You have no rights to delete experiment."));
         }
         model.clear();
         return "redirect:/planning/experiments";
@@ -503,12 +511,35 @@ public class StepController {
 
     @RequestMapping(value = "/planning/experiments/book", method = RequestMethod.GET)
     public String viewBookNewExperiment(final ModelMap model) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<Step> stepList = new ArrayList<Step>();
+        //prepare list of empty steps
+        for (int i = 0; i < 100; i++) {
+            stepList.add(new Step());
+        }
+
+        List<Step> userSteps = new ArrayList<Step>();
+        List<Step> otherSteps = new ArrayList<Step>();
+
+        for (Step step: stepService.findAll()) {
+            if (step.getUser().getId() ==currentUser.getId()){
+                userSteps.add(step);
+            }else{
+                otherSteps.add(step);
+            }
+        }
+        HolidayManager manager = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
+        Set<Holiday> holidays = manager.getHolidays(Calendar.getInstance().get(Calendar.YEAR));
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
+        model.addAttribute("userSteps", userSteps);
+        model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("experiment", new Experiment());
+        model.addAttribute("holidays",holidays);
         return "PlanningTool/planning-exp-book";
     }
 
@@ -833,7 +864,6 @@ public class StepController {
         if (result.hasErrors()) {
             ra.addFlashAttribute("Status", new String("Error"));
             ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type."));
-            System.out.println(result.getFieldError().toString());
             return "redirect:/planning/experiments";
         }
         ExperimentType tempExperimentType = experimentType.getId() == null ? null : experimentTypeRepository.findById(experimentType.getId()).orElse(null);
@@ -854,7 +884,7 @@ public class StepController {
                 ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
                 return "redirect:/planning/experiments";
             }
-            if (stepType.getContinuity().getMinutes() > 59 || stepType.getContinuity().getMinutes() < 0) {
+            if(stepType.getContinuity().getMinutes()>59 || stepType.getContinuity().getMinutes()<0){
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
                 return "redirect:/planning/experiments";
@@ -1036,7 +1066,6 @@ public class StepController {
         for (Holiday tmpHoliday : holidays) {
             if ((tmpHoliday.getDate().getMonth().getValue() == dateTime.getMonthOfYear()) &&
                     (tmpHoliday.getDate().getDayOfMonth() == dateTime.getDayOfMonth())) {
-                System.out.println("Date: " + tmpHoliday.getDate().toString() + " Description: " + tmpHoliday.getDescription());
                 return true;
             }
         }

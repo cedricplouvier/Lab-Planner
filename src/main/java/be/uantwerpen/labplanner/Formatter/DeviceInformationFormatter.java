@@ -27,5 +27,4 @@ public class DeviceInformationFormatter implements Formatter<DeviceInformation> 
     public String print(final DeviceInformation object, final Locale locale)
     { return (object != null ? object.getId().toString() : "");
     }
-
 }
