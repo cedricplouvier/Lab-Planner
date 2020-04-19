@@ -560,8 +560,6 @@ public class StepController {
             for (Product prod : productService.findAll()) {
                 productMap.put(prod, prod.getStockLevel());
             }
-
-
         }
 
 

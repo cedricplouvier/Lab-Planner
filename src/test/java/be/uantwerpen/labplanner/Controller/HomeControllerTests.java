@@ -98,6 +98,14 @@ public class HomeControllerTests {
     }
 
     @Test
+    public void showStatisticsPageTest() throws Exception {
+        mockMvc.perform(get("/statistics"))
+                .andExpect(status().is(302))
+                .andExpect(view().name("redirect:/statistics/statistics"))
+                .andDo(print());
+    }
+
+    @Test
     @WithUserDetails("Cedric")
     public void showStepsHomePageTest() throws Exception {
 
@@ -126,14 +134,19 @@ public class HomeControllerTests {
         testuser.setId(ID);
 
         Set<User> students = new HashSet<>();
+        students.add(user2);
         Relation relation = new Relation();
         relation.setResearcher(testuser);
         relation.setStudents(students);
         List<Relation> relations = new ArrayList<>();
         relations.add(relation);
 
+        Experiment exp2 = new Experiment();
+        exp2.setSteps(steps);
+        exp2.setUser(user2);
+        experiments.add(exp2);
+
         List<Report> reports = new ArrayList<>();
-        students.add(user2);
 
         when(stepService.findAll()).thenReturn(steps);
         when(experimentService.findAll()).thenReturn(experiments);
@@ -147,7 +160,7 @@ public class HomeControllerTests {
                 .andExpect(model().attribute("userSteps", hasSize(1)))
                 .andExpect(model().attribute("studentSteps",hasSize(1)))
                 .andExpect(model().attribute("userExperiments", hasSize(1)))
-                .andExpect(model().attribute("studentExperiments",hasSize(0)));
+                .andExpect(model().attribute("studentExperiments",hasSize(1)));
     }
 
 }
