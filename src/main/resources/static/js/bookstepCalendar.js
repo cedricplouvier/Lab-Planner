@@ -227,7 +227,7 @@ function checkContinuity(stepindex,schedule) {
         if(previousStepType['continuity']['type']=="Hard"){
             if(firstDate.getTime()!=secondDate.getTime()){
             return {
-                message: "This device requires a hard continuity, This step should be exactly "+stepType['continuity']['hours']+" hours after the previous step in the experiment.",
+                message: "This device requires a hard continuity, This step should be exactly "+previousStepType['continuity']['hours']+" hours after the previous step in the experiment.",
                 ok:false,
             }
         }

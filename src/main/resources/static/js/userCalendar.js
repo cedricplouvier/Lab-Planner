@@ -82,8 +82,4 @@ function generateSchedule(viewName, renderStart, renderEnd) {
     })
 
 }
-// function getInit() {
-//     let options = [];
-//    options.isReadOnly = false;
-//    return options
-// }
+
