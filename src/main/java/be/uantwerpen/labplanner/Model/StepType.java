@@ -12,8 +12,8 @@ public class StepType extends AbstractPersistable<Long> {
     @OneToOne
     @JoinColumn(name = "deviceType", nullable = false)
     private DeviceType deviceType;
-    @Column(name = "stepTypeName")
-    private String stepTypeName;
+    @Column(name = "name")
+    private String name;
     @OneToOne
     @JoinColumn(name = "continuity")
     private Continuity continuity;
@@ -23,7 +23,7 @@ public class StepType extends AbstractPersistable<Long> {
 
     public StepType(DeviceType deviceType, Continuity continuity, String stepTypeName) {
         this.deviceType = deviceType;
-        this.stepTypeName = stepTypeName;
+        this.name = stepTypeName;
         this.continuity = continuity;
     }
 
@@ -36,11 +36,11 @@ public class StepType extends AbstractPersistable<Long> {
     }
 
     public String getStepTypeName() {
-        return stepTypeName;
+        return name;
     }
 
     public void setStepTypeName(String stepTypeName) {
-        this.stepTypeName = stepTypeName;
+        this.name = stepTypeName;
     }
 
     public Continuity getContinuity() {
@@ -57,7 +57,7 @@ public class StepType extends AbstractPersistable<Long> {
     }
 
     @Override
-    protected void setId(Long id) {
+    public void setId(Long id) {
         super.setId(id);
     }
 }
