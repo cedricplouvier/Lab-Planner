@@ -53,7 +53,7 @@ public class DeviceControllerTests {
 
     @Mock
     private DeviceInformationService deviceInformationService;
-    @Autowired
+    @Mock
     private StorageService storageService;
     @InjectMocks
     private DeviceController deviceController;
@@ -138,11 +138,11 @@ public class DeviceControllerTests {
         List<Device> devices = new ArrayList<Device>();
         devices.add(device);
 
-//        when(deviceService.findById((long) 10)).thenReturn(Optional.of(device));
-//        mockMvc.perform(get("/device/info/{id}",10))
-//                .andExpect(status().isOk())
-//                .andExpect(view().name("Devices/device-info"))
-//                .andExpect(model().attribute("device", device));
+        when(deviceService.findById((long) 10)).thenReturn(Optional.of(device));
+        mockMvc.perform(get("/device/info/{id}",10))
+                .andExpect(status().isOk())
+                .andExpect(view().name("Devices/device-info"))
+                .andExpect(model().attribute("device", device));
     }
 
     @Test
@@ -203,14 +203,12 @@ public class DeviceControllerTests {
         deviceType.setDevicePictureName("picturename");
         deviceType.setId((long) 10);
         List<DeviceType> devicetypes = new ArrayList<DeviceType>();
-
         when(deviceTypeService.findById(deviceType.getId())).thenReturn(Optional.of(deviceType));
-
-//        mockMvc.perform(get("/devices/info/put/{id}",10))
-//                .andExpect(status().isOk())
-//                .andExpect(model().attribute("deviceInfoObject", instanceOf(DeviceInformation.class)))
-//                .andExpect(model().attribute("deviceTypeObject",Optional.of(deviceType)))
-//                .andExpect(view().name("Devices/device-info-manage"));
+        mockMvc.perform(get("/devices/info/put/{id}",10))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("deviceInfoObject", instanceOf(DeviceInformation.class)))
+                .andExpect(model().attribute("deviceTypeObject",deviceType))
+                .andExpect(view().name("Devices/device-info-manage"));
 
     }
 
@@ -269,14 +267,14 @@ public class DeviceControllerTests {
         List<DeviceType> devicetypes = new ArrayList<DeviceType>();
         devicetypes.add(deviceType);
 
-        when(deviceTypeService.findAll()).thenReturn(devicetypes);
+        when(deviceTypeService.findById((long) 10)).thenReturn(Optional.of(deviceType));
 
 //        //editing with existing id as input
-//        mockMvc.perform(get("/devices/types/{id}",10))
-//                .andExpect(status().isOk())
-//                .andExpect(model().attribute("deviceTypeObject",instanceOf(DeviceType.class)))
-//                .andExpect(view().name("Devices/device-type-manage"))
-//                .andDo(print());
+        mockMvc.perform(get("/devices/types/{id}",10))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("deviceTypeObject",instanceOf(DeviceType.class)))
+                .andExpect(view().name("Devices/device-type-manage"))
+                .andDo(print());
 
         //wrong input
         mockMvc.perform(get("/devices/types/{id}","fff"))
@@ -286,246 +284,197 @@ public class DeviceControllerTests {
     }
 
 
-//    @Test
-//    //TEst the validity of editing the device Information page
-//    public void viewEditDeviceInformationTest() throws Exception {
-//        Role role = new Role("testrol");
-//        long id = 10;
-//        role.setId(id);
-//        List<Role> roles = new ArrayList<Role>();
-//        roles.add(role);
-//        Privilege p = new Privilege("test");
-//        p.setId((long) 15);
-//        List<Privilege> privileges = new ArrayList<Privilege>();
-//        privileges.add(p);
-//
-//        when(roleService.findById(id)).thenReturn(Optional.of(role));
-//        when(privilegeService.findAll()).thenReturn(privileges);
-//
-//        //editing with existing id as input
-//        mockMvc.perform(get("/usermanagement/roles/{id}",10))
-//                .andExpect(status().isOk())
-//                .andExpect(model().attribute("allPrivileges",hasSize(1)))
-//                .andExpect(view().name("/Roles/role-manage"))
-//                .andDo(print());
-//
-//        //wrong input
-//        mockMvc.perform(get("/usermanagement/roles/{id}","fff"))
-//                .andExpect(status().is4xxClientError())
-//                .andDo(print());
-//
-//    }
-//
-//
-//
-//    @PreAuthorize("hasAuthority('Device - Modify - All')")
-//    @RequestMapping(value="/devices/info/{id}/{typeid}", method= RequestMethod.GET)
-//    public String viewEdiDeviceInfo(@PathVariable Long id, @PathVariable Long typeid, final ModelMap model){
-//        model.addAttribute("deviceInfoObject",deviceInformationService.findById(id).orElse(null));
-//        model.addAttribute("deviceTypeObject",deviceTypeService.findById(typeid).orElse(null));
-//        model.addAttribute("files", storageService.loadDir(Objects.requireNonNull(deviceTypeService.findById(typeid).orElse(null)).getDeviceTypeName()).map(
-//                path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
-//                        "serveFile", new String[]{ path.getFileName().toString(),path.getParent().toString()}).build().toUri().toString())
-//                .collect(Collectors.toList()));
-//        return "Devices/device-info-manage";
-//    }
-//   @Test
-//    //Ad role with non valid name
-//    public void AddNonValidNameRoleTest() throws Exception{
-//       Role role = new Role("  ");
-//       long id = 10;
-//       role.setId(id);
-//
-//       Privilege p = new Privilege("test");
-//       p.setId((long) 15);
-//       List<Privilege> privileges = new ArrayList<Privilege>();
-//       privileges.add(p);
-//
-//       when(privilegeService.findAll()).thenReturn(privileges);
-//
-//       //empty string name
-//       mockMvc.perform(post("/usermanagement/roles/").flashAttr("role",role))
-//               .andExpect(status().is(200))
-//               .andExpect(model().attribute("roleInUse",notNullValue()))
-//               .andExpect(view().name("/Roles/role-manage"))
-//               .andDo(print());
-//
-//       //null as name
-//       role.setName(null);
-//       mockMvc.perform(post("/usermanagement/roles/").flashAttr("role",role))
-//               .andExpect(status().is(200))
-//               .andExpect(model().attribute("roleInUse",notNullValue()))
-//               .andExpect(view().name("/Roles/role-manage"))
-//               .andDo(print());
-//   }
-//
-//
-//
-//    @PreAuthorize("hasAuthority('Device - Modify - All')")
-//    @RequestMapping(value="/devices/{id}/delete")
-//    public String deleteDevice(@PathVariable Long id, final ModelMap
-//            model){ deviceService.deleteById(id);
-//        model.clear();
-//        return "redirect:/devices";
-//    }
-//
-//    @Test
-//    //test for deleting
-//    public void DeleteDeviceTest() throws Exception{
-//        Role role = new Role("testrole");
-//        long id = 10;
-//        role.setId(id);
-//
-//        Set<Role> roles = new HashSet<Role>();
-//        roles.add(role);
-//
-//        User user = new User("admin","admin");
-//        user.setRoles(roles);
-//        List<User> users = new ArrayList<>();
-//        users.add(user);
-//
-//        //Role is in Use
-//        when(userService.findAll()).thenReturn(users);
-//        mockMvc.perform(get("/usermanagement/roles/{id}/delete","10"))
-//                .andExpect(status().is(200))
-//                .andDo(print())
-//                .andExpect(model().attribute("inUseError",notNullValue()))
-//
-//                .andExpect(view().name("/Roles/role-list"));
-//
-//        //Role is not in Use
-//        when(userService.findAll()).thenReturn(users);
-//        mockMvc.perform(get("/usermanagement/roles/{id}/delete","11"))
-//                .andExpect(status().is(302))
-//                .andDo(print())
-//                .andExpect(model().attributeDoesNotExist())
-//                .andExpect(view().name("redirect:/usermanagement/roles"));
-//
-//        //wrong url input
-//        mockMvc.perform(get("/usermanagement/roles/{id}/delete","ff"))
-//                .andExpect(status().is4xxClientError())
-//                .andDo(print());
-//
-//
-//
-//
-//    }
-//
-//    @PreAuthorize("hasAuthority('Device - Modify - All')")
-//    @RequestMapping(value="/devices/types/{id}/delete")
-//    public String deleteDeviceType(@PathVariable Long id, final ModelMap model){
-//        List<Device> allDevices = deviceService.findAll();
-//        Boolean isUsed = false;
-//        for(Device currentDevice : allDevices){
-//            if(currentDevice.getDeviceType().getId()==id){
-//                isUsed = true;
-//            }
-//        }
-//        if(isUsed){
-//            model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
-//            model.addAttribute("errormessage", "There are devices of type "+deviceTypeService.findById(id).orElse(null).getDeviceTypeName());
-//            return "Devices/list-device-types";
-//        }
-//        deviceTypeService.deleteById(id);
-//        model.clear();
-//        return "redirect:/devices";
-//    }
-//
-//
-//    @Test
-//    //test for deleting
-//    public void DeleteDeviceTypeTest() throws Exception{
-//        Role role = new Role("testrole");
-//        long id = 10;
-//        role.setId(id);
-//
-//        Set<Role> roles = new HashSet<Role>();
-//        roles.add(role);
-//
-//        User user = new User("admin","admin");
-//        user.setRoles(roles);
-//        List<User> users = new ArrayList<>();
-//        users.add(user);
-//
-//        //Role is in Use
-//        when(userService.findAll()).thenReturn(users);
-//        mockMvc.perform(get("/usermanagement/roles/{id}/delete","10"))
-//                .andExpect(status().is(200))
-//                .andDo(print())
-//                .andExpect(model().attribute("inUseError",notNullValue()))
-//
-//                .andExpect(view().name("/Roles/role-list"));
-//
-//        //Role is not in Use
-//        when(userService.findAll()).thenReturn(users);
-//        mockMvc.perform(get("/usermanagement/roles/{id}/delete","11"))
-//                .andExpect(status().is(302))
-//                .andDo(print())
-//                .andExpect(model().attributeDoesNotExist())
-//                .andExpect(view().name("redirect:/usermanagement/roles"));
-//
-//        //wrong url input
-//        mockMvc.perform(get("/usermanagement/roles/{id}/delete","ff"))
-//                .andExpect(status().is4xxClientError())
-//                .andDo(print());
-//
-//
-//
-//
-//    }
-//    @PreAuthorize("hasAuthority('Device - Modify - All')")
-//    @RequestMapping(value="/devices/info/{id}/{typeid}/delete")
-//    public String deleteDeviceInfo(@PathVariable Long id, final ModelMap model, @PathVariable Long typeid){
-//        DeviceType deviceType = deviceTypeService.findById(typeid).get();
-//        List<DeviceInformation> informations = deviceType.getDeviceInformation();
-//        informations.remove(deviceInformationService.findById(id).get());
-//        deviceType.setDeviceInformation(informations);
-//        deviceTypeService.saveNewDeviceType(deviceType);
-//        deviceInformationService.deleteById(id);
-//        model.clear();
-//
-//        return "redirect:/devices/types/"+typeid;
-//    }
-//
-//    @Test
-//    //test for deleting
-//    public void DeleteInformationTest() throws Exception{
-//        Role role = new Role("testrole");
-//        long id = 10;
-//        role.setId(id);
-//
-//        Set<Role> roles = new HashSet<Role>();
-//        roles.add(role);
-//
-//        User user = new User("admin","admin");
-//        user.setRoles(roles);
-//        List<User> users = new ArrayList<>();
-//        users.add(user);
-//
-//        //Role is in Use
-//        when(userService.findAll()).thenReturn(users);
-//        mockMvc.perform(get("/usermanagement/roles/{id}/delete","10"))
-//                .andExpect(status().is(200))
-//                .andDo(print())
-//                .andExpect(model().attribute("inUseError",notNullValue()))
-//
-//                .andExpect(view().name("/Roles/role-list"));
-//
-//        //Role is not in Use
-//        when(userService.findAll()).thenReturn(users);
-//        mockMvc.perform(get("/usermanagement/roles/{id}/delete","11"))
-//                .andExpect(status().is(302))
-//                .andDo(print())
-//                .andExpect(model().attributeDoesNotExist())
-//                .andExpect(view().name("redirect:/usermanagement/roles"));
-//
-//        //wrong url input
-//        mockMvc.perform(get("/usermanagement/roles/{id}/delete","ff"))
-//                .andExpect(status().is4xxClientError())
-//                .andDo(print());
-//
-//
-//
-//
-//    }
+    @Test
+    //TEst the validity of editing the device Information page
+    public void viewEditDeviceInformationTest() throws Exception {
+        DeviceInformation deviceInformation = new DeviceInformation();
+        deviceInformation.setInformationName("deviceInformation2");
+        //Set variables
+        deviceInformation.setInformation("test");
+        List files = new ArrayList();
+        files.add("1");
+        files.add("2");
+        deviceInformation.setFiles(files);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("devicetype2");
+        List deviceinformations = new ArrayList();
+        deviceinformations.add(deviceInformation);
+        deviceType.setDeviceInformation(deviceinformations);
+        //Set variables
+        deviceType.setColor("test");
+        deviceType.setOvernightuse(true);
+        deviceType.setDevicePictureName("picturename");
+        Device device = new Device();
+        device.setDevicename("device2");
+        //Set variables
+        device.setComment("test");
+        device.setId((long) 10);
+        deviceInformation.setId((long) 10);
+        deviceType.setId((long) 10);
+        device.setDeviceType(deviceType);
+        List<Device> devices = new ArrayList<Device>();
+        devices.add(device);
+
+        when(deviceTypeService.findById((long) 10)).thenReturn(Optional.of(deviceType));
+        when(deviceInformationService.findById((long) 10)).thenReturn(Optional.of(deviceInformation));
+
+        //editing with existing id as input
+        mockMvc.perform(get("/devices/info/{id}/{typeid}",10,10))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("deviceInfoObject",deviceInformation))
+                .andExpect(model().attribute("deviceTypeObject",deviceType))
+                .andExpect(view().name("Devices/device-info-manage"))
+                .andDo(print());
+
+        //wrong input
+        mockMvc.perform(get("/devices/info/{id}/{typeid}","fff","fff"))
+                .andExpect(status().is4xxClientError())
+                .andDo(print());
+
+    }
+
+
+
+
+
+    @Test
+    //test for deleting
+    public void DeleteDeviceTest() throws Exception{
+        Device device = new Device();
+        device.setDevicename("device");
+        //Set variables
+        device.setComment("test");
+
+        DeviceType d1 = new DeviceType("devicetype",false);
+        List<DeviceType> deviceTypes = new ArrayList<DeviceType>();
+        deviceTypes.add(d1);
+        device.setDeviceType(d1);
+        device.setId((long) 10);
+        List<Device> devices = new ArrayList<Device>();
+        devices.add(device);
+
+        //Role is in Use
+        when(deviceService.findAll()).thenReturn(devices);
+        mockMvc.perform(get("/devices/{id}/delete",10))
+                .andExpect(status().is(302))
+                .andDo(print())
+                .andExpect(view().name("redirect:/devices"));
+
+
+        //wrong url input
+        mockMvc.perform(get("/usermanagement/roles/{id}/delete","ff"))
+                .andExpect(status().is4xxClientError())
+                .andDo(print());
+
+
+
+
+    }
+
+    @Test
+    //test for deleting
+    public void DeleteDeviceTypeTest() throws Exception{
+        Device device = new Device();
+        device.setDevicename("device");
+        //Set variables
+        device.setComment("test");
+
+        DeviceType d1 = new DeviceType("devicetype",false);
+        DeviceType d2 = new DeviceType("devicetype2",false);
+        d2.setId((long) 11);
+
+        List<DeviceType> deviceTypes = new ArrayList<DeviceType>();
+        deviceTypes.add(d1);
+        deviceTypes.add(d2);
+        device.setDeviceType(d1);
+        device.setId((long) 10);
+        d1.setId((long) 10);
+        List<Device> devices = new ArrayList<Device>();
+        devices.add(device);
+
+        //Role is in Use
+        when(deviceService.findAll()).thenReturn(devices);
+        when(deviceTypeService.findAll()).thenReturn(deviceTypes);
+        when(deviceTypeService.findById((long) 10)).thenReturn(Optional.of(d1));
+
+        mockMvc.perform(get("/devices/types/{id}/delete",10))
+                .andExpect(status().is(200))
+                .andDo(print())
+
+                .andExpect(view().name("Devices/list-device-types"));
+
+        //Role is not in Use
+
+        mockMvc.perform(get("/devices/types/{id}/delete",11))
+                .andExpect(status().is(302))
+                .andDo(print())
+                .andExpect(view().name("redirect:/devices"));
+
+        //wrong url input
+        mockMvc.perform(get("/devices/types/{id}/delete","ff"))
+                .andExpect(status().is4xxClientError())
+                .andDo(print());
+
+    }
+    @PreAuthorize("hasAuthority('Device - Modify - All')")
+    @RequestMapping(value="/devices/info/{id}/{typeid}/delete")
+    public String deleteDeviceInfo(@PathVariable Long id, final ModelMap model, @PathVariable Long typeid){
+        DeviceType deviceType = deviceTypeService.findById(typeid).get();
+        List<DeviceInformation> informations = deviceType.getDeviceInformation();
+        informations.remove(deviceInformationService.findById(id).get());
+        deviceType.setDeviceInformation(informations);
+        deviceTypeService.saveNewDeviceType(deviceType);
+        deviceInformationService.deleteById(id);
+        model.clear();
+
+        return "redirect:/devices/types/"+typeid;
+    }
+
+    @Test
+    //test for deleting
+    public void DeleteInformationTest() throws Exception{
+        Device device = new Device();
+        device.setDevicename("device");
+        //Set variables
+        device.setComment("test");
+
+        DeviceType d1 = new DeviceType("devicetype",false);
+        DeviceType d2 = new DeviceType("devicetype2",false);
+        d2.setId((long) 11);
+
+        List<DeviceType> deviceTypes = new ArrayList<DeviceType>();
+        deviceTypes.add(d1);
+        deviceTypes.add(d2);
+        device.setDeviceType(d1);
+        device.setId((long) 10);
+        d1.setId((long) 10);
+        List<Device> devices = new ArrayList<Device>();
+        devices.add(device);
+        DeviceInformation i1 = new DeviceInformation("info","information");
+        List<DeviceInformation> deviceInformation = new ArrayList<DeviceInformation>();
+        deviceInformation.add(i1);
+        d1.setDeviceInformation(deviceInformation);
+        i1.setId((long) 10);
+
+
+        //Role is not in Use
+        when(deviceTypeService.findAll()).thenReturn(deviceTypes);
+        when(deviceInformationService.findById((long) 10)).thenReturn(Optional.of(i1));
+        when(deviceTypeService.findById((long) 10)).thenReturn(Optional.of(d1));
+
+        mockMvc.perform(get("/devices/info/{id}/{typeid}/delete",10,10))
+                .andExpect(status().is(302))
+                .andDo(print())
+                .andExpect(model().attributeDoesNotExist())
+                .andExpect(view().name("redirect:/devices/types/10"));
+
+        //wrong url input
+        mockMvc.perform(get("/usermanagement/roles/{id}/delete","ff"))
+                .andExpect(status().is4xxClientError())
+                .andDo(print());
+
+
+
+
+    }
 }
