@@ -1,36 +1,35 @@
 package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.LabplannerApplication;
+import be.uantwerpen.labplanner.Model.Experiment;
 import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Model.Report;
 import be.uantwerpen.labplanner.Model.Step;
+import be.uantwerpen.labplanner.Service.ExperimentService;
 import be.uantwerpen.labplanner.Service.RelationService;
 import be.uantwerpen.labplanner.Service.ReportService;
 import be.uantwerpen.labplanner.Service.StepService;
 import be.uantwerpen.labplanner.common.model.users.User;
-import be.uantwerpen.labplanner.common.service.users.RoleService;
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get; //belangrijke imports
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(classes = LabplannerApplication.class)
 @WebAppConfiguration
@@ -38,6 +37,9 @@ public class HomeControllerTests {
 
     @Mock
     private StepService stepService;
+
+    @Mock
+    private ExperimentService experimentService;
 
     @Mock
     private RelationService relationService;
@@ -113,6 +115,13 @@ public class HomeControllerTests {
         List<Step> steps = new ArrayList<>();
         steps.add(step);
         steps.add(step2);
+
+        Experiment exp = new Experiment();
+        exp.setSteps(steps);
+        exp.setUser(testuser);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(exp);
+
         testuser.setId(ID);
 
         Set<User> students = new HashSet<>();
@@ -126,6 +135,7 @@ public class HomeControllerTests {
         students.add(user2);
 
         when(stepService.findAll()).thenReturn(steps);
+        when(experimentService.findAll()).thenReturn(experiments);
         when(relationService.findAll()).thenReturn(relations);
         when(reportService.findAll()).thenReturn(reports);
 
