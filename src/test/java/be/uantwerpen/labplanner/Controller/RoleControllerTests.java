@@ -64,7 +64,7 @@ public class RoleControllerTests {
         when(roleService.findAll()).thenReturn(roles);
         mockMvc.perform(get("/usermanagement/roles"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/Roles/role-list"))
+                .andExpect(view().name("Roles/role-list"))
                 .andExpect(model().attribute("allRoles", hasSize(1)));
 
     }
@@ -85,7 +85,7 @@ public class RoleControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("allPrivileges",hasSize(1)))
                 .andExpect(model().attribute("role",instanceOf(Role.class)))
-                .andExpect(view().name("/Roles/role-manage"));
+                .andExpect(view().name("Roles/role-manage"));
 
     }
 
@@ -109,7 +109,7 @@ public class RoleControllerTests {
        mockMvc.perform(get("/usermanagement/roles/{id}",10))
                .andExpect(status().isOk())
                .andExpect(model().attribute("allPrivileges",hasSize(1)))
-               .andExpect(view().name("/Roles/role-manage"))
+               .andExpect(view().name("Roles/role-manage"))
                 .andDo(print());
 
         //wrong input
@@ -137,7 +137,7 @@ public class RoleControllerTests {
        mockMvc.perform(post("/usermanagement/roles/").flashAttr("role",role))
                .andExpect(status().is(200))
                .andExpect(model().attribute("roleInUse",notNullValue()))
-               .andExpect(view().name("/Roles/role-manage"))
+               .andExpect(view().name("Roles/role-manage"))
                .andDo(print());
 
        //null as name
@@ -145,7 +145,7 @@ public class RoleControllerTests {
        mockMvc.perform(post("/usermanagement/roles/").flashAttr("role",role))
                .andExpect(status().is(200))
                .andExpect(model().attribute("roleInUse",notNullValue()))
-               .andExpect(view().name("/Roles/role-manage"))
+               .andExpect(view().name("Roles/role-manage"))
                .andDo(print());
    }
 
@@ -170,7 +170,7 @@ public class RoleControllerTests {
         when(roleService.findByName("testrole")).thenReturn(Optional.of(role));
         mockMvc.perform(post("/usermanagement/roles/").flashAttr("role",role))
                 .andExpect(status().is(200))
-                .andExpect(view().name("/Roles/role-manage"))
+                .andExpect(view().name("Roles/role-manage"))
                 .andExpect(model().attribute("roleInUse",notNullValue()))
                 .andDo(print());
 
@@ -205,7 +205,7 @@ public class RoleControllerTests {
         mockMvc.perform(post("/usermanagement/roles/{id}","10").flashAttr("role",role))
                 .andExpect(status().is(200))
                 .andExpect(model().attribute("roleInUse",notNullValue()))
-                .andExpect(view().name("/Roles/role-manage"))
+                .andExpect(view().name("Roles/role-manage"))
                 .andDo(print());
 
     }
@@ -251,7 +251,7 @@ public class RoleControllerTests {
                 .andDo(print())
                 .andExpect(model().attribute("inUseError",notNullValue()))
 
-                .andExpect(view().name("/Roles/role-list"));
+                .andExpect(view().name("Roles/role-list"));
 
         //Role is not in Use
         when(userService.findAll()).thenReturn(users);

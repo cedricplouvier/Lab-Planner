@@ -64,7 +64,7 @@ public class UserControllerTests {
         when(userService.findAll()).thenReturn(users);
         mockMvc.perform(get("/usermanagement/users"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/Users/user-list"))
+                .andExpect(view().name("Users/user-list"))
                 .andExpect(model().attribute("allUsers", hasSize(1)));
 
     }
@@ -86,7 +86,7 @@ public class UserControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("allRoles",hasSize(1)))
                 .andExpect(model().attribute("user",instanceOf(User.class)))
-                .andExpect(view().name("/Users/user-manage"));
+                .andExpect(view().name("Users/user-manage"));
 
     }
 
@@ -114,7 +114,7 @@ public class UserControllerTests {
         mockMvc.perform(get("/usermanagement/users/{id}",10))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("allRoles",hasSize(1)))
-                .andExpect(view().name("/Users/user-manage"))
+                .andExpect(view().name("Users/user-manage"))
                 .andDo(print());
 
         //wrong input
@@ -143,7 +143,7 @@ public class UserControllerTests {
         mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
                 .andExpect(status().is(200))
                 .andExpect(model().attribute("UserInUse",notNullValue()))
-                .andExpect(view().name("/Users/user-manage"))
+                .andExpect(view().name("Users/user-manage"))
                 .andDo(print());
 
 
@@ -154,7 +154,7 @@ public class UserControllerTests {
         mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
                 .andExpect(status().is(200))
                 .andExpect(model().attribute("UserInUse",notNullValue()))
-                .andExpect(view().name("/Users/user-manage"))
+                .andExpect(view().name("Users/user-manage"))
                 .andDo(print());
 
         //username = null
@@ -163,7 +163,7 @@ public class UserControllerTests {
         mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
                 .andExpect(status().is(200))
                 .andExpect(model().attribute("UserInUse",notNullValue()))
-                .andExpect(view().name("/Users/user-manage"))
+                .andExpect(view().name("Users/user-manage"))
                 .andDo(print());
 
         //PW is null
@@ -172,7 +172,7 @@ public class UserControllerTests {
         mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
                 .andExpect(status().is(200))
                 .andExpect(model().attribute("UserInUse",notNullValue()))
-                .andExpect(view().name("/Users/user-manage"))
+                .andExpect(view().name("Users/user-manage"))
                 .andDo(print());
     }
 
@@ -197,7 +197,7 @@ public class UserControllerTests {
         when(userService.findByUsername("admin")).thenReturn(Optional.of(user));
         mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
                 .andExpect(status().is(200))
-                .andExpect(view().name("/Users/user-manage"))
+                .andExpect(view().name("Users/user-manage"))
                 .andExpect(model().attribute("UserInUse",notNullValue()))
                 .andDo(print());
 
@@ -232,7 +232,7 @@ public class UserControllerTests {
         mockMvc.perform(post("/usermanagement/users/{id}","10").flashAttr("user",user))
                 .andExpect(status().is(200))
                 .andExpect(model().attribute("UserInUse",notNullValue()))
-                .andExpect(view().name("/Users/user-manage"))
+                .andExpect(view().name("Users/user-manage"))
                 .andDo(print());
 
     }
@@ -275,7 +275,7 @@ public class UserControllerTests {
                 .andDo(print())
                 .andExpect(model().attribute("inUseError",notNullValue()))
 
-                .andExpect(view().name("/Users/user-list"));
+                .andExpect(view().name("Users/user-list"));
 
         //User is not in Use
         when(stepService.findAll()).thenReturn(steps);

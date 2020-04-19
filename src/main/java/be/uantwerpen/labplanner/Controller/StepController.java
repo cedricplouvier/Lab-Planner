@@ -181,10 +181,6 @@ public class StepController {
 
         //check for valid input
         if ((step.getStart() == null || step.getEnd() == null || step.getStartHour() == null || step.getEndHour() == null) || (step.getStart().trim().equals("") || step.getEnd().trim().equals("") || step.getStartHour().trim().equals("") || step.getEndHour().trim().equals(""))) {
-            model.addAttribute("allDevices", deviceService.findAll());
-            model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
-            model.addAttribute("allSteps", stepService.findAll());
-            model.addAttribute("Step", new Step());
             ra.addFlashAttribute("Status", new String("Error"));
             ra.addFlashAttribute("Message", new String("Error while trying to save step."));
             return "redirect:/planning/";
@@ -220,10 +216,6 @@ public class StepController {
 
 
         if (result.hasErrors()) {
-            model.addAttribute("allDevices", deviceService.findAll());
-            model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
-            model.addAttribute("allSteps", stepService.findAll());
-            model.addAttribute("Step", new Step());
             ra.addFlashAttribute("Status", new String("Error"));
             if (result.hasErrors()) {
                 System.out.println(result.getFieldError().toString());
@@ -276,10 +268,6 @@ public class StepController {
 
 
         stepService.save(step);
-        model.addAttribute("allDevices", deviceService.findAll());
-        model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
-        model.addAttribute("allSteps", stepService.findAll());
-        model.addAttribute("Step", new Step());
         ra.addFlashAttribute("Status", "Success");
         String message = new String("Step has been added/edited.");
         ra.addFlashAttribute("Message", message);
@@ -332,7 +320,7 @@ public class StepController {
                 model.addAttribute("allDevices", deviceService.findAll());
                 model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
                 model.addAttribute("allSteps", stepService.findAll());
-                return "/PlanningTool/step-manage";
+                return "PlanningTool/step-manage";
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
@@ -421,9 +409,9 @@ public class StepController {
     public String viewShowExperiments(final ModelMap model) {
         model.addAttribute("allExperiments", experimentService.findAll());
         model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
-        return "/PlanningTool/planning-exp-list";
+        return "PlanningTool/planning-exp-list";
     }
-
+    @PreAuthorize("hasAuthority('Planning - Make new experiment')")
     @RequestMapping(value = "/planning/experiments/{id}/delete", method = RequestMethod.GET)
     public String deleteExperimentType(@PathVariable Long id, final ModelMap model, RedirectAttributes ra) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -810,7 +798,7 @@ public class StepController {
         return "PlanningTool/planning-exp-info";
     }
 
-
+    @PreAuthorize("hasAuthority('Planning - Make new experiment')")
     @RequestMapping(value = "/planning/experiments/put", method = RequestMethod.GET)
     public String viewCreateExperimentType(final ModelMap model) {
         List<String> options = new ArrayList<>();
@@ -818,15 +806,13 @@ public class StepController {
         options.add("Soft (at least)");
         options.add("Soft (at most)");
         options.add("Hard");
-        model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
-        model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("experimentType", new ExperimentType());
         model.addAttribute("allOptions", options);
-        return "/PlanningTool/planning-exp-manage";
+        return "PlanningTool/planning-exp-manage";
     }
-
+    @PreAuthorize("hasAuthority('Planning - Make new experiment')")
     @RequestMapping(value = "/planning/experiments/{id}", method = RequestMethod.GET)
     public String viewEditExperimentType(@PathVariable Long id, final ModelMap model) {
         List<String> options = new ArrayList<>();
@@ -834,15 +820,14 @@ public class StepController {
         options.add("Soft (at least)");
         options.add("Soft (at most)");
         options.add("Hard");
-        model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
-        model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("experimentType", experimentTypeService.findById(id).get());
         model.addAttribute("allOptions", options);
         return "PlanningTool/planning-exp-manage";
     }
 
+    @PreAuthorize("hasAuthority('Planning - Make new experiment')")
     @RequestMapping(value = {"/planning/experiments/", "/planning/experiments/{id}"}, method = RequestMethod.POST)
     public String addNewExperimentType(@Valid ExperimentType experimentType, BindingResult result, ModelMap model, RedirectAttributes ra) {
 

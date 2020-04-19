@@ -39,7 +39,7 @@ public class ReportControllerTests {
     public void viewReportTest() throws Exception{
 
         mockMvc.perform(get("/reports/list"))
-                .andExpect(view().name("/Reports/report-list"));
+                .andExpect(view().name("Reports/report-list"));
     }
 
     @Test
