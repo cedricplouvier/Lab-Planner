@@ -35,14 +35,19 @@ public class DeviceService {
         return (Device)this.deviceRepository.save(device);
     }
     public void saveNewDevice(Device device) {
-        Device tempDevice = (Device)this.deviceRepository.findById(device.getId()).orElse(null);
-        if (tempDevice != null){
-            tempDevice.setDeviceType(device.getDeviceType());
-            tempDevice.setDevicename(device.getDevicename());
-            tempDevice.setComment(device.getComment());
-            deviceRepository.save(tempDevice);
-        } else{
+        if(device.getId()!=null) {
+            Device tempDevice = (Device) this.deviceRepository.findById(device.getId()).orElse(null);
+            if (tempDevice != null) {
+                tempDevice.setDeviceType(device.getDeviceType());
+                tempDevice.setDevicename(device.getDevicename());
+                tempDevice.setComment(device.getComment());
+                deviceRepository.save(tempDevice);
+            } else {
+                deviceRepository.save(device);
+            }
+        }else{
             deviceRepository.save(device);
+
         }
     }
 

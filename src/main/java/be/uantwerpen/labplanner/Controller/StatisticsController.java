@@ -1,11 +1,9 @@
 package be.uantwerpen.labplanner.Controller;
 
-import be.uantwerpen.labplanner.Model.Device;
-import be.uantwerpen.labplanner.Model.DeviceType;
-import be.uantwerpen.labplanner.Model.Step;
-import be.uantwerpen.labplanner.Service.DeviceService;
-import be.uantwerpen.labplanner.Service.DeviceTypeService;
-import be.uantwerpen.labplanner.Service.StepService;
+import be.uantwerpen.labplanner.Model.*;
+import be.uantwerpen.labplanner.Service.*;
+import be.uantwerpen.labplanner.common.model.stock.Product;
+import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -34,6 +32,18 @@ public class StatisticsController {
     @Autowired
     private StepService stepService;
 
+    @Autowired
+    private CompositionService compositionService;
+
+    @Autowired
+    private PieceOfMixtureService pieceOfMixtureService;
+
+    @Autowired
+    private ExperimentService experimentService;
+
+    @Autowired
+    private ProductService productService;
+
     int[] totalHoursEmpty = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
     List<int[]> totalHours = new ArrayList<int[]>(Arrays.asList(totalHoursEmpty,totalHoursEmpty,totalHoursEmpty,totalHoursEmpty,totalHoursEmpty));
     List<Float> occupancyDevicesHours = new ArrayList<Float>(Arrays.asList(new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00)));
@@ -49,6 +59,9 @@ public class StatisticsController {
     float labClosingTime = 20;
     float labOpeningHoursInYear = amountOfWorkDaysInYear*(labClosingTime-labOpeningTime);
     int highestAbsoluteValueHours=0;
+
+    int[] stockLevelsProduct = new int[]{0,0,0,0,0,0}; //six because we want to visualise a period of 6 months
+    List<String> productNames= new ArrayList<>();
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/statistics", method = RequestMethod.GET)
@@ -93,8 +106,52 @@ public class StatisticsController {
         // value to scale the y-axis
         model.addAttribute("highestAbsoluteValueHours",highestAbsoluteValueHours);
 
+
         return "/Statistics/statistics";
     }
+
+    @PreAuthorize("hasAnyAuthority('Statistics Access')")
+    @RequestMapping(value = "/statistics/stockStatistics", method = RequestMethod.GET)
+    public String showStatisticsStockPage(final ModelMap model) {
+
+        List<Product> products = productService.findAll();
+        List<Double> currentStockLevel = new ArrayList<>();
+        //get all the product names
+        for(Product product: products){
+            productNames.add(product.getName());
+        }
+
+        for(Product product: products){
+            currentStockLevel.add(product.getStockLevel());
+        }
+
+        //get all the stock levels
+        model.addAttribute("products",products);
+        model.addAttribute("productNames",productNames);
+        model.addAttribute("currentStockLevel",currentStockLevel);
+
+        for(int j=0; j<products.size();j++) {
+            currentStockLevel.add(products.get(j).getStockLevel());
+            System.out.println(products.get(j).getName()+ " stocklevel: " +products.get(j).getStockLevel());
+        }
+
+        /*for(int i=0; i< experiments.size();i++){
+            System.out.println("__________________________________________________");
+            System.out.println("Experiment start date" + experiments.get(i).getStartDate());
+            Experiment experiment = experiments.get(i);
+            for(int j=0; j<experiment.getPiecesOfMixture().size();j++) {
+                System.out.println("pieces of mixtures size" + piecesOfMixture.size());
+                Mixture mixture = piecesOfMixture.get(j).getMixture();
+                for(int z=0;z<mixture.getCompositions().size();z++) {
+                     System.out.println(mixture.getCompositions().get(z).getProduct().getName()+" stock: "+
+                             mixture.getCompositions().get(z).getProduct().getStockLevel());
+                     currentStockLevel.add(mixture.getCompositions().get(z).getProduct().getStockLevel());
+               }
+           }*/
+
+        return "/Statistics/stockStatistics";
+    }
+
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value ="/statistics/statistics/submit")
@@ -130,7 +187,6 @@ public class StatisticsController {
         deviceCounter++;
         return "redirect:/statistics/statistics";
     }
-
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/clearList")
