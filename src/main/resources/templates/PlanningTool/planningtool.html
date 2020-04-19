@@ -233,6 +233,7 @@
             <thead>
             <h2> <span th:text="#{experiments}"></span></h2>
             <tr >
+                <th th:text="#{step.user.username}"></th>
                 <th th:text="#{experiment.name}">Experiment Name</th>
                 <th th:text="#{experiment.type}">Experiment Type</th>
                 <th th:text="#{step.start}">Start Date</th>
@@ -242,6 +243,9 @@
             <!-- IMPORTANT, class="list" have to be at tbody -->
             <tbody class="list" id="Experiment-list-User">
             <tr th:each="experiment : ${userExperiments}">
+
+                <td class="userName" th:value="${experiment.getUser()}"
+                    th:text="${experiment.getUser().getFirstName() + ' ' + experiment.getUser().getLastName()}"></td>
                 <td class="experimentName" th:value="${experiment.getExperimentname()}" th:text="${experiment.getExperimentname()}" >Experiment name</td>
                 <td class="experimentType" th:value="${experiment.getExperimentType().getExperimentTypeName()}" th:text="${experiment.getExperimentType().getExperimentTypeName()}">Experiment Type name</td>
                 <td class="startTime" th:value="${experiment.getStartDate()}" th:text="${experiment.getStartDate()}"> Start Date</td>

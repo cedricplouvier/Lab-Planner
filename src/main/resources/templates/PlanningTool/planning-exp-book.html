@@ -251,6 +251,7 @@
     <form id="MyForm" action="#" th:action="@{/planning/experiments/book/{id}  (id=${{experiment}})}"
           th:object="${experiment}" method="post">
         <input th:field="*{id}" th:type="hidden"/>
+        <input th:type="hidden" th:field="*{user}"/>
         <input id="experimentType" th:type="hidden"
                th:field="*{experimentType}">
 

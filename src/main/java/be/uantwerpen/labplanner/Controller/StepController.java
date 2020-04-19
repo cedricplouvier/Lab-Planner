@@ -582,9 +582,6 @@ public class StepController {
         }
 
 
-        //prepare experiment entity for checking of conditions and to save it into database
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        experiment.setUser(currentUser);
         //set ExperimentType by ExperimentType id
         for (ExperimentType expType : experimentTypeService.findAll()) {
             if (expType.getId().equals(experiment.getExperimentType().getId())) {
@@ -598,7 +595,9 @@ public class StepController {
         }
 
 
-        //if new Experiment, add the current student to the step.
+        //prepare experiment entity for checking of conditions and to save it into database
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //if new Experiment, add the current student to the experiment.
         if (experiment.getUser() == null) {
             experiment.setUser(currentUser);
         }
