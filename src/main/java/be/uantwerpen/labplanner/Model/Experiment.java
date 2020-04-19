@@ -35,6 +35,7 @@ public class Experiment extends AbstractPersistable<Long> {
     @Column(name = "endDate")
     private String endDate;
 
+
     //constructor used to create experiment with ID
     public Experiment(Experiment experiment) {
         this.experimentType = experiment.experimentType;

@@ -62,7 +62,7 @@ public class RelationControllerTests {
         when(relationService.findAll()).thenReturn(relations);
         mockMvc.perform(get("/usermanagement/users/relations"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/Users/relation-list"))
+                .andExpect(view().name("Users/relation-list"))
                 .andExpect(model().attribute("allRelations", hasSize(1)));
 
     }
@@ -79,7 +79,7 @@ public class RelationControllerTests {
         mockMvc.perform(get("/usermanagement/users/relations/put"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("relation",instanceOf(Relation.class)))
-                .andExpect(view().name("/Users/relation-manage"));
+                .andExpect(view().name("Users/relation-manage"));
 
     }
 
@@ -99,7 +99,7 @@ public class RelationControllerTests {
         //editing with existing id as input
         mockMvc.perform(get("/usermanagement/users/relations/{id}",10))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/Users/relation-manage"))
+                .andExpect(view().name("Users/relation-manage"))
                 .andDo(print());
 
         //wrong input
@@ -124,7 +124,7 @@ public class RelationControllerTests {
         mockMvc.perform(post("/usermanagement/users/relations/").flashAttr("relation",relation))
                 .andExpect(status().is(200))
                 .andExpect(model().attribute("RelationError",notNullValue()))
-                .andExpect(view().name("/Users/relation-manage"))
+                .andExpect(view().name("Users/relation-manage"))
                 .andDo(print());
 
     }
