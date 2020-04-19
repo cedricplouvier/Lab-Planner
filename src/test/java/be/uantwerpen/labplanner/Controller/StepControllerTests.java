@@ -320,7 +320,7 @@ public class StepControllerTests {
         role.setId((long) 31);
         //   when(relationService.findAll()).thenReturn(relations);
         mockMvc.perform(get("/planning/{id}",5))
-                .andExpect(status().isOk())
+                .andExpect(status().is(302))
                 .andExpect(model().attribute("allSteps",hasSize(1)))
                 .andExpect(view().name("PlanningTool/step-manage"));
 
@@ -421,7 +421,7 @@ public class StepControllerTests {
         role.setId((long) 31);
         //   when(relationService.findAll()).thenReturn(relations);
         mockMvc.perform(get("/planning/{id}",5))
-                .andExpect(status().is(302))
+                .andExpect(status().is(200))
                 .andExpect(view().name("redirect:/planning/"));
 
     }
