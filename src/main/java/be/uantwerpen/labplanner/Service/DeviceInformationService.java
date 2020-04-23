@@ -62,7 +62,7 @@ public class DeviceInformationService {
             deviceInformationRepository.save(tempDeviceInformation);
         }
     }
-    public void saveSomeAttributes(DeviceInformation deviceInformation,Long deviceTypeId) {
+    public void saveNewDeviceInformation(DeviceInformation deviceInformation, Long deviceTypeId) {
         DeviceInformation tempDeviceInformation = deviceInformation.getId() == null?null: deviceInformationRepository.findById( deviceInformation.getId()).orElse(null);
         if (tempDeviceInformation != null){
             tempDeviceInformation.setInformationName(deviceInformation.getInformationName());

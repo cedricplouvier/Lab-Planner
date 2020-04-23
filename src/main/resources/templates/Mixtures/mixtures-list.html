@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"   xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
 <!-- Import header -->
 <head th:replace="navbar :: head (title='#{mixtures}')"></head>
 <body onload="initPage()">
@@ -47,32 +48,44 @@
     <div th:replace="navbar :: navbar"></div>
     <div class="content">
         <div id="mixture-list">
+
+            <div class="alert alert-success" role="alert" th:if="${success}!=null" th:text="${success}"></div>
+
+
             <input type='text' id='txt_name' th:placeholder="#{mixtures.search}">
 
             <table class="table table-hover">
                 <thead>
                 <tr>
                     <th th:text="#{mixtures.name}">Mixture Name</th>
-                    <th th:text="#{mixtures.ingredients}">Mixture Ingredients</th>
+                    <th style="width: 50%"  th:text="#{product.description}">Mixture Descrption</th>
+                    <th th:text="#{mixtures.tag}">Mixture Tags</th>
+
+
 
                 </tr>
                 </thead>
                 <!-- IMPORTANT, class="list" have to be at tbody -->
                 <tbody class="list">
                 <tr th:each="mixture : ${allMixtures}">
-                    <td class='mixtureName' th:value="${mixture.getName()}"
-                        th:text="${mixture.name}" >Mixture Name</td>
-                        <td class="ingredients">
+                        <td class='mixtureName' th:value="${mixture.getName()}"
+                        th:text="${mixture.getName()}" >Mixture Name</td>
+
+                         <td class='descr' th:value="${mixture.getDescription()}"
+                        th:text="${mixture.description}" >Mixture description</td>
+                        <td class="Tags">
                             <a
-                                    th:each="ingred : ${mixture.compositions}"
-                                    th:value="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()}"
-                                    th:utext="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' '+ ${ingred.getProduct().units.getSIString()} + '<br />'"></a>
+                                    th:each="tag : ${mixture.tags}"
+                                    th:value="${tag.name}"
+                                    th:text="${tag.name} + ' '"></a>
                         </td>
                     <td>
-                        <a th:href="@{/mixtures/{id}/(id=${mixture.id})}"><span
+                        <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  th:href="@{/mixtures/{id}/(id=${mixture.id})}"><span
                                 class="fas fa-edit"></span></a>&nbsp;
-                        <a th:href="@{/mixtures/{id}/delete(id=${mixture.id})}">
+                        <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/mixtures/{id}/delete(id=${mixture.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
                             <span class="fas fa-trash"></span></a>
+                        <a th:href="@{/mixtures/info/{id}/(id=${mixture.id})}">
+                            <span class="fas fa-info"></span></a>
                     </td>
                 </tr>
                 <tr class='notfound'>
@@ -81,12 +94,12 @@
                 </tbody>
             </table>
             <a href="/products" class="btn btn-primary" th:text="#{product.return}" >Return to products</a>
-            <a href="/mixtures/put" type="button" class="btn btn-outline-primary"th:text="#{mixture.create}">
-                Create new tag
+            <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  href="/mixtures/put" type="button" class="btn btn-outline-primary"th:text="#{mixture.create}">
+                Create new mixture
             </a>
-            <a href="/compositions" type="button" class="btn btn-outline-primary"th:text="#{mixtures.ingredients}">
-                Ingredient List
-            </a>
+            <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  href="/compositions" th:text="#{manage.ingred}"  class="btn btn-outline-primary" > New Ingredient</a>
+
+
 
 
 

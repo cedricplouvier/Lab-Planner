@@ -24,26 +24,15 @@ public class Device extends AbstractPersistable<Long> {
     private String devicename;
 
     @OneToOne
-    @JoinColumn(name = "deviceType", nullable = false)
+    @JoinColumn(name = "deviceType", nullable = true)
     private DeviceType deviceType;
     @Column
     private String Comment;
-    @Column(
-            name = "date_created",
-            nullable = false,
-            updatable = false
-    )
-    @CreationTimestamp
-    private LocalDateTime dateCreated;
-    @Column(
-            name = "updated_on"
-    )
-    @UpdateTimestamp
-    private LocalDateTime updateDateTime;
+
 
     //Constructors
     public Device() {
-        this(DEFAULT_DEVICENAME,new DeviceType());
+        this(DEFAULT_DEVICENAME,null);
     }
 
     public Device(String devicename,DeviceType deviceType) {
@@ -66,9 +55,6 @@ public class Device extends AbstractPersistable<Long> {
         super.setId(id);
     }
 
-    public static void setDefaultDevicename(String defaultDevicename) {
-        DEFAULT_DEVICENAME = defaultDevicename;
-    }
 
     public String getDevicename() {
         return devicename;
@@ -87,21 +73,6 @@ public class Device extends AbstractPersistable<Long> {
         this.deviceType = deviceType;
     }
 
-    public LocalDateTime getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(LocalDateTime dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public LocalDateTime getUpdateDateTime() {
-        return updateDateTime;
-    }
-
-    public void setUpdateDateTime(LocalDateTime updateDateTime) {
-        this.updateDateTime = updateDateTime;
-    }
 
     public String getComment() {
         return Comment;

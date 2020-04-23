@@ -83,9 +83,15 @@
                     </li>
                     -->
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/planningtool}" th:text="#{navbar.planningtool}">
+                        <a class="nav-link" th:href="@{/calendar/user}" th:text="#{navbar.calendar}">
                             Planning Tool
-                            <span class="sr-only">(Planning Tool)</span>
+                            <span class="sr-only">(Personal Calendar)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/planning/}" th:text="#{navbar.book}">
+                            Planning Tool
+                            <span class="sr-only">(Book experiment)</span>
                         </a>
                     </li>
                     <!--
@@ -106,8 +112,23 @@
                     -->
                 </ul>
 
+                <div sec:authorize="hasAuthority('Statistics Access')">
+                    <ul class="navbar-nav my-2 my-lg-0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" th:text="#{navbar.statistics}" id="navbarStatistics" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Statistics
+                            </a>
+
+                            <div class="dropdown-menu" aria-labelledby="navbarLanguage">
+                                <a class="dropdown-item" th:href="@{/statistics}" th:text="#{statistics.device}"></a>
+                                <a class="dropdown-item" th:href="@{/statistics/stockStatistics}" th:text="#{statistics.stock}"></a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
                 <ul class="navbar-nav my-2 my-lg-0">
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown" left>
                         <a class="nav-link dropdown-toggle" href="#" th:text="#{navbar.account}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Account
                         </a>

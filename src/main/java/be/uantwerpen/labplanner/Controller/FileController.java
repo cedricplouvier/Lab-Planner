@@ -1,24 +1,17 @@
 package be.uantwerpen.labplanner.Controller;
 
-import java.io.IOException;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import be.uantwerpen.labplanner.Exception.StorageFileNotFoundException;
 import be.uantwerpen.labplanner.Model.DeviceType;
 import be.uantwerpen.labplanner.Service.DeviceInformationService;
 import be.uantwerpen.labplanner.Service.DeviceTypeService;
-import be.uantwerpen.labplanner.Service.FileSystemStorageService;
 import be.uantwerpen.labplanner.Service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
@@ -45,18 +38,14 @@ public class FileController {
 
 	@PostMapping("/upload/typeimage/{typeid}")
 	public String handleTypeImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long typeid) {
-//		if(storageService.getFileExtension(file.getOriginalFilename()).equals("png"))
-		System.out.println("Failed to store image");
 		DeviceType tempDeviceType =  deviceTypeService.findById( typeid).orElse(null);
 		if(tempDeviceType!=null) {
 			String filename = tempDeviceType.getDeviceTypeName()+"."+file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 			storageService.store(file,"images",filename);
 			tempDeviceType.setDevicePictureName(filename);
-			deviceTypeService.saveSomeAttributes(tempDeviceType);
-			System.out.println("Succesfully stored image");
+			deviceTypeService.saveNewDeviceType(tempDeviceType);
 
 		}else{
-			System.out.println("Failed to store image");
 		}
 
 		return "redirect:/devices/types/"+typeid;

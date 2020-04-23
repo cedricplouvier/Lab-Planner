@@ -33,12 +33,12 @@ public class DeviceTypeService {
     public Optional<DeviceType> findByDevicetypeName(String deviceTypeName) {
         return this.deviceTypeRepository.findByDeviceTypeName(deviceTypeName);
     }
-    public void saveSomeAttributes(DeviceType deviceType) {
+    public void saveNewDeviceType(DeviceType deviceType) {
         DeviceType tempDeviceType = deviceType.getId() == null?null: deviceTypeRepository.findById( deviceType.getId()).orElse(null);
 
         if (tempDeviceType != null){
             tempDeviceType.setOvernightuse(deviceType.getOvernightuse());
-
+            tempDeviceType.setColor(deviceType.getColor());
             tempDeviceType.setDeviceTypeName(deviceType.getDeviceTypeName());
             if(deviceType.getDeviceInformations() !=null) {
                 for (DeviceInformation deviceInformation : deviceType.getDeviceInformations()) {

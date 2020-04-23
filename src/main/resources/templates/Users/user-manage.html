@@ -8,17 +8,23 @@
             selectableHeader: '<div class="custom-header" th:text="#{selectable.items}"></div>',
             selectionHeader: '<div class="custom-header" th:text="#{selected.items}"></div>'
         });
+        -
+
+        if ($("Researcher").is(':checked')) {
+            $('.tab1_btn').prop('disabled', false);
+        } else {
+            $('.tab1_btn').prop('disabled', true);
+        }
     }
 </script>
-<!--<script>-->
-<!--    $(document).ready(function () {-->
-<!--        $("#txt_username").keyup(function (-->
-<!--        ) {-->
-<!--            alert('fds');-->
-<!--        })-->
 
-<!--    })-->
-<!--</script>-->
+<script>
+    $(document).ready(function(){
+        goFurther();
+    });
+</script>
+
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
@@ -27,9 +33,23 @@
     function toggle(source) {
         var checkboxes = document.querySelectorAll('input[type="checkbox"]');
         for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i] != source)
+            if (checkboxes[i] != source) {
                 checkboxes[i].checked = source.checked;
+
+            }
+
         }
+        goFurther();
+
+    }
+</script>
+
+<script type="text/javascript">
+    function goFurther(){
+        if (document.getElementById("Researcher").checked == true)
+            document.getElementById("btnSelectStudents").disabled = false;
+        else
+            document.getElementById("btnSelectStudents").disabled = true;
     }
 </script>
 
@@ -72,10 +92,17 @@
         <div class="form-check">
             <input th:field ="*{roles}" class="form-check-input" type="checkbox"
                    th:each="role : ${allRoles}"
+                   th:id="${{role.name}}"
                    th:value="${{role}}"
-                   th:utext="${role.name} + '<br>'">
+                   th:utext="${role.name} + '<br>'"
+            onclick="goFurther()">
         </div>
 
+        <p></p>
+<!--        <div>-->
+<!--            <input class="btn btn-primary" type="button" data-toggle="modal" data-target="#studentSelectModal" id="btnSelectStudents" th:value="#{users.selectStudents}" disabled  >-->
+<!--        </div>-->
+        <p></p>
         <div class="form-group">
             <label class="control-label" th:text="#{users.email}"></label>
             <input class="form-control" type = text th:field="*{email}"/>
@@ -96,24 +123,12 @@
             <input class="form-control" type = text th:field="*{location}"/>
 
         </div>
-
-
-
-
-
-
-
-
         <p>
-            <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
+            <button type="submit" name="UserSave" th:text="#{save}" class="btn btn-outline-primary">Save</button>
             <a href="/usermanagement/users" th:text="#{close}" class="btn btn-secondary">Close</a>
 
         </p>
     </form>
-
-
-
-
 </div>
 </body>
 </html>

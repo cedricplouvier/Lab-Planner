@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{User Management}')"></head>
+<body onload = "initPage()">
+<script type="text/javascript">
+    function initPage(){
+        $('#roles').multiSelect({
+            selectableHeader: '<div class="custom-header" th:text="#{selectable.items}"></div>',
+            selectionHeader: '<div class="custom-header" th:text="#{selected.items}"></div>'
+        });
+        -
+
+        if ($("Researcher").is(':checked')) {
+            $('.tab1_btn').prop('disabled', false);
+        } else {
+            $('.tab1_btn').prop('disabled', true);
+        }
+    }
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    function toggle(source) {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source) {
+                checkboxes[i].checked = source.checked;
+
+            }
+
+        }
+
+    }
+</script>
+
+
+
+<div class = "container">
+    <div th:replace="navbar :: navbar"></div>
+    <form action="#" th:action="@{/usermanagement/users/relations/{id}(id=${relation.id})}"
+          th:object="${relation}" method="post">
+        <input th:type="hidden" th:field="*{id}"/>
+
+        <div class="alert alert-danger" role="alert" th:if="${RelationError}!=null" th:text="${RelationError}"></div>
+
+
+        <div class="form-group">
+            <label class="control-label" th:text="#{relation.description}"></label>
+            <input class="form-control" type = text th:field="*{description}"/>
+
+        </div>
+        <div class="form-group">
+            <label class="control-label" th:text="#{relation.researcher}"></label>
+<!--            <input class="form-control" type = text th:field="*{researcher}" />-->
+
+            <select id="Researcher" th:field="*{researcher}">
+                <option th:each="user : ${allUsers}"
+                        th:if="${#strings.contains(user.roles.iterator().next().name, 'Researcher')}"
+                        th:value="${user.id}" th:text="${user.firstName + ' ' + user.lastName}"></option>
+            </select>
+
+        </div>
+
+
+        <div>
+            <label class="control-label" th:text="#{relation.students}"></label>
+        </div>
+        <div>
+            <input type="checkbox" onclick="toggle(this);" /> <b>Check all?</b><br />
+        </div>
+        <div class="form-check">
+            <input th:field ="*{students}" class="form-check-input" type="checkbox"
+                   th:each="student : ${allUsers}"
+                   th:if="${#strings.contains(student.roles.iterator().next().name, 'student')}"
+                   th:id="${{student.firstName}}"
+                   th:value="${{student}}"
+                   th:utext="${student.firstName + ' ' + student.lastName} + '<br>'"
+                   >
+        </div>
+
+        <p>
+            <button type="submit" name="RelationSave" th:text="#{save}" class="btn btn-outline-primary">Save</button>
+            <a href="/usermanagement/users/relations" th:text="#{close}" class="btn btn-secondary">Close</a>
+
+        </p>
+    </form>
+</div>
+</body>
+</html>
