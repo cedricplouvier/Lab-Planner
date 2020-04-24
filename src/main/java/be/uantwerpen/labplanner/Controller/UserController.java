@@ -1,5 +1,6 @@
 package be.uantwerpen.labplanner.Controller;
 
+import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Model.Step;
 import be.uantwerpen.labplanner.Service.StepService;
 import be.uantwerpen.labplanner.Service.RelationService;
@@ -36,6 +37,9 @@ public class UserController {
 
     @Autowired
     private StepService stepService;
+
+    @Autowired
+    private RelationService relationService;
 
 
     //Populate
@@ -172,6 +176,12 @@ public class UserController {
         boolean isUsed = false;
         for (Step step : allSteps) {
             if (step.getUser().getId() == id) {
+                isUsed = true;
+            }
+        }
+
+        for (Relation relation : relationService.findAll()){
+            if ((relation.getResearcher().getId() == id) || (relation.getStudents().contains(userService.findById(id).orElse(null)))){
                 isUsed = true;
             }
         }
