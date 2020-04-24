@@ -56,8 +56,7 @@
 <!--            <input class="form-control" type = text th:field="*{researcher}" />-->
 
             <select id="Researcher" th:field="*{researcher}">
-                <option th:each="user : ${allUsers}"
-                        th:if="${#strings.contains(user.roles.iterator().next().name, 'Researcher')}"
+                <option th:each="user : ${allResearchers}"
                         th:value="${user.id}" th:text="${user.firstName + ' ' + user.lastName}"></option>
             </select>
 
@@ -72,8 +71,7 @@
         </div>
         <div class="form-check">
             <input th:field ="*{students}" class="form-check-input" type="checkbox"
-                   th:each="student : ${allUsers}"
-                   th:if="${#strings.contains(student.roles.iterator().next().name, 'student')}"
+                   th:each="student : ${allStudents}"
                    th:id="${{student.firstName}}"
                    th:value="${{student}}"
                    th:utext="${student.firstName + ' ' + student.lastName} + '<br>'"
