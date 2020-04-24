@@ -86,6 +86,21 @@ public class UserController {
             return "Users/user-manage";
         }
 
+
+        //test for duplicate UA number
+        for(User temp : userService.findAll()){
+
+            if ( (temp.getUaNumber()!= null) && (user.getUaNumber()!=null)   && ((temp.getUaNumber().equals(user.getUaNumber()))&&(temp.getId()!=user.getId()))){
+                model.addAttribute("allRoles", roleService.findAll());
+                model.addAttribute("allUsers",userService.findAll());
+                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.UAError") );
+
+                return "Users/user-manage";
+            }
+        }
+
+
+
         if (user.getId() == null) {
             //if the given username is unique, save the user in the database
             if (userService.findByUsername(user.getUsername()).isPresent()) {
@@ -106,6 +121,7 @@ public class UserController {
             return "redirect:/usermanagement/users";
         }
 
+        // already id, so existing user
         //Check if name is not already used.
         User tempUser = userService.findById(user.getId()).orElse(null);
         if(!tempUser.getUsername().equals(user.getUsername())){

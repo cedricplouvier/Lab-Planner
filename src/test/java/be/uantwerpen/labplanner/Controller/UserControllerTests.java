@@ -181,10 +181,41 @@ public class UserControllerTests {
     public void addNewCorrectUserTest() throws Exception{
         User user = new User("admin","admin");
 
+
+        user.setUaNumber("2");
+
+        User user2 = new User("Ua","Ua");
+        user2.setUaNumber("1");
+        user2.setId((long) 789);
+        List<User> users = new ArrayList<>();
+        users.add(user2);
+
+        when(userService.findAll()).thenReturn(users);
         when(userService.findByUsername("admin")).thenReturn(Optional.empty());
         mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/usermanagement/users"))
+                .andDo(print());
+
+    }
+
+    @Test
+    //add new user with unique name
+    public void addUserDoubleUANumber() throws Exception{
+        User user = new User("admin","admin");
+        user.setUaNumber("1");
+
+        User user2 = new User("Ua","Ua");
+        user2.setUaNumber("1");
+        user2.setId((long) 789);
+        List<User> users = new ArrayList<>();
+        users.add(user2);
+
+        when(userService.findAll()).thenReturn(users);
+        when(userService.findByUsername("admin")).thenReturn(Optional.empty());
+        mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
+                .andExpect(status().is(200))
+                .andExpect(model().attribute("UserInUse",notNullValue()))
                 .andDo(print());
 
     }
