@@ -96,7 +96,12 @@ public class UserController {
             }
             //trim input and save
             user.setUsername(user.getUsername().trim());
-            user.setPassword(user.getPassword().trim());
+            if (!user.getPassword().equals(user.getPassword().trim())){
+                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.passwordError") );
+                model.addAttribute("allRoles", roleService.findAll());
+                model.addAttribute("allUsers",userService.findAll());
+                return "Users/user-manage";
+            }
             userService.save(user);
             return "redirect:/usermanagement/users";
         }
@@ -110,15 +115,26 @@ public class UserController {
                 model.addAttribute("allUsers",userService.findAll());
                 return "Users/user-manage";
             }
+
             //trim input and save
             user.setUsername(user.getUsername().trim());
-            user.setPassword(user.getPassword().trim());
+            if (!user.getPassword().equals(user.getPassword().trim())){
+                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.passwordError") );
+                model.addAttribute("allRoles", roleService.findAll());
+                model.addAttribute("allUsers",userService.findAll());
+                return "Users/user-manage";
+            }
             userService.save(user);
             return "redirect:/usermanagement/users";
         }
         //trim input and save
         user.setUsername(user.getUsername().trim());
-        user.setPassword(user.getPassword().trim());
+        if (!user.getPassword().equals(user.getPassword().trim())){
+            model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.passwordError") );
+            model.addAttribute("allRoles", roleService.findAll());
+            model.addAttribute("allUsers",userService.findAll());
+            return "Users/user-manage";
+        }
         userService.save(user);
         return "redirect:/usermanagement/users";
     }

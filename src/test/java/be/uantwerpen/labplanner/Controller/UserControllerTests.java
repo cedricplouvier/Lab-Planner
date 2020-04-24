@@ -51,7 +51,7 @@ public class UserControllerTests {
     @BeforeEach
     public void setup(){
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(this.userController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
     }
 
     @Test
@@ -191,8 +191,35 @@ public class UserControllerTests {
 
     @Test
     //add new user with unique name
+    public void addNewCorrectUserWrongPWTest() throws Exception{
+        User user = new User("admin"," admin");
+
+        when(userService.findByUsername("admin")).thenReturn(Optional.empty());
+        mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
+                .andExpect(status().is(200))
+                .andExpect(model().attribute("UserInUse",notNullValue()))
+                .andDo(print());
+
+    }
+
+    @Test
+    //add new user with unique name
     public void addNewFalseUserTest() throws Exception{
         User user = new User("admin","admin");
+
+        when(userService.findByUsername("admin")).thenReturn(Optional.of(user));
+        mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
+                .andExpect(status().is(200))
+                .andExpect(view().name("Users/user-manage"))
+                .andExpect(model().attribute("UserInUse",notNullValue()))
+                .andDo(print());
+
+    }
+
+    @Test
+    //add new user with unique name
+    public void addNewFalsePasswOrdUserTest() throws Exception{
+        User user = new User("admin","admin ");
 
         when(userService.findByUsername("admin")).thenReturn(Optional.of(user));
         mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
@@ -213,6 +240,20 @@ public class UserControllerTests {
         mockMvc.perform(post("/usermanagement/users/{id}","10").flashAttr("user",user))
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/usermanagement/users"))
+                .andDo(print());
+
+    }
+
+    @Test
+    // edit existing user without changing name.
+    public void EditCorrectUserWrongPWTest() throws Exception{
+        User user = new User("admin","admin ");
+        long id = 10;
+
+        when(userService.findById(id)).thenReturn(Optional.of(user));
+        mockMvc.perform(post("/usermanagement/users/{id}","10").flashAttr("user",user))
+                .andExpect(status().is(200))
+                .andExpect(model().attribute("UserInUse",notNullValue()))
                 .andDo(print());
 
     }
@@ -252,6 +293,25 @@ public class UserControllerTests {
         mockMvc.perform(post("/usermanagement/users/{id}","10").flashAttr("user",user))
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/usermanagement/users"))
+                .andDo(print());
+
+    }
+
+    @Test
+    // Edit existing user with unique name
+    public void EditUserUniqueNameWrongPasswordTest() throws Exception{
+        User user = new User("admin","admin ");
+        long id = 10;
+        user.setId(id);
+
+        User user2 = new User("admin2","admin2");
+
+        when(userService.findById(id)).thenReturn(Optional.of(user2));
+        when(userService.findByUsername("admin")).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/usermanagement/users/{id}","10").flashAttr("user",user))
+                .andExpect(status().is(200))
+                .andExpect(model().attribute("UserInUse",notNullValue()))
                 .andDo(print());
 
     }
