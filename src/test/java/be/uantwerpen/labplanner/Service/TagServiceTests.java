@@ -31,10 +31,10 @@ public class TagServiceTests {
 
     @Test
     public void testGetTagById(){
-        Tag tag = new Tag("test");
+        Tag tag = new Tag("testID");
         tagRepository.save(tag);
         Tag fetched = tagService.findById(tag.getId()).orElse(null);
-        assertEquals(fetched.getName(), "test");
+        assertEquals(fetched.getName(), "testID");
 
     }
 
