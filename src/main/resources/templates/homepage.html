@@ -47,9 +47,9 @@
         </tr>
     </table>
 
-    <h5 sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')"> <span th:text="#{step.student}"></span></h5>
+    <h5 th:if="${!studentSteps.isEmpty()}" sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')"> <span th:text="#{step.student}"></span></h5>
 
-    <table class="table table-hover"  sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')">
+    <table th:if="${!studentSteps.isEmpty()}" class="table table-hover"  sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')">
         <thead>
         <tr>
             <th th:text="#{step.user.username}"></th>

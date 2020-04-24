@@ -31,18 +31,18 @@ public class TagServiceTests {
 
     @Test
     public void testGetTagById(){
-        Tag tag = new Tag("test");
+        Tag tag = new Tag("testID");
         tagRepository.save(tag);
         Tag fetched = tagService.findById(tag.getId()).orElse(null);
-        assertEquals(fetched.getName(), "test");
+        assertEquals(fetched.getName(), "testID");
 
     }
 
     @Test
     public void testGetTagByName(){
-        Tag tag = new Tag("test");
+        Tag tag = new Tag("testTagForThisTest");
         tagRepository.save(tag);
-        Tag fetched = tagService.findByName("test").orElse(null);
+        Tag fetched = tagService.findByName("testTagForThisTest").orElse(null);
         assertEquals(fetched.getId(), tag.getId());
 
     }

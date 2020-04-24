@@ -6,6 +6,7 @@ import be.uantwerpen.labplanner.Repository.RelationRepository;
 import be.uantwerpen.labplanner.Service.RelationService;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
+import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -32,6 +35,9 @@ public class RelationController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RoleService roleService;
 
     @Autowired
     private RelationService relationService;
@@ -49,7 +55,27 @@ public class RelationController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users/relations/put",method = RequestMethod.GET)
     public String viewCreateRelation(@org.jetbrains.annotations.NotNull final ModelMap model){
-        model.addAttribute("allUsers",userService.findAll());
+        // add list with all the users which have a Researcher Role in their role list.
+        Role researcher = roleService.findByName("Researcher").orElse(null);
+        List<User> researchers = new ArrayList<>();
+        for (User user : userService.findAll()){
+            if (user.getRoles().contains(researcher)){
+                researchers.add(user);
+            }
+        }
+        model.addAttribute("allResearchers",researchers);
+
+        //add list with all users which have a Bachelor or Master Role in their role list.
+        Role Bachelor = roleService.findByName("Bachelorstudent").orElse(null);
+        Role Master = roleService.findByName("Masterstudent").orElse(null);
+        List<User> students = new ArrayList<>();
+        for (User user : userService.findAll()){
+            if ((user.getRoles().contains(Bachelor))|| (user.getRoles().contains(Master))){
+                students.add(user);
+            }
+        }
+        model.addAttribute("allStudents",students);
+
         model.addAttribute(new Relation(""));
         return "Users/relation-manage";
     }
@@ -57,7 +83,28 @@ public class RelationController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users/relations/{id}",method = RequestMethod.GET)
     public String viewEditRelation(@PathVariable("id") long id, final ModelMap model){
-        model.addAttribute("allUsers",userService.findAll());
+
+        // add list with all the users which have a Researcher Role in their role list.
+        Role researcher = roleService.findByName("Researcher").orElse(null);
+        List<User> researchers = new ArrayList<>();
+        for (User user : userService.findAll()){
+            if (user.getRoles().contains(researcher)){
+                researchers.add(user);
+            }
+        }
+        model.addAttribute("allResearchers",researchers);
+
+        //add list with all users which have a Bachelor or Master Role in their role list.
+        Role Bachelor = roleService.findByName("Bachelorstudent").orElse(null);
+        Role Master = roleService.findByName("Masterstudent").orElse(null);
+        List<User> students = new ArrayList<>();
+        for (User user : userService.findAll()){
+            if ((user.getRoles().contains(Bachelor))|| (user.getRoles().contains(Master))){
+                students.add(user);
+            }
+        }
+        model.addAttribute("allStudents",students);
+
         model.addAttribute("relation",relationService.findById(id).orElse(null));
         return "Users/relation-manage";
     }
@@ -115,11 +162,6 @@ public class RelationController {
         //  List<Step> allSteps = stepService.findAll();
         boolean isUsed = false;
 
-        if (isUsed){
-            model.addAttribute("allUsers",userService.findAll());
-            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",current).getString("user.deleteError"));
-            return "Users/relation-list";
-        }
 
         relationService.deleteById(id);
         model.clear();
