@@ -86,7 +86,7 @@ public class StepControllerTests {
 
         Role role = new Role("Administrator");
         when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
-        role.setId((long) 31);
+        role.setId((long) 32);
         //   when(relationService.findAll()).thenReturn(relations);
         mockMvc.perform(get("/planning/"))
                 .andExpect(status().isOk())
@@ -475,7 +475,7 @@ public class StepControllerTests {
         when(relationService.findAll()).thenReturn(rels);
         role.setId((long) 31);
         //   when(relationService.findAll()).thenReturn(relations);
-        mockMvc.perform(post("/planning/").flashAttr("Step",step))
+        mockMvc.perform(post("/planning/").flashAttr("step",step))
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/planning/"));
 
@@ -532,7 +532,7 @@ public class StepControllerTests {
         when(relationService.findAll()).thenReturn(rels);
         role.setId((long) 31);
         //   when(relationService.findAll()).thenReturn(relations);
-        mockMvc.perform(post("/planning/").flashAttr("Step",step))
+        mockMvc.perform(post("/planning/").flashAttr("step",step))
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/planning/"));
 
@@ -553,13 +553,13 @@ public class StepControllerTests {
         //roles
         Role role1 = new Role("Administrator");
         when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
-        role1.setId((long) 31);
+        role1.setId((long) 32);
 
         when(stepService.findById((long) 5)).thenReturn(Optional.of(step));
 
         Role researcher = new Role("Researcher");
         when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
-        researcher.setId((long) 30);
+        researcher.setId((long) 31);
 
         Set<User> students = new HashSet<>();
         students.add(user);
@@ -578,13 +578,10 @@ public class StepControllerTests {
         List<Step> steps = new ArrayList<>();
         steps.add(step);
 
-        Role role = new Role("Administrator");
-        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
         when(stepService.findAll()).thenReturn(steps);
         when(relationService.findAll()).thenReturn(rels);
-        role.setId((long) 31);
         //   when(relationService.findAll()).thenReturn(relations);
-        mockMvc.perform(post("/planning/").flashAttr("Step",step))
+        mockMvc.perform(post("/planning/").flashAttr("step",step))
                 .andExpect(status().is(302))
                 .andExpect(MockMvcResultMatchers.flash().attribute("Status", notNullValue()))
                 .andDo(print())
@@ -667,20 +664,21 @@ public class StepControllerTests {
 
         //roles
         Role role1 = new Role("Administrator");
+        role1.setId((long) 32);
         when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
-        role1.setId((long) 31);
+
 
         when(stepService.findById((long) 5)).thenReturn(Optional.of(step));
 
         Role researcher = new Role("Researcher");
+        researcher.setId((long) 31);
         when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
-        researcher.setId((long) 30);
 
         Set<User> students = new HashSet<>();
         students.add(user);
         //researcher
         User res = new User("Researcher","tester");
-        res.setId((long) 41);
+        res.setId((long) 42);
         //relation
         Relation rel = new Relation();
         rel.setResearcher(res);
@@ -693,11 +691,8 @@ public class StepControllerTests {
         List<Step> steps = new ArrayList<>();
         steps.add(step);
 
-        Role role = new Role("Administrator");
-        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
         when(stepService.findAll()).thenReturn(steps);
         when(relationService.findAll()).thenReturn(rels);
-        role.setId((long) 31);
         //   when(relationService.findAll()).thenReturn(relations);
         mockMvc.perform(post("/planning/").flashAttr("step",step))
                 .andExpect(status().is(302))
@@ -755,7 +750,7 @@ public class StepControllerTests {
         when(relationService.findAll()).thenReturn(rels);
         role.setId((long) 32);
         //   when(relationService.findAll()).thenReturn(relations);
-        mockMvc.perform(post("/planning/").flashAttr("Step",step))
+        mockMvc.perform(post("/planning/").flashAttr("step",step))
                 .andExpect(status().is(302))
                 .andExpect(MockMvcResultMatchers.flash().attribute("Status", "Error"))
                 .andDo(print())
@@ -874,7 +869,7 @@ public class StepControllerTests {
     //view edit page of step as owner
     public void DeleteStepOwner() throws Exception{
         User user = new User("tester","tester");
-        user.setId((long) 39);
+        user.setId((long) 40);
         Device d1 = new Device();
         d1.setId((long) 10);
 
@@ -936,19 +931,19 @@ public class StepControllerTests {
         //roles
         Role role1 = new Role("Administrator");
         when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
-        role1.setId((long) 31);
+        role1.setId((long) 32);
 
         when(stepService.findById((long) 5)).thenReturn(Optional.of(step));
 
         Role researcher = new Role("Researcher");
         when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
-        researcher.setId((long) 30);
+        researcher.setId((long) 31);
 
         Set<User> students = new HashSet<>();
         students.add(user);
         //researcher
         User res = new User("Researcher","tester");
-        res.setId((long) 41);
+        res.setId((long) 42);
         //relation
         Relation rel = new Relation();
         rel.setResearcher(res);
@@ -961,11 +956,60 @@ public class StepControllerTests {
         List<Step> steps = new ArrayList<>();
         steps.add(step);
 
-        Role role = new Role("Administrator");
-        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
         when(stepService.findAll()).thenReturn(steps);
         when(relationService.findAll()).thenReturn(rels);
-        role.setId((long) 31);
+        //   when(relationService.findAll()).thenReturn(relations);
+        mockMvc.perform(get("/planning/{id}/delete",5))
+                .andExpect(status().is(302))
+                .andDo(print())
+                .andExpect(view().name("redirect:/planning/"));
+    }
+
+    @Test
+    @WithUserDetails("Researcher")
+    //view edit page of step as owner
+    public void DeleteStepResearcherNotOfOwner() throws Exception{
+        User user = new User("tester","tester");
+        user.setId((long) 39);
+        Device d1 = new Device();
+        d1.setId((long) 10);
+
+        Step step = new Step(user,d1,"2020-03-18","2020-03-18","11:00","12:00","");
+        step.setId((long) 5);
+
+        //roles
+        Role role1 = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
+        role1.setId((long) 32);
+
+        when(stepService.findById((long) 5)).thenReturn(Optional.of(step));
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        User user2 = new User("tester","tester");
+        user2.setId((long) 97);
+
+        Set<User> students = new HashSet<>();
+        students.add(user2);
+        //researcher
+        User res = new User("Researcher","tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+
+        when(stepService.findAll()).thenReturn(steps);
+        when(relationService.findAll()).thenReturn(rels);
         //   when(relationService.findAll()).thenReturn(relations);
         mockMvc.perform(get("/planning/{id}/delete",5))
                 .andExpect(status().is(302))
