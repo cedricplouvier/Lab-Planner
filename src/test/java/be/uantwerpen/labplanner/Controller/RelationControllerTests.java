@@ -81,11 +81,11 @@ public class RelationControllerTests {
         List<Relation> rels = new ArrayList<Relation>();
         rels.add(rel);
         Role Researcher = new Role("Researcher");
-        Researcher.setId((long) 1);
+        Researcher.setId((long) 753);
         Role Bach = new Role("Bachelorstudent");
-        Bach.setId((long) 2);
+        Bach.setId((long) 754);
         Role Master = new Role("Masterstudent");
-        Master.setId((long) 3);
+        Master.setId((long) 755);
         Set<Role> roles = new HashSet();
         roles.add(Bach);
 
@@ -128,11 +128,11 @@ public class RelationControllerTests {
         List<Relation> rels = new ArrayList<Relation>();
         rels.add(rel);
         Role Researcher = new Role("Researcher");
-        Researcher.setId((long) 1);
+        Researcher.setId((long) 750);
         Role Bach = new Role("Bachelorstudent");
-        Bach.setId((long) 2);
+        Bach.setId((long) 751);
         Role Master = new Role("Masterstudent");
-        Master.setId((long) 3);
+        Master.setId((long) 752);
         Set<Role> roles = new HashSet();
         roles.add(Bach);
 
@@ -270,7 +270,7 @@ public class RelationControllerTests {
 
     @Test
     //test for deleting
-    public void DeleteUserTest() throws Exception{
+    public void DeleteRelationTest() throws Exception{
         Relation rel = new Relation("delete");
         long id = 10;
         rel.setId(id);
