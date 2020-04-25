@@ -27,6 +27,9 @@
     #myInput:focus {
         outline: 3px solid #ddd;
     }
+    #submitform { margin-top: 25px; }
+
+    #spacing { margin-top: 25px; }
 
     .dropdown {
         position: relative;
@@ -103,10 +106,10 @@
             <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>
             <div class="alert alert-secondary" role="alert" th:if="${amount}!=null" th:text="#{selected.amount} + ' '+ ${amount}+ ' %'"></div>
 
-            <label class="control-label" th:text="#{mixtures.name}"></label>
+            <h6 class="control-label" th:text="#{mixtures.name}"></h6>
             <input class="form-control" type = text th:field="*{name}"/>
 
-            <label class="control-label" th:text="#{product.description}"></label>
+            <h6 class="control-label" th:text="#{product.description}"></h6>
             <input class="form-control" type = text th:field="*{description}"/>
 
         </div>
@@ -119,7 +122,7 @@
                    th:value="${{tag}}"
                    th:utext="${tag.name} + '<br>'">
         </div>
-        <div>
+        <div id="spacing">
             <h6 th:text="#{mixtures.ingredients}">Ingredients</h6>
         </div>
 
@@ -156,23 +159,25 @@
             </div>
             </tbody>
         </table>
-        <button style="margin-right: 10px;font-size: 90%" class="btn btn-primary "
-                type="button"
-                th:text="#{composition.add}"
-                th:onclick="addIngredientRow([[${allProducts}]])">
-        </button>
 
-        <button style="margin-right: 10px;font-size: 90%" class="btn btn-outline-primary"
-                type="button"
-                th:text="#{composition.remove}"
-                th:onclick="removeIngredientRow()">
-        </button>
+        <div>
+            <button style="margin-right: 10px;font-size: 90%" class="btn btn-outline-primary"
+                    type="button"
+                    th:text="#{composition.add}"
+                    th:onclick="addIngredientRow([[${allProducts}]])">
+            </button>
 
+            <button style="margin-right: 10px;font-size: 90%" class="btn btn-outline-secondary"
+                    type="button"
+                    th:text="#{composition.remove}"
+                    th:onclick="removeIngredientRow()">
+            </button>
 
+        </div>
 
-    <div>
+    <div id="submitform">
             <p>
-        <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
+        <button type="submit" th:text="#{mixture.save}" class="btn btn-primary">Save</button>
                 <a href="/mixtures" th:text="#{close}" class="btn btn-secondary">Close</a>
 
 
