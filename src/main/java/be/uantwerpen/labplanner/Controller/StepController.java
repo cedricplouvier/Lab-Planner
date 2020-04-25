@@ -564,7 +564,7 @@ public class StepController {
         //list of steps that is filled by selected steps and saved when there is no problem with input
         List<Step> tmpListSteps = new ArrayList<Step>();
 
-        if (experiment == null) {
+        if (experiment == null ||experiment.getExperimentType() == null ) {
             errorMessage = "Error while trying to save Experiment.";
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
             return "/PlanningTool/planning-exp-book";
@@ -585,6 +585,13 @@ public class StepController {
             if (expType.getId().equals(experiment.getExperimentType().getId())) {
                 experiment.setExperimentType(expType);
             }
+        }
+        
+        for( PieceOfMixture pom: experiment.getPiecesOfMixture())
+        if(pom.getMixtureAmount() <0){
+            errorMessage = "Ammount of mixture can't be negative";
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            return "/PlanningTool/planning-exp-book";
         }
 
         //In case of edit experiment, reset stocklevels, so that eventuel new stock levels can be saved, and stock is not withdrawn multiple times.

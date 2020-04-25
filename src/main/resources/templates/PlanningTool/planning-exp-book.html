@@ -68,7 +68,7 @@
                 '   </select>' +
                 '   </th>' +
                 '   <th>' +
-                '       <input type="number"  class=" form-control input-device" placeholder="Amount of mixture" id="piecesOfMixture' + i + '.mixtureAmount" name="piecesOfMixture[' + i + '].mixtureAmount" required>' +
+                '       <input type="number" min="0" step="0.01" class=" form-control input-device" placeholder="Amount of mixture" id="piecesOfMixture' + i + '.mixtureAmount" name="piecesOfMixture[' + i + '].mixtureAmount" required>' +
                 '   </th>' +
                 '   <th>' +
                 '       <input class=" form-control input-device" placeholder="Mixture comment" id="piecesOfMixture' + i + '.mixtureComment" name="piecesOfMixture[' + i + '].mixtureComment">' +
@@ -325,7 +325,7 @@
                         </select>
                     </th>
                     <th>
-                        <input type="number" class=" form-control input-device"
+                        <input type="number" min="0" step="0.01"  class=" form-control input-device"
                                th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
                                placeholder="Amount of mixture" required>
                     </th>
