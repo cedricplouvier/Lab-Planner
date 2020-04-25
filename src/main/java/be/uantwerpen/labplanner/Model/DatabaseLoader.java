@@ -1,14 +1,10 @@
 package be.uantwerpen.labplanner.Model;
 
 import be.uantwerpen.labplanner.Repository.*;
-import be.uantwerpen.labplanner.common.model.stock.Product;
-import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.model.stock.Unit;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
-import be.uantwerpen.labplanner.common.repository.stock.ProductRepository;
-import be.uantwerpen.labplanner.common.repository.stock.TagRepository;
 import be.uantwerpen.labplanner.common.repository.users.PrivilegeRepository;
 import be.uantwerpen.labplanner.common.repository.users.RoleRepository;
 import be.uantwerpen.labplanner.common.repository.users.UserRepository;
@@ -27,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@Profile("!prod")
+//@Profile("!prod")
 public class DatabaseLoader {
 
     private final PrivilegeRepository privilegeRepository;
@@ -36,8 +32,8 @@ public class DatabaseLoader {
     private final DeviceTypeRepository deviceTypeRepository;
     private final DeviceRepository deviceRepository;
     private final DeviceInformationRepository deviceInformationRepository;
-    private final ProductRepository productRepository;
-    private final TagRepository tagRepository;
+    private final OwnProductRepository productRepository;
+    private final OwnTagRepository tagRepository;
     private final StepRepository stepRepository;
     private final CompositionRepository compositionRepository;
     private final MixtureRepository mixtureRepository;
@@ -50,7 +46,7 @@ public class DatabaseLoader {
     private final ReportRepository reportRepository;
 
     @Autowired
-    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository, DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository, PieceOfMixtureRepository pieceOfMixtureRepository, ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository, ExperimentRepository experimentRepository) {
+    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository, DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, OwnProductRepository productRepository, OwnTagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository, PieceOfMixtureRepository pieceOfMixtureRepository, ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository, ExperimentRepository experimentRepository) {
 
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
@@ -460,37 +456,37 @@ public class DatabaseLoader {
 
 
         //create some products
-        Tag tag1 = new Tag("Aggregates");
-        List<Tag> tags1 = new ArrayList<>();
+        OwnTag tag1 = new OwnTag("Aggregates");
+        List<OwnTag> tags1 = new ArrayList<>();
         tags1.add(tag1);
         tagRepository.save(tag1);
-        Tag tag2 = new Tag("Bitumen");
-        List<Tag> tags2 = new ArrayList<>();
+        OwnTag tag2 = new OwnTag("Bitumen");
+        List<OwnTag> tags2 = new ArrayList<>();
         tags2.add(tag2);
         tagRepository.save(tag2);
-        Tag tag3 = new Tag("Consumables");
-        List<Tag> tags3 = new ArrayList<>();
+        OwnTag tag3 = new OwnTag("Consumables");
+        List<OwnTag> tags3 = new ArrayList<>();
         tags3.add(tag3);
         tagRepository.save(tag3);
-        Tag tag4 = new Tag("Other");
-        List<Tag> tags4 = new ArrayList<>();
+        OwnTag tag4 = new OwnTag("Other");
+        List<OwnTag> tags4 = new ArrayList<>();
         tags4.add(tag4);
         tagRepository.save(tag4);
-        Product pr1 = new Product("porfier63", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        OwnProduct pr1 = new OwnProduct("porfier63", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
         productRepository.save(pr1);
-        Product pr2 = new Product("porfier4", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        OwnProduct pr2 = new OwnProduct("porfier4", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
         productRepository.save(pr2);
-        Product pr3 = new Product("porfier2", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        OwnProduct pr3 = new OwnProduct("porfier2", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
         productRepository.save(pr3);
-        Product pr4 = new Product("kalksteen", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        OwnProduct pr4 = new OwnProduct("kalksteen", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
         productRepository.save(pr4);
-        Product pr5 = new Product("alzagrirondzan", lorem.getWords(20), 1.0, 1000.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
+        OwnProduct pr5 = new OwnProduct("alzagrirondzan", lorem.getWords(20), 1.0, 1000.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
         productRepository.save(pr5);
-        Product pr6 = new Product("duras", lorem.getWords(20), 1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        OwnProduct pr6 = new OwnProduct("duras", lorem.getWords(20), 1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr6);
-        Product pr7 = new Product("bitOpAggr", lorem.getWords(20), 1.0, 200.0, 25.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        OwnProduct pr7 = new OwnProduct("bitOpAggr", lorem.getWords(20), 1.0, 200.0, 25.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr7);
-        Product pr8 = new Product("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        OwnProduct pr8 = new OwnProduct("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
         productRepository.save(pr8);
 
         Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","11:00","12:00","");

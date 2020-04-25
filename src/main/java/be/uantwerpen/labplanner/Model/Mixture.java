@@ -1,7 +1,5 @@
 package be.uantwerpen.labplanner.Model;
 
-import be.uantwerpen.labplanner.common.model.stock.Tag;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
@@ -19,7 +17,7 @@ public class Mixture extends AbstractPersistable<Long> {
     @Column
     private String description;
 
-    @JsonBackReference
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "Mix_COMP",
@@ -47,9 +45,9 @@ public class Mixture extends AbstractPersistable<Long> {
                     referencedColumnName = "ID"
             )}
     )
-    private List<Tag> tags;
+    private List<OwnTag> tags;
 
-    public Mixture(String name, List<Composition> compositions, String description, List<Tag> tags){
+    public Mixture(String name, List<Composition> compositions, String description, List<OwnTag> tags){
         this.name = name;
         this.compositions = compositions;
         this.description = description;
@@ -90,11 +88,11 @@ public class Mixture extends AbstractPersistable<Long> {
         this.name = name;
     }
 
-    public List<Tag> getTags() {
+    public List<OwnTag> getTags() {
         return tags;
     }
 
-    public void setTags(List<Tag> tags) {
+    public void setTags(List<OwnTag> tags) {
         this.tags = tags;
     }
 
