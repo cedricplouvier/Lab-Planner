@@ -2,8 +2,6 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Service.*;
-import be.uantwerpen.labplanner.common.model.stock.Product;
-import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -42,7 +40,7 @@ public class StatisticsController {
     private ExperimentService experimentService;
 
     @Autowired
-    private ProductService productService;
+    private OwnProductService productService;
 
     int[] totalHoursEmpty = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
     List<int[]> totalHours = new ArrayList<int[]>(Arrays.asList(totalHoursEmpty,totalHoursEmpty,totalHoursEmpty,totalHoursEmpty,totalHoursEmpty));
@@ -114,14 +112,14 @@ public class StatisticsController {
     @RequestMapping(value = "/statistics/stockStatistics", method = RequestMethod.GET)
     public String showStatisticsStockPage(final ModelMap model) {
 
-        List<Product> products = productService.findAll();
+        List<OwnProduct> products = productService.findAll();
         List<Double> currentStockLevel = new ArrayList<>();
         //get all the product names
-        for(Product product: products){
+        for(OwnProduct product: products){
             productNames.add(product.getName());
         }
 
-        for(Product product: products){
+        for(OwnProduct product: products){
             currentStockLevel.add(product.getStockLevel());
         }
 

@@ -4,11 +4,9 @@ import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Repository.ExperimentRepository;
 import be.uantwerpen.labplanner.Repository.ExperimentTypeRepository;
 import be.uantwerpen.labplanner.Service.*;
-import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.repository.users.UserRepository;
-import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import de.jollyday.Holiday;
 import de.jollyday.HolidayCalendar;
@@ -63,7 +61,7 @@ public class StepController {
     @Autowired
     private PieceOfMixtureService pieceOfMixtureService;
     @Autowired
-    private ProductService productService;
+    private OwnProductService productService;
 
     @Autowired
     private RelationService relationService;
@@ -470,13 +468,13 @@ public class StepController {
             }
 
             //add amounts back to the stock.
-            Map<Product, Double> productMap = new HashMap<>();
+            Map<OwnProduct, Double> productMap = new HashMap<>();
 
             for (PieceOfMixture piece : experiment.getPiecesOfMixture()) {
                 Mixture mix = piece.getMixture();
                 List<Composition> compositions = mix.getCompositions();
                 for (Composition comp : compositions) {
-                    Product prod = comp.getProduct();
+                    OwnProduct prod = comp.getProduct();
                     if (!productMap.containsKey(prod)) {
                         productMap.put(prod, prod.getStockLevel());
                     }
@@ -488,7 +486,7 @@ public class StepController {
             Iterator it = productMap.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry pair = (Map.Entry) it.next();
-                Product prod = (Product) pair.getKey();
+                OwnProduct prod = (OwnProduct) pair.getKey();
                 prod.setStockLevel((Double) pair.getValue());
                 productService.save(prod);
             }
@@ -556,7 +554,7 @@ public class StepController {
             return "redirect:/planning/";
         }
 
-        Map<Product, Double> productMap = new HashMap<>();
+        Map<OwnProduct, Double> productMap = new HashMap<>();
 
         //In case of edit experiment, reset stocklevels, so that eventuel new stock levels can be saved, and stock is not withdrawn multiple times.
         if (experimentService.findByExperimentName(experiment.getExperimentname()).isPresent()) {
@@ -566,7 +564,7 @@ public class StepController {
                 Mixture mix = piece.getMixture();
                 List<Composition> compositions = mix.getCompositions();
                 for (Composition comp : compositions) {
-                    Product prod = comp.getProduct();
+                    OwnProduct prod = comp.getProduct();
                     if (!productMap.containsKey(prod)) {
                         productMap.put(prod, prod.getStockLevel());
                     }
@@ -576,7 +574,7 @@ public class StepController {
                 }
             }
         } else {
-            for (Product prod : productService.findAll()) {
+            for (OwnProduct prod : productService.findAll()) {
                 productMap.put(prod, prod.getStockLevel());
             }
         }
@@ -695,7 +693,7 @@ public class StepController {
                 Mixture mix = piece.getMixture();
                 List<Composition> compositions = mix.getCompositions();
                 for (Composition comp : compositions) {
-                    Product prod = comp.getProduct();
+                    OwnProduct prod = comp.getProduct();
                     if (!productMap.containsKey(prod)) {
                         productMap.put(prod, prod.getStockLevel());
                     }
@@ -728,7 +726,7 @@ public class StepController {
         Iterator it2 = productMap.entrySet().iterator();
         while (it2.hasNext()) {
             Map.Entry pair = (Map.Entry) it2.next();
-            Product prod = (Product) pair.getKey();
+            OwnProduct prod = (OwnProduct) pair.getKey();
             prod.setStockLevel((Double) pair.getValue());
             productService.save(prod);
         }

@@ -3,13 +3,13 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Model.Composition;
 import be.uantwerpen.labplanner.Model.Mixture;
+import be.uantwerpen.labplanner.Model.OwnProduct;
+import be.uantwerpen.labplanner.Model.OwnTag;
 import be.uantwerpen.labplanner.Service.CompositionService;
 import be.uantwerpen.labplanner.Service.MixtureService;
-import be.uantwerpen.labplanner.common.model.stock.Product;
-import be.uantwerpen.labplanner.common.model.stock.Tag;
+import be.uantwerpen.labplanner.Service.OwnProductService;
+import be.uantwerpen.labplanner.Service.OwnTagService;
 import be.uantwerpen.labplanner.common.model.stock.Unit;
-import be.uantwerpen.labplanner.common.service.stock.ProductService;
-import be.uantwerpen.labplanner.common.service.stock.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,9 +29,9 @@ import java.util.*;
 public class StockController {
 
     @Autowired
-    private ProductService productService;
+    private OwnProductService productService;
     @Autowired
-    private TagService tagService;
+    private OwnTagService tagService;
     @Autowired
     private MixtureService mixtureService;
     @Autowired
@@ -39,19 +39,19 @@ public class StockController {
 
     //Populate
     @ModelAttribute("allProducts")
-    public Iterable<Product> populateProducts(){
+    public Iterable<OwnProduct> populateProducts(){
         return  this.productService.findAll();
     }
 
-    public List<Product> getAggBitList(){
+    public List<OwnProduct> getAggBitList(){
         //aggregates + bitumen
-        List<Product> agg_bit = new ArrayList<>();
+        List<OwnProduct> agg_bit = new ArrayList<>();
         //consumables + other
-        List<Product> con_oth = new ArrayList<>();
-        Tag aggregateTag = null;
-        Tag bitumenTag = null;
-        Optional<Tag> OptAggregateTag = tagService.findByName("Aggregates");
-        Optional<Tag> optBitumenTag = tagService.findByName("Bitumen");
+        List<OwnProduct> con_oth = new ArrayList<>();
+        OwnTag aggregateTag = null;
+        OwnTag bitumenTag = null;
+        Optional<OwnTag> OptAggregateTag = tagService.findByName("Aggregates");
+        Optional<OwnTag> optBitumenTag = tagService.findByName("Bitumen");
         if(OptAggregateTag.isPresent()){
             aggregateTag = OptAggregateTag.get();
         }
@@ -60,10 +60,10 @@ public class StockController {
         }
 
 
-        List<Product> products = productService.findAll();
-        Iterator<Product> it = products.iterator();
+        List<OwnProduct> products = productService.findAll();
+        Iterator<OwnProduct> it = products.iterator();
         while (it.hasNext()) {
-            Product temp = it.next();
+            OwnProduct temp = it.next();
             if(temp.getTags().contains(aggregateTag) || temp.getTags().contains(bitumenTag)){
                 agg_bit.add(temp);
             }
@@ -74,15 +74,15 @@ public class StockController {
         return agg_bit;
     }
 
-    public List<Product> getComOthList(){
+    public List<OwnProduct> getComOthList(){
         //aggregates + bitumen
-        List<Product> agg_bit = new ArrayList<>();
+        List<OwnProduct> agg_bit = new ArrayList<>();
         //consumables + other
-        List<Product> con_oth = new ArrayList<>();
-        Tag aggregateTag = null;
-        Tag bitumenTag = null;
-        Optional<Tag> OptAggregateTag = tagService.findByName("Aggregates");
-        Optional<Tag> optBitumenTag = tagService.findByName("Bitumen");
+        List<OwnProduct> con_oth = new ArrayList<>();
+        OwnTag aggregateTag = null;
+        OwnTag bitumenTag = null;
+        Optional<OwnTag> OptAggregateTag = tagService.findByName("Aggregates");
+        Optional<OwnTag> optBitumenTag = tagService.findByName("Bitumen");
         if(OptAggregateTag.isPresent()){
             aggregateTag = OptAggregateTag.get();
         }
@@ -91,10 +91,10 @@ public class StockController {
         }
 
 
-        List<Product> products = productService.findAll();
-        Iterator<Product> it = products.iterator();
+        List<OwnProduct> products = productService.findAll();
+        Iterator<OwnProduct> it = products.iterator();
         while (it.hasNext()) {
-            Product temp = it.next();
+            OwnProduct temp = it.next();
             if(temp.getTags().contains(aggregateTag) || temp.getTags().contains(bitumenTag)){
                 agg_bit.add(temp);
             }
@@ -109,8 +109,8 @@ public class StockController {
     //@PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Read only - Basic') or hasAuthority('Stock - Aggregates + Bitumen Read only - Advanced') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value="/products", method= RequestMethod.GET)
     public String showProducts(final ModelMap model){
-        List<Product> agg_bit = getAggBitList();
-        List<Product> con_oth = getComOthList();
+        List<OwnProduct> agg_bit = getAggBitList();
+        List<OwnProduct> con_oth = getComOthList();
 
         model.addAttribute("agg_bit", agg_bit);
         model.addAttribute("con_oth", con_oth);
@@ -124,7 +124,7 @@ public class StockController {
     public String viewCreateProducts(final ModelMap model){
         model.addAttribute("allProducts", productService.findAll());
         model.addAttribute("allTags", tagService.findAll());
-        model.addAttribute("product",new Product("","",0.0, 0.0, 0.0, 0.0, null, "URL", "", null,null, LocalDateTime.now(), LocalDateTime.now(), null));
+        model.addAttribute("product",new OwnProduct("","",0.0, 0.0, 0.0, 0.0, null, "URL", "", null,null, LocalDateTime.now(), LocalDateTime.now(), null));
         model.addAttribute("units",Unit.values());
         return "Stock/products-manage";
     }
@@ -142,15 +142,15 @@ public class StockController {
     @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value={"/products/", "/products/{id}"},
             method= RequestMethod.POST)
-    public String addProduct(@Valid Product product, BindingResult result,
-                          final ModelMap model){
+    public String addProduct(@Valid OwnProduct product, BindingResult result,
+                             final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
 
-        List<Product > products = productService.findAll();
-        Iterator<Product> it = products.iterator();
+        List<OwnProduct> products = productService.findAll();
+        Iterator<OwnProduct> it = products.iterator();
         String NameIsUsed = null;
         while (it.hasNext()) {
-            Product temp = it.next();
+            OwnProduct temp = it.next();
             if(temp.getName().contains(product.getName()) && !temp.getId().equals(product.getId())){
                 NameIsUsed = "There is already a product with the name " + product.getName();
             }
@@ -237,8 +237,8 @@ public class StockController {
         Locale current = LocaleContextHolder.getLocale();
         productService.deleteById(id);
         model.clear();
-        List<Product> agg_bit = getAggBitList();
-        List<Product> con_oth = getComOthList();
+        List<OwnProduct> agg_bit = getAggBitList();
+        List<OwnProduct> con_oth = getComOthList();
         model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
         model.addAttribute("agg_bit", agg_bit);
         model.addAttribute("con_oth", con_oth);
@@ -249,7 +249,7 @@ public class StockController {
     @RequestMapping(value ="/products/info/{id}", method= RequestMethod.GET)
     public String viewProductInfo(@PathVariable Long id, final ModelMap model){
 
-        Product prod = productService.findById(id).orElse(null);
+        OwnProduct prod = productService.findById(id).orElse(null);
 
         List<Mixture> mixtures = new ArrayList<>();
         List<Mixture> returnList = new ArrayList<>();
@@ -287,17 +287,17 @@ public class StockController {
     @RequestMapping(value="/tags/{id}/delete",method = RequestMethod.GET)
     public String deleteTag(@PathVariable Long id, final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
-        List<Product> products = productService.findAll();
-        Tag tag = null;
-        Optional<Tag> tempTag = tagService.findById(id);
+        List<OwnProduct> products = productService.findAll();
+        OwnTag tag = null;
+        Optional<OwnTag> tempTag = tagService.findById(id);
         boolean isUsed = false;
         if(tempTag.isPresent()){
             tag = tempTag.get();
         }
 
-        Iterator<Product> it = products.iterator();
+        Iterator<OwnProduct> it = products.iterator();
         while (it.hasNext()) {
-            Product temp = it.next();
+            OwnProduct temp = it.next();
             if(temp.getTags().contains(tag)){
                 isUsed = true;
             }
@@ -326,15 +326,15 @@ public class StockController {
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
     @RequestMapping(value={"/tags", "/tags/{id}"},
             method= RequestMethod.POST)
-        public String addTag(@Valid Tag tag, BindingResult result,
+        public String addTag(@Valid OwnTag tag, BindingResult result,
                              final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
 
-        List<Tag > tags = tagService.findAll();
-        Iterator<Tag> it = tags.iterator();
+        List<OwnTag> tags = tagService.findAll();
+        Iterator<OwnTag> it = tags.iterator();
         String NameIsUsed = null;
         while (it.hasNext()) {
-            Tag temp = it.next();
+            OwnTag temp = it.next();
             if(temp.getName().contains(tag.getName()) && !temp.getId().equals(tag.getId())){
                  NameIsUsed = "There is already a tag with the name " + tag.getName();
             }
@@ -366,7 +366,7 @@ public class StockController {
     @RequestMapping(value="/tags/put", method= RequestMethod.GET)
     public String viewCreateTags(final ModelMap model){
         model.addAttribute("allTags", tagService.findAll());
-        model.addAttribute("tag", new Tag(""));
+        model.addAttribute("tag", new OwnTag(""));
         return "Tags/tags-manage";
     }
 
@@ -380,6 +380,9 @@ public class StockController {
     @RequestMapping(value="/mixtures/{id}/delete",method = RequestMethod.GET)
     public String deleteMixture(@PathVariable Long id, final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
+        for(Composition comp: mixtureService.findById(id).orElse(null).getCompositions()){
+            compositionService.delete(comp);
+        }
         mixtureService.deleteById(id);
         model.clear();
         model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
@@ -510,6 +513,10 @@ public class StockController {
             return "Mixtures/mixtures-manage";
         }
 
+        for (Composition comp: mixture.getCompositions()){
+            compositionService.save(comp);
+        }
+
         mixtureService.save(mixture);
         model.addAttribute("allMixtures", mixtureService.findAll());
         return "Mixtures/mixtures-list";
@@ -540,110 +547,6 @@ public class StockController {
     }
 
 
-
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
-    @RequestMapping(value="/compositions", method = RequestMethod.GET)
-    public String showCompositions(final ModelMap model){
-        model.addAttribute("allCompositions",compositionService.findAll());
-        return "Mixtures/compositions-list";
-    }
-
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
-    @RequestMapping(value="/compositions/{id}/delete",method = RequestMethod.GET)
-    public String deleteComposition(@PathVariable Long id, final ModelMap model){
-        Locale current = LocaleContextHolder.getLocale();
-        List<Mixture> mixtures = mixtureService.findAll();
-        Mixture mixture = null;
-        Composition comp = compositionService.findById(id).orElse(null);
-        boolean isUsed = false;
-
-        Iterator<Mixture> it = mixtures.iterator();
-        while (it.hasNext()) {
-            Mixture temp = it.next();
-            if(temp.getCompositions().contains(comp)){
-                isUsed = true;
-            }
-        }
-        if (isUsed){
-            model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("composition.deleteError"));
-            model.addAttribute("allCompositions",compositionService.findAll());
-            return "Mixtures/compositions-list";
-        }
-        compositionService.deleteById(id);
-        model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
-        model.addAttribute("allCompositions",compositionService.findAll());
-        return "Mixtures/compositions-list";
-    }
-
-
-
-
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
-    @RequestMapping(value="/compositions/{id}", method= RequestMethod.GET)
-    public String viewEditComposition(@PathVariable Long id, final ModelMap model){
-        Locale current = LocaleContextHolder.getLocale();
-        List<Mixture> mixtures = mixtureService.findAll();
-        Mixture mixture = null;
-        Composition comp = compositionService.findById(id).orElse(null);
-        boolean isUsed = false;
-
-        Iterator<Mixture> it = mixtures.iterator();
-        while (it.hasNext()) {
-            Mixture temp = it.next();
-            if(temp.getCompositions().contains(comp)){
-                isUsed = true;
-            }
-        }
-        if (isUsed){
-            model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("composition.editError"));
-            model.addAttribute("allCompositions",compositionService.findAll());
-            return "Mixtures/compositions-list";
-        }
-
-
-        model.addAttribute("allCompositions", compositionService.findAll());
-        model.addAttribute("composition",compositionService.findById(id).orElse(null));
-        return "Mixtures/compositions-manage";
-    }
-
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
-    @RequestMapping(value={"/compositions", "/compositions/{id}"},
-            method= RequestMethod.POST)
-    public String addCompositions(@Valid Composition composition, BindingResult result,
-                         final ModelMap model){
-        Locale current = LocaleContextHolder.getLocale();
-
-
-        if(composition.getAmount() == 0.0 || composition.getAmount() > 100.0){
-            model.addAttribute("allCompositions", compositionService.findAll());
-            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.amount"));
-            return "Mixtures/compositions-manage";
-        }
-        if(composition.getProduct() == null){
-            model.addAttribute("allCompositions", compositionService.findAll());
-            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.product"));
-            return "Mixtures/compositions-manage";
-        }
-
-
-
-        if(result.hasErrors()){
-            model.addAttribute("allCompositions", compositionService.findAll());
-            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.general"));
-            return "Mixtures/compositions-manage";
-        }
-        compositionService.save(composition);
-        model.addAttribute("allCompositions", compositionService.findAll());
-        return "Mixtures/compositions-list";
-    }
-
-
-    @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
-    @RequestMapping(value="/compositions/put", method= RequestMethod.GET)
-    public String viewCreateCompostions(final ModelMap model){
-        model.addAttribute("composition", new Composition());
-        return "Mixtures/compositions-manage";
-    }
 
 
 
