@@ -380,6 +380,9 @@ public class StockController {
     @RequestMapping(value="/mixtures/{id}/delete",method = RequestMethod.GET)
     public String deleteMixture(@PathVariable Long id, final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
+        for(Composition comp: mixtureService.findById(id).orElse(null).getCompositions()){
+            compositionService.delete(comp);
+        }
         mixtureService.deleteById(id);
         model.clear();
         model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
@@ -510,6 +513,10 @@ public class StockController {
             return "Mixtures/mixtures-manage";
         }
 
+        for (Composition comp: mixture.getCompositions()){
+            compositionService.save(comp);
+        }
+
         mixtureService.save(mixture);
         model.addAttribute("allMixtures", mixtureService.findAll());
         return "Mixtures/mixtures-list";
@@ -540,110 +547,6 @@ public class StockController {
     }
 
 
-
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
-    @RequestMapping(value="/compositions", method = RequestMethod.GET)
-    public String showCompositions(final ModelMap model){
-        model.addAttribute("allCompositions",compositionService.findAll());
-        return "Mixtures/compositions-list";
-    }
-
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
-    @RequestMapping(value="/compositions/{id}/delete",method = RequestMethod.GET)
-    public String deleteComposition(@PathVariable Long id, final ModelMap model){
-        Locale current = LocaleContextHolder.getLocale();
-        List<Mixture> mixtures = mixtureService.findAll();
-        Mixture mixture = null;
-        Composition comp = compositionService.findById(id).orElse(null);
-        boolean isUsed = false;
-
-        Iterator<Mixture> it = mixtures.iterator();
-        while (it.hasNext()) {
-            Mixture temp = it.next();
-            if(temp.getCompositions().contains(comp)){
-                isUsed = true;
-            }
-        }
-        if (isUsed){
-            model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("composition.deleteError"));
-            model.addAttribute("allCompositions",compositionService.findAll());
-            return "Mixtures/compositions-list";
-        }
-        compositionService.deleteById(id);
-        model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
-        model.addAttribute("allCompositions",compositionService.findAll());
-        return "Mixtures/compositions-list";
-    }
-
-
-
-
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
-    @RequestMapping(value="/compositions/{id}", method= RequestMethod.GET)
-    public String viewEditComposition(@PathVariable Long id, final ModelMap model){
-        Locale current = LocaleContextHolder.getLocale();
-        List<Mixture> mixtures = mixtureService.findAll();
-        Mixture mixture = null;
-        Composition comp = compositionService.findById(id).orElse(null);
-        boolean isUsed = false;
-
-        Iterator<Mixture> it = mixtures.iterator();
-        while (it.hasNext()) {
-            Mixture temp = it.next();
-            if(temp.getCompositions().contains(comp)){
-                isUsed = true;
-            }
-        }
-        if (isUsed){
-            model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("composition.editError"));
-            model.addAttribute("allCompositions",compositionService.findAll());
-            return "Mixtures/compositions-list";
-        }
-
-
-        model.addAttribute("allCompositions", compositionService.findAll());
-        model.addAttribute("composition",compositionService.findById(id).orElse(null));
-        return "Mixtures/compositions-manage";
-    }
-
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
-    @RequestMapping(value={"/compositions", "/compositions/{id}"},
-            method= RequestMethod.POST)
-    public String addCompositions(@Valid Composition composition, BindingResult result,
-                         final ModelMap model){
-        Locale current = LocaleContextHolder.getLocale();
-
-
-        if(composition.getAmount() == 0.0 || composition.getAmount() > 100.0){
-            model.addAttribute("allCompositions", compositionService.findAll());
-            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.amount"));
-            return "Mixtures/compositions-manage";
-        }
-        if(composition.getProduct() == null){
-            model.addAttribute("allCompositions", compositionService.findAll());
-            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.product"));
-            return "Mixtures/compositions-manage";
-        }
-
-
-
-        if(result.hasErrors()){
-            model.addAttribute("allCompositions", compositionService.findAll());
-            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.general"));
-            return "Mixtures/compositions-manage";
-        }
-        compositionService.save(composition);
-        model.addAttribute("allCompositions", compositionService.findAll());
-        return "Mixtures/compositions-list";
-    }
-
-
-    @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
-    @RequestMapping(value="/compositions/put", method= RequestMethod.GET)
-    public String viewCreateCompostions(final ModelMap model){
-        model.addAttribute("composition", new Composition());
-        return "Mixtures/compositions-manage";
-    }
 
 
 

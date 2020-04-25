@@ -21,6 +21,7 @@ public class OwnTag extends AbstractPersistable<Long> {
     )
     private String name;
 
+    @JsonIgnore
     @ManyToMany(
             mappedBy = "tags"
     )

@@ -82,6 +82,7 @@ public class OwnProduct extends AbstractPersistable<Long> {
     @UpdateTimestamp
     private LocalDateTime updateDateTime;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "aPROD_TAG",
