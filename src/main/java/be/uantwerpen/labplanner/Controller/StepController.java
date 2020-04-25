@@ -597,7 +597,7 @@ public class StepController {
 
         //prepare experiment entity for checking of conditions and to save it into database
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //if new Experiment, add the current student to the experiment.
+        //if the experiment is new, set current user for experiment. Otherwise keep the user same
         if (experiment.getUser() == null) {
             experiment.setUser(currentUser);
         }

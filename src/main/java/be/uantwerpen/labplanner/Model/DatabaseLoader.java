@@ -711,12 +711,12 @@ public class DatabaseLoader {
         reportRepository.save(r5);
 
         //fill experimentRepository
-        Step step1 = new Step(u6, d10, "2020-03-16", "2020-03-16", "11:00", "12:00", "");
-        Step step2 = new Step(u6, d1, "2020-03-17", "2020-03-17", "12:00", "13:00", "");
-        Step step3 = new Step(u6, d11, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
-        Step step4 = new Step(u6, d12, "2020-03-19", "2020-03-19", "09:00", "10:00", "");
-        Step step5 = new Step(u6, d4, "2020-03-19", "2020-03-19", "10:00", "11:00", "");
-        Step step6 = new Step(u6, d5, "2020-03-19", "2020-03-19", "11:00", "12:00", "");
+        Step step1 = new Step(u7, d10, "2020-03-16", "2020-03-16", "11:00", "12:00", "");
+        Step step2 = new Step(u7, d1, "2020-03-17", "2020-03-17", "12:00", "13:00", "");
+        Step step3 = new Step(u7, d11, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
+        Step step4 = new Step(u7, d12, "2020-03-19", "2020-03-19", "09:00", "10:00", "");
+        Step step5 = new Step(u7, d4, "2020-03-19", "2020-03-19", "10:00", "11:00", "");
+        Step step6 = new Step(u7, d5, "2020-03-19", "2020-03-19", "11:00", "12:00", "");
         stepRepository.save(step1);
         stepRepository.save(step2);
         stepRepository.save(step3);
@@ -741,7 +741,7 @@ public class DatabaseLoader {
         List<PieceOfMixture> pomList = new ArrayList<>();
         pomList.add(pom);
 
-        Experiment ex = new Experiment(experimentType1, stepList, u6, "experiment1", pomList, "2020-03-16", "2020-03-19");
+        Experiment ex = new Experiment(experimentType1, stepList, u7, "experiment1", pomList, "2020-03-16", "2020-03-19");
         experimentRepository.save(ex);
     }
 }
