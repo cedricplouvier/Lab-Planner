@@ -27,10 +27,6 @@ public class OwnProduct extends AbstractPersistable<Long> {
     @NotBlank(
             message = "{invalid.notblank}"
     )
-    @Pattern(
-            regexp = "[a-zA-Z0-9-_]+",
-            message = "{product.invalid.name}"
-    )
     private String name;
     @Column
     private String description;
