@@ -10,10 +10,11 @@
     toastr.options.extendedTimeOut = 5000;
     $(document).ready(function () {
         var messages =  /*[[${Message}]]*/ null;
+        console.log(messages);
         if (messages != null) {
             toastr.error(messages);
         }
-    }
+    })
     function addrow(a) {
         console.log(a);
         var rowCount = $('#list tr').length;

@@ -38,7 +38,7 @@
             <td>
                 <a  sec:authorize="hasAuthority('Planning - Make new experiment') " th:href="@{/planning/experiments/{id}/(id=${experiment.id})}"><span
                         class="fas fa-edit"></span></a>&nbsp;
-                <a sec:authorize="hasAuthority('Planning - Make new experiment')" th:href="@{/planning/experiments/{id}/delete(id=${experiment.id})}">
+                <a sec:authorize="hasAuthority('Planning - Make new experiment')" th:href="@{/planning/experiments/{id}/delete(id=${experiment.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
                     <span class="fas fa-trash"></span></a>
             </td>
         </tr>
