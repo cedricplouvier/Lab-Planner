@@ -114,7 +114,9 @@ public class StockController {
 
         model.addAttribute("agg_bit", agg_bit);
         model.addAttribute("con_oth", con_oth);
-        return "Stock/products-list";
+        model.addAttribute("allMixtures", mixtureService.findAll());
+        model.addAttribute("allProductTags", tagService.findAll());
+        return "Stock/overview-stock";
     }
 
 
@@ -228,21 +230,54 @@ public class StockController {
             return "Stock/products-manage";
         }
         productService.save(product);
-        return "redirect:/products";
+        List<OwnProduct> agg_bit = getAggBitList();
+        List<OwnProduct> con_oth = getComOthList();
+        model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("save.success"));
+        model.addAttribute("agg_bit", agg_bit);
+        model.addAttribute("con_oth", con_oth);
+        model.addAttribute("allMixtures", mixtureService.findAll());
+        model.addAttribute("allProductTags", tagService.findAll());
+        return "Stock/overview-stock";
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
     @RequestMapping(value="/products/{id}/delete",method = RequestMethod.GET)
     public String deleteProduct(@PathVariable Long id, final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
-        productService.deleteById(id);
-        model.clear();
-        List<OwnProduct> agg_bit = getAggBitList();
-        List<OwnProduct> con_oth = getComOthList();
-        model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
-        model.addAttribute("agg_bit", agg_bit);
-        model.addAttribute("con_oth", con_oth);
-        return "Stock/products-list";
+        Boolean inuse = false;
+        OwnProduct prod = productService.findById(id).orElse(null);
+        //check for all mixtures if this product is used as ingredient
+        List<Composition> compositions = compositionService.findAll();
+        Iterator<Composition> it = compositions.iterator();
+        while (it.hasNext()) {
+            Composition temp = it.next();
+            if(temp.getProduct().equals(prod)){
+                inuse = true;
+
+            }
+        }
+        if(!inuse) {
+            productService.deleteById(id);
+            model.clear();
+            List<OwnProduct> agg_bit = getAggBitList();
+            List<OwnProduct> con_oth = getComOthList();
+            model.addAttribute("success", ResourceBundle.getBundle("messages", current).getString("delete.success"));
+            model.addAttribute("agg_bit", agg_bit);
+            model.addAttribute("con_oth", con_oth);
+            model.addAttribute("allMixtures", mixtureService.findAll());
+            model.addAttribute("allProductTags", tagService.findAll());
+            return "Stock/overview-stock";
+        }
+        else{
+            List<OwnProduct> agg_bit = getAggBitList();
+            List<OwnProduct> con_oth = getComOthList();
+            model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("product.deleteError"));
+            model.addAttribute("agg_bit", agg_bit);
+            model.addAttribute("con_oth", con_oth);
+            model.addAttribute("allMixtures", mixtureService.findAll());
+            model.addAttribute("allProductTags", tagService.findAll());
+            return "Stock/overview-stock";
+        }
 
     }
 
@@ -277,17 +312,11 @@ public class StockController {
 
 
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
-    @RequestMapping(value="/tags", method = RequestMethod.GET)
-    public String showProductTags(final ModelMap model){
-        model.addAttribute("allProductTags",tagService.findAll());
-        return "Tags/tags-list";
-    }
-
-    @PreAuthorize("hasAuthority('Stock - Modify - All')")
     @RequestMapping(value="/tags/{id}/delete",method = RequestMethod.GET)
     public String deleteTag(@PathVariable Long id, final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
         List<OwnProduct> products = productService.findAll();
+        List<Mixture> mixtures = mixtureService.findAll();
         OwnTag tag = null;
         Optional<OwnTag> tempTag = tagService.findById(id);
         boolean isUsed = false;
@@ -302,15 +331,33 @@ public class StockController {
                 isUsed = true;
             }
         }
-        if (isUsed){
-            model.addAttribute("allProductTags",tagService.findAll());
-            model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("tag.deleteError"));
-            return "Tags/tags-list";
+        Iterator<Mixture> it2 = mixtures.iterator();
+        while (it2.hasNext()) {
+            Mixture temp = it2.next();
+            if(temp.getTags().contains(tag)){
+                isUsed = true;
+            }
         }
+        if (isUsed){
+            List<OwnProduct> agg_bit = getAggBitList();
+            List<OwnProduct> con_oth = getComOthList();
+            model.addAttribute("agg_bit", agg_bit);
+            model.addAttribute("con_oth", con_oth);
+            model.addAttribute("allMixtures", mixtureService.findAll());
+            model.addAttribute("allProductTags", tagService.findAll());
+            model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("tag.deleteError"));
+            return "Stock/overview-stock";
+        }
+
         tagService.deleteById(id);
-        model.addAttribute("allProductTags",tagService.findAll());
+        List<OwnProduct> agg_bit = getAggBitList();
+        List<OwnProduct> con_oth = getComOthList();
+        model.addAttribute("agg_bit", agg_bit);
+        model.addAttribute("con_oth", con_oth);
+        model.addAttribute("allMixtures", mixtureService.findAll());
+        model.addAttribute("allProductTags", tagService.findAll());
         model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
-        return "Tags/tags-list";
+        return "Stock/overview-stock";
     }
 
 
@@ -359,7 +406,14 @@ public class StockController {
             return "Tags/tags-manage";
         }
         tagService.save(tag);
-        return "redirect:/tags";
+        List<OwnProduct> agg_bit = getAggBitList();
+        List<OwnProduct> con_oth = getComOthList();
+        model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("save.success"));
+        model.addAttribute("agg_bit", agg_bit);
+        model.addAttribute("con_oth", con_oth);
+        model.addAttribute("allMixtures", mixtureService.findAll());
+        model.addAttribute("allProductTags", tagService.findAll());
+        return "Stock/overview-stock";
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
@@ -370,25 +424,33 @@ public class StockController {
         return "Tags/tags-manage";
     }
 
-    @RequestMapping(value="/mixtures", method= RequestMethod.GET)
-    public String viewMixturesList(final ModelMap model){
-        model.addAttribute("allMixtures", mixtureService.findAll());
-        return "Mixtures/mixtures-list";
-    }
+
 
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
     @RequestMapping(value="/mixtures/{id}/delete",method = RequestMethod.GET)
     public String deleteMixture(@PathVariable Long id, final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
-        for(Composition comp: mixtureService.findById(id).orElse(null).getCompositions()){
+        /*for(Composition comp: mixtureService.findById(id).orElse(null).getCompositions()){
             compositionService.delete(comp);
         }
         mixtureService.deleteById(id);
         model.clear();
+        List<OwnProduct> agg_bit = getAggBitList();
+        List<OwnProduct> con_oth = getComOthList();
         model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("delete.success"));
+        model.addAttribute("agg_bit", agg_bit);
+        model.addAttribute("con_oth", con_oth);
         model.addAttribute("allMixtures", mixtureService.findAll());
-        return "Mixtures/mixtures-list";
-
+        model.addAttribute("allProductTags", tagService.findAll());
+        return "Stock/overview-stock";*/
+        List<OwnProduct> agg_bit = getAggBitList();
+        List<OwnProduct> con_oth = getComOthList();
+        model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("mixture.deleteError"));
+        model.addAttribute("agg_bit", agg_bit);
+        model.addAttribute("con_oth", con_oth);
+        model.addAttribute("allMixtures", mixtureService.findAll());
+        model.addAttribute("allProductTags", tagService.findAll());
+        return "Stock/overview-stock";
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
@@ -518,8 +580,14 @@ public class StockController {
         }
 
         mixtureService.save(mixture);
+        List<OwnProduct> agg_bit = getAggBitList();
+        List<OwnProduct> con_oth = getComOthList();
+        model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("save.success"));
+        model.addAttribute("agg_bit", agg_bit);
+        model.addAttribute("con_oth", con_oth);
         model.addAttribute("allMixtures", mixtureService.findAll());
-        return "Mixtures/mixtures-list";
+        model.addAttribute("allProductTags", tagService.findAll());
+        return "Stock/overview-stock";
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
