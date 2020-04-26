@@ -147,7 +147,7 @@ public class StepController {
                 }
             }
             Iterator<Experiment> itExp = allExperiments.iterator();
-            while (it.hasNext()) {
+            while (itExp.hasNext()) {
                 Experiment temp = itExp.next();
                 if (temp.getUser().equals(user)) {
                     userExperiments.add(temp);
