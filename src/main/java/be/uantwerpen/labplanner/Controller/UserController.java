@@ -65,7 +65,7 @@ public class UserController {
         return "Users/user-manage";
     }
 
-    @RequestMapping(value = "/usermanagement/password",method = RequestMethod.GET)
+    @RequestMapping(value = "/password",method = RequestMethod.GET)
     public String viewEditPassword(@org.jetbrains.annotations.NotNull final ModelMap model){
         //get current user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -75,6 +75,55 @@ public class UserController {
 
         return "Users/password-manage";
     }
+
+    @RequestMapping(value = "/password",method = RequestMethod.POST)
+    public String savePassword(@Valid User user, BindingResult result, @org.jetbrains.annotations.NotNull final ModelMap model){
+        //get current user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User curruser = (User) authentication.getPrincipal();
+
+        if (curruser.getId() != user.getId()){
+            //error
+            return null;
+        }
+
+        else if(user.getPassword().length()<6){
+            model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwshort") );
+            model.addAttribute(user);
+            return "Users/password-manage";
+
+        }
+
+        else if (user.getPassword().equals(user.getPassword().toLowerCase()) || user.getPassword().equals(user.getPassword().toUpperCase())){
+
+            model.addAttribute(user);
+            model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwcapital") );
+            return "Users/password-manage";
+        }
+
+        else if (!user.getPassword().matches(".*\\d.*")){
+            model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwnumber") );
+            model.addAttribute(user);
+            return "Users/password-manage";
+        }
+
+        else if (!user.getPassword().equals(user.getPassword().trim())){
+            model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwspace") );
+            model.addAttribute(user);
+            return "Users/password-manage";
+        }
+
+        curruser.setPassword(user.getPassword());
+        userService.save(curruser);
+
+
+
+
+
+        return "redirect:/home";
+    }
+
+
 
 
 
