@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -34,7 +35,7 @@ public class ProductRepositoryTests {
     @Autowired
     private TagRepository tagRepository;
 
-
+    @Transactional
     @Test
     public void testSaveProduct(){
 
