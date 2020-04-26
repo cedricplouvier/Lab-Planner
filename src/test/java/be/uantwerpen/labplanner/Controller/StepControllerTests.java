@@ -1132,7 +1132,7 @@ public class StepControllerTests {
                 .andExpect(MockMvcResultMatchers.flash().attribute("Message", "There was a problem in adding the Experiment Type:\nInvalid value for minutes."))
                 .andExpect(MockMvcResultMatchers.flash().attribute("Status", "Error"))
                 .andDo(print())
-                .andExpect(view().name("redirect:/planning/experiments"));
+                .andExpect(view().name("redirect:/planning/experiments/put"));
     }
 
     @Test
@@ -1160,7 +1160,7 @@ public class StepControllerTests {
                 .andExpect(MockMvcResultMatchers.flash().attribute("Message", "There was a problem in adding the Experiment Type:\nThis experiment type name is already occupied!"))
                 .andExpect(MockMvcResultMatchers.flash().attribute("Status", "Error"))
                 .andDo(print())
-                .andExpect(view().name("redirect:/planning/experiments"));
+                .andExpect(view().name("redirect:/planning/experiments/put"));
     }
 
     @Test
