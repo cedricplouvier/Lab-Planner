@@ -196,9 +196,11 @@ function checkOverlap() {
                 const optionValue = devices[current]['id'];
                 $('#deviceTypeDropdown').append($('<option>').val(optionValue).text(optionText));
                 document.getElementById('selectStep').disabled = false;
-
             }
         }
+    }
+    if(!checkContinuity(calendarUpdate.stepIndex,newSchedule).ok){
+        document.getElementById('selectStep').disabled = true;
     }
 }
 function checkContinuity(stepindex,schedule) {
@@ -338,10 +340,7 @@ function generateSchedule(viewName, renderStart, renderEnd) {
                 schedule.bgColor = '#0275d8';
                 schedule.dragBgColor = '#0275d8';
                 schedule.borderColor = '#0275d8';
-
-
             schedule.category = 'time';
-
             ScheduleList.push(schedule);
         // }
     })
@@ -373,7 +372,6 @@ function generateSchedule(viewName, renderStart, renderEnd) {
     //Add all current filled in steps
     let numberOfSteps = allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length;
     for (let current = 0; current < numberOfSteps; current++){
-
         let ok = true;
         let step = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current];
         let schedule = new ScheduleInfo();
@@ -383,10 +381,8 @@ function generateSchedule(viewName, renderStart, renderEnd) {
         schedule.title = 'Step '+(current+1)+' of Experiment '+allExperiments[calendarUpdate.experimentIndex]['experimentTypeName']+', \nDevice = '+step['deviceType']['deviceTypeName'];
         if(calendarUpdate.stepIndex==current){
             schedule.isReadOnly = false;
-
         }else{
             schedule.isReadOnly = true;
-
         }
         if(document.getElementById('startDate' + current + '')) {
             var start = document.getElementById('startDate' + current + '').value;
@@ -434,6 +430,12 @@ function generateSchedule(viewName, renderStart, renderEnd) {
                 schedule.body=check.message;
             }
             ScheduleList.push(schedule);
+        }
+        if(calendarUpdate.stepIndex==current){
+            newSchedule =schedule;
+            if(newSchedule.start&&newSchedule.end) {
+                checkOverlap(current,schedule);
+            }
         }
     }
 }
