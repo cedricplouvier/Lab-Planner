@@ -118,10 +118,18 @@ public class StepController {
         List<Experiment> studentExperiments = new ArrayList<>();
         List<Experiment> userExperiments = new ArrayList<>();
         List<Experiment> allExperiments = experimentService.findAll();
-
+        Boolean hasAdmin = false;
         Set<Role> userRoles = user.getRoles();
-        Role adminRol = roleService.findByName("Administrator").get();
-        if (userRoles.contains(adminRol)) {
+
+        for(Role role: userRoles)
+        {
+            if(role.getName().equals("Administrator"))
+            {
+                hasAdmin=true;
+            }
+        }
+
+        if (hasAdmin) {
             Iterator<Step> it = allsteps.iterator();
             while (it.hasNext()) {
                 Step temp = it.next();
@@ -842,7 +850,7 @@ public class StepController {
                 model.addAttribute("allExperiments", experimentService.findAll());
                 model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
                 model.addAttribute("allMixtures", mixtureService.findAll());
-                return "/PlanningTool/planning-exp-book";
+                return "PlanningTool/planning-exp-book";
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message", new String("user can not edit specific step!"));

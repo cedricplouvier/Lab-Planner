@@ -115,7 +115,7 @@
                 <div sec:authorize="hasAuthority('Statistics Access')">
                     <ul class="navbar-nav my-2 my-lg-0">
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" th:text="#{navbar.statistics}" id="navbarStatistics" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" th:href="@{#}" th:text="#{navbar.statistics}" id="navbarStatistics" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Statistics
                             </a>
 
@@ -129,7 +129,7 @@
 
                 <ul class="navbar-nav my-2 my-lg-0">
                     <li class="nav-item dropdown" left>
-                        <a class="nav-link dropdown-toggle" href="#" th:text="#{navbar.account}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" th:href="@{#}" th:text="#{navbar.account}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Account
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -139,7 +139,7 @@
                                th:text="#{navbar.settings}">Settings</a>
                             <!-- th:href="@{/users/profile/{id}" (id=${#authentication.principal.user.id})}" -->
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/logout" th:text="#{navbar.logout}">
+                            <a class="dropdown-item" th:href="@{/logout}" th:text="#{navbar.logout}">
                                 Logout
                                 <span class="sr-only">(logout)</span>
                             </a>
@@ -149,7 +149,7 @@
 
                 <ul class="navbar-nav my-2 my-lg-0">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" th:text="#{navbar.language}" id="navbarLanguage" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" th:href="@{#}" th:text="#{navbar.language}" id="navbarLanguage" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Language
                         </a>
 

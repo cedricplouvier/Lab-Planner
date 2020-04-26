@@ -39,13 +39,13 @@
     <div th:replace="navbar :: navbar"></div>
     <div class="content">
         <div id="role-list">
-            <a href="/usermanagement/roles/put" class="btn btn-primary"
+            <a th:href="@{/usermanagement/roles/put}" class="btn btn-primary"
                th:text="#{roles.create}"></a>
 
             <!-- still problem when u want to delete a role when this role is in use. -->
-            <a href="/usermanagement/users" class="btn btn-outline-secondary"
+            <a th:href="@{/usermanagement/users}" class="btn btn-outline-secondary"
                th:text="#{users.page}"></a>
-            <a href="/usermanagement/privileges" class="btn btn-outline-secondary"
+            <a th:href="@{/usermanagement/privileges}" class="btn btn-outline-secondary"
                th:text="#{privileges.page}"></a>
 
             <input class="float-right" id="search" placeholder="Search" />

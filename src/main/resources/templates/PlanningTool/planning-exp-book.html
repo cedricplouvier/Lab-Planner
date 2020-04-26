@@ -17,8 +17,8 @@
     <link rel='stylesheet' href='https://uicdn.toast.com/tui-calendar/latest/tui-calendar.css'>
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css"/>
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css"/>
-    <link rel="stylesheet" type="text/css" href="/css/default.css">
-    <link rel="stylesheet" type="text/css" href="/css/icons.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/default.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/icons.css}">
 </head>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
@@ -538,7 +538,7 @@
             </tbody>
         </table>
         <div>
-            <a style="margin-right: 10px" href="/planning/" class="btn btn-outline-primary"
+            <a style="margin-right: 10px" th:href="@{/planning/}" class="btn btn-outline-primary"
                th:text="#{experimentstype.return}">Return</a>
 
             <button style="margin-right: 10px" type="submit" class="btn btn-primary"
