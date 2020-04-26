@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -90,6 +91,14 @@ public class UserControllerTests {
 
     }
 
+    @Test
+    @WithUserDetails("Ruben")
+    public void VieuwCHangePasswordTest() throws Exception{
+        mockMvc.perform(get("/usermanagement/password"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("user",instanceOf(User.class)))
+                .andExpect(view().name("Users/password-manage"));
+    }
 
 
     @Test

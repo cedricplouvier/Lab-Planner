@@ -56,7 +56,7 @@
                     </li>
                     <li class="nav-item">
                         <div sec:authorize="hasAuthority('User Management')">
-                        <a class="nav-link" th:href="@{/usermanagement}" th:text="#{navbar.user}">
+                        <a class="nav-link" th:href="@{/usermanagement/users}" th:text="#{navbar.user}">
                             User Management
                             <span class="sr-only">(user management)</span>
                         </a>
@@ -135,8 +135,7 @@
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <!--/*@thymesVar id="id" type=""*/-->
                             <!--/*@thymesVar id="user" type=""*/-->
-                            <a class="dropdown-item"
-                               th:text="#{navbar.settings}">Settings</a>
+                            <a class="dropdown-item" th:href="@{/usermanagement/password}" th:text="#{navbar.settings}">Settings</a>
                             <!-- th:href="@{/users/profile/{id}" (id=${#authentication.principal.user.id})}" -->
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="/logout" th:text="#{navbar.logout}">

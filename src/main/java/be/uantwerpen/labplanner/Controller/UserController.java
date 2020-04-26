@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -61,6 +63,17 @@ public class UserController {
         model.addAttribute("allUsers",userService.findAll());
         model.addAttribute(new User("","","","","","","","",null,null,null));
         return "Users/user-manage";
+    }
+
+    @RequestMapping(value = "/usermanagement/password",method = RequestMethod.GET)
+    public String viewEditPassword(@org.jetbrains.annotations.NotNull final ModelMap model){
+        //get current user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+
+        model.addAttribute(user);
+
+        return "Users/password-manage";
     }
 
 
