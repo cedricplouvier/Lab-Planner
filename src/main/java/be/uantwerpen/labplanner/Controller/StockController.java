@@ -160,6 +160,7 @@ public class StockController {
 
         if(product.getName().length() == 0 ){
             model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("product",product);
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.name"));
             model.addAttribute("units", Unit.values());
 
@@ -168,6 +169,7 @@ public class StockController {
 
         if(product.getDescription().length() == 0 ){
             model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("product",product);
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.description"));
             model.addAttribute("units", Unit.values());
 
@@ -176,6 +178,7 @@ public class StockController {
 
         if(product.getProperties().length() == 0 ){
             model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("product",product);
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.properties"));
             model.addAttribute("units", Unit.values());
 
@@ -184,6 +187,7 @@ public class StockController {
 
         if(product.getStockLevel() < 0){
             model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("product",product);
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.stock"));
             model.addAttribute("units", Unit.values());
 
@@ -192,6 +196,7 @@ public class StockController {
 
         if(product.getLowStockLevel() < 0){
             model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("product",product);
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.lowstock"));
             model.addAttribute("units", Unit.values());
 
@@ -200,6 +205,7 @@ public class StockController {
 
         if(product.getReservedStockLevel() < 0){
             model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("product",product);
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.reservedstock"));
             model.addAttribute("units", Unit.values());
 
@@ -208,6 +214,7 @@ public class StockController {
 
         if(product.getTags().size() == 0){
             model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("product",product);
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.tag"));
             model.addAttribute("units", Unit.values());
 
@@ -216,6 +223,7 @@ public class StockController {
 
         if(NameIsUsed != null){
             model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("product",product);
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.duplicate"));
             model.addAttribute("units", Unit.values());
 
@@ -224,6 +232,7 @@ public class StockController {
 
         if(result.hasErrors()){
             model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("product",product);
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.general"));
             model.addAttribute("units", Unit.values());
 
@@ -388,18 +397,21 @@ public class StockController {
         }
 
         if(tag.getName().length() == 0){
+            model.addAttribute("tag", new OwnTag());
             model.addAttribute("allTags", tagService.findAll());
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.name"));
             return "Tags/tags-manage";
         }
 
         if(NameIsUsed != null){
+            model.addAttribute("tag", new OwnTag());
             model.addAttribute("allTags", tagService.findAll());
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.duplicate"));
             return "Tags/tags-manage";
         }
 
         if(result.hasErrors()){
+            model.addAttribute("tag", new OwnTag());
             model.addAttribute("allTags", tagService.findAll());
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.general"));
 
