@@ -44,10 +44,24 @@
             <div class="card bg-light mb-3">
                 <div class="card-body">
                     <h5 class="card-title"> <a th:text="#{mixtures.ingredients}">Ingredient</a>  </h5>
-                    <a
-                            th:each="ingred : ${mixture.compositions}"
-                            th:value="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' %'"
-                            th:utext="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' %' + '<br />'"></a>
+                                           <table class="table table-hover table-striped table-borderless">
+                        <thead>
+                        <tr>
+                            <th th:text="#{product}">Product Name</th>
+                            <th th:text="#{composition.amount}">Amount </th>
+                        </tr>
+                        </thead>
+                        <!-- IMPORTANT, class="list" have to be at tbody -->
+                        <tbody class="list">
+                        <tr th:each="ingred : ${mixture.compositions}">
+                            <td class='productname' th:value="${ingred.getProduct().getName()}"
+                                th:text="${ingred.getProduct().getName()}" >product Name</td>
+                            <td class='productname' th:value="${ingred.getAmount()}"
+                                th:text="${ingred.getAmount()}" >product amount</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
                 </div>
             </div>
             <div class="card bg-light mb-3">
