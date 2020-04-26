@@ -50,6 +50,13 @@
             </div>
             <div class="card bg-light mb-3">
                 <div class="card-body">
+                    <h5 class="card-title"> <a th:text="#{product.url}">More information</a> </h5>
+                    <a class="nav-link" th:href="${product.url.toString()}" th:text="${product.url.toString()}"> </a>
+
+                </div>
+            </div>
+            <div class="card bg-light mb-3">
+                <div class="card-body">
                     <h5 class="card-title"> Tags </h5>
                     <a
                             th:each="tag : ${product.tags}"

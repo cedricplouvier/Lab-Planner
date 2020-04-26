@@ -1,6 +1,7 @@
 package be.uantwerpen.labplanner.Model;
 
 
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;
@@ -26,6 +27,10 @@ public class OwnProduct extends AbstractPersistable<Long> {
             message = "{invalid.notblank}"
     )
     private String name;
+
+    @Column
+    private URL url;
+
     @Column
     private String description;
     @Column(
@@ -94,7 +99,7 @@ public class OwnProduct extends AbstractPersistable<Long> {
     public OwnProduct() {
     }
 
-    public OwnProduct(String name, String description, Double unitCost, Double stockLevel, Double lowStockLevel, Double reservedStockLevel, Unit units, String imageUrl, String properties, Long productCreatorId, Long lastUpdatedById, LocalDateTime createDateTime, LocalDateTime updateDateTime, List<OwnTag> tags) {
+    public OwnProduct(String name, String description, Double unitCost, Double stockLevel, Double lowStockLevel, Double reservedStockLevel, Unit units, String imageUrl, String properties, Long productCreatorId, Long lastUpdatedById, LocalDateTime createDateTime, LocalDateTime updateDateTime, List<OwnTag> tags, URL url) {
         this.name = name;
         this.description = description;
         this.unitCost = unitCost;
@@ -109,6 +114,7 @@ public class OwnProduct extends AbstractPersistable<Long> {
         this.createDateTime = createDateTime;
         this.updateDateTime = updateDateTime;
         this.tags = tags;
+        this.url = url;
     }
 
     @Override
@@ -231,6 +237,14 @@ public class OwnProduct extends AbstractPersistable<Long> {
 
     public void setTags(List<OwnTag> tags) {
         this.tags = tags;
+    }
+
+    public URL getUrl() {
+        return url;
+    }
+
+    public void setUrl(URL url) {
+        this.url = url;
     }
 }
 
