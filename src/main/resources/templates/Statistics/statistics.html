@@ -16,6 +16,15 @@
     <link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/theme/neo.css'/>
 
 </head>
+<script th:inline="javascript">
+    toastr.options.extendedTimeOut = 5000;
+    $(document).ready(function () {
+        var status = "[(${Status})]";
+        var messages =  /*[[${Message}]]*/ "TEST";
+        if (status !=null)
+            toastr.error(messages);
+    });
+</script>
 <body>
 <div class ="container" >
     <div th:replace="navbar :: navbar"></div>
@@ -68,6 +77,7 @@
         <a href="/statistics/statistics/clearList" class="btn btn-primary" th:text="#{statistics.clearList}"></a>
         <br><br>
     </form>
+    <div class="alert alert-danger" role="alert" th:if="${Status}==deviceLimit" th:text="#{statistics.amountErrorMessage}"></div>
     <p th:text="#{statistics.amountMessage}"></p>
     <hr style="color:rgb(0,115,250); background-color:rgb(0,115,250); height:1px">
 </div>
