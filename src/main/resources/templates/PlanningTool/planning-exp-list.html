@@ -49,11 +49,10 @@
     <a style="margin-right: 10px" sec:authorize="hasAuthority('Planning - Make new experiment')" href="/planning/experiments/put" type="button" class="btn btn-primary"th:text="#{experiment.type.create}">
         Create new experiment
     </a>
-
-
-
-
-
 </div>
 </body>
+</div>
+<div th:replace="footer :: footer"></div>
+</div>
+
 </html>
