@@ -126,13 +126,21 @@
                     data-target="#staticBackdrop" th:text="#{book.step}">
                 Book new Step
             </button>
+
+            <p/>
             <a th:href="@{/planning/experiments/book/}">
                 <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal"
                         data-target="#staticBackdropExperiment" th:text="#{book.Experiment}">
                     Book new Experiment
                 </button>
             </a>
+
+            <p/>
+
         </h1>
+
+        <input class="floating" id="search" placeholder="Search" />
+
         <table class="table table-hover">
             <thead>
             <tr>
