@@ -21,6 +21,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import javax.swing.tree.ExpandVetoException;
+
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get; //belangrijke imports
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -75,6 +77,40 @@ public class UserControllerTests {
 
     }
 
+    @Test
+    @WithUserDetails("Ruben")
+    public void testPasswordSave()throws Exception{
+        User u = new User("test","test");
+        u.setId((long) 34);
+
+        mockMvc.perform(post("/password").flashAttr("user",u))
+        .andExpect(model().attribute("PWError",notNullValue()));
+
+        u.setPassword("TESTTEST");
+        mockMvc.perform(post("/password").flashAttr("user",u))
+                .andExpect(model().attribute("PWError",notNullValue()));
+
+        u.setPassword("testtest");
+        mockMvc.perform(post("/password").flashAttr("user",u))
+                .andExpect(model().attribute("PWError",notNullValue()));
+
+        u.setPassword("TESTtest");
+        mockMvc.perform(post("/password").flashAttr("user",u))
+                .andExpect(model().attribute("PWError",notNullValue()));
+
+        u.setPassword("TESTtest1  ");
+        mockMvc.perform(post("/password").flashAttr("user",u))
+                .andExpect(model().attribute("PWError",notNullValue()));
+
+        u.setPassword("TESTtest123");
+        mockMvc.perform(post("/password").flashAttr("user",u))
+                .andExpect(model().attribute("PWError",nullValue()));
+
+
+
+
+    }
+
 
     @Test
     // Show user manage page test
@@ -96,6 +132,14 @@ public class UserControllerTests {
 
     }
 
+    @Test
+    @WithUserDetails("Ruben")
+    public void VieuwChangePasswordTest() throws Exception{
+        mockMvc.perform(get("/password"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("user",instanceOf(User.class)))
+                .andExpect(view().name("Users/password-manage"));
+    }
 
 
     @Test

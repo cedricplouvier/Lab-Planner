@@ -55,7 +55,7 @@ public class CalendarController {
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
         model.addAttribute("Step", new Step());
 
-        return "/Calendar/userCalendar";
+        return "Calendar/userCalendar";
 
     }
 }

@@ -103,7 +103,7 @@
 
         <p>
             <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
-            <a href="/planning/" th:text="#{close}" class="btn btn-secondary">Close</a>
+            <a th:href="@{/planning/}" th:text="#{close}" class="btn btn-secondary">Close</a>
 
         </p>
     </form>
@@ -113,4 +113,7 @@
 
 </div>
 </body>
+</div>
+<div th:replace="footer :: footer"></div>
+</div>
 </html>

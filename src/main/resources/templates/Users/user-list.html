@@ -32,14 +32,14 @@
     <div th:replace="navbar :: navbar"></div>
     <div class="content">
         <div id="user-list">
-            <a href="/usermanagement/users/put" class="btn btn-primary"
+            <a th:href="@{/usermanagement/users/put}" class="btn btn-primary"
                th:text="#{users.create}">Create user
             text   </a>
-            <a href="/usermanagement/users/relations" class="btn btn-outline-secondary"
+            <a th:href="@{/usermanagement/users/relations}" class="btn btn-outline-secondary"
                th:text="#{relation.page}"></a>
-            <a href="/usermanagement/roles" class="btn btn-outline-secondary"
+            <a th:href="@{/usermanagement/roles}" class="btn btn-outline-secondary"
                th:text="#{roles.page}"></a>
-            <a href="/usermanagement/privileges" class="btn btn-outline-secondary"
+            <a th:href="@{/usermanagement/privileges}" class="btn btn-outline-secondary"
                th:text="#{privileges.page}"></a>
             <input class="float-right" id="search" placeholder="Search" />
             <div class="alert alert-danger" role="alert" th:if="${inUseError}!=null" th:text="${inUseError}"></div>
