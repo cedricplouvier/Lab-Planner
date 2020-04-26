@@ -302,16 +302,7 @@ public class StockControllerTests {
                 .andDo(print());
     }
 
-    @Test
-    public void EditComposition() throws Exception{
-        Composition comp = new Composition(5.0, new OwnProduct());
-        long id = 10;
 
-        when(compositionService.findById(id)).thenReturn(Optional.of(comp));
-        mockMvc.perform(post("/compositions/{id}","10").flashAttr("composition",comp))
-                .andExpect(view().name("Mixtures/compositions-list"))
-                .andDo(print());
-    }
 
     @Test
     public void EditInvalidCompositionAmountZero() throws Exception{
@@ -351,7 +342,7 @@ public class StockControllerTests {
         Mixture mix = new Mixture("testing", ingredients, "blablabla",tags);
 
         mockMvc.perform(post("/mixtures/").flashAttr("mixture",mix))
-                .andExpect(view().name("Mixtures/mixtures-list"))
+                .andExpect(view().name("Stock/overview-stock"))
                 .andDo(print());
     }
 
@@ -419,7 +410,7 @@ public class StockControllerTests {
 
         when(mixtureService.findById(id)).thenReturn(Optional.of(mix));
         mockMvc.perform(post("/mixtures/{id}","10").flashAttr("mixture",mix))
-                .andExpect(view().name("Mixtures/mixtures-list"))
+                .andExpect(view().name("Stock/overview-stock"))
                 .andDo(print());
     }
 

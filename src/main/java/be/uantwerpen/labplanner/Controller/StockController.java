@@ -502,7 +502,21 @@ public class StockController {
         while (it2.hasNext()) {
             Composition temp = it2.next();
             totalAmount = totalAmount + temp.getAmount();
+
         }
+
+        //remove mixtures with amount = from list
+        Iterator<Composition> it3 = mixture.getCompositions().iterator();
+        while (it3.hasNext()) {
+            Composition temp = it3.next();
+            if (temp.getAmount() == 0) {
+                mixture.getCompositions().remove(temp);
+            }
+
+        }
+
+
+
 
         if(mixture.getName().length() == 0){
             model.addAttribute("allMixtures", mixtureService.findAll());
