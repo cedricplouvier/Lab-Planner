@@ -909,14 +909,14 @@ public class StepController {
 
         if (result.hasErrors()) {
             ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type."));
-            return "PlanningTool/planning-exp-manage";
+            return "redirect:/planning/experiments/{id}";
         }
         ExperimentType tempExperimentType = experimentType.getId() == null ? null : experimentTypeRepository.findById(experimentType.getId()).orElse(null);
         if (tempExperimentType == null) {
             for (ExperimentType exptyp : experimentTypeService.findAll()) {
                 if (experimentType.getExpname().equals(exptyp.getExpname())) {
                     ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nThis experiment type name is already occupied!"));
-                    return "PlanningTool/planning-exp-manage";
+                    return "redirect:/planning/experiments/{id}";
                 }
             }
         }
@@ -925,11 +925,11 @@ public class StepController {
         for (StepType stepType : experimentType.getStepTypes()) {
             if (stepType.getContinuity().getHours() < 0) {
                 ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
-                return "PlanningTool/planning-exp-manage";
+                return "redirect:/planning/experiments/{id}";
             }
             if (stepType.getContinuity().getMinutes() > 59 || stepType.getContinuity().getMinutes() < 0) {
                 ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
-                return "PlanningTool/planning-exp-manage";
+                return "redirect:/planning/experiments/{id}";
             } else
                 stepTypeService.saveNewStepType(stepType);
         }

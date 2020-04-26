@@ -10,13 +10,13 @@
     toastr.options.extendedTimeOut = 5000;
     $(document).ready(function () {
         var messages =  /*[[${Message}]]*/ null;
-        console.log(messages);
+        // console.log(messages);
         if (messages != null) {
             toastr.error(messages);
         }
     })
     function addrow(a) {
-        console.log(a);
+        // console.log(a);
         var rowCount = $('#list tr').length;
         $('#list')
             .append('<tr class="row'+rowCount+'" id="row'+rowCount+'"> <td><input hidden class="steptype" value="'+a.id+'" id="stepTypes'+rowCount+'.deviceType" name="stepTypes['+rowCount+'].deviceType">'+a.deviceTypeName+'<input hidden class="steptypename" value="'+a.deviceTypeName+'" id="stepTypes'+rowCount+'.stepTypeName" name="stepTypes['+rowCount+'].stepTypeName"> </td><td><select required value="" id="stepTypes'+rowCount+'.continuity.type" name="stepTypes['+rowCount+'].continuity.type"><option class="dropdown-item" value="No">No</option><option class="dropdown-item" value="Soft (at least)">Soft (at least)</option><option class="dropdown-item" value="Soft (at most)">Soft (at most)</option><option class="dropdown-item" value="Hard">Hard</option> </select></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.hour" name="stepTypes['+rowCount+'].continuity.hours" placeholder="Hours"></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.minutes" name="stepTypes['+rowCount+'].continuity.minutes" placeholder="Minutes"></td><td><a onclick="removeRow(this)"> <span class="fas fa-trash" style="color: red" ></span> </a></td> </tr>')
