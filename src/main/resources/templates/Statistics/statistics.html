@@ -65,7 +65,7 @@
         </select>
         <br><br>
         <button class="btn btn-primary" type="submit" th:text="#{statistics.addDevice}"></button>
-        <a href="/statistics/statistics/clearList" class="btn btn-primary" th:text="#{statistics.clearList}"></a>
+        <a th:href="@{/statistics/statistics/clearList}" class="btn btn-primary" th:text="#{statistics.clearList}"></a>
         <br><br>
     </form>
     <p th:text="#{statistics.amountMessage}"></p>

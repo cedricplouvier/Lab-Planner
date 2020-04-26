@@ -118,10 +118,18 @@ public class StepController {
         List<Experiment> studentExperiments = new ArrayList<>();
         List<Experiment> userExperiments = new ArrayList<>();
         List<Experiment> allExperiments = experimentService.findAll();
-
+        Boolean hasAdmin = false;
         Set<Role> userRoles = user.getRoles();
-        Role adminRol = roleService.findByName("Administrator").get();
-        if (userRoles.contains(adminRol)) {
+
+        for(Role role: userRoles)
+        {
+            if(role.getName().equals("Administrator"))
+            {
+                hasAdmin=true;
+            }
+        }
+
+        if (hasAdmin) {
             Iterator<Step> it = allsteps.iterator();
             while (it.hasNext()) {
                 Step temp = it.next();
@@ -147,7 +155,7 @@ public class StepController {
                 }
             }
             Iterator<Experiment> itExp = allExperiments.iterator();
-            while (it.hasNext()) {
+            while (itExp.hasNext()) {
                 Experiment temp = itExp.next();
                 if (temp.getUser().equals(user)) {
                     userExperiments.add(temp);
@@ -193,7 +201,10 @@ public class StepController {
         }
 
         //check holidays, weekend and opening hours
-        if (dateTimeIsUnavailable(step, ra)) {
+        if (dateTimeIsUnavailable(step)) {
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", getMessageForSelectedStep(step));
+
             return "redirect:/planning/";
         }
 
@@ -409,6 +420,7 @@ public class StepController {
         model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
         return "PlanningTool/planning-exp-list";
     }
+
     @PreAuthorize("hasAuthority('Planning - Make new experiment')")
     @RequestMapping(value = "/planning/experiments/{id}/delete", method = RequestMethod.GET)
     public String deleteExperimentType(@PathVariable Long id, final ModelMap model, RedirectAttributes ra) {
@@ -418,9 +430,9 @@ public class StepController {
         Role adminRol = roleService.findByName("Administrator").get();
         boolean isUsed = false;
         boolean hasAdmin = false;
-        for (Role userRole :userRoles){
-            if(userRole.getName().equals(adminRol.getName())){
-                hasAdmin=true;
+        for (Role userRole : userRoles) {
+            if (userRole.getName().equals(adminRol.getName())) {
+                hasAdmin = true;
             }
         }
 
@@ -446,8 +458,7 @@ public class StepController {
                 ra.addFlashAttribute("Status", new String("Success"));
                 ra.addFlashAttribute("Message", new String("Experiment type successfully deleted."));
             }
-        }
-        else{
+        } else {
             ra.addFlashAttribute("Status", new String("Error"));
             ra.addFlashAttribute("Message", new String("You have no rights to delete experiment."));
         }
@@ -463,8 +474,12 @@ public class StepController {
         Set<Role> userRoles = currentUser.getRoles();
         Role adminRol = roleService.findByName("Administrator").get();
         if (userRoles.contains(adminRol)) {
-
             Experiment experiment = experimentService.findById(id).get();
+
+            for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
+                pieceOfMixtureService.delete(pom);
+            }
+
             for (Step step : experiment.getSteps()) {
                 stepService.delete(step.getId());
             }
@@ -522,10 +537,10 @@ public class StepController {
         List<Step> userSteps = new ArrayList<Step>();
         List<Step> otherSteps = new ArrayList<Step>();
 
-        for (Step step: stepService.findAll()) {
-            if (step.getUser().getId() ==currentUser.getId()){
+        for (Step step : stepService.findAll()) {
+            if (step.getUser().getId() == currentUser.getId()) {
                 userSteps.add(step);
-            }else{
+            } else {
                 otherSteps.add(step);
             }
         }
@@ -539,7 +554,7 @@ public class StepController {
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("experiment", new Experiment());
-        model.addAttribute("holidays",holidays);
+        model.addAttribute("holidays", holidays);
         return "PlanningTool/planning-exp-book";
     }
 
@@ -547,16 +562,47 @@ public class StepController {
     @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
     @RequestMapping(value = {"/planning/experiments/book", "/planning/experiments/book/{id}"}, method = RequestMethod.POST)
     public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Locale current = LocaleContextHolder.getLocale();
+        Map<Product, Double> productMap = new HashMap<>();
 
+        //Error message that is used as a feedback to user when there is a problem with his input
+        String errorMessage = "";
 
-        if (experiment == null) {
-            ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save Experiment."));
-            return "redirect:/planning/";
+        //list of steps that is filled by selected steps and saved when there is no problem with input
+        List<Step> tmpListSteps = new ArrayList<Step>();
+
+        if (experiment == null || experiment.getExperimentType() == null) {
+            errorMessage = "Error while trying to save Experiment.";
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            return "/PlanningTool/planning-exp-book";
         }
 
-        Map<Product, Double> productMap = new HashMap<>();
+        //check if experiment name is unique
+        for (Experiment exp : experimentService.findAll()) {
+            //If there is experiment with different ID and same name, it's not unique
+            if (experiment.getExperimentname().equals(exp.getExperimentname()) && !Objects.equals(experiment.getId(), exp.getId())) {
+                errorMessage = "Experiment with this name already exists";
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+                return "/PlanningTool/planning-exp-book";
+            }
+        }
+
+        //set current experimentType by experimentType id
+        for (ExperimentType expType : experimentTypeService.findAll()) {
+            if (expType.getId().equals(experiment.getExperimentType().getId())) {
+                experiment.setExperimentType(expType);
+            }
+        }
+
+        //check negative mixture
+        for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
+            if (pom.getMixtureAmount() < 0) {
+                errorMessage = "Ammount of mixture can't be negative";
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+                return "/PlanningTool/planning-exp-book";
+            }
+        }
 
         //In case of edit experiment, reset stocklevels, so that eventuel new stock levels can be saved, and stock is not withdrawn multiple times.
         if (experimentService.findByExperimentName(experiment.getExperimentname()).isPresent()) {
@@ -581,23 +627,14 @@ public class StepController {
             }
         }
 
-
-        //set ExperimentType by ExperimentType id
-        for (ExperimentType expType : experimentTypeService.findAll()) {
-            if (expType.getId().equals(experiment.getExperimentType().getId())) {
-                experiment.setExperimentType(expType);
-            }
-        }
+        //Both, step size and stepType size has to be same
         if (experiment.getSteps().size() != experiment.getExperimentType().getStepTypes().size()) {
-            ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save Experiment."));
-            return "redirect:/planning/";
+            errorMessage = "Error while trying to save Experiment. Problem with length of steps";
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            return "/PlanningTool/planning-exp-book";
         }
 
-
-        //prepare experiment entity for checking of conditions and to save it into database
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //if new Experiment, add the current student to the experiment.
+        //if the experiment is new, set current user to experiment. Otherwise keep the user same
         if (experiment.getUser() == null) {
             experiment.setUser(currentUser);
         }
@@ -607,7 +644,6 @@ public class StepController {
         Role promotorRole = roleService.findByName("Researcher").get();
         Boolean allowedToEdit = false;
         boolean enoughStock = true;
-
 
         //Admin can edit all the experiments
         if (currentUser.getRoles().contains(adminole)) {
@@ -633,58 +669,56 @@ public class StepController {
                     }
                 }
             }
-
         }
 
         if (!allowedToEdit) {
             //no rights, so error message & save nothing
-            ra.addFlashAttribute("Status", "Error");
-            String message = new String("Student has no right to edit experiment");
-            ra.addFlashAttribute("Message", message);
-            return "redirect:/planning/";
-
+            errorMessage = "Student has no right to edit experiment";
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            return "/PlanningTool/planning-exp-book";
         }
 
-
         //check correctness of steps
-        List<Step> tmpListSteps = new ArrayList<Step>();
         for (Step step : experiment.getSteps()) {
+
+            //proceed only if experiment still satisfies all needs
+
             //check, if step data are correct
             if ((step.getStart() == null || step.getEnd() == null ||
                     step.getStartHour() == null || step.getEndHour() == null ||
                     step.getStart().trim().equals("") || step.getEnd().trim().equals("") ||
                     step.getStartHour().trim().equals("") || step.getEndHour().trim().equals(""))) {
 
-                ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("Error while trying to save Experiment. Wrong input"));
-                return "redirect:/planning/";
+                errorMessage = "Error while trying to save Experiment. Wrong input";
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+                return "/PlanningTool/planning-exp-book";
             }
 
             //check, double booking
             if (overlapCheck(step)) {
-                ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("Error while trying to save Experiment. Problem with double booking of device " + step.getDevice().getDevicename()));
-                return "redirect:/planning/";
+                errorMessage = "Error while trying to save Experiment. Problem with double booking of device " + step.getDevice().getDevicename();
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+                return "/PlanningTool/planning-exp-book";
             }
 
             //check holidays, weekend and opening hours
-            if (dateTimeIsUnavailable(step, ra)) {
-                return "redirect:/planning/";
+            if (dateTimeIsUnavailable(step)) {
+                errorMessage = getMessageForSelectedStep(step);
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+                return "/PlanningTool/planning-exp-book";
             }
-
-
             step.setUser(currentUser);
             step.setStepType(experiment.getExperimentType().getStepTypes().get(experiment.getSteps().indexOf(step)));
             tmpListSteps.add(step);
+
         }
 
         //check if steps inside this experiment fulfills continuity
         if (isProblemWithContinuity(experiment.getSteps())) {
-            ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save Experiment. Problem with continuity"));
-            return "redirect:/planning/";
+            errorMessage = "Error while trying to save Experiment. Problem with continuity";
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            return "/PlanningTool/planning-exp-book";
         }
-
 
         //check if enough stock available (if not enoughstock= false)
         //put al the stocklevels in a map
@@ -704,6 +738,7 @@ public class StepController {
                     productMap.put(prod, stocklevel);
                 }
             }
+
         //check if a temp stock level in map is <0, if so, there is unsuficient stock.
         Iterator it = productMap.entrySet().iterator();
         while (it.hasNext()) {
@@ -713,16 +748,14 @@ public class StepController {
             }
         }
 
-
+        //if not enough stock, change stock levels back to previous edit
         if (!enoughStock) {
-            //if not enough stock, change stock levels back to previous edit
-
-
-            ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", ResourceBundle.getBundle("messages", current).getString("enough.stock"));
-            return "redirect:/planning/";
+            errorMessage = ResourceBundle.getBundle("messages", current).getString("enough.stock");
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            return "/PlanningTool/planning-exp-book";
         }
 
+        // if experiment fulfills all needs, save it into database
 
         //withdraw amounts from temp stock
         Iterator it2 = productMap.entrySet().iterator();
@@ -733,15 +766,10 @@ public class StepController {
             productService.save(prod);
         }
 
-
-        //Save steps and experiment into database
+        //Save steps into database
         for (Step step : tmpListSteps) {
             stepService.saveSomeAttributes(step);
         }
-        experiment.setSteps(tmpListSteps);
-        //set Start date and end date of experiment
-        experiment.setStartDate(tmpListSteps.get(0).getStart());
-        experiment.setEndDate(tmpListSteps.get(tmpListSteps.size() - 1).getEnd());
         experiment.setSteps(tmpListSteps);
 
         //Save piecesOfExperiment in database
@@ -751,12 +779,28 @@ public class StepController {
             }
         }
 
+        //set Start date and end date of experiment
+        experiment.setStartDate(tmpListSteps.get(0).getStart());
+        experiment.setEndDate(tmpListSteps.get(tmpListSteps.size() - 1).getEnd());
+
         //save experiment into database
         experimentService.saveExperiment(experiment);
         ra.addFlashAttribute("Status", "Success");
         String message = new String("Experiment has been added/edited.");
         ra.addFlashAttribute("Message", message);
         return "redirect:/planning/";
+    }
+
+
+    //Method to prepare model atributes when user entered wrong input
+    private void prepareModelAtributesToRebookExperiment(final ModelMap model, Experiment experiment, String errorMessage) {
+        model.addAttribute("errorMsg", errorMessage);
+        model.addAttribute("experiment", experiment);
+        model.addAttribute("allDevices", deviceService.findAll());
+        model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+        model.addAttribute("allExperiments", experimentService.findAll());
+        model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
+        model.addAttribute("allMixtures", mixtureService.findAll());
     }
 
     @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
@@ -806,7 +850,7 @@ public class StepController {
                 model.addAttribute("allExperiments", experimentService.findAll());
                 model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
                 model.addAttribute("allMixtures", mixtureService.findAll());
-                return "/PlanningTool/planning-exp-book";
+                return "PlanningTool/planning-exp-book";
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
@@ -842,6 +886,7 @@ public class StepController {
         model.addAttribute("allOptions", options);
         return "PlanningTool/planning-exp-manage";
     }
+
     @PreAuthorize("hasAuthority('Planning - Make new experiment')")
     @RequestMapping(value = "/planning/experiments/{id}", method = RequestMethod.GET)
     public String viewEditExperimentType(@PathVariable Long id, final ModelMap model) {
@@ -859,7 +904,8 @@ public class StepController {
 
     @PreAuthorize("hasAuthority('Planning - Make new experiment')")
     @RequestMapping(value = {"/planning/experiments/", "/planning/experiments/{id}"}, method = RequestMethod.POST)
-    public String addNewExperimentType(@Valid ExperimentType experimentType, BindingResult result, ModelMap model, RedirectAttributes ra) {
+    public String addNewExperimentType(@Valid ExperimentType experimentType, BindingResult result, ModelMap
+            model, RedirectAttributes ra) {
 
         if (result.hasErrors()) {
             ra.addFlashAttribute("Status", new String("Error"));
@@ -884,7 +930,7 @@ public class StepController {
                 ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
                 return "redirect:/planning/experiments";
             }
-            if(stepType.getContinuity().getMinutes()>59 || stepType.getContinuity().getMinutes()<0){
+            if (stepType.getContinuity().getMinutes() > 59 || stepType.getContinuity().getMinutes() < 0) {
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
                 return "redirect:/planning/experiments";
@@ -903,7 +949,6 @@ public class StepController {
         return "redirect:/planning/experiments";
     }
 
-
     public boolean overlapCheck(Step step) throws ParseException {
         Iterable<Step> allSteps = populateSteps();
         //in formatter Hours should be in capital letters, lowercase 'hh' is for AM - PM ( so from 0 to 12)
@@ -911,8 +956,6 @@ public class StepController {
         Date thisStepDateStart = formatter.parse(step.getStart() + " " + step.getStartHour());
         Date thisStepDateStop = formatter.parse(step.getEnd() + " " + step.getEndHour());
 
-        if (thisStepDateStop.before(thisStepDateStart))
-            return true;
         for (Step s : allSteps) {
             if ((step.getDevice() == s.getDevice()) && ((step.getId() == null) || (!s.getId().equals(step.getId())))) {
                 Date startDate = formatter.parse(s.getStart() + " " + s.getStartHour());
@@ -923,73 +966,102 @@ public class StepController {
                 if ((thisStepDateStart.equals(startDate)) && thisStepDateStop.equals(stopDate)) {
                     return true;
                 }
-                if (thisStepDateStart.equals(thisStepDateStop))
-                    return true;
-
             }
         }
         return false;
     }
 
-    // returns true, when there is a problem with continuity
-    public boolean dateTimeIsUnavailable(Step step, RedirectAttributes ra) throws ParseException {
+    // return error message that describes Problem with date of selected step
+    public String getMessageForSelectedStep(Step step) throws ParseException {
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
         DateTime currentStartDate = formatter.parseDateTime(step.getStart() + " " + step.getStartHour());
         DateTime currentEndDate = formatter.parseDateTime(step.getEnd() + " " + step.getEndHour());
 
         //check if startDate is before endDate
         if (currentEndDate.isBefore(currentStartDate)) {
-            ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save Experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is before end date."));
+            return "Error while trying to save Experiment. Start date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is after end date.";
+        }
+        //check if startDate is not the same as endDate
+        if (currentEndDate.equals(currentStartDate)) {
+            return "Error while trying to save Experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is the same as end date.";
+        }
+
+
+        //check opening hours
+        if (!isInsideOpeningHours(currentStartDate)) {
+            return "Error while trying to save step as a part of experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours.";
+        }
+        if (!isInsideOpeningHours(currentEndDate)) {
+            return "Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours.";
+        }
+        //check weekend
+        if (isWeekend(currentStartDate)) {
+            return "Error while trying to save step as a part of experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is on weekend.";
+        }
+        if (isWeekend(currentEndDate)) {
+            return "Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is on weekend.";
+        }
+        //check holidays
+        if (isInsideHoliday(currentStartDate)) {
+            return "Error while trying to save step as a part of experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is at holidays.";
+
+        }
+        if (isInsideHoliday(currentEndDate)) {
+            return "Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is at holidays.";
+
+        }
+
+        //CheckOverNight
+        if (currentStartDate.getDayOfYear() < currentEndDate.getDayOfYear()) {
+            if (!step.getDevice().getDeviceType().getOvernightuse()) {
+                return "Error while trying to save step as a part of experiment. Device " + step.getDevice().getDevicename() + " can't be used over nigh.";
+
+            }
+        }
+        return "Success";
+    }
+
+    // returns true, when there is a problem with continuity
+    public boolean dateTimeIsUnavailable(Step step) throws ParseException {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
+        DateTime currentStartDate = formatter.parseDateTime(step.getStart() + " " + step.getStartHour());
+        DateTime currentEndDate = formatter.parseDateTime(step.getEnd() + " " + step.getEndHour());
+
+        //check if startDate is before endDate
+        if (currentEndDate.isBefore(currentStartDate)) {
             return true;
         }
         //check if startDate is not the same as endDate
         if (currentEndDate.equals(currentStartDate)) {
-            ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save Experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is the same as end date."));
             return true;
         }
 
 
         //check opening hours
         if (!isInsideOpeningHours(currentStartDate)) {
-            ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save step as a part of experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours."));
             return true;
         }
         if (!isInsideOpeningHours(currentEndDate)) {
-            ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours."));
             return true;
         }
         //check weekend
         if (isWeekend(currentStartDate)) {
-            ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save step as a part of experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is on weekend."));
             return true;
         }
         if (isWeekend(currentEndDate)) {
-            ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is on weekend."));
             return true;
         }
         //check holidays
         if (isInsideHoliday(currentStartDate)) {
-            ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save step as a part of experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is at holidays."));
             return true;
         }
         if (isInsideHoliday(currentEndDate)) {
-            ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is at holidays."));
             return true;
         }
 
         //CheckOverNight
         if (currentStartDate.getDayOfYear() < currentEndDate.getDayOfYear()) {
             if (!step.getDevice().getDeviceType().getOvernightuse()) {
-                ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("Error while trying to save step as a part of experiment. Device " + step.getDevice().getDevicename() + " can't be used over nigh."));
                 return true;
             }
         }

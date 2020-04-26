@@ -124,11 +124,11 @@
 
 
 
-            <a sec:authorize="hasAuthority('Stock - Modify - All')" href="tags" class="btn btn-primary" th:text="#{tag.manage}"
+            <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{tags}" class="btn btn-primary" th:text="#{tag.manage}"
             >Manage Materials</a>
-            <a href="/mixtures" class="btn btn-outline-primary" th:text="#{mixtures}"
+            <a th:href="@{/mixtures}" class="btn btn-outline-primary" th:text="#{mixtures}"
             >Mixtures</a>
-            <a sec:authorize="hasAuthority('Stock - Modify - All')" href="/products/put" class="btn btn-outline-primary" th:text="#{product.new}"
+            <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/put}" class="btn btn-outline-primary" th:text="#{product.new}"
             >Manage device types</a>
 
 
