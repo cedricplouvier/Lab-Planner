@@ -69,6 +69,10 @@
             <input class="form-control" type = text th:field="*{lastName}"/>
 
         </div>
+
+
+
+
         <div class="form-group" th:name="UserName" >
             <label class="control-label" th:text="#{users.username}"></label>
             <input class="form-control" id="txt_username" name="txt_username" type = text th:field="*{username}" required
@@ -77,6 +81,7 @@
         </div>
         <div class="alert alert-danger" role="alert" th:if="${UserInUse}!=null" th:text="${UserInUse}"></div>
 
+<!--        password set to hidden.-->
         <div hidden class="form-group" th:name="PassWord" >
             <label class="control-label" th:text="#{users.password}"></label>
             <input class="form-control" th:name="pword" text th:field="*{password}" required readonly/>
