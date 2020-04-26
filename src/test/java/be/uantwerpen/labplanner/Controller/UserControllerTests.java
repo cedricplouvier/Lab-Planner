@@ -129,8 +129,8 @@ public class UserControllerTests {
 
     @Test
     @WithUserDetails("Ruben")
-    public void VieuwCHangePasswordTest() throws Exception{
-        mockMvc.perform(get("/usermanagement/password"))
+    public void VieuwChangePasswordTest() throws Exception{
+        mockMvc.perform(get("/password"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("user",instanceOf(User.class)))
                 .andExpect(view().name("Users/password-manage"));
