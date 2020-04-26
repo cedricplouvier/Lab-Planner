@@ -49,7 +49,7 @@ public class StatisticsController {
     List<Float> occupancyDevicesHours = new ArrayList<Float>(Arrays.asList(new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00)));
     List<Float> occupancyDevicesDays = new ArrayList<Float>(Arrays.asList(new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00)));
     List<Device> selectedDevices = new ArrayList<>(Arrays.asList(new Device(),new Device(),new Device(),new Device(),new Device()));
-    List<String> selectableYears = new ArrayList<>(Arrays.asList("2019","2020","2021", "2021"));
+    List<String> selectableYears = new ArrayList<>(Arrays.asList("2019","2020","2021", "2022"));
     List<String> selectableGraphTypes = new ArrayList<>(Arrays.asList("Device hours by month","Device occupancy rate in hours","Device occupancy rate in days"));
     int deviceCounter=0;
     String selectedYear = getCurrentYear();
@@ -135,20 +135,6 @@ public class StatisticsController {
             System.out.println(products.get(j).getName()+ " stocklevel: " +products.get(j).getStockLevel());
         }
 
-        /*for(int i=0; i< experiments.size();i++){
-            System.out.println("__________________________________________________");
-            System.out.println("Experiment start date" + experiments.get(i).getStartDate());
-            Experiment experiment = experiments.get(i);
-            for(int j=0; j<experiment.getPiecesOfMixture().size();j++) {
-                System.out.println("pieces of mixtures size" + piecesOfMixture.size());
-                Mixture mixture = piecesOfMixture.get(j).getMixture();
-                for(int z=0;z<mixture.getCompositions().size();z++) {
-                     System.out.println(mixture.getCompositions().get(z).getProduct().getName()+" stock: "+
-                             mixture.getCompositions().get(z).getProduct().getStockLevel());
-                     currentStockLevel.add(mixture.getCompositions().get(z).getProduct().getStockLevel());
-               }
-           }*/
-
         return "Statistics/stockStatistics";
     }
 
@@ -163,6 +149,7 @@ public class StatisticsController {
         float occupancyDays;
         float totalDeviceHoursYear=0;
         float totalDeviceDaysYear=0;
+        highestAbsoluteValueHours=10;
 
         selectedDevices.set(deviceCounter,selectedDev);
 
@@ -226,6 +213,7 @@ public class StatisticsController {
         float occupancyDays;
         float totalDeviceHoursYear=0;
         float totalDeviceDaysYear=0;
+        highestAbsoluteValueHours = 10;
 
         //calculate occupancy of device by hours and year per year + total of device hours by year and month absolute
         for(int i=0;i<selectedDevices.size();i++){
