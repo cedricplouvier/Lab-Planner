@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -170,8 +172,18 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users/{id}/delete",method = RequestMethod.GET)
     public String deleteUser(@PathVariable long id, final ModelMap model) {
-        //get current locale
-        Locale current = LocaleContextHolder.getLocale();
+
+        //get current user.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+
+        if (user.getId() == id){
+            model.addAttribute("allUsers",userService.findAll());
+            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.selfDeleteError"));
+            return "Users/user-list";
+        }
+
+
         List<Step> allSteps = stepService.findAll();
         boolean isUsed = false;
         for (Step step : allSteps) {
@@ -188,7 +200,7 @@ public class UserController {
 
         if (isUsed){
             model.addAttribute("allUsers",userService.findAll());
-            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",current).getString("user.deleteError"));
+            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.deleteError"));
             return "Users/user-list";
         }
 
