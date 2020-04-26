@@ -575,7 +575,7 @@ public class StepController {
         if (experiment == null || experiment.getExperimentType() == null) {
             errorMessage = "Error while trying to save Experiment.";
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-            return "/PlanningTool/planning-exp-book";
+            return "PlanningTool/planning-exp-book";
         }
 
         //check if experiment name is unique
@@ -584,7 +584,7 @@ public class StepController {
             if (experiment.getExperimentname().equals(exp.getExperimentname()) && !Objects.equals(experiment.getId(), exp.getId())) {
                 errorMessage = "Experiment with this name already exists";
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-                return "/PlanningTool/planning-exp-book";
+                return "PlanningTool/planning-exp-book";
             }
         }
 
@@ -600,7 +600,7 @@ public class StepController {
             if (pom.getMixtureAmount() < 0) {
                 errorMessage = "Ammount of mixture can't be negative";
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-                return "/PlanningTool/planning-exp-book";
+                return "PlanningTool/planning-exp-book";
             }
         }
 
@@ -631,7 +631,7 @@ public class StepController {
         if (experiment.getSteps().size() != experiment.getExperimentType().getStepTypes().size()) {
             errorMessage = "Error while trying to save Experiment. Problem with length of steps";
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-            return "/PlanningTool/planning-exp-book";
+            return "PlanningTool/planning-exp-book";
         }
 
         //if the experiment is new, set current user to experiment. Otherwise keep the user same
@@ -908,17 +908,15 @@ public class StepController {
             model, RedirectAttributes ra) {
 
         if (result.hasErrors()) {
-            ra.addFlashAttribute("Status", new String("Error"));
             ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type."));
-            return "redirect:/planning/experiments";
+            return "PlanningTool/planning-exp-manage";
         }
         ExperimentType tempExperimentType = experimentType.getId() == null ? null : experimentTypeRepository.findById(experimentType.getId()).orElse(null);
         if (tempExperimentType == null) {
             for (ExperimentType exptyp : experimentTypeService.findAll()) {
                 if (experimentType.getExpname().equals(exptyp.getExpname())) {
-                    ra.addFlashAttribute("Status", new String("Error"));
                     ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nThis experiment type name is already occupied!"));
-                    return "redirect:/planning/experiments";
+                    return "PlanningTool/planning-exp-manage";
                 }
             }
         }
@@ -926,14 +924,12 @@ public class StepController {
 
         for (StepType stepType : experimentType.getStepTypes()) {
             if (stepType.getContinuity().getHours() < 0) {
-                ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
-                return "redirect:/planning/experiments";
+                return "PlanningTool/planning-exp-manage";
             }
             if (stepType.getContinuity().getMinutes() > 59 || stepType.getContinuity().getMinutes() < 0) {
-                ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
-                return "redirect:/planning/experiments";
+                return "PlanningTool/planning-exp-manage";
             } else
                 stepTypeService.saveNewStepType(stepType);
         }
