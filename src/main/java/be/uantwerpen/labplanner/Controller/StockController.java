@@ -391,7 +391,7 @@ public class StockController {
         String NameIsUsed = null;
         while (it.hasNext()) {
             OwnTag temp = it.next();
-            if(temp.getName().contains(tag.getName()) && !temp.getId().equals(tag.getId())){
+            if(temp.getName().equals(tag.getName()) && !temp.getId().equals(tag.getId())){
                  NameIsUsed = "There is already a tag with the name " + tag.getName();
             }
         }
@@ -514,9 +514,6 @@ public class StockController {
             }
 
         }
-
-
-
 
         if(mixture.getName().length() == 0){
             model.addAttribute("allMixtures", mixtureService.findAll());

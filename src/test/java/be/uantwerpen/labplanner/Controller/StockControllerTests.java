@@ -39,9 +39,6 @@ public class StockControllerTests {
 
 
     @Mock
-    private UserService userService;
-
-    @Mock
     private OwnProductService productService;
 
     @Mock
@@ -280,54 +277,6 @@ public class StockControllerTests {
         mockMvc.perform(post("/tags/{id}","10").flashAttr("tag",t1))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Tags/tags-manage"))
-                .andDo(print());
-
-    }
-
-    @Test
-    public void addValidComposition() throws Exception{
-        Composition comp1 = new Composition(5.0, new OwnProduct());
-        mockMvc.perform(post("/compositions/").flashAttr("composition",comp1))
-                .andExpect(view().name("Mixtures/compositions-list"))
-                .andDo(print());
-    }
-
-    @Test
-    public void addInValidComposition() throws Exception{
-        //Amount must be greater than 0
-        Composition comp1 = new Composition(0.0, new OwnProduct());
-        mockMvc.perform(post("/compositions/").flashAttr("composition",comp1))
-                .andExpect(model().attribute("errormessage", notNullValue()))
-                .andExpect(view().name("Mixtures/compositions-manage"))
-                .andDo(print());
-    }
-
-
-
-    @Test
-    public void EditInvalidCompositionAmountZero() throws Exception{
-        //amount is not valid, amount is zero
-        Composition comp = new Composition(0.0, new OwnProduct());
-        long id = 10;
-
-        when(compositionService.findById(id)).thenReturn(Optional.of(comp));
-        mockMvc.perform(post("/compositions/{id}","10").flashAttr("composition",comp))
-                .andExpect(model().attribute("errormessage", notNullValue()))
-                .andExpect(view().name("Mixtures/compositions-manage"))
-                .andDo(print());
-
-    }
-
-    @Test
-    public void EditInvalidCompositionAmountGreaterThanHundred() throws Exception{
-        //amount is not valid, amount is >100
-        Composition comp = new Composition(150.0, new OwnProduct());
-        long id = 10;
-
-        when(compositionService.findById(id)).thenReturn(Optional.of(comp));
-        mockMvc.perform(post("/compositions/{id}","10").flashAttr("composition",comp))
-                .andExpect(model().attribute("errormessage", notNullValue()))
-                .andExpect(view().name("Mixtures/compositions-manage"))
                 .andDo(print());
 
     }
