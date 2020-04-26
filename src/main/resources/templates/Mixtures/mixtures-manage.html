@@ -47,8 +47,8 @@
     <div>
             <p>
         <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
-                <a href="/mixtures" th:text="#{close}" class="btn btn-secondary">Close</a>
-                <a href="/compositions" th:text="#{manage.ingred}" class="btn btn-secondary">Close</a>
+                <a th:href="@{/mixtures}" th:text="#{close}" class="btn btn-secondary">Close</a>
+                <a th:href="@{/compositions}" th:text="#{manage.ingred}" class="btn btn-secondary">Close</a>
 
 
             </p>

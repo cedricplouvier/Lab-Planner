@@ -52,8 +52,8 @@
                 </tr>
                 </tbody>
             </table>
-            <a href="/mixtures" class="btn btn-primary" th:text="#{mixtures.return}" >Return to mixtures</a>
-            <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  href="/compositions/put" type="button" class="btn btn-outline-primary"th:text="#{composition.create}">
+            <a th:href="@{/mixtures}" class="btn btn-primary" th:text="#{mixtures.return}" >Return to mixtures</a>
+            <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  th:href="@{/compositions/put}" type="button" class="btn btn-outline-primary"th:text="#{composition.create}">
                 Create new composition
             </a>
 

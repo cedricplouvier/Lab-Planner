@@ -107,7 +107,7 @@ public class StatisticsController {
         model.addAttribute("highestAbsoluteValueHours",highestAbsoluteValueHours);
 
 
-        return "/Statistics/statistics";
+        return "Statistics/statistics";
     }
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
@@ -149,7 +149,7 @@ public class StatisticsController {
                }
            }*/
 
-        return "/Statistics/stockStatistics";
+        return "Statistics/stockStatistics";
     }
 
 
@@ -192,6 +192,7 @@ public class StatisticsController {
     @RequestMapping("/statistics/statistics/clearList")
     public String clearList() {
         deviceCounter = 0;
+        highestAbsoluteValueHours=10;
         selectedDevices = Arrays.asList(new Device(),new Device(),new Device(),new Device(),new Device());
         int[] emptyHoursArray =new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
 

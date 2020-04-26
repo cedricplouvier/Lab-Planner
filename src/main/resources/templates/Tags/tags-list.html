@@ -82,8 +82,8 @@
                 </tr>
                 </tbody>
             </table>
-            <a href="/products" class="btn btn-primary" th:text="#{product.return}" >Return to products</a>
-            <a href="/tags/put" type="button" class="btn btn-outline-primary"th:text="#{tag.create}">
+            <a th:href="@{/products}" class="btn btn-primary" th:text="#{product.return}" >Return to products</a>
+            <a th:href="@{/tags/put}" type="button" class="btn btn-outline-primary"th:text="#{tag.create}">
                 Create new tag
             </a>
 

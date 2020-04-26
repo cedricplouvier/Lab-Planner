@@ -18,8 +18,8 @@
     <link rel='stylesheet' href='https://uicdn.toast.com/tui-calendar/latest/tui-calendar.css'>
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css"/>
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css"/>
-    <link rel="stylesheet" type="text/css" href="/css/default.css">
-    <link rel="stylesheet" type="text/css" href="/css/icons.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/default.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/icons.css}">
 </head>
 
 <body>
@@ -30,11 +30,9 @@
 <!-- Import menu bar -->
 <div id="lnb">
     <div class="lnb-new-schedule">
-        <form method = "GET" action = "/planning/">
-            <button class="btn btn-default btn-block lnb-new-schedule-btn "  id="btn-new-schedule" type="submit" >
+            <a type="button" th:href="@{/planning/}" class="btn btn-default btn-block lnb-new-schedule-btn "  id="btn-new-schedule" >
                 Go to booking
-            </button>
-        </form>
+            </a>
     </div>
     <div id="lnb-calendars" class="lnb-calendars">
         <div>
