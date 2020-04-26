@@ -1,9 +1,6 @@
 package be.uantwerpen.labplanner.Model;
 
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
+
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;
@@ -23,6 +20,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
 public class OwnProduct extends AbstractPersistable<Long> {
+
     @Column
     @NotBlank(
             message = "{invalid.notblank}"
@@ -113,6 +111,16 @@ public class OwnProduct extends AbstractPersistable<Long> {
         this.tags = tags;
     }
 
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Override
+    public void setId(Long id) {
+        super.setId(id);
+    }
+
     public String getName() {
         return this.name;
     }
@@ -167,10 +175,6 @@ public class OwnProduct extends AbstractPersistable<Long> {
 
     public List<OwnTag> getTags() {
         return this.tags;
-    }
-
-    public void setId(Long id) {
-        super.setId(id);
     }
 
     public void setName(String name) {
