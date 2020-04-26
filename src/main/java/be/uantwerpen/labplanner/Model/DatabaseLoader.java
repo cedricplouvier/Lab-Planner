@@ -487,7 +487,7 @@ public class DatabaseLoader {
         productRepository.save(pr6);
         OwnProduct pr7 = new OwnProduct("Bitumen op aggregaten", lorem.getWords(20), 1.0, 200.0, 25.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, new URL("https://nl.wikipedia.org/wiki/Bitumen"));
         productRepository.save(pr7);
-        OwnProduct pr8 = new OwnProduct("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4,new URL("https://nl.wikipedia.org/wiki/Elon_Musk"));
+        OwnProduct pr8 = new OwnProduct("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4,null);
         productRepository.save(pr8);
 
         Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","11:00","12:00","");
