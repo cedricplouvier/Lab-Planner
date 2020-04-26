@@ -9,6 +9,15 @@
     .notfound{
         display: none;
     }
+
+    .table-wrapper {
+        max-height: 300px;
+        width: 100%;
+        overflow: auto;
+        display:inline-block;
+    }
+
+
 </style>
 <script>
     $(document).ready(function(){
@@ -78,6 +87,7 @@
 
 
                     <div class="card-body" id="product-list">
+                        <div class="table-wrapper">
                         <table class="table table-hover table-striped table-borderless">
                             <thead>
                             <tr>
@@ -139,7 +149,7 @@
 
 
                             </tbody>
-                        </table>
+                        </table></div>
 
 
                         <a sec:authorize="hasAuthority('Stock - Modify - All')" href="/products/put" class="btn btn-outline-primary" th:text="#{product.new}"
@@ -171,6 +181,8 @@
                      data-parent="#accordionEx">
                     <div class="card-body">
                         <div id="mixture-list">
+                            <div class="table-wrapper">
+
                             <table class="table table-hover table-striped table-borderless">
                                 <thead>
                                 <tr>
@@ -208,6 +220,7 @@
 
                                 </tbody>
                             </table>
+                            </div>
                             <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  href="/mixtures/put" type="button" class="btn btn-outline-primary"th:text="#{mixture.create}">
                                 Create new mixture
                             </a>
@@ -240,6 +253,8 @@
                      data-parent="#accordionEx">
                     <div class="card-body">
                         <div id="tag-list">
+                            <div class="table-wrapper">
+
                             <table class="table table-hover table-striped table-borderless">
                                 <thead>
                                 <tr>
@@ -264,6 +279,7 @@
 
                                 </tbody>
                             </table>
+                            </div>
                             <a href="/tags/put" type="button" class="btn btn-outline-primary"th:text="#{tag.create}">
                                 Create new tag
                             </a>

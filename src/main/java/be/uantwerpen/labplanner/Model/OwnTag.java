@@ -34,16 +34,22 @@ public class OwnTag extends AbstractPersistable<Long> {
         this.name = name;
     }
 
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Override
+    public void setId(Long id) {
+        super.setId(id);
+    }
+
     public List<OwnProduct> getProducts() {
         return this.products;
     }
 
     public void setProducts(List<OwnProduct> products) {
         this.products = products;
-    }
-
-    public void setId(Long id) {
-        super.setId(id);
     }
 
     public String getName() {
