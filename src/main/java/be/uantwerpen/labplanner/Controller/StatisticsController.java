@@ -50,7 +50,7 @@ public class StatisticsController {
     List<Float> occupancyDevicesHours = new ArrayList<Float>(Arrays.asList(new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00)));
     List<Float> occupancyDevicesDays = new ArrayList<Float>(Arrays.asList(new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00)));
     List<Device> selectedDevices = new ArrayList<>(Arrays.asList(new Device(),new Device(),new Device(),new Device(),new Device()));
-    List<String> selectableYears = new ArrayList<>(Arrays.asList("2019","2020","2021", "2021"));
+    List<String> selectableYears = new ArrayList<>(Arrays.asList("2019","2020","2021", "2022"));
     List<String> selectableGraphTypes = new ArrayList<>(Arrays.asList("Device hours by month","Device occupancy rate in hours","Device occupancy rate in days"));
     int deviceCounter=0;
     String selectedYear = getCurrentYear();
@@ -150,6 +150,7 @@ public class StatisticsController {
         float occupancyDays;
         float totalDeviceHoursYear=0;
         float totalDeviceDaysYear=0;
+        highestAbsoluteValueHours=10;
 
         if(deviceCounter<5) {
             selectedDevices.set(deviceCounter, selectedDev);
@@ -217,6 +218,7 @@ public class StatisticsController {
         float occupancyDays;
         float totalDeviceHoursYear=0;
         float totalDeviceDaysYear=0;
+        highestAbsoluteValueHours = 10;
 
         //calculate occupancy of device by hours and year per year + total of device hours by year and month absolute
         for(int i=0;i<selectedDevices.size();i++){
