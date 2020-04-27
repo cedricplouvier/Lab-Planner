@@ -36,12 +36,12 @@
                 <div class="col" >
                 </div>
                 <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
-                    <img class="img-fluid" th:src="${(deviceTypeObject.getDevicePictureName() != null && !#strings.isEmpty(deviceTypeObject.getDevicePictureName())) ? '/files/images/'+deviceTypeObject.getDevicePictureName() : '/images/placeholder.jpg'}" />
+                    <img class="img-fluid" th:src="@{${(deviceTypeObject.getDevicePictureName() != null && !#strings.isEmpty(deviceTypeObject.getDevicePictureName())) ? '/files/images/'+deviceTypeObject.getDevicePictureName() : '/images/placeholder.jpg'}}" />
                 </div>
             </div>
         </div>
         <p>
-            <a href="/devices/types"  class="btn btn-primary" th:text="#{close}"></a>
+            <a th:href="@{/devices/types}"  class="btn btn-primary" th:text="#{close}"></a>
             <button type="submit"  class="btn btnprimary" th:text="#{save}"></button>
         </p>
     </form>
@@ -92,7 +92,7 @@
     <div class="alert alert-info" role="alert" th:if="${deviceTypeObject.id}==null" th:text="#{device.savebeforeinfo}"></div>
     <hr class="my-4">
     <p>
-        <a href="/devices/types"  class="btn btn-primary" th:text="#{close}"></a>
+        <a th:href="@{/devices/types}"  class="btn btn-primary" th:text="#{close}"></a>
         <a th:if="${deviceTypeObject.id}!=null " th:href="@{/devices/info/put/{typeid}(typeid=${deviceTypeObject.getId()})}"  class="btn btn-primary" th:text="#{device.add.information}"></a>
     </p>
 </div>

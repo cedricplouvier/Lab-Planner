@@ -99,7 +99,7 @@ public class StatisticsControllerTests {
                 .andExpect(model().attribute("dev3", notNullValue()))
                 .andExpect(model().attribute("dev4", notNullValue()))
                 .andExpect(model().attribute("dev5", notNullValue()))
-                .andExpect(view().name("/Statistics/statistics"))
+                .andExpect(view().name("Statistics/statistics"))
                 .andDo(print());
     }
 
@@ -112,7 +112,7 @@ public class StatisticsControllerTests {
         when(productService.findAll()).thenReturn(products);
         mockMvc.perform(get("/statistics/stockStatistics").with(user("test").password("test")))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/Statistics/stockStatistics"))
+                .andExpect(view().name("Statistics/stockStatistics"))
                 .andExpect(model().attribute("products",hasSize(1)))
                 .andDo(print());
     }

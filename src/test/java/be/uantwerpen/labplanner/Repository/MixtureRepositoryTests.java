@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class MixtureRepositoryTests {
 
     @Autowired
     private OwnTagRepository tagRepository;
-
+    @Transactional
     @Test
     public void testSaveMixtures(){
 
