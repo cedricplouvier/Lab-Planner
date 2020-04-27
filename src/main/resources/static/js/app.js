@@ -571,7 +571,19 @@ let suggestion;
             span.style.backgroundColor = input.checked ? span.style.borderColor : 'transparent';
         });
     }
+    function calculateExperimentSuggestion() {
+        let numberOfSteps = allExperiments[0]['stepTypes'].length;
+        for (let current = 0; current < numberOfSteps; current++){
+                calendarUpdate.stepIndex=current;
+                calendarUpdate.experimentIndex=0;
+            calculateSuggestion()
+            newSchedule = suggestion;
+            suggestion = null;
 
+            checkOverlap();
+            saveScheduleChanges();
+        }
+    }
     function calculateSuggestion() {
         let today = new Date();
         let currentDate = new Date(today.getFullYear(),today.getMonth(),today.getDate(),today.getHours()+1,0);
@@ -674,6 +686,8 @@ let suggestion;
         $("#nextstep").on('click',nextStep);
         $("#previousstep").on('click',previousStep);
         $("#suggestStep").on('click',calculateSuggestion);
+        $("#suggestExperiment").on('click',calculateExperimentSuggestion);
+
         window.addEventListener('resize', resizeThrottled);
     }
     function nextStep() {
