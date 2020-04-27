@@ -562,7 +562,7 @@ public class StepController {
     public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Locale current = LocaleContextHolder.getLocale();
-        Map<Product, Double> productMap = new HashMap<>();
+        Map<OwnProduct, Double> productMap = new HashMap<>();
 
 
         if (experiment == null) {
@@ -571,7 +571,6 @@ public class StepController {
             return "redirect:/planning/";
         }
 
-        Map<OwnProduct, Double> productMap = new HashMap<>();
 
         //Error message that is used as a feedback to user when there is a problem with his input
         String errorMessage = "";
