@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
-<head th:replace="navbar :: head (title='#{User Management}')"></head>
+<head th:replace="navbar :: head (title='#{User Management}')">
+
+</head>
 <body onload = "initPage()">
 <script type="text/javascript">
     function initPage(){
@@ -66,10 +68,12 @@
         <div>
             <label class="control-label" th:text="#{relation.students}"></label>
         </div>
+
         <div>
+
             <input type="checkbox" onclick="toggle(this);" /> <b>Check all?</b><br />
         </div>
-        <div class="form-check">
+        <div class="form-check" id="checkboxes">
             <input th:field ="*{students}" class="form-check-input" type="checkbox"
                    th:each="student : ${allStudents}"
                    th:id="${{student.firstName}}"
