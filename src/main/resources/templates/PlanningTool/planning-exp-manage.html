@@ -7,24 +7,122 @@
 
     function showFixedTimeInput(i) {
 
-        var checkBox = document.getElementById("myTable").rows[i + 1].cells[5].getElementsByTagName("input")[0];
-        var cell = document.getElementById("myTable").rows[i + 1].cells[6].getElementsByTagName("input")[0];
+        var checkBox = document.getElementById("myTable").rows[i + 1].cells[4].getElementsByTagName("input")[0];
+        var cell1 = document.getElementById("myTable").rows[i + 1].cells[5].getElementsByTagName("input")[0];
+        var cell2 = document.getElementById("myTable").rows[i + 1].cells[5].getElementsByTagName("input")[1];
         if (checkBox.checked == true) {
-            cell.disabled = false;
-            cell.value = "";
+            cell1.disabled = false;
+            cell2.disabled = false;
             checkBox.value = true;
         } else {
-            cell.disabled = true;
+            cell1.disabled = true;
+            cell2.disabled = true;
             checkBox.value = false;
         }
     }
 
+    /*
+    <tr>
+
+                <td>
+                    <select id="stepTypes0.continuity.type" name="stepTypes[0].continuity.type">
+                        <option class="dropdown-item" value="No">No</option>
+                        <option class="dropdown-item" value="Soft (at least)">Soft (at least)</option>
+                        <option class="dropdown-item" value="Soft (at most)">Soft (at most)</option>
+                        <option class="dropdown-item" value="Hard" selected="selected">Hard</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="stepTypes0.continuity.directionType" name="stepTypes[0].continuity.directionType">
+                        <option class="dropdown-item" value="Before">Before</option>
+                        <option class="dropdown-item" value="After">After</option>
+                    </select>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <input type="number" min="0" step="1" class=" form-control input-device" style="width: 20%;  transform: translate(-40%, 0%);" value="24" id="stepTypes0.continuity.hours" name="stepTypes[0].continuity.hours">
+                        <span class="input-group-btn" style="width:0px;"></span>
+                        <input type="number" min="0" max="60" step="1" class="form-control input-device" style="width: 20%; transform: translate(-40%, 0%);" value="0" id="stepTypes0.continuity.minutes" name="stepTypes[0].continuity.minutes">
+                    </div>
+                </td><td>
+                    <label class="switch">
+                        <input type="checkbox" onclick="showFixedTimeInput(0)" value="false" id="stepTypes0.hasFixedLength1" name="stepTypes[0].hasFixedLength"><input type="hidden" name="_stepTypes[0].hasFixedLength" value="on">
+                    </label>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <input type="number" min="0" step="1" class=" form-control input-device" style="width: 20%; transform: translate(-40%, 0%);" value="0" id="stepTypes0.fixedTimeHours" name="stepTypes[0].fixedTimeHours" disabled="">
+                        <span class="input-group-btn" style="width:0px;"></span>
+                        <input type="number" min="0" max="60" step="1" class=" form-control input-device" style="width: 20%; transform: translate(-40%, 0%);" value="0" id="stepTypes0.fixedTimeMinutes" name="stepTypes[0].fixedTimeMinutes" disabled="">
+                    </div>
+                </td><td>
+            </td></tr>
+
+
+
+    */
+
     function addrow(a) {
+        let allTypeOptions = [[${allTypeOptions}]];
+        var typeOptions = '';
+        for (let j = 0; j < allTypeOptions.length; j++) {
+            typeOptions += '<option class="dropdown-item"' + allTypeOptions[j] + '">' + allTypeOptions[j] + '</option>'
+
+        }
+        let allTypeDirections = [[${allTypeDirections}]];
+        var directionOptions = '';
+        for (let j = 0; j < allTypeDirections.length; j++) {
+            directionOptions += '<option class="dropdown-item"' + allTypeDirections[j] + '">' + allTypeDirections[j] + '</option>'
+
+        }
+
+
         console.log(a);
         var rowCount = $('#list tr').length;
         $('#list')
-            .append('<tr class="row' + rowCount + '" id="row' + rowCount + '"> <td><input hidden class="steptype" value="' + a.id + '" id="stepTypes' + rowCount + '.deviceType" name="stepTypes[' + rowCount + '].deviceType">' + a.deviceTypeName + '<input hidden class="steptypename" value="' + a.deviceTypeName + '" id="stepTypes' + rowCount + '.stepTypeName" name="stepTypes[' + rowCount + '].stepTypeName"> </td><td><select required value="" id="stepTypes' + rowCount + '.continuity.type" name="stepTypes[' + rowCount + '].continuity.type"><option class="dropdown-item" value="No">No</option><option class="dropdown-item" value="Soft (at least)">Soft (at least)</option><option class="dropdown-item" value="Soft (at most)">Soft (at most)</option><option class="dropdown-item" value="Hard">Hard</option> </select></td> <td><input required value="" id="stepTypes' + rowCount + '.continuity.hour" name="stepTypes[' + rowCount + '].continuity.hours" placeholder="Hours"></td> <td><input required value="" id="stepTypes' + rowCount + '.continuity.minutes" name="stepTypes[' + rowCount + '].continuity.minutes" placeholder="Minutes"></td><td><a onclick="removeRow(this)"> <span class="fas fa-trash" style="color: red" ></span> </a></td> </tr>')
+            .append(
+                '<tr class="row' + rowCount + '" id="row' + rowCount + '"> ' +
+                '   <td>' +
+                '   <input hidden class="steptype" value="' + a.id + '" id="stepTypes' + rowCount + '.deviceType" name="stepTypes[' + rowCount + '].deviceType">' + a.deviceTypeName +
+                '   <input hidden class="steptypename" value="' + a.deviceTypeName + '" id="stepTypes' + rowCount + '.stepTypeName" name="stepTypes[' + rowCount + '].stepTypeName">' +
+                '   </td>' +
+                '   <td>' +
+                '       <select required value="" id="stepTypes' + rowCount + '.continuity.type" name="stepTypes[' + rowCount + '].continuity.type">' +
+                typeOptions +
+                '       </select>' +
+                '   </td>' +
+                '   <td>' +
+                '       <select required id="stepTypes' + rowCount + '.continuity.directionType" name="stepTypes[' + rowCount + '].continuity.directionType">' +
+                directionOptions +
+                '       </select>' +
+                '   </td>' +
+                '   <td>' +
+                '      <div class="input-group">' +
+                '           <input type="number" min="0" step="1" class=" form-control input-device" style="width: 20%;  transform: translate(-40%, 0%);" value="0" id="stepTypes0.continuity.hours" name="stepTypes[0].continuity.hours">' +
+                '           <span class="input-group-btn" style="width:0px;"></span>' +
+                '           <input type="number" min="0" max="60" step="1" class="form-control input-device" style="width: 20%; transform: translate(-40%, 0%);" value="0" id="stepTypes0.continuity.minutes" name="stepTypes[0].continuity.minutes">' +
+                '       </div>' +
+                '   </td><td>' +
+                '       <label class="switch">' +
+                '           <input type="checkbox" onclick="showFixedTimeInput(' + rowCount + ')" value="false" id="stepTypes' + rowCount + '.hasFixedLength1" name="stepTypes[' + rowCount + '].hasFixedLength">' +
+                '           <input type="hidden" name="_stepTypes[' + rowCount + '].hasFixedLength" value="on">' +
+                '       </label>' +
+                '   </td>' +
+                '   <td>' +
+                '       <div class="input-group">' +
+                '           <input type="number" min="0" step="1" class=" form-control input-device" style="width: 20%; transform: translate(-40%, 0%);" value="0" id="stepTypes' + rowCount + '.fixedTimeHours" name="stepTypes[' + rowCount + '].fixedTimeHours" disabled>' +
+                '           <span class="input-group-btn" style="width:0px;"></span>' +
+                '           <input type="number" min="0" max="60" step="1" class=" form-control input-device" style="width: 20%; transform: translate(-40%, 0%);" value="0" id="stepTypes' + rowCount + '.fixedTimeMinutes" name="stepTypes[' + rowCount + '].fixedTimeMinutes" disabled>' +
+                '       </div>' +
+                '   </td>' +
+                '   <td>' +
+                '       <a onclick="removeRow(this)"> <span class="fas fa-trash" style="color: red" >' +
+                '       </span></a>' +
+                '   </td>' +
+                '</tr>'
+            )
     }
+
 
     function filterFunction() {
         var input, filter, ul, li, a, i;
@@ -130,10 +228,9 @@
             <thead>
             <tr>
                 <th th:text="#{step.type}">Step Type</th>
-                <th>Continuity</th>
-                <th>After/Before previous step</th>
-                <th th:text="#{step.duration}">Duration hours</th>
-                <th th:text="#{step.duration}">Duration minutes</th>
+                <th>Continuity type</th>
+                <th>Continuity direction</th>
+                <th>Continuity duration</th>
                 <th th:text="#{stepType.setFixedTime}">Set fixed time of step</th>
                 <th th:text="#{stepType.fixedTime}">Fixed time of step</th>
             </tr>
@@ -161,13 +258,15 @@
                                 th:text="${option}"></option>
                     </select>
                 </td>
-                <td colspan="2">
+                <td>
                     <div class="input-group">
-                        <input type="number" min="0" step="1" class=" form-control input-device" style="width: 50%;  transform: translate(-50%, 0%);"
+                        <input type="number" min="0" step="1" class=" form-control input-device"
+                               style="width: 20%;  transform: translate(-40%, 0%);"
                                th:field="*{stepTypes[__${itemStat.index}__].continuity.hours}"
                                th:value="${stepType.continuity.hours}"/>
                         <span class="input-group-btn" style="width:0px;"></span>
-                        <input type="number" min="0" max="60" step="1" class=" form-control input-device" style="width: 50%; transform: translate(-50%, 0%);"
+                        <input type="number" min="0" max="60" step="1" class=" form-control input-device"
+                               style="width: 20%; transform: translate(-40%, 0%);"
                                th:field="*{stepTypes[__${itemStat.index}__].continuity.minutes}"
                                th:value="${stepType.continuity.minutes}"/>
                     </div>
@@ -180,17 +279,24 @@
                                th:value="${stepType.hasFixedLength}">
                     </label>
                 </td>
-                <td colspan="2">
+                <td>
                     <div class="input-group">
-                        <input type="number" min="0" step="1" class=" form-control input-device" style="width: 50%; transform: translate(-50%, 0%);"
+                        <input type="number" min="0" step="1" class=" form-control input-device"
+                               style="width: 20%; transform: translate(-40%, 0%);"
                                th:field="*{stepTypes[__${itemStat.index}__].fixedTimeHours}"
-                               th:value="${stepType.fixedTimeHours}"/>
+                               th:value="${stepType.fixedTimeHours}"
+                               th:disabled="!${stepType.hasFixedLength}"/>
                         <span class="input-group-btn" style="width:0px;"></span>
-                        <input type="number" min="0" max="60" step="1" class=" form-control input-device" style="width: 50%; transform: translate(-50%, 0%);"
+                        <input type="number" min="0" max="60" step="1" class=" form-control input-device"
+                               style="width: 20%; transform: translate(-40%, 0%);"
                                th:field="*{stepTypes[__${itemStat.index}__].fixedTimeMinutes}"
-                               th:value="${stepType.fixedTimeMinutes}"/>
+                               th:value="${stepType.fixedTimeMinutes}"
+                               th:disabled="!${stepType.hasFixedLength}"/>
                     </div>
                 <td>
+                <td>
+                    <a onclick="removeRow(this)"> <span class="fas fa-trash" style="color: red">                </span>
+                    </a></td>
             </tr>
             </tbody>
         </table>
