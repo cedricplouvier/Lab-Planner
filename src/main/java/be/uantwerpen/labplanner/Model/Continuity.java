@@ -15,6 +15,8 @@ public class Continuity extends AbstractPersistable<Long> {
     private int minutes;
     @Column(name="type")
     private String type;
+    @Column(name="directionType")
+    private String directionType;
 
     public Continuity(){}
     public Continuity(int hours, int minutes, String type){
@@ -44,5 +46,13 @@ public class Continuity extends AbstractPersistable<Long> {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getDirectionType() {
+        return directionType;
+    }
+
+    public void setDirectionType(String directionType) {
+        this.directionType = directionType;
     }
 }

@@ -4,11 +4,26 @@
 <head th:replace="navbar :: head (title='#{Experiment Management}')"></head>
 <script th:inline="javascript">
     var url = /*[[@{/planning/experiments/{id} (id=${experimentType})}]]*/ "";
+
+    function showFixedTimeInput(i) {
+
+        var checkBox = document.getElementById("myTable").rows[i + 1].cells[5].getElementsByTagName("input")[0];
+        var cell = document.getElementById("myTable").rows[i + 1].cells[6].getElementsByTagName("input")[0];
+        if (checkBox.checked == true) {
+            cell.disabled = false;
+            cell.value = "";
+            checkBox.value = true;
+        } else {
+            cell.disabled = true;
+            checkBox.value = false;
+        }
+    }
+
     function addrow(a) {
         console.log(a);
         var rowCount = $('#list tr').length;
         $('#list')
-            .append('<tr class="row'+rowCount+'" id="row'+rowCount+'"> <td><input hidden class="steptype" value="'+a.id+'" id="stepTypes'+rowCount+'.deviceType" name="stepTypes['+rowCount+'].deviceType">'+a.deviceTypeName+'<input hidden class="steptypename" value="'+a.deviceTypeName+'" id="stepTypes'+rowCount+'.stepTypeName" name="stepTypes['+rowCount+'].stepTypeName"> </td><td><select required value="" id="stepTypes'+rowCount+'.continuity.type" name="stepTypes['+rowCount+'].continuity.type"><option class="dropdown-item" value="No">No</option><option class="dropdown-item" value="Soft (at least)">Soft (at least)</option><option class="dropdown-item" value="Soft (at most)">Soft (at most)</option><option class="dropdown-item" value="Hard">Hard</option> </select></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.hour" name="stepTypes['+rowCount+'].continuity.hours" placeholder="Hours"></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.minutes" name="stepTypes['+rowCount+'].continuity.minutes" placeholder="Minutes"></td><td><a onclick="removeRow(this)"> <span class="fas fa-trash" style="color: red" ></span> </a></td> </tr>')
+            .append('<tr class="row' + rowCount + '" id="row' + rowCount + '"> <td><input hidden class="steptype" value="' + a.id + '" id="stepTypes' + rowCount + '.deviceType" name="stepTypes[' + rowCount + '].deviceType">' + a.deviceTypeName + '<input hidden class="steptypename" value="' + a.deviceTypeName + '" id="stepTypes' + rowCount + '.stepTypeName" name="stepTypes[' + rowCount + '].stepTypeName"> </td><td><select required value="" id="stepTypes' + rowCount + '.continuity.type" name="stepTypes[' + rowCount + '].continuity.type"><option class="dropdown-item" value="No">No</option><option class="dropdown-item" value="Soft (at least)">Soft (at least)</option><option class="dropdown-item" value="Soft (at most)">Soft (at most)</option><option class="dropdown-item" value="Hard">Hard</option> </select></td> <td><input required value="" id="stepTypes' + rowCount + '.continuity.hour" name="stepTypes[' + rowCount + '].continuity.hours" placeholder="Hours"></td> <td><input required value="" id="stepTypes' + rowCount + '.continuity.minutes" name="stepTypes[' + rowCount + '].continuity.minutes" placeholder="Minutes"></td><td><a onclick="removeRow(this)"> <span class="fas fa-trash" style="color: red" ></span> </a></td> </tr>')
     }
 
     function filterFunction() {
@@ -32,6 +47,7 @@
     function myFunction() {
         document.getElementById("myDropdown").classList.toggle("show");
     }
+
     function removeRow(r) {
         $(r).closest('tr').remove();
     }
@@ -60,7 +76,9 @@
         border-bottom: 1px solid #ddd;
     }
 
-    #myInput:focus {outline: 3px solid #ddd;}
+    #myInput:focus {
+        outline: 3px solid #ddd;
+    }
 
     .dropdown {
         position: relative;
@@ -84,59 +102,111 @@
         display: block;
     }
 
-    .dropdown a:hover {background-color: #ddd;}
+    .dropdown a:hover {
+        background-color: #ddd;
+    }
 
-    .show {display: block;}
+    .show {
+        display: block;
+    }
 </style>
 <body>
-<div class = "container">
+<div class="container">
     <div th:replace="navbar :: navbar"></div>
-    <form action="#" th:action="@{/planning/experiments/{id} (id=${experimentType.id})}" th:object="${experimentType}" method="post">
+    <form action="#" th:action="@{/planning/experiments/{id} (id=${experimentType.id})}" th:object="${experimentType}"
+          method="post">
 
-    <table class="table table-hover">
-        <div class="dropdown">
-            <div  class="">
-                <input type="text" placeholder="Search.." id="myInput" onclick="myFunction()" onmouseover="myFunction()"  onkeyup="filterFunction()">
-                <div  id="myDropdown" class="dropdown-content">
-                    <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}" th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
+        <table class="table table-hover" id="myTable">
+            <div class="dropdown">
+                <div class="">
+                    <input type="text" placeholder="Search.." id="myInput" onclick="myFunction()"
+                           onmouseover="myFunction()" onkeyup="filterFunction()">
+                    <div id="myDropdown" class="dropdown-content">
+                        <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}"
+                           th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <thead>
-        <tr>
-            <th th:text="#{step.type}">Step Type</th>
-            <th>Continuity</th>
-            <th th:text="#{step.duration}">Duration</th>
-        </tr>
-        </thead>
+            <thead>
+            <tr>
+                <th th:text="#{step.type}">Step Type</th>
+                <th>Continuity</th>
+                <th>After/Before previous step</th>
+                <th th:text="#{step.duration}">Duration hours</th>
+                <th th:text="#{step.duration}">Duration minutes</th>
+                <th th:text="#{stepType.setFixedTime}">Set fixed time of step</th>
+                <th th:text="#{stepType.fixedTime}">Fixed time of step</th>
+            </tr>
+            </thead>
 
-        <!-- IMPORTANT, class="list" have to be at tbody -->
-        <tbody id="list" class="list"  >
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody id="list" class="list">
             <tr th:each="stepType, itemStat : *{stepTypes}">
-                <td ><input class="steptype" th:type="hidden" th:field="*{stepTypes[__${itemStat.index}__].deviceType}" th:value="${stepType.deviceType.deviceTypeName}" th:text="${stepType.deviceType.deviceTypeName}" >
-                    <input class="steptypename" th:type="hidden" th:field="*{stepTypes[__${itemStat.index}__].stepTypeName}" th:value="${stepType.stepTypeName}">
+                <td><input class="steptype" th:type="hidden" th:field="*{stepTypes[__${itemStat.index}__].deviceType}"
+                           th:value="${stepType.deviceType.deviceTypeName}"
+                           th:text="${stepType.deviceType.deviceTypeName}">
+                    <input class="steptypename" th:type="hidden"
+                           th:field="*{stepTypes[__${itemStat.index}__].stepTypeName}"
+                           th:value="${stepType.stepTypeName}">
                 </td>
-                <td >
+                <td>
                     <select th:field="*{stepTypes[__${itemStat.index}__].continuity.type}">
-                        <option class="dropdown-item" th:each="option : ${allOptions}" th:value="${option}" th:text="${option}"></option>
+                        <option class="dropdown-item" th:each="option : ${allTypeOptions}" th:value="${option}"
+                                th:text="${option}"></option>
                     </select>
                 </td>
-                <td ><input th:field="*{stepTypes[__${itemStat.index}__].continuity.hours}" th:value="${stepType.continuity.hours}"></td>
-                <td ><input th:field="*{stepTypes[__${itemStat.index}__].continuity.minutes}" th:value="${stepType.continuity.minutes}"></td>
+                <td>
+                    <select th:field="*{stepTypes[__${itemStat.index}__].continuity.directionType}">
+                        <option class="dropdown-item" th:each="option : ${allTypeDirections}" th:value="${option}"
+                                th:text="${option}"></option>
+                    </select>
+                </td>
+                <td colspan="2">
+                    <div class="input-group">
+                        <input type="number" min="0" step="1" class=" form-control input-device" style="width: 50%;  transform: translate(-50%, 0%);"
+                               th:field="*{stepTypes[__${itemStat.index}__].continuity.hours}"
+                               th:value="${stepType.continuity.hours}"/>
+                        <span class="input-group-btn" style="width:0px;"></span>
+                        <input type="number" min="0" max="60" step="1" class=" form-control input-device" style="width: 50%; transform: translate(-50%, 0%);"
+                               th:field="*{stepTypes[__${itemStat.index}__].continuity.minutes}"
+                               th:value="${stepType.continuity.minutes}"/>
+                    </div>
+                <td>
+                    <label class="switch">
+                        <input type="checkbox"
+                               th:checked="${stepType.hasFixedLength}"
+                               th:onclick="showFixedTimeInput([[${itemStat.index}]])"
+                               th:field="*{stepTypes[__${itemStat.index}__].hasFixedLength}"
+                               th:value="${stepType.hasFixedLength}">
+                    </label>
+                </td>
+                <td colspan="2">
+                    <div class="input-group">
+                        <input type="number" min="0" step="1" class=" form-control input-device" style="width: 50%; transform: translate(-50%, 0%);"
+                               th:field="*{stepTypes[__${itemStat.index}__].fixedTimeHours}"
+                               th:value="${stepType.fixedTimeHours}"/>
+                        <span class="input-group-btn" style="width:0px;"></span>
+                        <input type="number" min="0" max="60" step="1" class=" form-control input-device" style="width: 50%; transform: translate(-50%, 0%);"
+                               th:field="*{stepTypes[__${itemStat.index}__].fixedTimeMinutes}"
+                               th:value="${stepType.fixedTimeMinutes}"/>
+                    </div>
+                <td>
             </tr>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
         <div>
             <input th:field="*{expname}" placeholder="Expirement Type Name">
             <input th:field="*{id}" th:type="hidden" th:value="experimentType.id">
         </div>
 
-    <div style="margin-top: 10px">
-        <a style="margin-right: 10px" href="/planning/experiments" class="btn btn-outline-primary" th:text="#{experimentstype.return}" >Return</a>
-        <button style="margin-right: 10px" type="submit"  class="btn btn-primary"th:text="#{experiment.type.submit}">
-            Submit
-        </button>
-    </div>
+        <div style="margin-top: 10px">
+            <a style="margin-right: 10px" href="/planning/experiments" class="btn btn-outline-primary"
+               th:text="#{experimentstype.return}">Return</a>
+            <button style="margin-right: 10px" type="submit" class="btn btn-primary"
+                    th:text="#{experiment.type.submit}">
+                Submit
+            </button>
+        </div>
     </form>
 </div>
 </body>

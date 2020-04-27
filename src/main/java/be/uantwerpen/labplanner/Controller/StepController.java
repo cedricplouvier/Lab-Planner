@@ -570,6 +570,13 @@ public class StepController {
             return "/PlanningTool/planning-exp-book";
         }
 
+        //set current experimentType by experimentType id
+        for (ExperimentType expType : experimentTypeService.findAll()) {
+            if (expType.getId().equals(experiment.getExperimentType().getId())) {
+                experiment.setExperimentType(expType);
+            }
+        }
+
         //check if experiment name is unique
         for (Experiment exp : experimentService.findAll()) {
             //If there is experiment with different ID and same name, it's not unique
@@ -580,19 +587,14 @@ public class StepController {
             }
         }
 
-        //set current experimentType by experimentType id
-        for (ExperimentType expType : experimentTypeService.findAll()) {
-            if (expType.getId().equals(experiment.getExperimentType().getId())) {
-                experiment.setExperimentType(expType);
-            }
-        }
-
         //check negative mixture
-        for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
-            if (pom.getMixtureAmount() < 0) {
-                errorMessage = "Ammount of mixture can't be negative";
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-                return "/PlanningTool/planning-exp-book";
+        if (experiment.getPiecesOfMixture() != null) {
+            for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
+                if (pom.getMixtureAmount() < 0) {
+                    errorMessage = "Ammount of mixture can't be negative";
+                    prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+                    return "/PlanningTool/planning-exp-book";
+                }
             }
         }
 
@@ -867,30 +869,44 @@ public class StepController {
     @PreAuthorize("hasAuthority('Planning - Make new experiment')")
     @RequestMapping(value = "/planning/experiments/put", method = RequestMethod.GET)
     public String viewCreateExperimentType(final ModelMap model) {
-        List<String> options = new ArrayList<>();
-        options.add("No");
-        options.add("Soft (at least)");
-        options.add("Soft (at most)");
-        options.add("Hard");
+        List<String> typeOptions = new ArrayList<>();
+        typeOptions.add("No");
+        typeOptions.add("Soft (at least)");
+        typeOptions.add("Soft (at most)");
+        typeOptions.add("Hard");
+
+        List<String> directionOptions = new ArrayList<>();
+        directionOptions.add("Before");
+        directionOptions.add("After");
+
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("experimentType", new ExperimentType());
-        model.addAttribute("allOptions", options);
+        model.addAttribute("allTypeOptions", typeOptions);
+        model.addAttribute("allTypeDirections", directionOptions);
         return "PlanningTool/planning-exp-manage";
     }
 
     @PreAuthorize("hasAuthority('Planning - Make new experiment')")
     @RequestMapping(value = "/planning/experiments/{id}", method = RequestMethod.GET)
     public String viewEditExperimentType(@PathVariable Long id, final ModelMap model) {
-        List<String> options = new ArrayList<>();
-        options.add("No");
-        options.add("Soft (at least)");
-        options.add("Soft (at most)");
-        options.add("Hard");
+        List<String> typeOptions = new ArrayList<>();
+        typeOptions.add("No");
+        typeOptions.add("Soft (at least)");
+        typeOptions.add("Soft (at most)");
+        typeOptions.add("Hard");
+
+
+        List<String> directionOptions = new ArrayList<>();
+        directionOptions.add("Before");
+        directionOptions.add("After");
+
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("experimentType", experimentTypeService.findById(id).get());
-        model.addAttribute("allOptions", options);
+        model.addAttribute("allTypeOptions", typeOptions);
+        model.addAttribute("allTypeDirections", directionOptions);
+
         return "PlanningTool/planning-exp-manage";
     }
 
