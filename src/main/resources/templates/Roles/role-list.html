@@ -55,7 +55,6 @@
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th th:text="#{roles.id}"></th>
                     <th th:text="#{roles.name}"></th>
                     <th th:text="#{roles.privileges}"></th>
                     <th th:text="#{roles.users}"></th>
@@ -68,7 +67,6 @@
 
                 <tbody class="list" id="RoleTable">
                 <tr th:each="role : ${allRoles}">
-                    <td class="ID" th:value="${role.id}" th:text="${role.id }"></td>
                     <td class="Name" th:value="${role.name}" th:text="${role.name }"></td>
                     <td class="Privileges">
                         <a
