@@ -152,7 +152,7 @@
                         </table></div>
 
 
-                        <a sec:authorize="hasAuthority('Stock - Modify - All')" href="/products/put" class="btn btn-outline-primary" th:text="#{product.new}"
+                        <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/put}" class="btn btn-outline-primary" th:text="#{product.new}"
                         >New product</a>
 
 
@@ -221,7 +221,7 @@
                                 </tbody>
                             </table>
                             </div>
-                            <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  href="/mixtures/put" type="button" class="btn btn-outline-primary"th:text="#{mixture.create}">
+                            <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  th:href="@{/mixtures/put}" type="button" class="btn btn-outline-primary"th:text="#{mixture.create}">
                                 Create new mixture
                             </a>
 
@@ -280,7 +280,7 @@
                                 </tbody>
                             </table>
                             </div>
-                            <a href="/tags/put" type="button" class="btn btn-outline-primary"th:text="#{tag.create}">
+                            <a th:href="@{/tags/put}" type="button" class="btn btn-outline-primary"th:text="#{tag.create}">
                                 Create new tag
                             </a>
 
