@@ -38,12 +38,12 @@
                 <ul>
                     <ul th:each="graphType : ${selectableGraphTypes}">
                         <div>
-                            <input type="radio" th:name="selectedTypeOfGraph" th:value="${graphType}">
+                            <input type="radio" th:name="selectedTypeOfGraph" th:value="${graphType}" onclick="this.form.submit();">
                             <label th:text="${graphType}"></label>
                         </div>
                     </ul >
                 </ul>
-                <button class="btn btn-primary" type="submit" th:text="#{statistics.selectGraph}"></button><p><span th:text="#{statistics.reselectTypeToRefresh}"></span></p>
+                <p><span th:text="#{statistics.reselectTypeToRefresh}"></span></p>
             </form>
         </div>
         <div class="col-sm-4">
@@ -52,12 +52,12 @@
                 <ul>
                     <ul th:each="years : ${selectableYears}">
                         <div>
-                            <input type="radio" th:name="selectedYear" th:value="${years}">
+                            <input type="radio" th:name="selectedYear" th:value="${years}" onclick="this.form.submit();">
                             <label th:text="${years}"></label>
                         </div>
                     </ul >
                 </ul>
-                <button class="btn btn-primary" type="submit" th:text="#{statistics.selectYear}"></button><p><span th:text="#{statistics.currentYearStandard}"></span></p>
+                <p><span th:text="#{statistics.currentYearStandard}"></span></p>
             </form>
         </div>
     </div>
