@@ -14,7 +14,7 @@
 
 <div class = "container">
     <div th:replace="navbar :: navbar"></div>
-    <form action="#" th:action="@{/usermanagement/privileges/{id}(id=${privilege})}"
+    <form action="#" th:action="@{/usermanagement/privileges/{id}(id=${privilege.id})}"
           th:object="${privilege}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
 

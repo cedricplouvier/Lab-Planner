@@ -88,7 +88,7 @@ let newSchedule;
                         newSchedule.end = e.end;
                     }
                     var check = checkContinuity(calendarUpdate.stepIndex, schedule)
-                    if (check.ok) {
+                    if (check.ok||$('#deviceTypeDropdown').children().length!=0) {
                         newSchedule.bgColor = '#5cb85c';
                         newSchedule.dragBgColor = '#5cb85c';
                         newSchedule.borderColor = '#5cb85c';
@@ -109,7 +109,6 @@ let newSchedule;
                     }
 
                     cal.updateSchedule(schedule.id, schedule.calendarId, e);
-                    refreshScheduleVisibility();
                 } else {
                     if (newSchedule) {
                         var calendar = e.calendar || findCalendar(e.calendarId);
@@ -119,10 +118,7 @@ let newSchedule;
 
                 }
                 $("#help").text("you can drag and drop the calendar or drag again");
-
                 checkOverlap();
-
-
                 refreshScheduleVisibility();
             }
 
@@ -287,7 +283,7 @@ let newSchedule;
         cal.setOptions(options, true);
         cal.changeView(viewName, true);
 
-        setDropdownCalendarType();
+        // setDropdownCalendarType();
         setRenderRangeText();
         setSchedules();
     }
@@ -302,7 +298,6 @@ let newSchedule;
         var str = ("0" + (newSchedule.end.getHours() )).slice(-2)+ ":" + ("0" + (newSchedule.end.getMinutes() )).slice(-2)  ;
         document.getElementById('endHour' + calendarUpdate.stepIndex + '').value = str;
 
-        console.log(document.getElementById('deviceTypeDropdown').value)
         document.getElementById('selectDevice' + calendarUpdate.stepIndex + '').value =  document.getElementById('deviceTypeDropdown').value;
 
         var check = checkContinuity(calendarUpdate.stepIndex,newSchedule);
@@ -407,6 +402,7 @@ let newSchedule;
             });
         }
     }
+
     function saveNewSchedule(scheduleData) {
         var calendar = scheduleData.calendar || findCalendar(scheduleData.calendarId);
         var schedule = {
@@ -493,67 +489,55 @@ let newSchedule;
         });
 
         cal.render(true);
-        let parent = document.getElementsByClassName('tui-full-calendar-timegrid-schedules-container');
-        var type = cal.getViewName();
-        if (type === 'day') {
 
-        } else if (type === 'week') {
-            for (let current=0;current<=6;current++){
-                let currentDay =(current+cal.getDateRangeStart().getDay())%7;
-                if(currentDay==0||currentDay==6) {
-                    var iDiv = document.createElement('div');
-                    iDiv.id = 'weekend';
-                    iDiv.className = 'weekend';
-
-                    iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:100%;width:100%;opacity:0.25; ";
-                    parent[0].children[current].prepend(iDiv);
-                }else{ // week day or holliday
-                    var startDate = new Date(cal.getDateRangeStart().getFullYear(), cal.getDateRangeStart().getMonth(), cal.getDateRangeStart().getDate(), cal.getDateRangeStart().getHours(), cal.getDateRangeStart().getMinutes());
-                    //add hours and minutes of continuity
-                    startDate.setDate(startDate.getDate()+current);
-                    var isHoliday = false;
-                    for (let current = 0; current < holidays.length; current++) {
-                        if (holidays[current]['date'] == startDate.getFullYear().toString()+ "-" + ("0" + (startDate.getMonth() + 1)).slice(-2) + "-" + ("0" + (startDate.getDate())).slice(-2) ) {
-                            console.log("holiday");
-                            isHoliday = true;
-                        }
-                    }
-                    if(isHoliday){
+        if(calendarType==0) {
+            let parent = document.getElementsByClassName('tui-full-calendar-timegrid-schedules-container');
+            var type = cal.getViewName();
+            if (type === 'week') {
+                for (let current = 0; current <= 6; current++) {
+                    let currentDay = (current + cal.getDateRangeStart().getDay()) % 7;
+                    if (currentDay == 0 || currentDay == 6) {
                         var iDiv = document.createElement('div');
-                        iDiv.id = 'holiday';
-                        iDiv.className = 'holiday';
+                        iDiv.id = 'weekend';
+                        iDiv.className = 'weekend';
+
                         iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:100%;width:100%;opacity:0.25; ";
                         parent[0].children[current].prepend(iDiv);
-                    }else{ // add office hours and continuity
-                        //office hours
-                        var iDiv = document.createElement('div');
-                        iDiv.id = 'officehours';
-                        iDiv.className = 'officehours';
-                        let percentage = 100/24*9;
-                        iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:"+percentage+"%;width:100%;opacity:0.25; ";
-                        parent[0].children[current].prepend(iDiv);
-                        iDiv = document.createElement('div');
-                        iDiv.id = 'officehours';
-                        iDiv.className = 'officehours';
-                        percentage = 100/24*7;
-                        iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:"+percentage+"%;width:100%;opacity:0.25;bottom: 0px; ";
-                        parent[0].children[current].prepend(iDiv);
-                        // check double bookings
-                        //check if there are available devices
-                        if($('#deviceTypeDropdown').children().length==0){
-                            return {
-                                message: "There are no available devices for this timeslot",
-                                ok:false,
+                    } else { // week day or holliday
+                        var startDate = new Date(cal.getDateRangeStart().getFullYear(), cal.getDateRangeStart().getMonth(), cal.getDateRangeStart().getDate(), cal.getDateRangeStart().getHours(), cal.getDateRangeStart().getMinutes());
+                        //add hours and minutes of continuity
+                        startDate.setDate(startDate.getDate() + current);
+                        var isHoliday = false;
+                        for (let current = 0; current < holidays.length; current++) {
+                            if (holidays[current]['date'] == startDate.getFullYear().toString() + "-" + ("0" + (startDate.getMonth() + 1)).slice(-2) + "-" + ("0" + (startDate.getDate())).slice(-2)) {
+                                isHoliday = true;
                             }
+                        }
+                        if (isHoliday) {
+                            var iDiv = document.createElement('div');
+                            iDiv.id = 'holiday';
+                            iDiv.className = 'holiday';
+                            iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:100%;width:100%;opacity:0.25; ";
+                            parent[0].children[current].prepend(iDiv);
+                        } else { // add office hours and continuity
+                            //office hours
+                            var iDiv = document.createElement('div');
+                            iDiv.id = 'officehours';
+                            iDiv.className = 'officehours';
+                            let percentage = 100 / 24 * 9;
+                            iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:" + percentage + "%;width:100%;opacity:0.25; ";
+                            parent[0].children[current].prepend(iDiv);
+                            iDiv = document.createElement('div');
+                            iDiv.id = 'officehours';
+                            iDiv.className = 'officehours';
+                            percentage = 100 / 24 * 7;
+                            iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:" + percentage + "%;width:100%;opacity:0.25;bottom: 0px; ";
+                            parent[0].children[current].prepend(iDiv);
                         }
                     }
                 }
             }
-        } else if (options.month.visibleWeeksCount === 2) {
-        } else if (options.month.visibleWeeksCount === 3) {
-        } else {
         }
-
         calendarElements.forEach(function(input) {
             var span = input.nextElementSibling;
             span.style.backgroundColor = input.checked ? span.style.borderColor : 'transparent';
@@ -681,7 +665,7 @@ let newSchedule;
 
     window.cal = cal;
 
-    setDropdownCalendarType();
+    // setDropdownCalendarType();
     setRenderRangeText();
     setSchedules();
     setEventListener();

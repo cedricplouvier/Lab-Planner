@@ -166,31 +166,31 @@ function checkOverlap() {
                 if(otherSteps[currentStep]['device']['id']==deviceId){ //found step booked of same device
                     var stepStart = new Date(otherSteps[currentStep]['start']+ 'T'+otherSteps[currentStep]['startHour']);
                     var stepEnd = new Date(otherSteps[currentStep]['end']+ 'T'+otherSteps[currentStep]['endHour']);
-
                     //check if date overlaps with schedule
                     if(stepStart>scheduleStart&&stepStart<scheduleEnd){
                         overlap = true;
                     }else if(stepEnd>scheduleStart&&stepEnd<scheduleEnd){
                         overlap = true;
+                    }else if(stepStart<scheduleStart&&stepEnd>scheduleEnd){
+                        overlap=true;
                     }
                 }
             }
             //now check own steps
-            //first check other steps
             for(var currentStep=0;currentStep<userSteps.length;currentStep++){
                 if(userSteps[currentStep]['device']['id']==deviceId){ //found step booked of same device
-                    var stepStart = new Date(userSteps[currentStep]['start']+ 'T'+userSteps[currentStep]['startHour']);
-                    var stepEnd = new Date(userSteps[currentStep]['end']+ 'T'+userSteps[currentStep]['endHour']);
-
+                    stepStart = new Date(userSteps[currentStep]['start']+ 'T'+userSteps[currentStep]['startHour']);
+                    stepEnd = new Date(userSteps[currentStep]['end']+ 'T'+userSteps[currentStep]['endHour']);
                     //check if date overlaps with schedule
                     if(stepStart>scheduleStart&&stepStart<scheduleEnd){
                         overlap = true;
                     }else if(stepEnd>scheduleStart&&stepEnd<scheduleEnd){
                         overlap = true;
+                    }else if(stepStart<scheduleStart&&stepEnd>scheduleEnd){
+                        overlap=true;
                     }
                 }
             }
-
             if(!overlap){
                 const optionText = devices[current]['devicename'];
                 const optionValue = devices[current]['id'];
@@ -305,7 +305,6 @@ function checkContinuity(stepindex,schedule) {
             ok:false,
         }
     }
-
     //check if there are available devices
     if($('#deviceTypeDropdown').children().length==0){
         return {
@@ -345,7 +344,7 @@ function generateSchedule(viewName, renderStart, renderEnd) {
         // }
     })
 
-    //Add all other steps of devicetpye
+    //Add all other steps of devicetype
     otherSteps.forEach(function (step) {
         if(step['device']['deviceType']['id'] === allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['id']) {
             let schedule = new ScheduleInfo();

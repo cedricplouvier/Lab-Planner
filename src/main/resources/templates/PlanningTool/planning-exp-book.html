@@ -21,15 +21,11 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/icons.css}">
 </head>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
 <script th:inline="javascript">
-
-    toastr.options.extendedTimeOut = 5000;
+    let errorMsg = [[${errorMsg}]]
     $(document).ready(function () {
-        let message = [[${errorMsg}]];
-        if (message != null) {
-            toastr.error(message);
+        if (errorMsg) {
+            $("#myToast").toast('show');
         }
     });
 
@@ -44,12 +40,12 @@
     let holidays = [[${holidays}]];
 
     let calendarUpdate = {
-        experimentIndex : 0,
-        stepIndex : 0,
+        experimentIndex: 0,
+        stepIndex: 0,
         start: 0,
-        end:0,
-        startHour:0,
-        endHour:0,
+        end: 0,
+        startHour: 0,
+        endHour: 0,
     }
 
     function addMixtureRow(mixtures) {
@@ -173,7 +169,8 @@
     function removeRow(r) {
         $(r).closest('tr').remove();
     }
-    function openCalendar(expInd,stepInd) {
+
+    function openCalendar(expInd, stepInd) {
         calendarUpdate.experimentIndex = expInd;
         calendarUpdate.stepIndex = stepInd;
         document.getElementById('steptitle').innerText = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['deviceTypeName'];
@@ -195,7 +192,6 @@
         calendarUpdate.endHour = document.getElementById('endHour' + stepInd + '').value
 
         document.getElementById('selectStep').disabled = false;
-        document.getElementById('deviceTypeDropdown').value = document.getElementById('selectDevice' + current + '').value;
 
     }
 </script>
@@ -255,9 +251,11 @@
     .show {
         display: block;
     }
+
     .modal-xl {
         width: 100%;
-        height: 100%;!important;
+        height: 100%;
+    !important;
         margin-top: 0px;
         margin-bottom: 0px;
         max-width: 100%;
@@ -265,17 +263,18 @@
     .modal {
         padding: 10px !important;
     }
+
     .modal-dialog,
     .modal-content {
         /* 80% of window height */
         height: 100%!important;
-
     }
 
     .modal-body {
         /* 100% = dialog height, 120px = header + footer */
         /*overflow-y: scroll;*/
-        height: 100%;!important;
+        height: 100%;
+    !important;
 
     }
     /*#extraLargeModal{*/
@@ -293,6 +292,13 @@
     }
 
 </style>
+
+<div class="toast" id="myToast" data-delay="5000" style=" background-color:red ;position: absolute; top: 0; right: 0;">
+    <div class="toast-body">
+        <strong th:text="${errorMsg}"></strong>
+    </div>
+</div>
+
 <body>
 <div class="container">
     <div th:replace="navbar :: navbar"></div>
@@ -361,7 +367,7 @@
                         </select>
                     </th>
                     <th>
-                        <input type="number" min="0" step="0.01"  class=" form-control input-device"
+                        <input type="number" min="0" step="0.01" class=" form-control input-device"
                                th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
                                placeholder="Amount of mixture" required>
                     </th>
@@ -477,12 +483,7 @@
                         <div id="leftSide" style="display:flex;flex-direction:column;flex: 3;">
                             <div id="menu" style="flex:1;">
                                 <span class="dropdown">
-                        <button id="dropdownMenu-calendarType" class="btn btn-default btn-sm dropdown-toggle"
-                                type="button" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="true">
-                            <i id="calendarTypeIcon" class="calendar-icon ic_view_month" style="margin-right: 4px;"></i>
-                            <span id="calendarTypeName">Dropdown</span>&nbsp;
-                            <i class="calendar-icon tui-full-calendar-dropdown-arrow"></i>
+
                         </button>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu-calendarType">
                             <li role="presentation">
@@ -547,7 +548,6 @@
                                 <span id="renderRange" class="render-range"></span>
                             </div>
                             <div id="calendar" ></div>
-
                         </div>
                         <div id="rightSide" style="flex: 1;display: flex;flex-direction: column;overflow-y: auto;">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="flex: 1;padding-right: 30px;width:10%;align-self:flex-end;">&times;</button>
@@ -572,11 +572,6 @@
                                     <div class="alert alert-info" id="help" role="alert">
                                         Drag and release to create a schedule.
                                     </div>
-                                </div>
-                            </div>
-                            <div style="flex: 3; margin: 10px;">
-                                <div class="alert alert-info" role="alert" style="height: 100%;">
-                                    A simple info alert—check it out!
                                 </div>
                             </div>
                             <div style="flex: 1;margin: 10px;">
