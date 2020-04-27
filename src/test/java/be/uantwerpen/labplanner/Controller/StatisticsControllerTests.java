@@ -23,6 +23,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -146,6 +147,11 @@ public class StatisticsControllerTests {
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/statistics/statistics"))
                 .andDo(print());
+
+    }
+
+    @Test
+    public void submitTestFail() throws Exception{
 
     }
 
