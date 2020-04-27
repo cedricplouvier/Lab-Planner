@@ -3,15 +3,10 @@ package be.uantwerpen.labplanner.Repository;
 
 import be.uantwerpen.labplanner.LabplannerApplication;
 
-import be.uantwerpen.labplanner.common.model.stock.Tag;
-import be.uantwerpen.labplanner.common.repository.stock.TagRepository;
+import be.uantwerpen.labplanner.Model.OwnTag;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.jdbc.AutoConfigureDataJdbc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TagRepositoryTests {
 
     @Autowired
-    private TagRepository tagRepository;
+    private OwnTagRepository tagRepository;
 
 
     @Test
@@ -32,7 +27,7 @@ public class TagRepositoryTests {
 
 
         //Setup tag
-        Tag tag = new Tag();
+        OwnTag tag = new OwnTag();
         tag.setName("testTag");
 
         //Save tag, verify it has ID value after save
@@ -41,7 +36,7 @@ public class TagRepositoryTests {
         assertNotNull(tag.getId());
 
         //fetch from db
-        Tag fetchedTag = tagRepository.findById(tag.getId()).orElse(null);
+        OwnTag fetchedTag = tagRepository.findById(tag.getId()).orElse(null);
         //should not be null
         assertNotNull(fetchedTag);
 
@@ -53,9 +48,9 @@ public class TagRepositoryTests {
 
 
         //get all tag, list should only have one more then initial
-        Iterable<Tag> tags = tagRepository.findAll();
+        Iterable<OwnTag> tags = tagRepository.findAll();
         int count = 0;
-        for(Tag p : tags){
+        for(OwnTag p : tags){
             count++;
         }
         assertEquals(count, precount+1);
