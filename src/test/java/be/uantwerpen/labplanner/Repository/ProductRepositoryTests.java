@@ -12,6 +12,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,7 +28,7 @@ public class ProductRepositoryTests {
     @Autowired
     private OwnTagRepository tagRepository;
 
-
+    @Transactional
     @Test
     public void testSaveProduct() throws MalformedURLException {
 

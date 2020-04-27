@@ -79,7 +79,7 @@
                     <div class="col" >
                     </div>
                     <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
-                        <img class="img-fluid" th:src="${(device.getDeviceType().getDevicePictureName() != null && !#strings.isEmpty(device.getDeviceType().getDevicePictureName())) ? '/files/images/'+device.getDeviceType().getDevicePictureName() : '/images/placeholder.jpg'}" />
+                        <img class="img-fluid" th:src="@{${(device.getDeviceType().getDevicePictureName() != null && !#strings.isEmpty(device.getDeviceType().getDevicePictureName())) ? '/files/images/'+device.getDeviceType().getDevicePictureName() : '/images/placeholder.jpg'}}" />
                     </div>
                 </div>
             </div>
@@ -105,7 +105,7 @@
                 </div>
             </div>
             <hr class="my-4">
-            <a href="/devices" class="btn btn-primary" th:text="#{device.back}"></a>
+            <a th:href="@{/devices}" class="btn btn-primary" th:text="#{back.devices}"></a>
         </div>
     </div><i class="glyphicon glyphicon-search"></i>
     <div th:replace="footer :: footer"></div>

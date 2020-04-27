@@ -23,6 +23,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -99,7 +100,7 @@ public class StatisticsControllerTests {
                 .andExpect(model().attribute("dev3", notNullValue()))
                 .andExpect(model().attribute("dev4", notNullValue()))
                 .andExpect(model().attribute("dev5", notNullValue()))
-                .andExpect(view().name("/Statistics/statistics"))
+                .andExpect(view().name("Statistics/statistics"))
                 .andDo(print());
     }
 
@@ -112,7 +113,7 @@ public class StatisticsControllerTests {
         when(productService.findAll()).thenReturn(products);
         mockMvc.perform(get("/statistics/stockStatistics").with(user("test").password("test")))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/Statistics/stockStatistics"))
+                .andExpect(view().name("Statistics/stockStatistics"))
                 .andExpect(model().attribute("products",hasSize(1)))
                 .andDo(print());
     }
@@ -146,6 +147,11 @@ public class StatisticsControllerTests {
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/statistics/statistics"))
                 .andDo(print());
+
+    }
+
+    @Test
+    public void submitTestFail() throws Exception{
 
     }
 

@@ -490,73 +490,73 @@ public class DatabaseLoader {
         OwnProduct pr8 = new OwnProduct("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4,null);
         productRepository.save(pr8);
 
-        Step s1= new Step(u1,d1,"2020-03-18","2020-03-18","11:00","12:00","");
+        Step s1 = new Step(u1, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
         stepRepository.save(s1);
-        Step s2= new Step(u1,d7,"2020-03-17","2020-03-17","08:00","18:00","");
+        Step s2 = new Step(u1, d7, "2020-03-17", "2020-03-17", "08:00", "18:00", "");
         stepRepository.save(s2);
-        Step s3= new Step(u4,d1,"2020-03-16","2020-03-16","14:00","16:00","");
+        Step s3 = new Step(u4, d1, "2020-03-16", "2020-03-16", "14:00", "16:00", "");
         stepRepository.save(s3);
-        Step s4= new Step(u4,d7,"2020-03-15","2020-03-15","16:00","18:00","");
+        Step s4 = new Step(u4, d7, "2020-03-15", "2020-03-15", "16:00", "18:00", "");
         stepRepository.save(s4);
-        Step s5= new Step(u5,d9,"2020-03-19","2020-03-19","13:00","18:00","");
+        Step s5 = new Step(u5, d9, "2020-03-19", "2020-03-19", "13:00", "18:00", "");
         stepRepository.save(s5);
 
-        Step s6= new Step(u7,d9,"2020-04-10","2020-04-10","13:00","18:00","");
+        Step s6 = new Step(u7, d9, "2020-04-10", "2020-04-10", "13:00", "18:00", "");
         stepRepository.save(s6);
-        Step s7= new Step(u7,d9,"2020-04-11","2020-04-11","13:00","18:00","");
+        Step s7 = new Step(u7, d9, "2020-04-11", "2020-04-11", "13:00", "18:00", "");
         stepRepository.save(s7);
-        Step s8= new Step(u8,d9,"2020-04-12","2020-04-12","13:00","18:00","");
+        Step s8 = new Step(u8, d9, "2020-04-12", "2020-04-12", "13:00", "18:00", "");
         stepRepository.save(s8);
-        Step s9= new Step(u8,d9,"2020-04-13","2020-04-13","13:00","18:00","");
+        Step s9 = new Step(u8, d9, "2020-04-13", "2020-04-13", "13:00", "18:00", "");
         stepRepository.save(s9);
 
-        Step s10= new Step(u1,d1,"2020-05-18","2020-05-18","11:00","13:00","");
+        Step s10 = new Step(u1, d1, "2020-05-18", "2020-05-18", "11:00", "13:00", "");
         stepRepository.save(s10);
-        Step s11= new Step(u1,d1,"2020-06-17","2020-06-17","08:00","19:00","");
+        Step s11 = new Step(u1, d1, "2020-06-17", "2020-06-17", "08:00", "19:00", "");
         stepRepository.save(s11);
-        Step s12= new Step(u4,d1,"2020-07-16","2020-07-16","11:00","16:00","");
+        Step s12 = new Step(u4, d1, "2020-07-16", "2020-07-16", "11:00", "16:00", "");
         stepRepository.save(s12);
-        Step s13= new Step(u4,d1,"2020-08-15","2020-08-15","12:00","18:00","");
+        Step s13 = new Step(u4, d1, "2020-08-15", "2020-08-15", "12:00", "18:00", "");
         stepRepository.save(s13);
-        Step s14= new Step(u5,d1,"2020-09-19","2020-09-19","14:00","18:00","");
+        Step s14 = new Step(u5, d1, "2020-09-19", "2020-09-19", "14:00", "18:00", "");
         stepRepository.save(s14);
-        Step s15= new Step(u4,d1,"2020-10-16","2020-10-16","11:00","16:00","");
+        Step s15 = new Step(u4, d1, "2020-10-16", "2020-10-16", "11:00", "16:00", "");
         stepRepository.save(s15);
-        Step s16= new Step(u4,d1,"2020-11-15","2020-11-15","12:00","18:00","");
+        Step s16 = new Step(u4, d1, "2020-11-15", "2020-11-15", "12:00", "18:00", "");
         stepRepository.save(s16);
-        Step s17= new Step(u5,d1,"2020-12-19","2020-12-19","14:00","18:00","");
+        Step s17 = new Step(u5, d1, "2020-12-19", "2020-12-19", "14:00", "18:00", "");
         stepRepository.save(s17);
 
-        Step s18= new Step(u7,d2,"2020-04-10","2020-04-10","09:00","18:00","");
+        Step s18 = new Step(u7, d2, "2020-04-10", "2020-04-10", "09:00", "18:00", "");
         stepRepository.save(s18);
-        Step s19= new Step(u7,d3,"2020-04-11","2020-04-11","13:00","20:00","");
+        Step s19 = new Step(u7, d3, "2020-04-11", "2020-04-11", "13:00", "20:00", "");
         stepRepository.save(s19);
-        Step s20= new Step(u8,d4,"2020-04-12","2020-04-12","13:00","15:00","");
+        Step s20 = new Step(u8, d4, "2020-04-12", "2020-04-12", "13:00", "15:00", "");
         stepRepository.save(s20);
-        Step s21= new Step(u8,d5,"2020-04-13","2020-04-13","11:00","18:00","");
+        Step s21 = new Step(u8, d5, "2020-04-13", "2020-04-13", "11:00", "18:00", "");
         stepRepository.save(s21);
 
-        Step s22= new Step(u1,d2,"2019-05-18","2019-05-18","10:00","20:00","");
+        Step s22 = new Step(u1, d2, "2019-05-18", "2019-05-18", "10:00", "20:00", "");
         stepRepository.save(s22);
 
-        Step s23= new Step(u1,d8,"2020-01-13","2020-01-15","10:00","18:00","");
+        Step s23 = new Step(u1, d8, "2020-01-13", "2020-01-15", "10:00", "18:00", "");
         stepRepository.save(s23);
-        Step s24= new Step(u1,d8,"2020-02-13","2020-03-15","10:00","18:00","");
+        Step s24 = new Step(u1, d8, "2020-02-13", "2020-03-15", "10:00", "18:00", "");
         stepRepository.save(s24);
-        Step s25= new Step(u1,d8,"2020-04-13","2020-06-15","10:00","18:00","");
+        Step s25 = new Step(u1, d8, "2020-04-13", "2020-06-15", "10:00", "18:00", "");
         stepRepository.save(s25);
-        Step s26= new Step(u1,d8,"2020-09-13","2020-12-15","10:00","18:00","");
+        Step s26 = new Step(u1, d8, "2020-09-13", "2020-12-15", "10:00", "18:00", "");
         stepRepository.save(s26);
-        Step s27= new Step(u1,d8,"2020-05-13","2020-07-15","10:00","18:00","");
+        Step s27 = new Step(u1, d8, "2020-05-13", "2020-07-15", "10:00", "18:00", "");
         //stepRepository.save(s27);
-        Step s28= new Step(u1,d8,"2020-09-13","2020-11-15","10:00","18:00","");
+        Step s28 = new Step(u1, d8, "2020-09-13", "2020-11-15", "10:00", "18:00", "");
         //stepRepository.save(s28);
-        Step s29= new Step(u1,d8,"2020-05-13","2020-07-15","10:00","18:00","");
+        Step s29 = new Step(u1, d8, "2020-05-13", "2020-07-15", "10:00", "18:00", "");
         //stepRepository.save(s29);
-        Step s30= new Step(u1,d8,"2020-09-13","2020-11-15","10:00","18:00","");
+        Step s30 = new Step(u1, d8, "2020-09-13", "2020-11-15", "10:00", "18:00", "");
         //stepRepository.save(s30);
 
-        Step s31= new Step(u1,d2,"2021-01-01","2021-12-30","10:00","20:00","");
+        Step s31 = new Step(u1, d2, "2021-01-01", "2021-12-30", "10:00", "20:00", "");
         stepRepository.save(s31);
 
         //Create compositions
@@ -708,37 +708,109 @@ public class DatabaseLoader {
         reportRepository.save(r5);
 
         //fill experimentRepository
-        Step step1 = new Step(u6, d10, "2020-03-16", "2020-03-16", "11:00", "12:00", "");
-        Step step2 = new Step(u6, d1, "2020-03-17", "2020-03-17", "12:00", "13:00", "");
-        Step step3 = new Step(u6, d11, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
-        Step step4 = new Step(u6, d12, "2020-03-19", "2020-03-19", "09:00", "10:00", "");
-        Step step5 = new Step(u6, d4, "2020-03-19", "2020-03-19", "10:00", "11:00", "");
-        Step step6 = new Step(u6, d5, "2020-03-19", "2020-03-19", "11:00", "12:00", "");
-        stepRepository.save(step1);
-        stepRepository.save(step2);
-        stepRepository.save(step3);
-        stepRepository.save(step4);
-        stepRepository.save(step5);
-        stepRepository.save(step6);
+        Step step1a = new Step(u7, d10, "2020-05-04", "2020-05-04", "11:00", "12:00", "");
+        Step step2a = new Step(u7, d1, "2020-05-05", "2020-05-05", "12:00", "13:00", "");
+        Step step3a = new Step(u7, d11, "2020-05-06", "2020-05-06", "11:00", "12:00", "");
+        Step step4a = new Step(u7, d12, "2020-05-07", "2020-05-07", "09:00", "10:00", "");
+        Step step5a = new Step(u7, d4, "2020-05-08", "2020-05-08", "10:00", "11:00", "");
+        Step step6a = new Step(u7, d5, "2020-05-08", "2020-05-08", "11:00", "12:00", "");
 
-        List<Step> stepList = new ArrayList<Step>();
-        stepList.add(step1);
-        stepList.add(step2);
-        stepList.add(step3);
-        stepList.add(step4);
-        stepList.add(step5);
-        stepList.add(step6);
 
-        for (int i = 0; i < stepList.size(); i++) {
-            stepList.get(i).setStepType(experimentType1.getStepTypes().get(i));
+        Step step1b = new Step(u7, d10, "2020-05-04", "2020-05-04", "13:00", "14:00", "");
+        Step step2b = new Step(u7, d1, "2020-05-05", "2020-05-05", "14:00", "15:00", "");
+        Step step3b = new Step(u7, d11, "2020-05-06", "2020-05-06", "13:00", "14:00", "");
+        Step step4b = new Step(u7, d12, "2020-05-07", "2020-05-07", "11:00", "12:00", "");
+        Step step5b = new Step(u7, d4, "2020-05-08", "2020-05-08", "12:00", "13:00", "");
+        Step step6b = new Step(u7, d5, "2020-05-08", "2020-05-08", "13:00", "14:00", "");
+
+
+        Step step1c = new Step(u7, d10, "2020-05-04", "2020-05-04", "14:00", "15:00", "");
+        Step step2c = new Step(u7, d1, "2020-05-05", "2020-05-05", "15:00", "16:00", "");
+        Step step3c = new Step(u7, d11, "2020-05-06", "2020-05-06", "15:00", "16:00", "");
+        Step step4c = new Step(u7, d12, "2020-05-07", "2020-05-07", "14:00", "15:00", "");
+        Step step5c = new Step(u7, d4, "2020-05-08", "2020-05-08", "14:00", "15:00", "");
+        Step step6c = new Step(u7, d5, "2020-05-08", "2020-05-08", "15:00", "16:00", "");
+
+
+        stepRepository.save(step1a);
+        stepRepository.save(step2a);
+        stepRepository.save(step3a);
+        stepRepository.save(step4a);
+        stepRepository.save(step5a);
+        stepRepository.save(step6a);
+
+        stepRepository.save(step1b);
+        stepRepository.save(step2b);
+        stepRepository.save(step3b);
+        stepRepository.save(step4b);
+        stepRepository.save(step5b);
+        stepRepository.save(step6b);
+
+        stepRepository.save(step1c);
+        stepRepository.save(step2c);
+        stepRepository.save(step3c);
+        stepRepository.save(step4c);
+        stepRepository.save(step5c);
+        stepRepository.save(step6c);
+
+        List<Step> stepList1 = new ArrayList<Step>();
+        stepList1.add(step1a);
+        stepList1.add(step2a);
+        stepList1.add(step3a);
+        stepList1.add(step4a);
+        stepList1.add(step5a);
+        stepList1.add(step6a);
+
+        List<Step> stepList2 = new ArrayList<Step>();
+        stepList2.add(step1b);
+        stepList2.add(step2b);
+        stepList2.add(step3b);
+        stepList2.add(step4b);
+        stepList2.add(step5b);
+        stepList2.add(step6b);
+
+        List<Step> stepList3 = new ArrayList<Step>();
+        stepList3.add(step1c);
+        stepList3.add(step2c);
+        stepList3.add(step3c);
+        stepList3.add(step4c);
+        stepList3.add(step5c);
+        stepList3.add(step6c);
+
+        for (int i = 0; i < stepList1.size(); i++) {
+            stepList1.get(i).setStepType(experimentType1.getStepTypes().get(i));
         }
-        PieceOfMixture pom = new PieceOfMixture(m1, "Best part of mixture!", 6.6666);
-        pieceOfMixtureRepository.save(pom);
+        for (int i = 0; i < stepList2.size(); i++) {
+            stepList2.get(i).setStepType(experimentType1.getStepTypes().get(i));
+        }
+        for (int i = 0; i < stepList3.size(); i++) {
+            stepList3.get(i).setStepType(experimentType1.getStepTypes().get(i));
+        }
 
-        List<PieceOfMixture> pomList = new ArrayList<>();
-        pomList.add(pom);
+        PieceOfMixture pom1 = new PieceOfMixture(m1, "comment 1", 6.6);
+        pieceOfMixtureRepository.save(pom1);
+        PieceOfMixture pom2 = new PieceOfMixture(m2, "comment 2", 6.6);
+        pieceOfMixtureRepository.save(pom2);
+        PieceOfMixture pom3 = new PieceOfMixture(m3, "comment 3", 6.6);
+        pieceOfMixtureRepository.save(pom3);
+        PieceOfMixture pom4 = new PieceOfMixture(m3, "comment 4", 6.6);
+        pieceOfMixtureRepository.save(pom4);
 
-        Experiment ex = new Experiment(experimentType1, stepList, u6, "experiment1", pomList, "2020-03-16", "2020-03-19");
-        experimentRepository.save(ex);
+        List<PieceOfMixture> pomList1 = new ArrayList<>();
+        pomList1.add(pom1);
+
+        List<PieceOfMixture> pomList2 = new ArrayList<>();
+        pomList2.add(pom2);
+
+        List<PieceOfMixture> pomList3 = new ArrayList<>();
+        pomList3.add(pom3);
+        pomList3.add(pom4);
+
+        Experiment ex1 = new Experiment(experimentType1, stepList1, u7, "experiment1", pomList1, step1a.getStart(), step6a.getEnd());
+        Experiment ex2 = new Experiment(experimentType1, stepList2, u7, "experiment2", pomList2, step1b.getStart(), step6b.getEnd());
+        Experiment ex3 = new Experiment(experimentType1, stepList3, u7, "experiment3", pomList3, step1c.getStart(), step6c.getEnd());
+        experimentRepository.save(ex1);
+        experimentRepository.save(ex2);
+        experimentRepository.save(ex3);
     }
 }

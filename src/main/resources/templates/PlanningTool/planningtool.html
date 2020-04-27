@@ -14,6 +14,16 @@
 
         }
     </script>
+    <script>
+        $(document).ready(function(){
+            $("#search").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $(".table tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
     <script th:inline="javascript">
         toastr.options.extendedTimeOut = 5000;
         $(document).ready(function () {
@@ -126,13 +136,21 @@
                     data-target="#staticBackdrop" th:text="#{book.step}">
                 Book new Step
             </button>
+
+            <p/>
             <a th:href="@{/planning/experiments/book/}">
                 <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal"
                         data-target="#staticBackdropExperiment" th:text="#{book.Experiment}">
                     Book new Experiment
                 </button>
             </a>
+
+            <p/>
+
         </h1>
+
+        <input class="floating" id="search" placeholder="Search" />
+
         <table class="table table-hover">
             <thead>
             <tr>
@@ -266,7 +284,7 @@
 
 
 
-        <a href="/planning/experiments" type="button" class="btn btn-primary" th:text="#{experiment.types}">
+        <a th:href="@{/planning/experiments}" type="button" class="btn btn-primary" th:text="#{experiment.types}">
             Experiment Types
         </a>
     </div>
@@ -322,5 +340,10 @@
     </div>
 </div>
 </body>
+</div>
+
+
+</div>
+<div th:replace="footer :: footer"></div>
 </div>
 </html>

@@ -56,7 +56,8 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Read only - Basic') or hasAuthority('Device - Modify - All') ")
     @RequestMapping(value="/devices/types", method= RequestMethod.GET)
     public String showDeviceTypes(final ModelMap model){
-        model.addAttribute("allDeviceTypes", deviceTypeService.findAll()); return "/Devices/list-device-types";
+        model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+        return "Devices/list-device-types";
     }
 
     //Info page for device

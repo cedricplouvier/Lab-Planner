@@ -130,7 +130,7 @@
             <thead>
             <tr>
                 <th th:text="#{product}">Product</th>
-                <th th:text="#{mixtures.amount}">Amount</th>
+                <th th:text="#{mixtures.amount}+ ' (%)'">Amount</th>
             </tr>
             </thead>
             <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -160,6 +160,10 @@
             </tbody>
         </table>
 
+        <div >
+            <a th:text="#{mixture.ingredInfo}">Ingredients</a>
+        </div>
+
         <div>
             <button style="margin-right: 10px;font-size: 90%" class="btn btn-outline-primary"
                     type="button"
@@ -178,7 +182,7 @@
     <div id="submitform">
             <p>
         <button type="submit" th:text="#{mixture.save}" class="btn btn-primary">Save</button>
-                <a href="/products" th:text="#{close}" class="btn btn-secondary">Close</a>
+                <a th:href="@{/products}" th:text="#{close}" class="btn btn-secondary">Close</a>
 
 
             </p>

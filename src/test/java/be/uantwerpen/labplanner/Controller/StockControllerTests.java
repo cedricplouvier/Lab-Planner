@@ -40,9 +40,6 @@ public class StockControllerTests {
 
 
     @Mock
-    private UserService userService;
-
-    @Mock
     private OwnProductService productService;
 
     @Mock
@@ -75,7 +72,7 @@ public class StockControllerTests {
 
         //empty name String
         prod.setName("");
-        mockMvc.perform(post("/products/").flashAttr("product",prod))
+        mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -83,7 +80,7 @@ public class StockControllerTests {
         //empty  description
         prod.setName("testname");
         prod.setDescription("");
-        mockMvc.perform(post("/products/").flashAttr("product",prod))
+        mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -91,7 +88,7 @@ public class StockControllerTests {
         //empty properties
         prod.setDescription("blablabla");
         prod.setProperties("");
-        mockMvc.perform(post("/products/").flashAttr("product",prod))
+        mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -101,7 +98,7 @@ public class StockControllerTests {
         prod.setStockLevel(-1.0);
         prod.setLowStockLevel(-1.0);
         prod.setReservedStockLevel(-1.0);
-        mockMvc.perform(post("/products/").flashAttr("product",prod))
+        mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -114,7 +111,7 @@ public class StockControllerTests {
         List<OwnTag> tags = new ArrayList<>();
         //tags is empty list
         prod.setTags(tags);
-        mockMvc.perform(post("/products/").flashAttr("product",prod))
+        mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -126,9 +123,9 @@ public class StockControllerTests {
         OwnTag t1 = new OwnTag("test");
         List<OwnTag> tags = new ArrayList<>();
         tags.add(t1);
-        OwnProduct prod = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags,null);
-        mockMvc.perform(post("/products/").flashAttr("product",prod))
-                .andExpect(view().name("redirect:/products"))
+        OwnProduct prod = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags);
+        mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
+                .andExpect(view().name("Stock/overview-stock"))
                 .andDo(print());
     }
 
@@ -141,8 +138,8 @@ public class StockControllerTests {
         long id = 10;
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
-        mockMvc.perform(post("/products/{id}","10").flashAttr("product",prod))
-                .andExpect(view().name("redirect:/products"))
+        mockMvc.perform(post("/products/{id}","10").flashAttr("ownProduct",prod))
+                .andExpect(view().name("Stock/overview-stock"))
                 .andDo(print());
 
     }
@@ -154,9 +151,10 @@ public class StockControllerTests {
         tags.add(t1);
         OwnProduct prod = new OwnProduct("","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags,null);
         long id = 10;
+        prod.setId(id);
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
-        mockMvc.perform(post("/products/{id}","10").flashAttr("product",prod))
+        mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -172,7 +170,7 @@ public class StockControllerTests {
         long id = 10;
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
-        mockMvc.perform(post("/products/{id}","10").flashAttr("product",prod))
+        mockMvc.perform(post("/products/{id}","10").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -188,7 +186,7 @@ public class StockControllerTests {
         long id = 10;
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
-        mockMvc.perform(post("/products/{id}","10").flashAttr("product",prod))
+        mockMvc.perform(post("/products/{id}","10").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -226,7 +224,7 @@ public class StockControllerTests {
         long id = 10;
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
-        mockMvc.perform(post("/products/{id}","10").flashAttr("product",prod))
+        mockMvc.perform(post("/products/{id}","10").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -237,7 +235,7 @@ public class StockControllerTests {
 
     @Test
     public void addValidTag() throws Exception{
-        OwnTag t1 = new OwnTag("test");
+        OwnTag t1 = new OwnTag("testtag");
         long id= 10;
         t1.setId(id);
         List<OwnTag> taglist = new ArrayList<>();
@@ -245,8 +243,10 @@ public class StockControllerTests {
 
         when(tagService.findAll()).thenReturn(taglist);
 
-        mockMvc.perform(post("/tags/").flashAttr("tag",t1))
-                .andExpect(view().name("redirect:/tags"))
+        System.out.println(t1.getName());
+
+        mockMvc.perform(post("/tags/").flashAttr("ownTag",t1))
+                .andExpect(view().name("Stock/overview-stock"))
                 .andDo(print());
     }
 
@@ -255,7 +255,7 @@ public class StockControllerTests {
 
         //name is empty
         OwnTag t1 = new OwnTag("");
-        mockMvc.perform(post("/tags/").flashAttr("tag",t1))
+        mockMvc.perform(post("/tags/").flashAttr("ownTag",t1))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Tags/tags-manage"))
                 .andDo(print());
@@ -274,7 +274,7 @@ public class StockControllerTests {
         when(tagService.findById(id)).thenReturn(Optional.of(tag2));
         when(tagService.findByName("test1")).thenReturn(Optional.of(tag));
 
-        mockMvc.perform(post("/tags/{id", "5").flashAttr("tag",tag))
+        mockMvc.perform(post("/tags/{id", "5").flashAttr("ownTag",tag))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Tags/tags-manage"))
                 .andDo(print());
@@ -287,8 +287,8 @@ public class StockControllerTests {
       long id = 10;
 
         when(tagService.findById(id)).thenReturn(Optional.of(t1));
-        mockMvc.perform(post("/tags/{id}","10").flashAttr("tag",t1))
-                .andExpect(view().name("redirect:/tags"))
+        mockMvc.perform(post("/tags/{id}","10").flashAttr("ownTag",t1))
+                .andExpect(view().name("Stock/overview-stock"))
                 .andDo(print());
     }
 
@@ -299,66 +299,9 @@ public class StockControllerTests {
        long id = 10;
 
         when(tagService.findById(id)).thenReturn(Optional.of(t1));
-        mockMvc.perform(post("/tags/{id}","10").flashAttr("tag",t1))
+        mockMvc.perform(post("/tags/{id}","10").flashAttr("ownTag",t1))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Tags/tags-manage"))
-                .andDo(print());
-
-    }
-
-    @Test
-    public void addValidComposition() throws Exception{
-        Composition comp1 = new Composition(5.0, new OwnProduct());
-        mockMvc.perform(post("/compositions/").flashAttr("composition",comp1))
-                .andExpect(view().name("Mixtures/compositions-list"))
-                .andDo(print());
-    }
-
-    @Test
-    public void addInValidComposition() throws Exception{
-        //Amount must be greater than 0
-        Composition comp1 = new Composition(0.0, new OwnProduct());
-        mockMvc.perform(post("/compositions/").flashAttr("composition",comp1))
-                .andExpect(model().attribute("errormessage", notNullValue()))
-                .andExpect(view().name("Mixtures/compositions-manage"))
-                .andDo(print());
-    }
-
-    @Test
-    public void EditComposition() throws Exception{
-        Composition comp = new Composition(5.0, new OwnProduct());
-        long id = 10;
-
-        when(compositionService.findById(id)).thenReturn(Optional.of(comp));
-        mockMvc.perform(post("/compositions/{id}","10").flashAttr("composition",comp))
-                .andExpect(view().name("Mixtures/compositions-list"))
-                .andDo(print());
-    }
-
-    @Test
-    public void EditInvalidCompositionAmountZero() throws Exception{
-        //amount is not valid, amount is zero
-        Composition comp = new Composition(0.0, new OwnProduct());
-        long id = 10;
-
-        when(compositionService.findById(id)).thenReturn(Optional.of(comp));
-        mockMvc.perform(post("/compositions/{id}","10").flashAttr("composition",comp))
-                .andExpect(model().attribute("errormessage", notNullValue()))
-                .andExpect(view().name("Mixtures/compositions-manage"))
-                .andDo(print());
-
-    }
-
-    @Test
-    public void EditInvalidCompositionAmountGreaterThanHundred() throws Exception{
-        //amount is not valid, amount is >100
-        Composition comp = new Composition(150.0, new OwnProduct());
-        long id = 10;
-
-        when(compositionService.findById(id)).thenReturn(Optional.of(comp));
-        mockMvc.perform(post("/compositions/{id}","10").flashAttr("composition",comp))
-                .andExpect(model().attribute("errormessage", notNullValue()))
-                .andExpect(view().name("Mixtures/compositions-manage"))
                 .andDo(print());
 
     }
@@ -373,7 +316,7 @@ public class StockControllerTests {
         Mixture mix = new Mixture("testing", ingredients, "blablabla",tags);
 
         mockMvc.perform(post("/mixtures/").flashAttr("mixture",mix))
-                .andExpect(view().name("Mixtures/mixtures-list"))
+                .andExpect(view().name("Stock/overview-stock"))
                 .andDo(print());
     }
 
@@ -441,7 +384,7 @@ public class StockControllerTests {
 
         when(mixtureService.findById(id)).thenReturn(Optional.of(mix));
         mockMvc.perform(post("/mixtures/{id}","10").flashAttr("mixture",mix))
-                .andExpect(view().name("Mixtures/mixtures-list"))
+                .andExpect(view().name("Stock/overview-stock"))
                 .andDo(print());
     }
 
