@@ -5,6 +5,7 @@
 /* global moment, tui, chance */
 /* global findCalendar, CalendarList, ScheduleList, generateSchedule */
 let newSchedule;
+let suggestion;
 (function(window, Calendar) {
     let cal, resizeThrottled;
     let useCreationPopup = false;
@@ -67,7 +68,18 @@ let newSchedule;
                     newSchedule = null;
                     setSchedules();
                     setUI();
-
+                }
+                if(e.schedule.id==suggestion.id){
+                    newSchedule = suggestion;
+                    newSchedule.bgColor = '#5cb85c';
+                    newSchedule.dragBgColor = '#5cb85c';
+                    newSchedule.borderColor = '#5cb85c';
+                    newSchedule.body="No problems found";
+                    newSchedule.isReadOnly = false;
+                    suggestion = null;
+                    cal.updateSchedule(newSchedule.id, newSchedule.calendarId, newSchedule);
+                    checkOverlap();
+                    refreshScheduleVisibility()
                 }
             }
             console.log('clickSchedule', e);
@@ -560,6 +572,41 @@ let newSchedule;
         });
     }
 
+    function calculateSuggestion() {
+        let today = new Date();
+        let currentDate = new Date(today.getFullYear(),today.getMonth(),today.getDate(),today.getHours()+1,0);
+        let endDate = new Date(today.getFullYear(),today.getMonth(),today.getDate(),today.getHours()+1,0);
+        endDate.setDate(endDate.getDate()+14);
+        let step = 30; //in minutes
+        let length = 60;
+        let found = false;
+        var calendar = selectedCalendar ? selectedCalendar : CalendarList[0];
+
+        let schedule = null;
+        while(!found && currentDate<endDate){
+            currentDate.setMinutes(currentDate.getMinutes()+30);
+
+            console.log(currentDate.getHours())
+
+            let end = new Date(currentDate.getFullYear(),currentDate.getMonth(),currentDate.getDate(),currentDate.getHours(),currentDate.getMinutes());
+            end.setMinutes(end.getMinutes()+60);
+            schedule = createSuggestionSchedule(currentDate,end,calendar);
+            if(checkContinuity(calendarUpdate.stepIndex,schedule).ok){
+                // if(checkOverlap()){
+                    found = true;
+                // }
+            }
+            console.log(currentDate);
+            console.log(currentDate);
+        }
+        if(found){
+            suggestion = schedule;
+            console.log("suggestion found, start:"+schedule.start);
+            setSchedules();
+
+        }
+    }
+
     function setDropdownCalendarType() {
         var calendarTypeName = document.getElementById('calendarTypeName');
         var calendarTypeIcon = document.getElementById('calendarTypeIcon');
@@ -626,6 +673,7 @@ let newSchedule;
         $("#selectStep").on('click',saveScheduleChanges);
         $("#nextstep").on('click',nextStep);
         $("#previousstep").on('click',previousStep);
+        $("#suggestStep").on('click',calculateSuggestion);
         window.addEventListener('resize', resizeThrottled);
     }
     function nextStep() {
@@ -634,7 +682,6 @@ let newSchedule;
             setSchedules();
             setUI();
             var calendar = selectedCalendar ? selectedCalendar : CalendarList[0];
-            cal.deleteSchedule(newSchedule.id, calendar.id);
         }
         refreshScheduleVisibility();
     }
@@ -665,8 +712,7 @@ let newSchedule;
             setSchedules();
             setUI();
             var calendar = selectedCalendar ? selectedCalendar : CalendarList[0];
-            cal.deleteSchedule(newSchedule.id, calendar.id);
-
+            // cal.deleteSchedule(newSchedule.id, calendar.id);
         }
         refreshScheduleVisibility();
     }

@@ -26,7 +26,9 @@ function getIndex(id){
 function addCalendar(calendar) {
     CalendarList.push(calendar);
 }
-
+function bookSchedule(schedule) {
+ ScheduleList.push(schedule);
+}
 function getCurrentSchedule() {
     for (let current = 0; current < ScheduleList.length; current++){
         if(ScheduleList[current].stepIndex==calendarUpdate.stepIndex){
@@ -215,16 +217,30 @@ function checkContinuity(stepindex,schedule) {
             }
         }
 
-
-
-    //Continuity
-    //Hard
+        //check not before previous step
         let previousStepType = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex-1];
         var firstDate = new Date(previousSchedule.end.getFullYear(), previousSchedule.end.getMonth(), previousSchedule.end.getDate(), previousSchedule.end.getHours(), previousSchedule.end.getMinutes());
         //add hours and minutes of continuity
         firstDate.setHours(firstDate.getHours()+previousStepType['continuity']['hours']);
         firstDate.setMinutes(firstDate.getMinutes()+previousStepType['continuity']['minutes']);
-        var secondDate = new Date(schedule.start.getFullYear(), schedule.start.getMonth(), schedule.start.getDate(), schedule.start.getHours(), schedule.start.getMinutes());
+        var secondDate = new Date(schedule.end.getFullYear(), schedule.end.getMonth(), schedule.end.getDate(), schedule.end.getHours(), schedule.end.getMinutes());
+        if(secondDate<firstDate){
+            return {
+                message: "This step cant end before the previous step ends.",
+                ok:false,
+            }
+        }
+
+
+        //Continuity
+    //Hard
+        previousStepType = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex-1];
+        firstDate = new Date(previousSchedule.end.getFullYear(), previousSchedule.end.getMonth(), previousSchedule.end.getDate(), previousSchedule.end.getHours(), previousSchedule.end.getMinutes());
+        //add hours and minutes of continuity
+        firstDate.setHours(firstDate.getHours()+previousStepType['continuity']['hours']);
+        firstDate.setMinutes(firstDate.getMinutes()+previousStepType['continuity']['minutes']);
+        secondDate = new Date(schedule.start.getFullYear(), schedule.start.getMonth(), schedule.start.getDate(), schedule.start.getHours(), schedule.start.getMinutes());
+
 
         if(previousStepType['continuity']['type']=="Hard"){
             if(firstDate.getTime()!=secondDate.getTime()){
@@ -289,7 +305,7 @@ function checkContinuity(stepindex,schedule) {
             }
         }
     }
-    //OpeningsHours
+    //OpeningsHours\
     if(schedule.start.getHours()>=9&&schedule.start.getHours()<=17&&schedule.start.getDay()!=0&&schedule.start.getDay()!=6){
         if(schedule.end.getHours()>=9&&schedule.end.getHours()<=17&&schedule.end.getDay()!=0&&schedule.end.getDay()!=6){
 
@@ -306,6 +322,9 @@ function checkContinuity(stepindex,schedule) {
         }
     }
 
+
+
+
     //check if there are available devices
     if($('#deviceTypeDropdown').children().length==0){
         return {
@@ -317,6 +336,24 @@ function checkContinuity(stepindex,schedule) {
         message: "No problems found",
     ok:true,
 }}
+
+function createSuggestionSchedule(start,end,calendar) {
+    let step = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex];
+    let schedule = new ScheduleInfo();
+    schedule.id = chance.guid();
+    schedule.calendarId = calendar.id;
+    schedule.title = "Suggestion: click to select"
+    schedule.body = 'Step '+(calendarUpdate.stepIndex+1)+' of Experiment '+allExperiments[calendarUpdate.experimentIndex]['experimentTypeName']+', \nDevice = '+step['deviceType']['deviceTypeName'];
+    schedule.isReadOnly = true;
+    schedule.start = start;
+    schedule.end = end;
+    schedule.color = calendar.color;
+    schedule.bgColor = '#f0ad4e';
+    schedule.dragBgColor = '#f0ad4e';
+    schedule.borderColor = '#f0ad4e';
+    schedule.category = 'time';
+    return schedule
+}
 
 function generateSchedule(viewName, renderStart, renderEnd) {
     ScheduleList = [];
@@ -386,7 +423,6 @@ function generateSchedule(viewName, renderStart, renderEnd) {
         }
         if(document.getElementById('startDate' + current + '')) {
             var start = document.getElementById('startDate' + current + '').value;
-
             if (start != "") {
                 var startHour = document.getElementById('startHour' + current + '').value;
                 if (start != "") {
@@ -437,6 +473,10 @@ function generateSchedule(viewName, renderStart, renderEnd) {
                 checkOverlap(current,schedule);
             }
         }
+    }
+    if(suggestion){
+        ScheduleList.push(suggestion);
+
     }
 }
 

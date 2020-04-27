@@ -195,7 +195,6 @@
         calendarUpdate.endHour = document.getElementById('endHour' + stepInd + '').value
 
         document.getElementById('selectStep').disabled = false;
-        document.getElementById('deviceTypeDropdown').value = document.getElementById('selectDevice' + current + '').value;
 
     }
 </script>
@@ -388,6 +387,8 @@
         </button>
 
         <h3><span th:text="#{step.info}"></span></h3>
+
+        <button type="button" id="suggestExperiment" class="btn btn-warning" style=" display:block;">Suggest Entire Experiment</button>
 
         <table class="table table-hover" style=" font-size:100%; text-align:center;">
 
