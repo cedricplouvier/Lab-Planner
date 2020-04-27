@@ -108,21 +108,21 @@ public class StatisticsController {
         model.addAttribute("highestAbsoluteValueHours",highestAbsoluteValueHours);
 
 
-        return "/Statistics/statistics";
+        return "Statistics/statistics";
     }
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/stockStatistics", method = RequestMethod.GET)
     public String showStatisticsStockPage(final ModelMap model) {
 
-        List<Product> products = productService.findAll();
+        List<OwnProduct> products = productService.findAll();
         List<Double> currentStockLevel = new ArrayList<>();
         //get all the product names
-        for(Product product: products){
+        for(OwnProduct product: products){
             productNames.add(product.getName());
         }
 
-        for(Product product: products){
+        for(OwnProduct product: products){
             currentStockLevel.add(product.getStockLevel());
         }
 
@@ -136,7 +136,7 @@ public class StatisticsController {
             System.out.println(products.get(j).getName()+ " stocklevel: " +products.get(j).getStockLevel());
         }
 
-        return "/Statistics/stockStatistics";
+        return "Statistics/stockStatistics";
     }
 
 
