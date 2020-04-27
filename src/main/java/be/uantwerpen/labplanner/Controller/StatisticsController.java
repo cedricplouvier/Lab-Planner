@@ -43,7 +43,7 @@ public class StatisticsController {
     private ExperimentService experimentService;
 
     @Autowired
-    private ProductService productService;
+    private OwnProductService productService;
 
     int[] totalHoursEmpty = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
     List<int[]> totalHours = new ArrayList<int[]>(Arrays.asList(totalHoursEmpty,totalHoursEmpty,totalHoursEmpty,totalHoursEmpty,totalHoursEmpty));
