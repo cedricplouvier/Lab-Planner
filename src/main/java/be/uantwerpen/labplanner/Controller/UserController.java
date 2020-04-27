@@ -65,7 +65,7 @@ public class UserController {
     public String viewCreateUser(@org.jetbrains.annotations.NotNull final ModelMap model){
         model.addAttribute("allRoles",roleService.findAll());
         model.addAttribute("allUsers",userService.findAll());
-        model.addAttribute(new User("","","","","","","","",null,null,null));
+        model.addAttribute(new User("","DEFAULT","","","","","","",null,null,null));
         return "Users/user-manage";
     }
 
@@ -134,9 +134,28 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users/{id}",method = RequestMethod.GET)
     public String viewEditUser(@PathVariable("id") long id, final ModelMap model){
+        //get current user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User curruser = (User) authentication.getPrincipal();
+
+        Role admin = roleService.findByName("Administrator").orElse(null);
+        User editUser = userService.findById(id).orElse(null);
+
+        //curr user may not edit other admin
+        if ((editUser.getRoles().contains(admin)) && (!editUser.equals(curruser))){
+
+            model.addAttribute("allUsers",userService.findAll());
+            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.adminEditError"));
+            return "Users/user-list";
+        }
+
+
+
         model.addAttribute("allUsers",userService.findAll());
         model.addAttribute("allRoles",roleService.findAll());
         model.addAttribute("user",userService.findById(id).orElse(null));
+
+
         return "Users/user-manage";
     }
 
@@ -237,11 +256,16 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
-        if (user.getId() == id){
+
+        Role admin = roleService.findByName("Administrator").orElse(null);
+        User userToDelete = userService.findById(id).orElse(null);
+        if (userToDelete.getRoles().contains(admin)){
             model.addAttribute("allUsers",userService.findAll());
-            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.selfDeleteError"));
+            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.adminDeleteError"));
             return "Users/user-list";
         }
+
+
 
 
         List<Step> allSteps = stepService.findAll();

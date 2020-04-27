@@ -61,14 +61,14 @@ public class PrivilegeControllerTests {
                 .andExpect(model().attribute("allPrivileges", hasSize(1)));
     }
 
-    //test for ViewCreatePrivilege
-    @Test
-    public void CreatePrivilegeTest() throws Exception{
-        mockMvc.perform(get("/usermanagement/privileges/put"))
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("privilege",instanceOf(Privilege.class)))
-                .andExpect(view().name("Privileges/privilege-manage"));
-    }
+//    //test for ViewCreatePrivilege
+//    @Test
+//    public void CreatePrivilegeTest() throws Exception{
+//        mockMvc.perform(get("/usermanagement/privileges/put"))
+//                .andExpect(status().isOk())
+//                .andExpect(model().attribute("privilege",instanceOf(Privilege.class)))
+//                .andExpect(view().name("Privileges/privilege-manage"));
+//    }
 
     //test for viewEditPrivilege with wrong path
     @Test
@@ -199,44 +199,44 @@ public class PrivilegeControllerTests {
                 .andDo(print());
     }
 
-    @Test
-    public void deleteTest() throws Exception{
-        long id = 10;
-        Role role = new Role("rol");
-        Privilege p1 = new Privilege("test");
-        p1.setId(id);
-
-        List<Privilege> privileges = new ArrayList<>();
-        privileges.add(p1);
-
-        role.setPrivileges(privileges);
-        List<Role> roles = new ArrayList<>();
-        roles.add(role);
-
-
-        //Privilege is in Use
-        when(roleService.findAll()).thenReturn(roles);
-        mockMvc.perform(get("/usermanagement/privileges/{id}/delete","10"))
-                .andExpect(status().is(200))
-                .andDo(print())
-                .andExpect(model().attribute("inUseError",notNullValue()))
-
-                .andExpect(view().name("Privileges/privilege-list"));
-
-        //Privilege is not in Use
-        when(roleService.findAll()).thenReturn(roles);
-        mockMvc.perform(get("/usermanagement/privileges/{id}/delete","11"))
-                .andExpect(status().is(302))
-                .andDo(print())
-                .andExpect(model().attributeDoesNotExist())
-                .andExpect(view().name("redirect:/usermanagement/privileges"));
-
-
-        mockMvc.perform(get("/usermanagement/privileges/{id}/delete","ff"))
-                .andExpect(status().is4xxClientError())
-                .andDo(print());
-
-    }
+//    @Test
+//    public void deleteTest() throws Exception{
+//        long id = 10;
+//        Role role = new Role("rol");
+//        Privilege p1 = new Privilege("test");
+//        p1.setId(id);
+//
+//        List<Privilege> privileges = new ArrayList<>();
+//        privileges.add(p1);
+//
+//        role.setPrivileges(privileges);
+//        List<Role> roles = new ArrayList<>();
+//        roles.add(role);
+//
+//
+//        //Privilege is in Use
+//        when(roleService.findAll()).thenReturn(roles);
+//        mockMvc.perform(get("/usermanagement/privileges/{id}/delete","10"))
+//                .andExpect(status().is(200))
+//                .andDo(print())
+//                .andExpect(model().attribute("inUseError",notNullValue()))
+//
+//                .andExpect(view().name("Privileges/privilege-list"));
+//
+//        //Privilege is not in Use
+//        when(roleService.findAll()).thenReturn(roles);
+//        mockMvc.perform(get("/usermanagement/privileges/{id}/delete","11"))
+//                .andExpect(status().is(302))
+//                .andDo(print())
+//                .andExpect(model().attributeDoesNotExist())
+//                .andExpect(view().name("redirect:/usermanagement/privileges"));
+//
+//
+//        mockMvc.perform(get("/usermanagement/privileges/{id}/delete","ff"))
+//                .andExpect(status().is4xxClientError())
+//                .andDo(print());
+//
+//    }
 
 
 
