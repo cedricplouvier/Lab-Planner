@@ -123,7 +123,7 @@ public class StockControllerTests {
         OwnTag t1 = new OwnTag("test");
         List<OwnTag> tags = new ArrayList<>();
         tags.add(t1);
-        OwnProduct prod = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags);
+        OwnProduct prod = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags , null);
         mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
                 .andExpect(view().name("Stock/overview-stock"))
                 .andDo(print());
@@ -200,27 +200,6 @@ public class StockControllerTests {
         List<OwnTag> tags = new ArrayList<>();
         tags.add(t1);
         OwnProduct prod = new OwnProduct("test","description",1.0, -5.0, 0.0, 0.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags, null);
-        long id = 10;
-
-        when(productService.findById(id)).thenReturn(Optional.of(prod));
-        mockMvc.perform(post("/products/{id}","10").flashAttr("product",prod))
-                .andExpect(model().attribute("errormessage", notNullValue()))
-                .andExpect(view().name("Stock/products-manage"))
-                .andDo(print());
-
-    }
-
-    @Test
-    public void EditInvalidURLProduct() throws Exception{
-
-        OwnTag t1 = new OwnTag("test");
-        List<OwnTag> tags = new ArrayList<>();
-        tags.add(t1);
-
-
-        //Taglist is empty
-        URL url = new URL("dfwdgfvw");
-        OwnProduct prod = new OwnProduct("test","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags, url);
         long id = 10;
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
