@@ -71,7 +71,7 @@ public class StockControllerTests {
 
         //empty name String
         prod.setName("");
-        mockMvc.perform(post("/products/").flashAttr("product",prod))
+        mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -79,7 +79,7 @@ public class StockControllerTests {
         //empty  description
         prod.setName("testname");
         prod.setDescription("");
-        mockMvc.perform(post("/products/").flashAttr("product",prod))
+        mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -87,7 +87,7 @@ public class StockControllerTests {
         //empty properties
         prod.setDescription("blablabla");
         prod.setProperties("");
-        mockMvc.perform(post("/products/").flashAttr("product",prod))
+        mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -97,7 +97,7 @@ public class StockControllerTests {
         prod.setStockLevel(-1.0);
         prod.setLowStockLevel(-1.0);
         prod.setReservedStockLevel(-1.0);
-        mockMvc.perform(post("/products/").flashAttr("product",prod))
+        mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -110,7 +110,7 @@ public class StockControllerTests {
         List<OwnTag> tags = new ArrayList<>();
         //tags is empty list
         prod.setTags(tags);
-        mockMvc.perform(post("/products/").flashAttr("product",prod))
+        mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -123,8 +123,8 @@ public class StockControllerTests {
         List<OwnTag> tags = new ArrayList<>();
         tags.add(t1);
         OwnProduct prod = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags);
-        mockMvc.perform(post("/products/").flashAttr("product",prod))
-                .andExpect(view().name("redirect:/products"))
+        mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
+                .andExpect(view().name("Stock/overview-stock"))
                 .andDo(print());
     }
 
@@ -137,8 +137,8 @@ public class StockControllerTests {
         long id = 10;
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
-        mockMvc.perform(post("/products/{id}","10").flashAttr("product",prod))
-                .andExpect(view().name("redirect:/products"))
+        mockMvc.perform(post("/products/{id}","10").flashAttr("ownProduct",prod))
+                .andExpect(view().name("Stock/overview-stock"))
                 .andDo(print());
 
     }
@@ -153,7 +153,7 @@ public class StockControllerTests {
         prod.setId(id);
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
-        mockMvc.perform(post("/products/").flashAttr("product",prod))
+        mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -185,7 +185,7 @@ public class StockControllerTests {
         long id = 10;
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
-        mockMvc.perform(post("/products/{id}","10").flashAttr("product",prod))
+        mockMvc.perform(post("/products/{id}","10").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -202,7 +202,7 @@ public class StockControllerTests {
         long id = 10;
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
-        mockMvc.perform(post("/products/{id}","10").flashAttr("product",prod))
+        mockMvc.perform(post("/products/{id}","10").flashAttr("ownProduct",prod))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -213,7 +213,7 @@ public class StockControllerTests {
 
     @Test
     public void addValidTag() throws Exception{
-        OwnTag t1 = new OwnTag("test");
+        OwnTag t1 = new OwnTag("testtag");
         long id= 10;
         t1.setId(id);
         List<OwnTag> taglist = new ArrayList<>();
@@ -221,8 +221,10 @@ public class StockControllerTests {
 
         when(tagService.findAll()).thenReturn(taglist);
 
-        mockMvc.perform(post("/tags/").flashAttr("tag",t1))
-                .andExpect(view().name("redirect:/tags"))
+        System.out.println(t1.getName());
+
+        mockMvc.perform(post("/tags/").flashAttr("ownTag",t1))
+                .andExpect(view().name("Stock/overview-stock"))
                 .andDo(print());
     }
 
@@ -231,7 +233,7 @@ public class StockControllerTests {
 
         //name is empty
         OwnTag t1 = new OwnTag("");
-        mockMvc.perform(post("/tags/").flashAttr("tag",t1))
+        mockMvc.perform(post("/tags/").flashAttr("ownTag",t1))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Tags/tags-manage"))
                 .andDo(print());
@@ -250,7 +252,7 @@ public class StockControllerTests {
         when(tagService.findById(id)).thenReturn(Optional.of(tag2));
         when(tagService.findByName("test1")).thenReturn(Optional.of(tag));
 
-        mockMvc.perform(post("/tags/{id", "5").flashAttr("tag",tag))
+        mockMvc.perform(post("/tags/{id", "5").flashAttr("ownTag",tag))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Tags/tags-manage"))
                 .andDo(print());
@@ -263,8 +265,8 @@ public class StockControllerTests {
       long id = 10;
 
         when(tagService.findById(id)).thenReturn(Optional.of(t1));
-        mockMvc.perform(post("/tags/{id}","10").flashAttr("tag",t1))
-                .andExpect(view().name("redirect:/tags"))
+        mockMvc.perform(post("/tags/{id}","10").flashAttr("ownTag",t1))
+                .andExpect(view().name("Stock/overview-stock"))
                 .andDo(print());
     }
 
@@ -275,7 +277,7 @@ public class StockControllerTests {
        long id = 10;
 
         when(tagService.findById(id)).thenReturn(Optional.of(t1));
-        mockMvc.perform(post("/tags/{id}","10").flashAttr("tag",t1))
+        mockMvc.perform(post("/tags/{id}","10").flashAttr("ownTag",t1))
                 .andExpect(model().attribute("errormessage", notNullValue()))
                 .andExpect(view().name("Tags/tags-manage"))
                 .andDo(print());

@@ -382,7 +382,7 @@ public class StockController {
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
     @RequestMapping(value={"/tags", "/tags/{id}"},
             method= RequestMethod.POST)
-        public String addTag(@Valid OwnTag tag, BindingResult result,
+        public String addTag(@Valid OwnTag ownTag, BindingResult result,
                              final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
 
@@ -391,12 +391,12 @@ public class StockController {
         String NameIsUsed = null;
         while (it.hasNext()) {
             OwnTag temp = it.next();
-            if(temp.getName().equals(tag.getName()) && !temp.getId().equals(tag.getId())){
-                 NameIsUsed = "There is already a tag with the name " + tag.getName();
+            if(temp.getName().equals(ownTag.getName()) && !temp.getId().equals(ownTag.getId())){
+                 NameIsUsed = "There is already a tag with the name " + ownTag.getName();
             }
         }
 
-        if(tag.getName().length() == 0){
+        if(ownTag.getName().length() == 0){
             model.addAttribute("tag", new OwnTag());
             model.addAttribute("allTags", tagService.findAll());
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.name"));
@@ -417,7 +417,7 @@ public class StockController {
 
             return "Tags/tags-manage";
         }
-        tagService.save(tag);
+        tagService.save(ownTag);
         List<OwnProduct> agg_bit = getAggBitList();
         List<OwnProduct> con_oth = getComOthList();
         model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("save.success"));
@@ -507,13 +507,17 @@ public class StockController {
 
         //remove mixtures with amount = from list
         Iterator<Composition> it3 = mixture.getCompositions().iterator();
+        List<Composition> invalids = new ArrayList<>();
         while (it3.hasNext()) {
             Composition temp = it3.next();
             if (temp.getAmount() == 0) {
-                mixture.getCompositions().remove(temp);
+                invalids.add(temp);
             }
 
         }
+        mixture.getCompositions().removeAll(invalids);
+
+
 
         if(mixture.getName().length() == 0){
             model.addAttribute("allMixtures", mixtureService.findAll());

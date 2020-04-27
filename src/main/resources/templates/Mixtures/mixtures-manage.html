@@ -130,7 +130,7 @@
             <thead>
             <tr>
                 <th th:text="#{product}">Product</th>
-                <th th:text="#{mixtures.amount}">Amount</th>
+                <th th:text="#{mixtures.amount}+ ' (%)'">Amount</th>
             </tr>
             </thead>
             <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -159,6 +159,10 @@
             </div>
             </tbody>
         </table>
+
+        <div >
+            <a th:text="#{mixture.ingredInfo}">Ingredients</a>
+        </div>
 
         <div>
             <button style="margin-right: 10px;font-size: 90%" class="btn btn-outline-primary"
