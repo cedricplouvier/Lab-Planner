@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -28,7 +30,7 @@ public class ProductRepositoryTests {
 
     @Transactional
     @Test
-    public void testSaveProduct(){
+    public void testSaveProduct() throws MalformedURLException {
 
         //Setup products
         OwnProduct product = new OwnProduct();
@@ -108,6 +110,8 @@ public class ProductRepositoryTests {
         assertEquals(fetchedproduct.getLastUpdatedById(), fetchUpdatedProduct9.getLastUpdatedById());
 
 
+
+
         //update tags
         List<OwnTag> taglist = new ArrayList<>();
         OwnTag tag1 = new OwnTag("test1");
@@ -120,6 +124,14 @@ public class ProductRepositoryTests {
         productRepository.save(fetchedproduct);
         OwnProduct fetchUpdatedProduct10 = productRepository.findById(fetchedproduct.getId()).orElse(null);
         assertEquals(fetchedproduct.getTags(), fetchUpdatedProduct10.getTags());
+
+        //updateURL
+        URL url = new URL("https://www.google.com");
+
+        fetchedproduct.setUrl(url);
+        productRepository.save(fetchedproduct);
+        OwnProduct fetchUpdatedProduct11 = productRepository.findById(fetchedproduct.getId()).orElse(null);
+        assertEquals(fetchedproduct.getUrl(), fetchUpdatedProduct11.getUrl());
 
 
         //get all products, list should only have one more then initial
