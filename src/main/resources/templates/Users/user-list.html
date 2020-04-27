@@ -43,12 +43,12 @@
             <input class="float-right" id="search" placeholder="Search" />
             <div class="alert alert-danger" role="alert" th:if="${inUseError}!=null" th:text="${inUseError}"></div>
 
+
+<!--            password & id table parts removed from list.-->
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th th:text="#{users.id}"></th>
                     <th th:text="#{users.username}"></th>
-                    <th th:text="#{users.password}"></th>
                     <th th:text="#{users.firstName}"></th>
                     <th th:text="#{users.lastName}"></th>
                     <th th:text="#{users.uaNumber}"></th>
@@ -64,9 +64,7 @@
 
                 <tbody class="list" id="UserTable">
                 <tr th:each="user : ${allUsers}">
-                    <td class="ID" th:value="${user.id}" th:text="${user.id }"></td>
                     <td class="Username" th:value="${user.username}" th:text="${user.username }"></td>
-                    <td class="Password" th:value="${user.password}" th:text="${user.password }"></td>
                     <td class="Firstname" th:value="${user.firstName}" th:text="${user.firstName }"></td>
                     <td class="Lastname" th:value="${user.lastName}" th:text="${user.lastName }"></td>
                     <td class="UANumber" th:value="${user.uaNumber}" th:text="${user.uaNumber }"></td>
