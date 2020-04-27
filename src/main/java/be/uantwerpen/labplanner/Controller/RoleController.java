@@ -68,7 +68,7 @@ public class RoleController {
     @RequestMapping(value = "/usermanagement/roles/{id}",method = RequestMethod.GET)
     public String viewEditRole(@PathVariable long id, final ModelMap model){
         model.addAttribute("allPrivileges",privilegeService.findAll());
-        model.addAttribute("role",roleService.findById(id));
+        model.addAttribute("role",roleService.findById(id).orElse(null));
         return "Roles/role-manage";
     }
 
