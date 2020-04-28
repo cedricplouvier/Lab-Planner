@@ -79,7 +79,16 @@ let suggestion;
                     suggestion = null;
                     cal.updateSchedule(newSchedule.id, newSchedule.calendarId, newSchedule);
                     // checkOverlap();
-                    refreshScheduleVisibility()
+                    let possibleDevices =  checkOverlap(newSchedule);
+                    addDevices(possibleDevices);
+                    if(possibleDevices.length==0){
+                        newSchedule.bgColor = '#d9534f';
+                        newSchedule.dragBgColor = '#d9534f';
+                        newSchedule.borderColor = '#d9534f';
+                        newSchedule.body = "No available devices";
+                        cal.updateSchedule(newSchedule.id, newSchedule.calendarId,newSchedule);
+                    }
+                    refreshScheduleVisibility();
                 }
             }
             console.log('clickSchedule', e);
@@ -119,7 +128,6 @@ let suggestion;
                         e.borderColor = '#d9534f';
                         e.body = check.message;
                     }
-
                     cal.updateSchedule(schedule.id, schedule.calendarId, e);
                 } else {
                     if (newSchedule) {
@@ -128,7 +136,6 @@ let suggestion;
                     }
                     saveNewSchedule(e);
                 }
-
                 $("#help").text("you can drag and drop the calendar or drag again");
                 let possibleDevices =  checkOverlap(newSchedule);
                 addDevices(possibleDevices);
@@ -141,11 +148,9 @@ let suggestion;
                 }
                 refreshScheduleVisibility();
             }
-
         },
         'beforeUpdateSchedule': function(e) {
             if(calendarType==0) {
-
                 var schedule = e.schedule;
                 var changes = e.changes;
                 newSchedule = schedule;
@@ -185,25 +190,20 @@ let suggestion;
                     newSchedule.body = "No available devices";
                 }
                 cal.updateSchedule(newSchedule.id, newSchedule.calendarId,newSchedule);
-
                 refreshScheduleVisibility();
             }
         },
         'beforeDeleteSchedule': function(e) {
             if(calendarType==0) {
-
                 console.log('beforeDeleteSchedule', e);
                 cal.deleteSchedule(e.schedule.id, e.schedule.calendarId);
             }
         },
         'afterRenderSchedule': function(e) {
             var schedule = e.schedule;
-            // var element = cal.getElement(schedule.id, schedule.calendarId);
-            // console.log('afterRenderSchedule', element);
         },
         'clickTimezonesCollapseBtn': function(timezonesCollapsed) {
             console.log('timezonesCollapsed', timezonesCollapsed);
-
             if (timezonesCollapsed) {
                 cal.setTheme({
                     'week.daygridLeft.width': '77px',
@@ -215,11 +215,9 @@ let suggestion;
                     'week.timegridLeft.width': '60px'
                 });
             }
-
             return true;
         }
     });
-
     /**
      * Get time template for time and all-day
      * @param {Schedule} schedule - schedule
@@ -571,15 +569,13 @@ let suggestion;
         });
     }
     function calculateExperimentSuggestion() {
-        let numberOfSteps = allExperiments[0]['stepTypes'].length;
+        let numberOfSteps = allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length;
         for (let current = 0; current < numberOfSteps; current++){
                 calendarUpdate.stepIndex=current;
-                calendarUpdate.experimentIndex=0;
             calculateSuggestion()
             newSchedule = suggestion;
             suggestion = null;
-
-            checkOverlap();
+            addDevices(checkOverlap(newSchedule));
             saveScheduleChanges();
         }
     }

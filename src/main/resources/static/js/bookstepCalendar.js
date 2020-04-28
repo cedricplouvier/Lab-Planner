@@ -153,16 +153,16 @@ function ScheduleInfo() {
     };
 }
 function addDevices(possibleDevices) {
+    console.log(possibleDevices)
     if(possibleDevices.length>0&&checkContinuity(calendarUpdate.stepIndex,newSchedule).ok) {
         for (let current = 0; current < possibleDevices.length; current++) {
-            const optionText = devices[current]['devicename'];
-            const optionValue = devices[current]['id'];
+            const optionText = devices[possibleDevices[current]]['devicename'];
+            const optionValue = devices[possibleDevices[current]]['id'];
             $('#deviceTypeDropdown').append($('<option>').val(optionValue).text(optionText));
         }
         document.getElementById('selectStep').disabled = false;
     }else{
         document.getElementById('selectStep').disabled = true;
-
     }
 }
 function checkOverlap(schedule) {
@@ -174,17 +174,12 @@ function checkOverlap(schedule) {
             let deviceId = devices[current]['id'];
             var scheduleStart = new Date(schedule.start.getFullYear(), schedule.start.getMonth(), schedule.start.getDate(), schedule.start.getHours(), schedule.start.getMinutes());
             var scheduleEnd = new Date(schedule.end.getFullYear(), schedule.end.getMonth(), schedule.end.getDate(), schedule.end.getHours(), schedule.end.getMinutes());
-
             let overlap = false;
-
             //first check other steps
             for(var currentStep=0;currentStep<otherSteps.length;currentStep++){
                 if(otherSteps[currentStep]['device']['id']==deviceId){ //found step booked of same device
                     var stepStart = new Date(otherSteps[currentStep]['start']+ 'T'+otherSteps[currentStep]['startHour']);
                     var stepEnd = new Date(otherSteps[currentStep]['end']+ 'T'+otherSteps[currentStep]['endHour']);
-                    // console.log(stepStart)
-                    // console.log(scheduleStart)
-
                     //check if date overlaps with schedule
                     if(scheduleStart.getTime()<stepStart.getTime()&&scheduleEnd.getTime()>stepStart.getTime()&&scheduleEnd.getTime()<=stepEnd.getTime()){
                         overlap = true;

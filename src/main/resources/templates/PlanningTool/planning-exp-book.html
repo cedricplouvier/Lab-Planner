@@ -266,29 +266,17 @@
 
     .modal-dialog,
     .modal-content {
-        /* 80% of window height */
         height: 100%!important;
     }
 
     .modal-body {
-        /* 100% = dialog height, 120px = header + footer */
-        /*overflow-y: scroll;*/
         height: 100%;
     !important;
 
     }
-    /*#extraLargeModal{*/
-    /*    padding-right: 10px; !important*/
-    /*}*/
     body { padding-right: 0 !important }
     #calendar {
-        /*position: absolute;*/
-        /*left: 0;*/
-        /*overflow: hidden;*/
         overflow-y: auto;
-        /*right: 0;*/
-        /*bottom: 0px;*/
-        /*top: 64px;*/
     }
 
 </style>
@@ -395,10 +383,9 @@
 
         <h3><span th:text="#{step.info}"></span></h3>
 
-<!--        <button type="button" id="suggestExperiment" class="btn btn-warning" style=" display:block;">Suggest Entire Experiment</button>-->
+        <button type="button" id="suggestExperiment" class="btn btn-warning" style=" display:block;">Suggest Entire Experiment</button>
 
         <table class="table table-hover" style=" font-size:100%; text-align:center;">
-
             <thead>
             <tr>
                 <th>Step Type</th>
@@ -412,12 +399,9 @@
                 <th>Choose in Calendar</th>
             </tr>
             </thead>
-
             <!-- IMPORTANT, class="list" have to be at tbody -->
             <tbody id="list" class="list" style=" font-size:100%;">
-
             <div th:if="(*{experimentType}!=null)">
-
                 <tr th:each="stepType, itemStat : *{experimentType.stepTypes}">
                     <input id="step" th:type="hidden"
                            th:field="*{{steps[__${itemStat.index}__]}}"
@@ -450,9 +434,7 @@
                                class="form-control float-right input-hour"
                                th:value="*{steps[__${itemStat.index}__].startHour}"
                                th:field="*{steps[__${itemStat.index}__].startHour}" placeholder="Start hour">
-
                     </td>
-
                     <td>
                         <input required style="width: 90%; font-size:80%; " id="endDate" type="date"
                                th:value="*{steps[__${itemStat.index}__].end}"
