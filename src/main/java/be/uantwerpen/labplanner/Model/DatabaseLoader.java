@@ -693,9 +693,9 @@ public class DatabaseLoader {
         WhlTrkTest.add(styp3);
         WhlTrkTest.add(styp11);
         WhlTrkTest.add(styp10);
-        ExperimentType experimentType1 = new ExperimentType("ITSR", ITSRStyps);
+        ExperimentType experimentType1 = new ExperimentType("ITSR", ITSRStyps, false);
         experimentTypeRepository.save(experimentType1);
-        ExperimentType experimentType2 = new ExperimentType("Wheel Tracking Test", WhlTrkTest);
+        ExperimentType experimentType2 = new ExperimentType("Wheel Tracking Test", WhlTrkTest, true);
         experimentTypeRepository.save(experimentType2);
 
         Report r1 = new Report("Autosaw is broken", lorem.getWords(25), userRepository.findByUsername("Timo").orElse(null));

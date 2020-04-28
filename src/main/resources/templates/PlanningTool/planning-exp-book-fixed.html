@@ -43,12 +43,12 @@
     let holidays = [[${holidays}]];
 
     let calendarUpdate = {
-        experimentIndex : 0,
-        stepIndex : 0,
+        experimentIndex: 0,
+        stepIndex: 0,
         start: 0,
-        end:0,
-        startHour:0,
-        endHour:0,
+        end: 0,
+        startHour: 0,
+        endHour: 0,
     }
 
     function addMixtureRow(mixtures) {
@@ -78,7 +78,6 @@
 
 
     function removeMixtureRow() {
-
         var i = $('#mixtureList tr').length;
         if (i > 0) {
             document.getElementById("mixtureList").deleteRow(i - 1);
@@ -116,33 +115,39 @@
             $('#list')
                 .append(
                     '<tr class="row' + i + '" id="row' + i + '">' +
-                    '<td style="text-align:left;" value="' + a.stepTypes[i].id + '">' + a.stepTypes[i].stepTypeName + '</td>' +
-                    '<td>' +
-                    '<select required class=" form-control input-device" id="selectDevice' + i + '" name="steps[' + i + '].device" style=" width: 110%;font-size:90%;">' +
-                    '<option hidden selected disabled value="">Select device</option>' +
+                    '   <td style="text-align:left;" value="' + a.stepTypes[i].id + '">' + a.stepTypes[i].stepTypeName + '</td>' +
+                    '   <td>' +
+                    '       <select required class=" form-control input-device" id="selectDevice' + i + '" name="steps[' + i + '].device" style=" width: 110%;font-size:90%;">' +
+                    '       <option hidden selected disabled value="">Select device</option>' +
                     deviceOprions +
-                    '</select>' +
-                    '</td>' +
-                    '<td>' +
-                    '<input required style="width: 90%; font-size:80%;" required="" id="startDate' + i + '" type="date" class="form-control input-date" placeholder="Start date" name="steps[' + i + '].start">' +
-                    '</td>' +
-                    '<td>' +
-                    '<input required style="width: 100%; font-size:80%;" type="time" id="startHour' + i + '" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + i + '].startHour" >' +
-                    '</td>' +
-                    '<td>' +
-                    '<input required style="width: 90%; font-size:80%; " required="" id="endDate' + i + '" type="date" class="form-control input-date" placeholder="End date" name="steps[' + i + '].end" >' +
-                    '</td>' +
-                    '<td>' +
-                    '<input required style="width: 100%; font-size:80%; " type="time" id="endHour' + i + '" size="2" class="form-control float-right input-hour" placeholder="End hour" name="steps[' + i + '].endHour" >' +
-                    '</td> ' +
-                    '<td style="width: 10%; font-size:80%; text-align:center" id="continuity' + i + '" name="continuity" value=""> ' + a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '<br />' + a.stepTypes[i].continuity.type + '' +
-                    '</td> ' +
-                    '<td>' +
-                    '<input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + i + '].comment" value="" >' +
-                    '</td> ' +
-                    '<td>' +
-                    '<button  style="width: 100%; font-size:80%; class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,\'' + i + '\')" >Choose in calendar</button>' +
-                    '</td>' +
+                    '       </select>' +
+                    '   </td>' +
+                    '   <td style="vertical-align:bottom; text-align:center;">' +
+                    '       <p>Start</p>' +
+                    '       <p>End</p>' +
+                    '   </td>' +
+                    '   <td style="vertical-align:center; text-align:center;">' +
+                    '       <div class="input-group">' +
+                    '           <input required style="width: 90%; font-size:80%;" id="startDate' + i + '" type="date"  class="form-control input-date" placeholder="Start date" name="steps[' + i + '].start">' +
+                    '           <input required style="width: 90%; font-size:80%; " id="endDate' + i + '" type="date"  class="form-control input-date" placeholder="End date" name="steps[' + i + '].end">' +
+                    '       </div>' +
+                    '   </td>' +
+                    '   <td style="vertical-align:bottom; text-align:center;">' +
+                    '       <p>Start</p>' +
+                    '       <p>End</p>' +
+                    '   </td>' +
+                    '   <td style="vertical-align:center; text-align:center;">' +
+                    '       <input required="" style="width: 100%; font-size:80%;" type="time" id="startHour' + i + '" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + i + '].startHour">' +
+                    '        <input required="" style="width: 100%; font-size:80%; " type="time" id="endHour' + i + '" class="form-control float-right input-hour" placeholder="End hour" name="steps[' + i + '].endHour">' +
+                    '   </td> ' +
+                    '   <td style="width: 10%; font-size:80%; text-align:center" id="continuity' + i + '" name="continuity" value=""> ' + a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '<br />' + a.stepTypes[i].continuity.type + '' +
+                    '   </td> ' +
+                    '   <td>' +
+                    '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + i + '].comment" value="" >' +
+                    '   </td> ' +
+                    '   <td>' +
+                    '       <button  style="width: 100%; font-size:80%; class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,\'' + i + '\')" >Choose in calendar</button>' +
+                    '   </td>' +
                     '</tr>');
         }
     }
@@ -172,7 +177,8 @@
     function removeRow(r) {
         $(r).closest('tr').remove();
     }
-    function openCalendar(expInd,stepInd) {
+
+    function openCalendar(expInd, stepInd) {
         calendarUpdate.experimentIndex = expInd;
         calendarUpdate.stepIndex = stepInd;
         calendarUpdate.start = document.getElementById('startDate' + stepInd + '').value
@@ -237,23 +243,28 @@
     .show {
         display: block;
     }
+
     .modal-xl {
         width: 100%;
-        height: 100%;!important;
+        height: 100%;
+    !important;
         margin-top: 0px;
         margin-bottom: 0px;
     }
+
     .modal-dialog,
     .modal-content {
         /* 80% of window height */
-        height: 100%;!important;
+        height: 100%;
+    !important;
 
     }
 
     .modal-body {
         /* 100% = dialog height, 120px = header + footer */
         /*overflow-y: scroll;*/
-        height: 100%;!important;
+        height: 100%;
+    !important;
 
     }
 </style>
@@ -266,6 +277,9 @@
         <input th:type="hidden" th:field="*{user}"/>
         <input id="experimentType" th:type="hidden"
                th:field="*{experimentType}">
+        <input type="checkbox" id="isFixedExp" th:type="hidden"
+               th:field="*{experimentType.isFixedType}"
+               value="1">
 
 
         <h3><span th:text="#{experiment.info}"></span></h3>
@@ -325,7 +339,7 @@
                         </select>
                     </th>
                     <th>
-                        <input type="number" min="0" step="0.01"  class=" form-control input-device"
+                        <input type="number" min="0" step="0.01" class=" form-control input-device"
                                th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
                                placeholder="Amount of mixture" required>
                     </th>
@@ -359,10 +373,10 @@
             <tr>
                 <th>Step Type</th>
                 <th>Device</th>
-                <th>Start date</th>
-                <th>Start time</th>
-                <th>End date</th>
-                <th>End time</th>
+                <th></th>
+                <th th:text="#{date}">Date</th>
+                <th></th>
+                <th th:text="#{time}">Time</th>
                 <th>Continuity</th>
                 <th>Comment</th>
                 <th>Choose in Calendar</th>
@@ -378,11 +392,11 @@
                     <input id="step" th:type="hidden"
                            th:field="*{{steps[__${itemStat.index}__]}}"
                            th:value="*{{steps[__${itemStat.index}__]}}">
-                    <td style="text-align:left;"
+                    <td style="vertical-align:center; text-align:center;"
                         th:text="${stepType.stepTypeName}" th:value="${{stepType}}"
                         th:field="*{steps[__${itemStat.index}__].stepType}">
                     </td>
-                    <td>
+                    <td style="vertical-align:center; text-align:center;">
                         <select style="width: 110%;font-size:90%;" class=" form-control input-device"
                                 id="selectDevice"
                                 th:field="*{steps[__${itemStat.index}__].device}">
@@ -395,40 +409,49 @@
                             </option>
                         </select>
                     </td>
-                    <td>
-                        <input required style="width: 90%; font-size:80%;" id="startDate" type="date"
-                               th:field="*{steps[__${itemStat.index}__].start}"
-                               class="form-control input-date"
-                               placeholder="Start date">
+                    <td style="vertical-align:center; text-align:center;">
+                        <p th:text="#{start}"></p>
+                        <p th:text="#{end}"></p>
                     </td>
-                    <td>
+                    <td style="vertical-align:center; text-align:center;">
+                        <div class="input-group">
+                            <input required style="width: 90%; font-size:80%;" id="startDate" type="date"
+                                   th:value="*{steps[__${itemStat.index}__].start}"
+                                   th:field="*{steps[__${itemStat.index}__].start}"
+                                   class="form-control input-date"
+                                   placeholder="Start date"/>
+
+                            <input required style="width: 90%; font-size:80%; " id="endDate" type="date"
+                                   th:value="*{steps[__${itemStat.index}__].end}"
+                                   th:field="*{steps[__${itemStat.index}__].end}"
+                                   class="form-control input-date"
+                                   placeholder="End date"/>
+                        </div>
+
+                    </td>
+                    <td style="vertical-align:bottom; text-align:center;">
+                        <p th:text="#{start}"></p>
+                        <p th:text="#{end}"></p>
+                    </td>
+                    <td style="vertical-align:center; text-align:center;">
+
                         <input required style="width: 100%; font-size:80%;" type="time" id="startHour"
                                class="form-control float-right input-hour"
                                th:value="*{steps[__${itemStat.index}__].startHour}"
                                th:field="*{steps[__${itemStat.index}__].startHour}" placeholder="Start hour">
-
-                    </td>
-
-                    <td>
-                        <input required style="width: 90%; font-size:80%; " id="endDate" type="date"
-                               th:value="*{steps[__${itemStat.index}__].end}"
-                               th:field="*{steps[__${itemStat.index}__].end}"
-                               class="form-control input-date"
-                               placeholder="End date">
-                    </td>
-                    <td>
                         <input required style="width: 100%; font-size:80%; " type="time" id="endHour"
                                class="form-control float-right input-hour"
                                th:value="*{steps[__${itemStat.index}__].endHour}"
                                th:field="*{steps[__${itemStat.index}__].endHour}" placeholder="End hour">
                     </td>
 
-                    <td style="width: 10%; font-size:80%; text-align:center" id="continuity" name="continuity"
+                    <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center" id="continuity"
+                        name="continuity"
                         th:utext="*{experimentType.stepTypes[__${itemStat.index}__].continuity.hours} + ':' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}+
                         '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.type}"
                     >
                     </td>
-                    <td>
+                    <td style="vertical-align:center; text-align:center;">
                         <input style="width: 100%; font-size:80%; " type="text" id="comment"
                                class="form-control float-right" placeholder="comment"
                                th:field="*{steps[__${itemStat.index}__].comment}">
@@ -514,7 +537,7 @@
                     </span>
                                 <span id="renderRange" class="render-range"></span>
                             </div>
-                                <div id="calendar" style="overflow-y: auto"></div>
+                            <div id="calendar" style="overflow-y: auto"></div>
                         </div>
                         <div class="modal-footer" style="flex-direction: column;display: flex;">
                             <div id="legend" style="display: flex; flex-direction: row;">
@@ -525,10 +548,13 @@
 
                             <div style="display: flex;
   flex-direction: row;">
-                            <select required id="deviceTypeDropdown" class="form-control input-device" style="visibility: visible;">
-                                <option value="none" selected disabled hidden >No available device</option>
-                            </select>
-                            <button type="button" id="selectStep" data-dismiss="modal" class="btn btn-primary" disabled>Select</button>
+                                <select required id="deviceTypeDropdown" class="form-control input-device"
+                                        style="visibility: visible;">
+                                    <option value="none" selected disabled hidden>No available device</option>
+                                </select>
+                                <button type="button" id="selectStep" data-dismiss="modal" class="btn btn-primary"
+                                        disabled>Select
+                                </button>
                             </div>
                         </div>
                     </div>

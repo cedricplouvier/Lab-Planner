@@ -516,15 +516,9 @@ public class StepController {
     }
 
 
-    @RequestMapping(value = "/planning/experiments/book", method = RequestMethod.GET)
-    public String viewBookNewExperiment(final ModelMap model) {
+    @RequestMapping(value = "/planning/experiments/book/fixed", method = RequestMethod.GET)
+    public String viewBookFixedExperiment(final ModelMap model) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        List<Step> stepList = new ArrayList<Step>();
-        //prepare list of empty steps
-        for (int i = 0; i < 100; i++) {
-            stepList.add(new Step());
-        }
 
         List<Step> userSteps = new ArrayList<Step>();
         List<Step> otherSteps = new ArrayList<Step>();
@@ -547,13 +541,41 @@ public class StepController {
         model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("experiment", new Experiment());
         model.addAttribute("holidays", holidays);
-        return "PlanningTool/planning-exp-book";
+        return "PlanningTool/planning-exp-book-fixed";
+    }
+
+    @RequestMapping(value = "/planning/experiments/book/custom", method = RequestMethod.GET)
+    public String viewBookCustomExperiment(final ModelMap model) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<Step> userSteps = new ArrayList<Step>();
+        List<Step> otherSteps = new ArrayList<Step>();
+
+        for (Step step : stepService.findAll()) {
+            if (step.getUser().getId() == currentUser.getId()) {
+                userSteps.add(step);
+            } else {
+                otherSteps.add(step);
+            }
+        }
+        HolidayManager manager = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
+        Set<Holiday> holidays = manager.getHolidays(Calendar.getInstance().get(Calendar.YEAR));
+        model.addAttribute("allDevices", deviceService.findAll());
+        model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+        model.addAttribute("allMixtures", mixtureService.findAll());
+        model.addAttribute("allStepTypes", stepTypeService.findAll());
+        model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
+        model.addAttribute("userSteps", userSteps);
+        model.addAttribute("otherSteps", otherSteps);
+        model.addAttribute("experiment", new Experiment());
+        model.addAttribute("holidays", holidays);
+        return "PlanningTool/planning-exp-book-custom";
     }
 
 
     @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
     @RequestMapping(value = {"/planning/experiments/book", "/planning/experiments/book/{id}"}, method = RequestMethod.POST)
-    public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
+        public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Locale current = LocaleContextHolder.getLocale();
         Map<Product, Double> productMap = new HashMap<>();
@@ -567,7 +589,11 @@ public class StepController {
         if (experiment == null || experiment.getExperimentType() == null) {
             errorMessage = "Error while trying to save Experiment.";
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-            return "/PlanningTool/planning-exp-book";
+            if (experiment.getExperimentType().getIsFixedType()) {
+                return "PlanningTool/planning-exp-book-fixed";
+            } else {
+                return "PlanningTool/planning-exp-book-custom";
+            }
         }
 
         //set current experimentType by experimentType id
@@ -583,7 +609,11 @@ public class StepController {
             if (experiment.getExperimentname().equals(exp.getExperimentname()) && !Objects.equals(experiment.getId(), exp.getId())) {
                 errorMessage = "Experiment with this name already exists";
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-                return "/PlanningTool/planning-exp-book";
+                if (experiment.getExperimentType().getIsFixedType()) {
+                    return "PlanningTool/planning-exp-book-fixed";
+                } else {
+                    return "PlanningTool/planning-exp-book-custom";
+                }
             }
         }
 
@@ -593,7 +623,11 @@ public class StepController {
                 if (pom.getMixtureAmount() < 0) {
                     errorMessage = "Ammount of mixture can't be negative";
                     prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-                    return "/PlanningTool/planning-exp-book";
+                    if (experiment.getExperimentType().getIsFixedType()) {
+                        return "PlanningTool/planning-exp-book-fixed";
+                    } else {
+                        return "PlanningTool/planning-exp-book-custom";
+                    }
                 }
             }
         }
@@ -625,7 +659,12 @@ public class StepController {
         if (experiment.getSteps().size() != experiment.getExperimentType().getStepTypes().size()) {
             errorMessage = "Error while trying to save Experiment. Problem with length of steps";
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-            return "/PlanningTool/planning-exp-book";
+            if (experiment.getExperimentType().getIsFixedType()) {
+                return "PlanningTool/planning-exp-book-fixed";
+            } else {
+                return "PlanningTool/planning-exp-book-custom";
+            }
+
         }
 
         //if the experiment is new, set current user to experiment. Otherwise keep the user same
@@ -669,7 +708,11 @@ public class StepController {
             //no rights, so error message & save nothing
             errorMessage = "Student has no right to edit experiment";
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-            return "/PlanningTool/planning-exp-book";
+            if (experiment.getExperimentType().getIsFixedType()) {
+                return "PlanningTool/planning-exp-book-fixed";
+            } else {
+                return "PlanningTool/planning-exp-book-custom";
+            }
         }
 
         //check correctness of steps
@@ -685,21 +728,33 @@ public class StepController {
 
                 errorMessage = "Error while trying to save Experiment. Wrong input";
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-                return "/PlanningTool/planning-exp-book";
+                if (experiment.getExperimentType().getIsFixedType()) {
+                    return "PlanningTool/planning-exp-book-fixed";
+                } else {
+                    return "PlanningTool/planning-exp-book-custom";
+                }
             }
 
             //check, double booking
             if (overlapCheck(step)) {
                 errorMessage = "Error while trying to save Experiment. Problem with double booking of device " + step.getDevice().getDevicename();
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-                return "/PlanningTool/planning-exp-book";
+                if (experiment.getExperimentType().getIsFixedType()) {
+                    return "PlanningTool/planning-exp-book-fixed";
+                } else {
+                    return "PlanningTool/planning-exp-book-custom";
+                }
             }
 
             //check holidays, weekend and opening hours
             if (dateTimeIsUnavailable(step)) {
                 errorMessage = getMessageForSelectedStep(step);
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-                return "/PlanningTool/planning-exp-book";
+                if (experiment.getExperimentType().getIsFixedType()) {
+                    return "PlanningTool/planning-exp-book-fixed";
+                } else {
+                    return "PlanningTool/planning-exp-book-custom";
+                }
             }
             step.setUser(currentUser);
             step.setStepType(experiment.getExperimentType().getStepTypes().get(experiment.getSteps().indexOf(step)));
@@ -711,7 +766,11 @@ public class StepController {
         if (isProblemWithContinuity(experiment.getSteps())) {
             errorMessage = "Error while trying to save Experiment. Problem with continuity";
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-            return "/PlanningTool/planning-exp-book";
+            if (experiment.getExperimentType().getIsFixedType()) {
+                return "PlanningTool/planning-exp-book-fixed";
+            } else {
+                return "PlanningTool/planning-exp-book-custom";
+            }
         }
 
         //check if enough stock available (if not enoughstock= false)
@@ -746,7 +805,11 @@ public class StepController {
         if (!enoughStock) {
             errorMessage = ResourceBundle.getBundle("messages", current).getString("enough.stock");
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-            return "/PlanningTool/planning-exp-book";
+            if (experiment.getExperimentType().getIsFixedType()) {
+                return "PlanningTool/planning-exp-book-fixed";
+            } else {
+                return "PlanningTool/planning-exp-book-custom";
+            }
         }
 
         // if experiment fulfills all needs, save it into database
@@ -802,7 +865,7 @@ public class StepController {
     public String viewEditExperiment(@PathVariable long id, final ModelMap model, RedirectAttributes ra) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
-
+        Experiment experiment = experimentService.findById(id).orElse(null);
 
         if (experimentService.findById(id).isPresent()) {
             //also check for Researcher.
@@ -834,17 +897,21 @@ public class StepController {
                         }
                     }
                 }
-
             }
 
             if (allowedToEdit) {
-                model.addAttribute("experiment", experimentService.findById(id).orElse(null));
+                model.addAttribute("experiment", experiment);
                 model.addAttribute("allDevices", deviceService.findAll());
                 model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
                 model.addAttribute("allExperiments", experimentService.findAll());
                 model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
                 model.addAttribute("allMixtures", mixtureService.findAll());
-                return "/PlanningTool/planning-exp-book";
+
+                if (experiment.getExperimentType().getIsFixedType()) {
+                    return "PlanningTool/planning-exp-book-fixed";
+                } else {
+                    return "PlanningTool/planning-exp-book-custom";
+                }
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
@@ -853,7 +920,11 @@ public class StepController {
         } else {
             ra.addFlashAttribute("Status", new String("Error"));
             ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
-            return "PlanningTool/planning-exp-book";
+            if (experiment.getExperimentType().getIsFixedType()) {
+                return "PlanningTool/planning-exp-book-fixed";
+            } else {
+                return "PlanningTool/planning-exp-book-custom";
+            }
         }
     }
 

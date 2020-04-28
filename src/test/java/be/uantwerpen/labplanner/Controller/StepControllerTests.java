@@ -1037,7 +1037,7 @@ public class StepControllerTests {
         StepType stepType1 = new StepType(deviceType,new Continuity(0,0,"No"),"New StepType");
         stepTypes.add(stepType);
         stepTypes.add(stepType1);
-        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes,true);
         experimentType.setId((long)60);
         List<ExperimentType> experimentTypes = new ArrayList<>();
         experimentTypes.add(experimentType);
@@ -1064,7 +1064,7 @@ public class StepControllerTests {
         StepType stepType1 = new StepType(deviceType,new Continuity(0,0,"No"),"New StepType");
         stepTypes.add(stepType);
         stepTypes.add(stepType1);
-        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes,true);
         experimentType.setId((long)60);
         List<ExperimentType> experimentTypes = new ArrayList<>();
         experimentTypes.add(experimentType);
@@ -1091,7 +1091,7 @@ public class StepControllerTests {
         StepType stepType1 = new StepType(deviceType,new Continuity(0,0,"No"),"New StepType");
         stepTypes.add(stepType);
         stepTypes.add(stepType1);
-        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes,true);
         experimentType.setId((long)60);
         List<ExperimentType> experimentTypes = new ArrayList<>();
 
@@ -1118,7 +1118,7 @@ public class StepControllerTests {
         StepType stepType1 = new StepType(deviceType,new Continuity(0,0,"No"),"New StepType");
         stepTypes.add(stepType);
         stepTypes.add(stepType1);
-        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes,true);
         experimentType.setId((long)60);
         List<ExperimentType> experimentTypes = new ArrayList<>();
 
@@ -1146,7 +1146,7 @@ public class StepControllerTests {
         StepType stepType1 = new StepType(deviceType,new Continuity(0,0,"No"),"New StepType");
         stepTypes.add(stepType);
         stepTypes.add(stepType1);
-        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes,true);
         experimentType.setId((long)60);
         List<ExperimentType> experimentTypes = new ArrayList<>();
         experimentTypes.add(experimentType);
@@ -1179,7 +1179,7 @@ public class StepControllerTests {
         stepType1.setId((long) 59);
         stepTypes.add(stepType);
         stepTypes.add(stepType1);
-        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes,true);
         experimentType.setId((long)60);
         List<ExperimentType> experimentTypes = new ArrayList<>();
         experimentTypes.add(experimentType);
@@ -1233,7 +1233,7 @@ public class StepControllerTests {
         stepType1.setId((long) 59);
         stepTypes.add(stepType);
         stepTypes.add(stepType1);
-        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes,true);
         experimentType.setId((long)60);
         List<ExperimentType> experimentTypes = new ArrayList<>();
         experimentTypes.add(experimentType);
@@ -1350,7 +1350,7 @@ public class StepControllerTests {
         stepType1.setId((long) 59);
         stepTypes.add(stepType);
         stepTypes.add(stepType1);
-        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes,true);
         experimentType.setId((long)60);
 
         when(stepTypeService.findAll()).thenReturn(stepTypes);
