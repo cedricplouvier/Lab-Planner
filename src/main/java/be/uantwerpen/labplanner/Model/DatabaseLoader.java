@@ -629,11 +629,11 @@ public class DatabaseLoader {
 
 
         //create mixtures and save them
-        Mixture m1 = new Mixture("APT-C", mix1, lorem.getWords(20), tags2, null);
+        Mixture m1 = new Mixture("APT-C", mix1, lorem.getWords(20), tags2, null, null);
         mixtureRepository.save(m1);
-        Mixture m2 = new Mixture("AB-4C", mix2, lorem.getWords(20), tags1, null);
+        Mixture m2 = new Mixture("AB-4C", mix2, lorem.getWords(20), tags1, null, null);
         mixtureRepository.save(m2);
-        Mixture m3 = new Mixture("SMA", mix3, lorem.getWords(20), tags4, null);
+        Mixture m3 = new Mixture("SMA", mix3, lorem.getWords(20), tags4, null, null);
         mixtureRepository.save(m3);
 
 

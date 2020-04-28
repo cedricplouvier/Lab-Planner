@@ -30,6 +30,8 @@
     #submitform { margin-top: 25px; }
 
     #spacing { margin-top: 25px; }
+    #spacing2 { margin-top: 25px; }
+
 
     .dropdown {
         position: relative;
@@ -195,12 +197,16 @@
 
         </div>
 
+
+        <div th:if="(${mixture.getDocument()!=null})" id="spacing2">
+            <a>Extra info:  </a>
+            <a   th:href="@{/files/pdfs/{name}(name=${mixture.getDocument()})}" th:text="${mixture.getDocument()}"></a>
+        </div>
+
     <div id="submitform">
             <p>
         <button type="submit" th:text="#{mixture.save}" class="btn btn-primary">Save</button>
                 <a th:href="@{/products}" th:text="#{close}" class="btn btn-secondary">Close</a>
-
-
             </p>
     </div>
 
@@ -212,7 +218,7 @@
             <div class="input-group mb-3">
                 <div class="custom-file">
                     <input type="file" class="custom-file-input" name="file" accept="image/png, image/jpeg, image/jpg" id="inputGroupFile02"/>
-                    <label class="custom-file-label" for="inputGroupFile02"th:text="#{device.choosefile}"></label>
+                    <label class="custom-file-label" for="inputGroupFile02"th:text="#{mixture.image}"></label>
                 </div>
                 <div class="input-group-append">
                     <button class="btn btn-primary" id="upload-btn" disabled type="submit"  th:text="#{device.upload}"></button>
@@ -229,7 +235,29 @@
                 })
             </script>
         </form>
+        <form th:if="${mixture.id}!=null" method="POST" enctype="multipart/form-data"  th:action="@{/upload/mixturePdf/{mixtureId}(mixtureId=${mixture.id})}">
+            <div class="input-group mb-3">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" name="file" accept="application/pdf" id="inputGroupFile03"/>
+                    <label class="custom-file-label" for="inputGroupFile03"th:text="#{mixture.pdf}"></label>
+                </div>
+                <div class="input-group-append">
+                    <button class="btn btn-primary" id="upload-btn2" disabled type="submit"  th:text="#{device.upload}"></button>
+                </div>
+            </div>
+            <script>
+                $('#inputGroupFile03').on('change',function(){
+                    //get the file name
+                    var fileName2 = $(this).val();
+                    //replace the "Choose a file" label
+                    $(this).next('.custom-file-label').html(fileName2);
+                    $('#upload-btn2').prop('disabled', false);
+
+                })
+            </script>
+        </form>
         <div class="alert alert-info" role="alert" th:if="${mixture.id}==null" th:text="#{product.savebeforeupload}"></div>
+        <div class="alert alert-info" role="alert" th:if="${mixture.id}==null" th:text="#{mixture.savebeforeinfo}"></div>
 
 
 
