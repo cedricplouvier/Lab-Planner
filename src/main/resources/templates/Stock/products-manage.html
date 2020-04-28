@@ -122,7 +122,7 @@
     <form th:if="${product.id}!=null" method="POST" enctype="multipart/form-data"  th:action="@{/upload/productimage/{productId}(productId=${product.id})}">
         <div class="input-group mb-3">
             <div class="custom-file">
-                <input type="file" class="custom-file-input" name="file" id="inputGroupFile02"/>
+                <input type="file" class="custom-file-input" name="file" accept="image/png, image/jpeg, image/jpg" id="inputGroupFile02"/>
                 <label class="custom-file-label" for="inputGroupFile02"th:text="#{device.choosefile}"></label>
             </div>
             <div class="input-group-append">
