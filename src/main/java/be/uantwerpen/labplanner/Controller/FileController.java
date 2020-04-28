@@ -50,6 +50,8 @@ public class FileController {
 				"attachment; filename=\"" + file.getFilename() + "\"").body(file);
 	}
 
+
+
 	@PostMapping("/upload/typeimage/{typeid}")
 	public String handleTypeImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long typeid) {
 		DeviceType tempDeviceType =  deviceTypeService.findById( typeid).orElse(null);
@@ -118,6 +120,26 @@ public class FileController {
 
 		return "redirect:/mixtures/"+mixtureId;
 	}
+
+	@PostMapping("/upload/mixturePdf/{mixtureId}")
+	public String handleMixturePdfUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long mixtureId) {
+		Mixture temp =  mixtureService.findById( mixtureId).orElse(null);
+		if(temp!=null) {
+			//append productid to filename to make sure file is unique for each product
+			String filename = file.getOriginalFilename();
+			storageService.store(file,"pdfs",filename);
+			temp.setDocument(filename);
+			mixtureService.save(temp);
+
+		}else{
+		}
+
+		return "redirect:/mixtures/"+mixtureId;
+	}
+
+
+
+
 
 		//when upload is too big.
 	@ControllerAdvice

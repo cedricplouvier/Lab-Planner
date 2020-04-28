@@ -70,6 +70,14 @@
 
                 </div>
             </div>
+            <div th:if="(${mixture.getDocument()!=null})"  class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"> <a>Extra info:</a>  </h5>
+                    <div id="spacing2">
+                        <a   th:href="@{/files/pdfs/{name}(name=${mixture.getDocument()})}" th:text="${mixture.getDocument()}"></a>
+                    </div>
+                </div>
+            </div>
             <div class="card bg-light mb-3">
                 <div class="card-body">
                     <h5 class="card-title"> <a th:text="#{mixtures.tag}">Tags</a>  </h5>
@@ -79,6 +87,9 @@
                     </a>
                 </div>
             </div>
+
+
+
 
 
 
