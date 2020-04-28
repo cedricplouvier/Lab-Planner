@@ -642,6 +642,8 @@ let suggestion;
             suggestion = schedule;
             setSchedules();
             $('#toastsuggestionsuccess').toast('show')
+            cal.setDate(suggestion.start);
+            refreshScheduleVisibility()
 
         }
         if(!found&&index==calendarUpdate.stepIndex){
