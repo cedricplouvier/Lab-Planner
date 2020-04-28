@@ -125,7 +125,7 @@ public class StockControllerTests {
         tags.add(t1);
         OwnProduct prod = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags , null);
         mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
-                .andExpect(view().name("Stock/overview-stock"))
+                .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
     }
 
@@ -139,7 +139,7 @@ public class StockControllerTests {
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
         mockMvc.perform(post("/products/{id}","10").flashAttr("ownProduct",prod))
-                .andExpect(view().name("Stock/overview-stock"))
+                .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
 
     }
@@ -295,7 +295,7 @@ public class StockControllerTests {
         Mixture mix = new Mixture("testing", ingredients, "blablabla",tags, null, null);
 
         mockMvc.perform(post("/mixtures/").flashAttr("mixture",mix))
-                .andExpect(view().name("Stock/overview-stock"))
+                .andExpect(view().name("Mixtures/mixtures-manage"))
                 .andDo(print());
     }
 
@@ -363,7 +363,7 @@ public class StockControllerTests {
 
         when(mixtureService.findById(id)).thenReturn(Optional.of(mix));
         mockMvc.perform(post("/mixtures/{id}","10").flashAttr("mixture",mix))
-                .andExpect(view().name("Stock/overview-stock"))
+                .andExpect(view().name("Mixtures/mixtures-manage"))
                 .andDo(print());
     }
 
