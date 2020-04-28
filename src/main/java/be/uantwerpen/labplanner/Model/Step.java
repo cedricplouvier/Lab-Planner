@@ -30,7 +30,6 @@ public class Step extends AbstractPersistable<Long> {
     @Column(name = "comment")
     private String comment;
 
-
     public Step(){
     }
 

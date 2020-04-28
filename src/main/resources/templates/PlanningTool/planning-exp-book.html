@@ -173,10 +173,26 @@
     function openCalendar(expInd, stepInd) {
         calendarUpdate.experimentIndex = expInd;
         calendarUpdate.stepIndex = stepInd;
+        document.getElementById('steptitle').innerText = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['deviceTypeName'];
+        document.getElementById('length').innerText = "Length: unimplemented";
+        if(stepInd>0){
+            document.getElementById('continuity').innerText = "Continuity: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type'];
+            document.getElementById('align').innerText = "Alignment: After";
+            document.getElementById('time').innerText = "Time: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['hours']+"h "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['minutes']+"m";
+
+        }else{
+            document.getElementById('continuity').innerText = "Continuity: None";
+            document.getElementById('align').innerText = "Alignment: None";
+            document.getElementById('time').innerText = "Time: None";
+
+        }
         calendarUpdate.start = document.getElementById('startDate' + stepInd + '').value
         calendarUpdate.end = document.getElementById('endDate' + stepInd + '').value
         calendarUpdate.startHour = document.getElementById('startHour' + stepInd + '').value
         calendarUpdate.endHour = document.getElementById('endHour' + stepInd + '').value
+
+        document.getElementById('selectStep').disabled = false;
+
     }
 </script>
 <style>
@@ -242,14 +258,16 @@
     !important;
         margin-top: 0px;
         margin-bottom: 0px;
+        max-width: 100%;
+    }
+    .modal {
+        padding: 10px !important;
     }
 
     .modal-dialog,
     .modal-content {
         /* 80% of window height */
-        height: 100%;
-    !important;
-
+        height: 100%!important;
     }
 
     .modal-body {
@@ -259,6 +277,20 @@
     !important;
 
     }
+    /*#extraLargeModal{*/
+    /*    padding-right: 10px; !important*/
+    /*}*/
+    body { padding-right: 0 !important }
+    #calendar {
+        /*position: absolute;*/
+        /*left: 0;*/
+        /*overflow: hidden;*/
+        overflow-y: auto;
+        /*right: 0;*/
+        /*bottom: 0px;*/
+        /*top: 64px;*/
+    }
+
 </style>
 
 <div class="toast" id="myToast" data-delay="5000" style=" background-color:red ;position: absolute; top: 0; right: 0;">
@@ -445,22 +477,13 @@
                     </td>
                 </tr>
             </div>
-            <div id="extraLargeModal" class="modal" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-xl">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Schedule picker</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div id="menu">
-        <span class="dropdown">
-                        <button id="dropdownMenu-calendarType" class="btn btn-default btn-sm dropdown-toggle"
-                                type="button" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="true">
-                            <i id="calendarTypeIcon" class="calendar-icon ic_view_month" style="margin-right: 4px;"></i>
-                            <span id="calendarTypeName">Dropdown</span>&nbsp;
-                            <i class="calendar-icon tui-full-calendar-dropdown-arrow"></i>
+            <div id="extraLargeModal" class="modal" tabindex="-1" role="dialog" >
+                <div class="modal-dialog modal-xl" style="overflow-y: hidden; height:100%;">
+                    <div class="modal-content" style="display: flex;flex-direction: row">
+                        <div id="leftSide" style="display:flex;flex-direction:column;flex: 3;">
+                            <div id="menu" style="flex:1;">
+                                <span class="dropdown">
+
                         </button>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu-calendarType">
                             <li role="presentation">
@@ -524,27 +547,46 @@
                     </span>
                                 <span id="renderRange" class="render-range"></span>
                             </div>
-                            <div id="calendar" style="overflow-y: auto"></div>
+                            <div id="calendar" ></div>
                         </div>
-                        <div class="modal-footer" style="flex-direction: column;display: flex;">
-                            <div id="legend" style="display: flex; flex-direction: row;">
-                                <div class="alert alert-info" id="help" role="alert">
-                                    Drag and release to create a schedule.
+                        <div id="rightSide" style="flex: 1;display: flex;flex-direction: column;overflow-y: auto;">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="flex: 1;padding-right: 30px;width:10%;align-self:flex-end;">&times;</button>
+
+                            <div style="flex: 1;display: flex;flex-direction: row">
+                                <button type="button" id="previousstep" class="btn btn-primary" style="padding: 5px;flex: 1;  margin:auto;display:block;width: 90%;" >previous</button>
+                                <h6 id="steptitle" data-dismiss="modal"  style="padding: 5px;flex: 3;   margin: auto; text-align:center;vertical-align: center" disabled>Step name</h6>
+                                <button type="button" id="nextstep" class="btn btn-primary" style="padding: 5px;flex: 1;  margin:auto;display:block;width: 90%;" >  next  </button>
+                            </div>
+                            <div style="flex: 4;display: flex;flex-direction: column">
+                                <h6 data-dismiss="modal"  style="flex:1;padding: 5px;   margin: auto; text-align:center;vertical-align: center" >Requirements</h6>
+                                <ul class="list-group" style="flex:4;margin: 10px;">
+                                    <li class="list-group-item" style="padding-bottom: 0px;" id="length">Length: 5h</li>
+                                    <li class="list-group-item" style="padding-bottom: 0px;"id="continuity">Continuity: Hard</li>
+                                    <li class="list-group-item" style="padding-bottom: 0px;"id="align">Align: After</li>
+                                    <li class="list-group-item" style="padding-bottom: 0px;"id="time">Time difference: After</li>
+                                </ul>
+                            </div>
+                            <div style="flex: 4;display: flex;flex-direction: column">
+                                <h6 data-dismiss="modal"  style="flex:1;padding: 5px;   margin: auto; text-align:center;vertical-align: center" >Legend</h6>
+                                <div id="legend" style="display: flex;flex:1; flex-direction: column;margin: 10px;">
+                                    <div class="alert alert-info" id="help" role="alert">
+                                        Drag and release to create a schedule.
+                                    </div>
                                 </div>
                             </div>
-
-                            <div style="display: flex;
-  flex-direction: row;">
-                                <select required id="deviceTypeDropdown" class="form-control input-device"
-                                        style="visibility: visible;">
-                                    <option value="none" selected disabled hidden>No available device</option>
+                            <div style="flex: 1;margin: 10px;">
+                                <select required id="deviceTypeDropdown" class="form-control input-device" style="visibility: visible;">
+                                    <option value="none" selected disabled hidden >No available device</option>
                                 </select>
-                                <button type="button" id="selectStep" data-dismiss="modal" class="btn btn-primary"
-                                        disabled>Select
-                                </button>
+                            </div>
+                            <div style="flex: 1;">
+                                <button type="button" id="suggestStep" class="btn btn-warning" style="width: 90%;  margin:auto;display:block;">Suggest a step</button>
+                            </div>
+                            <div style="flex: 1;">
+                                 <button type="button" id="selectStep" class="btn btn-success" style="width: 90%;  margin:auto;display:block;" disabled>Save step</button>
                             </div>
                         </div>
-                    </div>
+                    </div>x`x
                 </div>
             </div>
             </tbody>

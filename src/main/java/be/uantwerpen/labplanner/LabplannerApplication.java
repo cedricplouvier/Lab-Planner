@@ -41,6 +41,7 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
         if (!registry.hasMappingForPattern("/webjars/**")) {
             registry.addResourceHandler("/webjars/**").addResourceLocations
                     ( "classpath:/META-INF/resources/webjars/");
+
         }
     }
 
