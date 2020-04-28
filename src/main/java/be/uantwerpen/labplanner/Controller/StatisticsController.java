@@ -3,25 +3,26 @@ package be.uantwerpen.labplanner.Controller;
 import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Service.*;
 import be.uantwerpen.labplanner.common.model.stock.Product;
+import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static java.lang.Math.round;
 
 @Controller
+@SessionAttributes({"deviceCounter", "selectedYear", "selectedTypeOfGraph"})
 public class StatisticsController {
 
     @Autowired
@@ -45,6 +46,21 @@ public class StatisticsController {
     @Autowired
     private OwnProductService productService;
 
+    @ModelAttribute("deviceCounter")
+    public int getdeviceCounter(){
+        return 0;
+    }
+    
+    @ModelAttribute("selectedTypeOfGraph")
+    public String graphType(){
+        return "Device hours by month";
+    }
+
+    @ModelAttribute("selectedYear")
+    public String selectYear(){
+        return getCurrentYear();
+    }
+
     int[] totalHoursEmpty = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
     List<int[]> totalHours = new ArrayList<int[]>(Arrays.asList(totalHoursEmpty,totalHoursEmpty,totalHoursEmpty,totalHoursEmpty,totalHoursEmpty));
     List<Float> occupancyDevicesHours = new ArrayList<Float>(Arrays.asList(new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00)));
@@ -52,9 +68,6 @@ public class StatisticsController {
     List<Device> selectedDevices = new ArrayList<>(Arrays.asList(new Device(),new Device(),new Device(),new Device(),new Device()));
     List<String> selectableYears = new ArrayList<>(Arrays.asList("2019","2020","2021", "2022"));
     List<String> selectableGraphTypes = new ArrayList<>(Arrays.asList("Device hours by month","Device occupancy rate in hours","Device occupancy rate in days"));
-    int deviceCounter=0;
-    String selectedYear = getCurrentYear();
-    String selectedTypeOfGraph= "Device hours by month";
     float amountOfWorkDaysInYear = 200;
     float labOpeningTime = 8;
     float labClosingTime = 20;
@@ -97,16 +110,16 @@ public class StatisticsController {
         model.addAttribute("occupancyDevicesHours4", occupancyDevicesDays.get(3));
         model.addAttribute("occupancyDevicesHours5", occupancyDevicesDays.get(4));
 
-        model.addAttribute("deviceCounter", deviceCounter);
-        model.addAttribute("selectableYears",selectableYears);
-        model.addAttribute("selectedYear", selectedYear);
+        //model.addAttribute("deviceCounter", deviceCounter);
+        model.addAttribute("deviceCounter");
+        model.addAttribute("selectableYears", selectableYears);
+        model.addAttribute("selectedYear");
 
         model.addAttribute("selectableGraphTypes",selectableGraphTypes);
-        model.addAttribute("selectedTypeOfGraph",selectedTypeOfGraph);
+        model.addAttribute("selectedTypeOfGraph");
 
         // value to scale the y-axis
         model.addAttribute("highestAbsoluteValueHours",highestAbsoluteValueHours);
-
 
         return "Statistics/statistics";
     }
@@ -142,7 +155,7 @@ public class StatisticsController {
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value ="/statistics/statistics/submit")
-    public String submit(Device selectedDev, RedirectAttributes redAttr){
+    public String submit(final ModelMap model, Device selectedDev, RedirectAttributes redAttr){
 
         List<Step> allSteps = stepService.findAll();
         int[] totalHoursSelectedDevice;
@@ -151,19 +164,18 @@ public class StatisticsController {
         float totalDeviceHoursYear=0;
         float totalDeviceDaysYear=0;
         highestAbsoluteValueHours=10;
-
-        if(deviceCounter<5) {
-            selectedDevices.set(deviceCounter, selectedDev);
+        if((int)model.getAttribute("deviceCounter")<5) {
+            selectedDevices.set((int)model.getAttribute("deviceCounter"), selectedDev);
 
             //calculate occupancy of device by hours and year per year + total of device hours by year and month absolute
             for (int i = 0; i < selectedDevices.size(); i++) {
                 Device dev = selectedDevices.get(i);
                 List<Step> selectedDeviceSteps = filterSelectedDeviceSteps(dev, allSteps);
-                occupancyHours = calculateOccupancyHours(selectedDeviceSteps, totalDeviceHoursYear);
+                occupancyHours = calculateOccupancyHours(model, selectedDeviceSteps, totalDeviceHoursYear);
                 occupancyDevicesHours.set(i, occupancyHours);
-                occupancyDays = calculateOccupancyDays(selectedDeviceSteps, totalDeviceDaysYear);
+                occupancyDays = calculateOccupancyDays(model, selectedDeviceSteps, totalDeviceDaysYear);
                 occupancyDevicesDays.set(i, occupancyDays);
-                totalHoursSelectedDevice = calculateTotalHoursDeviceByYearAndMonth(selectedDeviceSteps);
+                totalHoursSelectedDevice = calculateTotalHoursDeviceByYearAndMonth(model, selectedDeviceSteps);
                 totalHours.set(i, totalHoursSelectedDevice);
                 //get highest absolute value to scale the y axis
                 for (int j = 0; j < totalHoursSelectedDevice.length; j++) {
@@ -172,7 +184,10 @@ public class StatisticsController {
                     }
                 }
             }
-            deviceCounter++;
+            int dc = (int) model.get("deviceCounter") + 1;
+            //dc ++;
+            model.addAttribute("deviceCounter",dc);
+            //deviceCounter++;
         }
         else{
             redAttr.addFlashAttribute("Status","deviceLimit");
@@ -183,8 +198,8 @@ public class StatisticsController {
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/clearList")
-    public String clearList() {
-        deviceCounter = 0;
+    public String clearList(final ModelMap model) {
+        model.addAttribute("deviceCounter",0);
         selectedDevices = Arrays.asList(new Device(),new Device(),new Device(),new Device(),new Device());
         int[] emptyHoursArray =new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
 
@@ -196,21 +211,22 @@ public class StatisticsController {
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/getSelectedYear")
-    public String getSelectedYear(String selectedYear){
-        setSelectedYear(selectedYear);
+    public String getSelectedYear(final ModelMap model, String selectedYear){
+        setSelectedYear(model, selectedYear);
         return "redirect:/statistics/statistics/refreshYear";
     }
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/getSelectedGraphType")
-    public String getSelectedGraphType(String selectedTypeOfGraph){
-        this.selectedTypeOfGraph=selectedTypeOfGraph;
+    public String getSelectedGraphType(final ModelMap model, String selectedTypeOfGraph){
+        //this.selectedTypeOfGraph=selectedTypeOfGraph;
+        model.addAttribute("selectedTypeOfGraph", selectedTypeOfGraph);
         return "redirect:/statistics/statistics/refreshYear";
     }
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/refreshYear")
-    public String refreshYear(){
+    public String refreshYear(final ModelMap model){
 
         List<Step> allSteps = stepService.findAll();
         int[] totalHoursSelectedDevice;
@@ -224,11 +240,11 @@ public class StatisticsController {
         for(int i=0;i<selectedDevices.size();i++){
             Device dev = selectedDevices.get(i);
             List<Step> selectedDeviceSteps = filterSelectedDeviceSteps(dev,allSteps);
-            occupancyHours = calculateOccupancyHours(selectedDeviceSteps, totalDeviceHoursYear);
+            occupancyHours = calculateOccupancyHours(model, selectedDeviceSteps, totalDeviceHoursYear);
             occupancyDevicesHours.set(i,occupancyHours);
-            occupancyDays = calculateOccupancyDays(selectedDeviceSteps, totalDeviceDaysYear);
+            occupancyDays = calculateOccupancyDays(model, selectedDeviceSteps, totalDeviceDaysYear);
             occupancyDevicesDays.set(i,occupancyDays);
-            totalHoursSelectedDevice= calculateTotalHoursDeviceByYearAndMonth(selectedDeviceSteps);
+            totalHoursSelectedDevice= calculateTotalHoursDeviceByYearAndMonth(model, selectedDeviceSteps);
             totalHours.set(i,totalHoursSelectedDevice);
             //get highest absolute value to scale the y axis
             for(int j=0; j<totalHoursSelectedDevice.length;j++){
@@ -266,7 +282,7 @@ public class StatisticsController {
         return selectedDeviceSteps;
     }
 
-    public int[] calculateTotalHoursDeviceByYearAndMonth(List<Step> selectedDeviceSteps){
+    public int[] calculateTotalHoursDeviceByYearAndMonth(final ModelMap model, List<Step> selectedDeviceSteps){
         int[] totalHoursByMonth = new int[12];
         String[] months = new String[]{"01","02","03","04","05","06","07","08","09","10","11","12"};
         for(int j=0;j<selectedDeviceSteps.size();j++){
@@ -279,7 +295,7 @@ public class StatisticsController {
             String endHour = getStepHourEnd(devStep);
             String yearStep = getStepYearStart(devStep);
             for(int i = 0; i<months.length;i++) {
-                if(yearStep.matches(selectedYear)) {
+                if(yearStep.matches((String) model.getAttribute("selectedYear"))) {
                     //calculate for month i if same month
                     if ((startMonth.matches(months[i])) && (startMonth.matches(endMonth)==true)) {
                         if(startDay.matches(endDay)==true) {
@@ -356,12 +372,12 @@ public class StatisticsController {
         return totalHoursByMonth;
     }
 
-    public float calculateOccupancyHours(List<Step> selectedDeviceSteps, float totalDeviceHoursYear){
+    public float calculateOccupancyHours(final ModelMap model, List<Step> selectedDeviceSteps, float totalDeviceHoursYear){
         float occupancySelectedYearHours=0;
         for(int j=0;j<selectedDeviceSteps.size();j++){
             Step devStep = selectedDeviceSteps.get(j);
             String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
-            if(yearStep.matches(selectedYear)) {
+            if(yearStep.matches((String)model.getAttribute("selectedYear"))) {
                 String startDay = getStepDayStart(devStep);
                 String endDay = getStepDayEnd(devStep);
                 String startMonth = getStepMonthStart(devStep);
@@ -422,14 +438,14 @@ public class StatisticsController {
         return occupancySelectedYearHours;
     }
 
-    public float calculateOccupancyDays(List<Step> selectedDeviceSteps, float totalDeviceDaysYear){
+    public float calculateOccupancyDays(final ModelMap model, List<Step> selectedDeviceSteps, float totalDeviceDaysYear){
         float occupancySelectedYearDays=0;
         List<String> bookedDaysStart = new ArrayList<>();
         List<String> bookedDaysEnd = new ArrayList<>();
         for(int j=0;j<selectedDeviceSteps.size();j++){
             Step devStep = selectedDeviceSteps.get(j);
             String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
-            if(yearStep.matches(selectedYear)) {
+            if(yearStep.matches((String) model.getAttribute("selectedYear"))) {
                 String stepDateStart = devStep.getStart();
                 String stepDateEnd = devStep.getEnd();
                 String startDay = getStepDayStart(devStep);
@@ -681,8 +697,9 @@ public class StatisticsController {
         return formattedDate;
     }
 
-    public void setSelectedYear(String year) {
-         this.selectedYear=year;
+    public void setSelectedYear(final ModelMap model, String year) {
+         //this.selectedYear=year;
+         model.addAttribute("selectedYear",year);
     }
 
     public float getLabOpeningHoursInYear(){
