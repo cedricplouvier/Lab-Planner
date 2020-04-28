@@ -22,7 +22,8 @@ import java.util.*;
 import static java.lang.Math.round;
 
 @Controller
-@SessionAttributes({"deviceCounter", "selectedYear", "selectedTypeOfGraph"})
+@SessionAttributes({"deviceCounter", "selectedYear", "selectedTypeOfGraph", "selectedDevices", "occupancyDevicesHours",
+                    "occupancyDevicesDays", "totalHours", "highestAbsoluteValueHours", "productNames"})
 public class StatisticsController {
 
     @Autowired
@@ -47,35 +48,69 @@ public class StatisticsController {
     private OwnProductService productService;
 
     @ModelAttribute("deviceCounter")
-    public int getdeviceCounter(){
+    private int getdeviceCounter(){
         return 0;
     }
     
     @ModelAttribute("selectedTypeOfGraph")
-    public String graphType(){
+    private String graphType(){
         return "Device hours by month";
     }
 
     @ModelAttribute("selectedYear")
-    public String selectYear(){
+    private String selectYear(){
         return getCurrentYear();
     }
 
-    int[] totalHoursEmpty = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
-    List<int[]> totalHours = new ArrayList<int[]>(Arrays.asList(totalHoursEmpty,totalHoursEmpty,totalHoursEmpty,totalHoursEmpty,totalHoursEmpty));
-    List<Float> occupancyDevicesHours = new ArrayList<Float>(Arrays.asList(new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00)));
-    List<Float> occupancyDevicesDays = new ArrayList<Float>(Arrays.asList(new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00)));
-    List<Device> selectedDevices = new ArrayList<>(Arrays.asList(new Device(),new Device(),new Device(),new Device(),new Device()));
-    List<String> selectableYears = new ArrayList<>(Arrays.asList("2019","2020","2021", "2022"));
-    List<String> selectableGraphTypes = new ArrayList<>(Arrays.asList("Device hours by month","Device occupancy rate in hours","Device occupancy rate in days"));
+    @ModelAttribute("selectedDevices")
+    private List<Device> selectDev(){
+        return new ArrayList<>(Arrays.asList(new Device(),new Device(),new Device(),new Device(),new Device()));
+    }
+
+    @ModelAttribute("occupancyDevicesHours")
+    private List<Float> occupancyDevHours(){
+        return new ArrayList<Float>(Arrays.asList(new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00)));
+    }
+
+    @ModelAttribute("occupancyDevicesDays")
+    private List<Float> occupancyDevDays(){
+        return new ArrayList<Float>(Arrays.asList(new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00)));
+    }
+
+    @ModelAttribute("totalHours")
+    private List<int[]> totalDeviceHours(){
+        return new ArrayList<int[]>(Arrays.asList(
+                new int[]{0,0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0,0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0,0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0,0,0,0,0,0,0,0,0,0,0,0},
+                new int[]{0,0,0,0,0,0,0,0,0,0,0,0}));
+    }
+
+    @ModelAttribute("highestAbsoluteValueHours")
+    private int highestAbsValue(){
+        return 0;
+    }
+
+    @ModelAttribute("productNames")
+    private List<String> prodNames(){
+        return new ArrayList<>();
+    }
+
+    @ModelAttribute("selectableYears")
+    private List<String> selectableYears(){
+        return new ArrayList<>(Arrays.asList("2019","2020","2021", "2022"));
+    }
+
+    @ModelAttribute("selectableGraphTypes")
+    public List<String> selectableGraphs() {
+        return new ArrayList<>(Arrays.asList("Device hours by month","Device occupancy rate in hours","Device occupancy rate in days"));
+    }
+
     float amountOfWorkDaysInYear = 200;
     float labOpeningTime = 8;
     float labClosingTime = 20;
     float labOpeningHoursInYear = amountOfWorkDaysInYear*(labClosingTime-labOpeningTime);
-    int highestAbsoluteValueHours=0;
-
-    int[] stockLevelsProduct = new int[]{0,0,0,0,0,0}; //six because we want to visualise a period of 6 months
-    List<String> productNames= new ArrayList<>();
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/statistics", method = RequestMethod.GET)
@@ -86,24 +121,29 @@ public class StatisticsController {
         model.addAttribute("allDevices", devices);
         model.addAttribute("allDeviceTypes", deviceTypes);
         model.addAttribute("selectedDev",new Device());
-        model.addAttribute("dev1",selectedDevices.get(0));
-        model.addAttribute("dev2",selectedDevices.get(1));
-        model.addAttribute("dev3",selectedDevices.get(2));
-        model.addAttribute("dev4",selectedDevices.get(3));
-        model.addAttribute("dev5",selectedDevices.get(4));
+
+        List<Device> listSelectedDevices = (List) model.getAttribute("selectedDevices");
+        model.addAttribute("dev1",listSelectedDevices.get(0));
+        model.addAttribute("dev2",listSelectedDevices.get(1));
+        model.addAttribute("dev3",listSelectedDevices.get(2));
+        model.addAttribute("dev4",listSelectedDevices.get(3));
+        model.addAttribute("dev5",listSelectedDevices.get(4));
         //Absolute hours of each device by year and month
+        List<int[]> totalHours = (List) model.getAttribute("totalHours");
         model.addAttribute("totalHours1",totalHours.get(0));
         model.addAttribute("totalHours2",totalHours.get(1));
         model.addAttribute("totalHours3",totalHours.get(2));
         model.addAttribute("totalHours4",totalHours.get(3));
         model.addAttribute("totalHours5",totalHours.get(4));
         //Occupancy rate of devices by year in hours
+        List<Float> occupancyDevicesHours = (List) model.getAttribute("occupancyDevicesHours");
         model.addAttribute("occupancyDevices1", occupancyDevicesHours.get(0));
         model.addAttribute("occupancyDevices2", occupancyDevicesHours.get(1));
         model.addAttribute("occupancyDevices3", occupancyDevicesHours.get(2));
         model.addAttribute("occupancyDevices4", occupancyDevicesHours.get(3));
         model.addAttribute("occupancyDevices5", occupancyDevicesHours.get(4));
         //Occupancy rate of devices by year in days
+        List<Float> occupancyDevicesDays = (List) model.getAttribute("occupancyDevicesDays");
         model.addAttribute("occupancyDevicesHours1", occupancyDevicesDays.get(0));
         model.addAttribute("occupancyDevicesHours2", occupancyDevicesDays.get(1));
         model.addAttribute("occupancyDevicesHours3", occupancyDevicesDays.get(2));
@@ -112,14 +152,14 @@ public class StatisticsController {
 
         //model.addAttribute("deviceCounter", deviceCounter);
         model.addAttribute("deviceCounter");
-        model.addAttribute("selectableYears", selectableYears);
+        model.addAttribute("selectableYears");
         model.addAttribute("selectedYear");
 
-        model.addAttribute("selectableGraphTypes",selectableGraphTypes);
+        model.addAttribute("selectableGraphTypes");
         model.addAttribute("selectedTypeOfGraph");
 
         // value to scale the y-axis
-        model.addAttribute("highestAbsoluteValueHours",highestAbsoluteValueHours);
+        model.addAttribute("highestAbsoluteValueHours");
 
         return "Statistics/statistics";
     }
@@ -130,6 +170,7 @@ public class StatisticsController {
 
         List<OwnProduct> products = productService.findAll();
         List<Double> currentStockLevel = new ArrayList<>();
+        List<String> productNames = (List) model.getAttribute("productNames");
         //get all the product names
         for(OwnProduct product: products){
             productNames.add(product.getName());
@@ -146,7 +187,6 @@ public class StatisticsController {
 
         for(int j=0; j<products.size();j++) {
             currentStockLevel.add(products.get(j).getStockLevel());
-            System.out.println(products.get(j).getName()+ " stocklevel: " +products.get(j).getStockLevel());
         }
 
         return "Statistics/stockStatistics";
@@ -157,19 +197,24 @@ public class StatisticsController {
     @RequestMapping(value ="/statistics/statistics/submit")
     public String submit(final ModelMap model, Device selectedDev, RedirectAttributes redAttr){
 
+        List<Device> listSelectedDevices = (List) model.getAttribute("selectedDevices");
+        List<Float> occupancyDevicesHours = (List) model.getAttribute("occupancyDevicesHours");
+        List<Float> occupancyDevicesDays = (List) model.getAttribute("occupancyDevicesDays");
+        List<int[]> totalHours = (List) model.getAttribute("totalHours");
         List<Step> allSteps = stepService.findAll();
         int[] totalHoursSelectedDevice;
         float occupancyHours;
         float occupancyDays;
         float totalDeviceHoursYear=0;
         float totalDeviceDaysYear=0;
-        highestAbsoluteValueHours=10;
+        //highestAbsoluteValueHours=10;
+        model.addAttribute("highestAbsoluteValueHours", 10);
         if((int)model.getAttribute("deviceCounter")<5) {
-            selectedDevices.set((int)model.getAttribute("deviceCounter"), selectedDev);
+            listSelectedDevices.set((int)model.getAttribute("deviceCounter"), selectedDev);
 
             //calculate occupancy of device by hours and year per year + total of device hours by year and month absolute
-            for (int i = 0; i < selectedDevices.size(); i++) {
-                Device dev = selectedDevices.get(i);
+            for (int i = 0; i < listSelectedDevices.size(); i++) {
+                Device dev = listSelectedDevices.get(i);
                 List<Step> selectedDeviceSteps = filterSelectedDeviceSteps(dev, allSteps);
                 occupancyHours = calculateOccupancyHours(model, selectedDeviceSteps, totalDeviceHoursYear);
                 occupancyDevicesHours.set(i, occupancyHours);
@@ -179,15 +224,14 @@ public class StatisticsController {
                 totalHours.set(i, totalHoursSelectedDevice);
                 //get highest absolute value to scale the y axis
                 for (int j = 0; j < totalHoursSelectedDevice.length; j++) {
-                    if (totalHoursSelectedDevice[j] >= highestAbsoluteValueHours) {
-                        highestAbsoluteValueHours = totalHoursSelectedDevice[j];
+                    if (totalHoursSelectedDevice[j] >= (int) model.getAttribute("highestAbsoluteValueHours")) {
+                        //highestAbsoluteValueHours = totalHoursSelectedDevice[j];
+                        model.addAttribute("highestAbsoluteValueHours", totalHoursSelectedDevice[j]);
                     }
                 }
             }
             int dc = (int) model.get("deviceCounter") + 1;
-            //dc ++;
             model.addAttribute("deviceCounter",dc);
-            //deviceCounter++;
         }
         else{
             redAttr.addFlashAttribute("Status","deviceLimit");
@@ -199,13 +243,18 @@ public class StatisticsController {
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/clearList")
     public String clearList(final ModelMap model) {
-        model.addAttribute("deviceCounter",0);
-        selectedDevices = Arrays.asList(new Device(),new Device(),new Device(),new Device(),new Device());
-        int[] emptyHoursArray =new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
 
+        List<int[]> totalHours = (List) model.getAttribute("totalHours");
+        int[] emptyHoursArray =new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
         for(int j=0; j<totalHours.size();j++) {
             totalHours.set(j, emptyHoursArray);
         }
+        model.addAttribute("occupancyDeviceDays",new ArrayList<Float>(Arrays.asList(new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00))));
+        model.addAttribute("occupancyDevicesHours", new ArrayList<Float>(Arrays.asList(new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00))));
+        model.addAttribute("deviceCounter",0);
+        model.addAttribute("highestAbsoluteValueHours",10);
+        model.addAttribute("selectedDevices", new ArrayList<>(Arrays.asList(new Device(),new Device(),new Device(),new Device(),new Device())));
+
         return "redirect:/statistics";
     }
 
@@ -227,18 +276,21 @@ public class StatisticsController {
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/refreshYear")
     public String refreshYear(final ModelMap model){
-
+        List<Device> listSelectedDevices = (List) model.getAttribute("selectedDevices");
+        List<Float> occupancyDevicesHours = (List) model.getAttribute("occupancyDevicesHours");
+        List<Float> occupancyDevicesDays = (List) model.getAttribute("occupancyDevicesDays");
+        List<int[]> totalHours = (List) model.getAttribute("totalHours");
         List<Step> allSteps = stepService.findAll();
         int[] totalHoursSelectedDevice;
         float occupancyHours;
         float occupancyDays;
         float totalDeviceHoursYear=0;
         float totalDeviceDaysYear=0;
-        highestAbsoluteValueHours = 10;
+        model.addAttribute("highestAbsoluteValueHours", 10);
 
         //calculate occupancy of device by hours and year per year + total of device hours by year and month absolute
-        for(int i=0;i<selectedDevices.size();i++){
-            Device dev = selectedDevices.get(i);
+        for(int i=0;i<listSelectedDevices.size();i++){
+            Device dev = listSelectedDevices.get(i);
             List<Step> selectedDeviceSteps = filterSelectedDeviceSteps(dev,allSteps);
             occupancyHours = calculateOccupancyHours(model, selectedDeviceSteps, totalDeviceHoursYear);
             occupancyDevicesHours.set(i,occupancyHours);
@@ -248,8 +300,9 @@ public class StatisticsController {
             totalHours.set(i,totalHoursSelectedDevice);
             //get highest absolute value to scale the y axis
             for(int j=0; j<totalHoursSelectedDevice.length;j++){
-                if(totalHoursSelectedDevice[j] >= highestAbsoluteValueHours){
-                    highestAbsoluteValueHours = totalHoursSelectedDevice[j];
+                if(totalHoursSelectedDevice[j] >= (int) model.getAttribute("highestAbsoluteValueHours")){
+                    //highestAbsoluteValueHours = totalHoursSelectedDevice[j];
+                    model.addAttribute("highestAbsoluteValueHours", totalHoursSelectedDevice[j]);
                 }
             }
         }
@@ -698,7 +751,6 @@ public class StatisticsController {
     }
 
     public void setSelectedYear(final ModelMap model, String year) {
-         //this.selectedYear=year;
          model.addAttribute("selectedYear",year);
     }
 
