@@ -78,6 +78,8 @@
 
                 <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
                     <span class="fas fa-trash" style="color: red" ></span> </a>
+
+
             </td>
 
         </tr>
@@ -164,6 +166,7 @@
 
     <a  sec:authorize="hasAuthority('Console Access')" th:href="@{/reports/list}" th:text="#{report.list} + ' ('+${reportAmount}+')'" class="btn btn-primary"></a>
     <a  th:href="@{/reports/put}" th:text="#{report.problem}" class="btn btn-primary"></a>
+    <a  th:href="@{/mail}" th:text="#{report.problem}" class="btn btn-primary"></a>
 
 </div>
     <div th:replace="footer :: footer"></div>
