@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-public class EmailController  {
+public class EmailController   {
 
     @Autowired
     public JavaMailSender emailSender;
