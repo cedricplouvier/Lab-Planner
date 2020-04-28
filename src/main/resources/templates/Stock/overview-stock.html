@@ -177,7 +177,7 @@
                 <!-- Card header -->
                 <div class="card-header" role="tab" id="headingTwo2">
                     <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseTwo2"
-                       aria-expanded="false" aria-controls="collapseTwo2">
+                       aria-expanded="true" aria-controls="collapseTwo2">
                         <h5 class="mb-0" th:text="#{mixtures}">
                             Collapsible Group Item #2 <i class="fas fa-angle-down rotate-icon"></i>
                         </h5>
@@ -185,7 +185,7 @@
                 </div>
 
                 <!-- Card body -->
-                <div id="collapseTwo2" class="collapse" role="tabpanel" aria-labelledby="headingTwo2"
+                <div id="collapseTwo2" role="tabpanel" aria-labelledby="headingTwo2"
                      data-parent="#accordionEx">
                     <div class="card-body">
                         <div id="mixture-list">
@@ -194,6 +194,7 @@
                             <table class="table table-hover table-striped table-borderless">
                                 <thead>
                                 <tr>
+                                    <th></th>
                                     <th th:text="#{mixtures.name}">Mixture Name</th>
                                     <th style="width: 50%"  th:text="#{product.description}">Mixture Description</th>
                                     <th th:text="#{mixtures.tag}">Mixture Tags</th>
@@ -202,6 +203,9 @@
                                 </thead>
                                 <tbody class="list">
                                 <tr th:each="mixture : ${allMixtures}">
+                                    <td>
+                                        <img style="max-height:75px; max-width:75px; overflow: hidden" th:src="@{${(mixture.getImage() != null) ? '/files/images/'+mixture.getImage() : '/images/placeholder.jpg'}}" />
+
                                     <td class='mixtureName' th:value="${mixture.getName()}"
                                         th:text="${mixture.getName()}" >Mixture Name</td>
 
@@ -248,8 +252,8 @@
 
                 <!-- Card header -->
                 <div class="card-header" role="tab" id="headingThree3">
-                    <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseThree3"
-                       aria-expanded="false" aria-controls="collapseThree3">
+                    <a  data-toggle="collapse" data-parent="#accordionEx" href="#collapseThree3"
+                       aria-expanded="true" aria-controls="collapseThree3">
                         <h5 class="mb-0" th:text="#{tags}" >
                             Collapsible Group Item #3 <i class="fas fa-angle-down rotate-icon"></i>
                         </h5>
