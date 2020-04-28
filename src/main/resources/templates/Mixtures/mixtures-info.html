@@ -19,7 +19,7 @@
     <div th:replace="navbar :: navbar"></div>
     <div class="row">
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
-            <a href="/products" th:text="#{close}" class="btn btn-primary">Close</a>
+            <a th:href="@{/products}" th:text="#{close}" class="btn btn-primary">Close</a>
         </div>
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
             <h2 th:text="#{mixtures.info}+ ': ' + ${mixture.getName()}">Mixture Info </h2>
