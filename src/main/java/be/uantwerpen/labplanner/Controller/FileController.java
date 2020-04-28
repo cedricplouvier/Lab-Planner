@@ -2,17 +2,26 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Exception.StorageFileNotFoundException;
 import be.uantwerpen.labplanner.Model.DeviceType;
-import be.uantwerpen.labplanner.Service.DeviceInformationService;
-import be.uantwerpen.labplanner.Service.DeviceTypeService;
-import be.uantwerpen.labplanner.Service.StorageService;
+import be.uantwerpen.labplanner.Model.OwnProduct;
+import be.uantwerpen.labplanner.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.FlashMap;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 
 @Controller
@@ -23,6 +32,8 @@ public class FileController {
 	private DeviceInformationService deviceInformationService;
 	@Autowired
 	private DeviceTypeService deviceTypeService;
+	@Autowired
+	private OwnProductService productService;
 	@Autowired
 	public FileController(StorageService storageService) {
 		this.storageService = storageService;
@@ -70,6 +81,45 @@ public class FileController {
 	@ExceptionHandler(StorageFileNotFoundException.class)
 	public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
 		return ResponseEntity.notFound().build();
+	}
+
+
+	@PostMapping("/upload/productimage/{productId}")
+	public String handleProductImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long productId) {
+		OwnProduct temp =  productService.findById( productId).orElse(null);
+		if(temp!=null) {
+			//append productid to filename to make sure file is unique for each product
+			String filename = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1)+productId.toString();
+			storageService.store(file,"images",filename);
+			temp.setImageName(filename);
+			productService.save(temp);
+
+		}else{
+		}
+
+		return "redirect:/products/"+productId;
+	}
+
+		//when upload is too big.
+	@ControllerAdvice
+	public class FileUploadExceptionAdvice {
+
+		@ExceptionHandler(MaxUploadSizeExceededException.class)
+		public String handleMaxSizeException(
+				MaxUploadSizeExceededException exc,
+				HttpServletRequest request,
+				HttpServletResponse response) {
+			Locale current = LocaleContextHolder.getLocale();
+			FlashMap outputFlashMap = RequestContextUtils.getOutputFlashMap(request);
+
+			if (outputFlashMap != null){
+				outputFlashMap.put("error", ResourceBundle.getBundle("messages",current).getString("valid.size"));
+
+			}
+			return "redirect:/products";
+
+
+		}
 	}
 
 }
