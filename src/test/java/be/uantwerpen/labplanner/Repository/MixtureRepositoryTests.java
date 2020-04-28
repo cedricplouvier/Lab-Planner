@@ -99,6 +99,13 @@ public class MixtureRepositoryTests {
         Mixture fetchedMix4 = mixtureRepository.findById(fetchedMix.getId()).orElse(null);
         assertEquals(fetchedMix.getDescription(), fetchedMix4.getDescription());
 
+        //update image
+        //update description
+        fetchedMix.setImage("testImage");
+        mixtureRepository.save(fetchedMix);
+        Mixture fetchedMix6 = mixtureRepository.findById(fetchedMix.getId()).orElse(null);
+        assertEquals(fetchedMix.getImage(), fetchedMix6.getImage());
+
         //update tag
         List<OwnTag> tags  = new ArrayList<>();
         OwnTag t1 = new OwnTag("test");
