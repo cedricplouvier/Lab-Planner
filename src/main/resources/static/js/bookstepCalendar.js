@@ -323,7 +323,7 @@ function checkContinuity(stepindex,schedule) {
     let startTime = schedule.start.getMinutes()+schedule.start.getHours()*60;
     //add hours and minutes of continuity
     let endTime = schedule.end.getMinutes()+schedule.end.getHours()*60;
-    
+
     //OpeningsHours\
     if(startTime>=9*60&&startTime<=17*60&&schedule.start.getDay()!=6&&schedule.start.getDay()!=0){
         if(endTime>=9*60&&endTime<=17*60&&schedule.end.getDay()!=0&&schedule.end.getDay()!=6){
@@ -339,7 +339,13 @@ function checkContinuity(stepindex,schedule) {
             ok:false,
         }
     }
-
+    let today = new Date();
+    if(schedule.start.getTime()<today.getTime()){
+        return {
+            message: "Cant book in the past",
+            ok:false,
+        }
+    }
     return {
         message: "No problems found",
     ok:true,
