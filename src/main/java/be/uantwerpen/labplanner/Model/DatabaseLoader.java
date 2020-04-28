@@ -629,12 +629,14 @@ public class DatabaseLoader {
 
 
         //create mixtures and save them
-        Mixture m1 = new Mixture("APT-C", mix1, lorem.getWords(20), tags2);
+        Mixture m1 = new Mixture("APT-C", mix1, lorem.getWords(20), tags2, null);
         mixtureRepository.save(m1);
-        Mixture m2 = new Mixture("AB-4C", mix2, lorem.getWords(20), tags1);
+        Mixture m2 = new Mixture("AB-4C", mix2, lorem.getWords(20), tags1, null);
         mixtureRepository.save(m2);
-        Mixture m3 = new Mixture("SMA", mix3, lorem.getWords(20), tags4);
+        Mixture m3 = new Mixture("SMA", mix3, lorem.getWords(20), tags4, null);
         mixtureRepository.save(m3);
+
+
         //Continuities
         Continuity cont1 = new Continuity(0, 0, "No");
         continuityRepository.save(cont1);

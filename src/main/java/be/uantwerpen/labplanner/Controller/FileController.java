@@ -2,6 +2,7 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Exception.StorageFileNotFoundException;
 import be.uantwerpen.labplanner.Model.DeviceType;
+import be.uantwerpen.labplanner.Model.Mixture;
 import be.uantwerpen.labplanner.Model.OwnProduct;
 import be.uantwerpen.labplanner.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ public class FileController {
 	private DeviceTypeService deviceTypeService;
 	@Autowired
 	private OwnProductService productService;
+	@Autowired
+	private MixtureService mixtureService;
 	@Autowired
 	public FileController(StorageService storageService) {
 		this.storageService = storageService;
@@ -98,6 +101,22 @@ public class FileController {
 		}
 
 		return "redirect:/products/"+productId;
+	}
+
+	@PostMapping("/upload/mixtureImage/{mixtureId}")
+	public String handleMixtureImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long mixtureId) {
+		Mixture temp =  mixtureService.findById( mixtureId).orElse(null);
+		if(temp!=null) {
+			//append productid to filename to make sure file is unique for each product
+			String filename = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1)+mixtureId.toString();
+			storageService.store(file,"images",filename);
+			temp.setImage(filename);
+			mixtureService.save(temp);
+
+		}else{
+		}
+
+		return "redirect:/mixtures/"+mixtureId;
 	}
 
 		//when upload is too big.
