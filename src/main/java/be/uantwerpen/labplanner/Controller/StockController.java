@@ -605,14 +605,14 @@ public class StockController {
         }
 
         mixtureService.save(mixture);
-        List<OwnProduct> agg_bit = getAggBitList();
-        List<OwnProduct> con_oth = getComOthList();
         model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("save.success"));
-        model.addAttribute("agg_bit", agg_bit);
-        model.addAttribute("con_oth", con_oth);
         model.addAttribute("allMixtures", mixtureService.findAll());
-        model.addAttribute("allProductTags", tagService.findAll());
-        return "Stock/overview-stock";
+        model.addAttribute("allProducts", productService.findAll());
+        model.addAttribute("composition", new Composition());
+        model.addAttribute("allTags", tagService.findAll());
+        model.addAttribute("allCompositions", compositionService.findAll());
+
+        return "Mixtures/mixtures-manage";
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")

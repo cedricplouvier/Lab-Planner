@@ -113,15 +113,31 @@
             <input class="form-control" type = text th:field="*{description}"/>
 
         </div>
-        <div>
-            <h6 th:text="#{mixtures.tag}">tags</h6>
+
+
+        <div class="form-row">
+            <div class="col">
+                <div class="form-check">
+                    <div>
+                        <h6 th:text="#{mixtures.tag}">tags</h6>
+                    </div>
+                    <div class="form-check">
+                        <input th:field ="*{tags}" class="form-check-input" type="checkbox"
+                               th:each="tag : ${allTags}"
+                               th:value="${{tag}}"
+                               th:utext="${tag.name} + '<br>'">
+                    </div>
+            </div>
+            </div>
+            <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+
+                <img style="max-height:200px; max-width:200px; overflow: hidden" th:src="@{${(mixture.getImage() != null ) ? '/files/images/'+mixture.getImage() : '/images/placeholder.jpg'}}" />
+
+            </div>
+
         </div>
-        <div class="form-check">
-            <input th:field ="*{tags}" class="form-check-input" type="checkbox"
-                   th:each="tag : ${allTags}"
-                   th:value="${{tag}}"
-                   th:utext="${tag.name} + '<br>'">
-        </div>
+
+
         <div id="spacing">
             <h6 th:text="#{mixtures.ingredients}">Ingredients</h6>
         </div>
@@ -191,6 +207,31 @@
         <form class="form-inline">
 
     </form>
+
+        <form th:if="${mixture.id}!=null" method="POST" enctype="multipart/form-data"  th:action="@{/upload/mixtureImage/{mixtureId}(mixtureId=${mixture.id})}">
+            <div class="input-group mb-3">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" name="file" accept="image/png, image/jpeg, image/jpg" id="inputGroupFile02"/>
+                    <label class="custom-file-label" for="inputGroupFile02"th:text="#{device.choosefile}"></label>
+                </div>
+                <div class="input-group-append">
+                    <button class="btn btn-primary" id="upload-btn" disabled type="submit"  th:text="#{device.upload}"></button>
+                </div>
+            </div>
+            <script>
+                $('#inputGroupFile02').on('change',function(){
+                    //get the file name
+                    var fileName = $(this).val();
+                    //replace the "Choose a file" label
+                    $(this).next('.custom-file-label').html(fileName);
+                    $('#upload-btn').prop('disabled', false);
+
+                })
+            </script>
+        </form>
+        <div class="alert alert-info" role="alert" th:if="${mixture.id}==null" th:text="#{product.savebeforeupload}"></div>
+
+
 
 </div>
 </body>
