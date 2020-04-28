@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,14 +43,14 @@ public class StatisticsController {
     private ExperimentService experimentService;
 
     @Autowired
-    private ProductService productService;
+    private OwnProductService productService;
 
     int[] totalHoursEmpty = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
     List<int[]> totalHours = new ArrayList<int[]>(Arrays.asList(totalHoursEmpty,totalHoursEmpty,totalHoursEmpty,totalHoursEmpty,totalHoursEmpty));
     List<Float> occupancyDevicesHours = new ArrayList<Float>(Arrays.asList(new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00)));
     List<Float> occupancyDevicesDays = new ArrayList<Float>(Arrays.asList(new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00),new Float(0.00)));
     List<Device> selectedDevices = new ArrayList<>(Arrays.asList(new Device(),new Device(),new Device(),new Device(),new Device()));
-    List<String> selectableYears = new ArrayList<>(Arrays.asList("2019","2020","2021", "2021"));
+    List<String> selectableYears = new ArrayList<>(Arrays.asList("2019","2020","2021", "2022"));
     List<String> selectableGraphTypes = new ArrayList<>(Arrays.asList("Device hours by month","Device occupancy rate in hours","Device occupancy rate in days"));
     int deviceCounter=0;
     String selectedYear = getCurrentYear();
@@ -114,14 +115,14 @@ public class StatisticsController {
     @RequestMapping(value = "/statistics/stockStatistics", method = RequestMethod.GET)
     public String showStatisticsStockPage(final ModelMap model) {
 
-        List<Product> products = productService.findAll();
+        List<OwnProduct> products = productService.findAll();
         List<Double> currentStockLevel = new ArrayList<>();
         //get all the product names
-        for(Product product: products){
+        for(OwnProduct product: products){
             productNames.add(product.getName());
         }
 
-        for(Product product: products){
+        for(OwnProduct product: products){
             currentStockLevel.add(product.getStockLevel());
         }
 
@@ -135,27 +136,13 @@ public class StatisticsController {
             System.out.println(products.get(j).getName()+ " stocklevel: " +products.get(j).getStockLevel());
         }
 
-        /*for(int i=0; i< experiments.size();i++){
-            System.out.println("__________________________________________________");
-            System.out.println("Experiment start date" + experiments.get(i).getStartDate());
-            Experiment experiment = experiments.get(i);
-            for(int j=0; j<experiment.getPiecesOfMixture().size();j++) {
-                System.out.println("pieces of mixtures size" + piecesOfMixture.size());
-                Mixture mixture = piecesOfMixture.get(j).getMixture();
-                for(int z=0;z<mixture.getCompositions().size();z++) {
-                     System.out.println(mixture.getCompositions().get(z).getProduct().getName()+" stock: "+
-                             mixture.getCompositions().get(z).getProduct().getStockLevel());
-                     currentStockLevel.add(mixture.getCompositions().get(z).getProduct().getStockLevel());
-               }
-           }*/
-
         return "Statistics/stockStatistics";
     }
 
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value ="/statistics/statistics/submit")
-    public String submit(Device selectedDev){
+    public String submit(Device selectedDev, RedirectAttributes redAttr){
 
         List<Step> allSteps = stepService.findAll();
         int[] totalHoursSelectedDevice;
@@ -163,28 +150,34 @@ public class StatisticsController {
         float occupancyDays;
         float totalDeviceHoursYear=0;
         float totalDeviceDaysYear=0;
+        highestAbsoluteValueHours=10;
 
-        selectedDevices.set(deviceCounter,selectedDev);
+        if(deviceCounter<5) {
+            selectedDevices.set(deviceCounter, selectedDev);
 
-        //calculate occupancy of device by hours and year per year + total of device hours by year and month absolute
-        for(int i=0;i<selectedDevices.size();i++){
-            Device dev = selectedDevices.get(i);
-            List<Step> selectedDeviceSteps = filterSelectedDeviceSteps(dev,allSteps);
-            occupancyHours = calculateOccupancyHours(selectedDeviceSteps, totalDeviceHoursYear);
-            occupancyDevicesHours.set(i,occupancyHours);
-            occupancyDays = calculateOccupancyDays(selectedDeviceSteps, totalDeviceDaysYear);
-            occupancyDevicesDays.set(i,occupancyDays);
-            totalHoursSelectedDevice= calculateTotalHoursDeviceByYearAndMonth(selectedDeviceSteps);
-            totalHours.set(i,totalHoursSelectedDevice);
-            //get highest absolute value to scale the y axis
-            for(int j=0; j<totalHoursSelectedDevice.length;j++){
-                if(totalHoursSelectedDevice[j] >= highestAbsoluteValueHours){
-                    highestAbsoluteValueHours = totalHoursSelectedDevice[j];
+            //calculate occupancy of device by hours and year per year + total of device hours by year and month absolute
+            for (int i = 0; i < selectedDevices.size(); i++) {
+                Device dev = selectedDevices.get(i);
+                List<Step> selectedDeviceSteps = filterSelectedDeviceSteps(dev, allSteps);
+                occupancyHours = calculateOccupancyHours(selectedDeviceSteps, totalDeviceHoursYear);
+                occupancyDevicesHours.set(i, occupancyHours);
+                occupancyDays = calculateOccupancyDays(selectedDeviceSteps, totalDeviceDaysYear);
+                occupancyDevicesDays.set(i, occupancyDays);
+                totalHoursSelectedDevice = calculateTotalHoursDeviceByYearAndMonth(selectedDeviceSteps);
+                totalHours.set(i, totalHoursSelectedDevice);
+                //get highest absolute value to scale the y axis
+                for (int j = 0; j < totalHoursSelectedDevice.length; j++) {
+                    if (totalHoursSelectedDevice[j] >= highestAbsoluteValueHours) {
+                        highestAbsoluteValueHours = totalHoursSelectedDevice[j];
+                    }
                 }
             }
+            deviceCounter++;
         }
-
-        deviceCounter++;
+        else{
+            redAttr.addFlashAttribute("Status","deviceLimit");
+            redAttr.addFlashAttribute("Message","You can only add 5 devices to the graph, Clear graph list to add new devices");
+        }
         return "redirect:/statistics/statistics";
     }
 
@@ -192,7 +185,6 @@ public class StatisticsController {
     @RequestMapping("/statistics/statistics/clearList")
     public String clearList() {
         deviceCounter = 0;
-        highestAbsoluteValueHours=10;
         selectedDevices = Arrays.asList(new Device(),new Device(),new Device(),new Device(),new Device());
         int[] emptyHoursArray =new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
 
@@ -226,6 +218,7 @@ public class StatisticsController {
         float occupancyDays;
         float totalDeviceHoursYear=0;
         float totalDeviceDaysYear=0;
+        highestAbsoluteValueHours = 10;
 
         //calculate occupancy of device by hours and year per year + total of device hours by year and month absolute
         for(int i=0;i<selectedDevices.size();i++){
