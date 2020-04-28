@@ -1,10 +1,12 @@
 package be.uantwerpen.labplanner;
 
+import be.uantwerpen.labplanner.Service.NewSecurityService;
 import be.uantwerpen.labplanner.Service.StorageService;
 import be.uantwerpen.labplanner.common.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +21,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
@@ -68,7 +71,7 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
     protected static class AuthenticationSecurity extends
             GlobalAuthenticationConfigurerAdapter {
         @Autowired
-        private SecurityService securityService;
+        private NewSecurityService securityService;
 
         @Override
         public void init(AuthenticationManagerBuilder auth) throws Exception
@@ -81,6 +84,10 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
     public NoOpPasswordEncoder passwordEncoder() {
         return (NoOpPasswordEncoder)
                 NoOpPasswordEncoder.getInstance();
+    }
+    @Bean
+    public NewSecurityService newSecurityService(){
+        return (NewSecurityService) new NewSecurityService();
     }
 
 }

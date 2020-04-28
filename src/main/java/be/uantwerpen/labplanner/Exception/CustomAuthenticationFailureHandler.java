@@ -40,7 +40,9 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
                 exception.getMessage());
 
         logger.error(HttpStatus.UNAUTHORIZED.toString()+"  => "+objectMapper.writeValueAsString(data));
-        response.sendRedirect("/login");
+        response.getOutputStream()
+                .println(objectMapper.writeValueAsString(data));
+        response.sendRedirect("/se/g3/login");
     }
 
 }
