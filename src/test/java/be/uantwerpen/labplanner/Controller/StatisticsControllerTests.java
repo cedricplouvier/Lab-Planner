@@ -3,16 +3,12 @@ package be.uantwerpen.labplanner.Controller;
 import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.Device;
 import be.uantwerpen.labplanner.Model.DeviceType;
+import be.uantwerpen.labplanner.Model.OwnProduct;
 import be.uantwerpen.labplanner.Model.Step;
 import be.uantwerpen.labplanner.Service.DeviceService;
 import be.uantwerpen.labplanner.Service.DeviceTypeService;
+import be.uantwerpen.labplanner.Service.OwnProductService;
 import be.uantwerpen.labplanner.Service.StepService;
-import be.uantwerpen.labplanner.common.model.stock.Product;
-import be.uantwerpen.labplanner.common.model.users.Role;
-import be.uantwerpen.labplanner.common.model.users.User;
-import be.uantwerpen.labplanner.common.service.stock.ProductService;
-import be.uantwerpen.labplanner.common.service.users.RoleService;
-import be.uantwerpen.labplanner.common.service.users.UserService;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,8 +22,8 @@ import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -60,7 +56,7 @@ public class StatisticsControllerTests {
     private StepService stepService;
 
     @Mock
-    private ProductService productService;
+    private OwnProductService productService;
 
     @InjectMocks
     private StatisticsController statisticsController;
@@ -110,8 +106,8 @@ public class StatisticsControllerTests {
 
     @Test
     public void showStatisticsStockPageTest() throws Exception{
-        List<Product> products = new ArrayList<>();
-        Product productTest = new Product();
+        List<OwnProduct> products = new ArrayList<>();
+        OwnProduct productTest = new OwnProduct();
         products.add(productTest);
 
         when(productService.findAll()).thenReturn(products);
@@ -151,6 +147,11 @@ public class StatisticsControllerTests {
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/statistics/statistics"))
                 .andDo(print());
+
+    }
+
+    @Test
+    public void submitTestFail() throws Exception{
 
     }
 

@@ -19,18 +19,17 @@
     <div th:replace="navbar :: navbar"></div>
     <div class="row">
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
-            <a th:href="@{/mixtures}" th:text="#{back.mixtures}" class="btn btn-primary">Back to mixtures overview</a>
+            <a href="/products" th:text="#{close}" class="btn btn-primary">Close</a>
         </div>
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
-            <h2 th:text="#{mixtures.info}">Mixture Info </h2>
+            <h2 th:text="#{mixtures.info}+ ': ' + ${mixture.getName()}">Mixture Info </h2>
 
         </div>
     </div>
-    <h4 th:text="${mixture.getName()}">Name</h4>
     <div class="row">
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
 
-            <img th:src="@{${'/images/placeholder.jpg'}}" />
+            <img th:src="${'/images/placeholder.jpg'}" />
 
         </div>
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
@@ -44,10 +43,31 @@
             <div class="card bg-light mb-3">
                 <div class="card-body">
                     <h5 class="card-title"> <a th:text="#{mixtures.ingredients}">Ingredient</a>  </h5>
-                    <a
-                            th:each="ingred : ${mixture.compositions}"
-                            th:value="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' %'"
-                            th:utext="${ingred.getProduct().getName()} + ': ' + ${ingred.getAmount()} + ' %' + '<br />'"></a>
+                                           <table class="table table-hover table-striped table-borderless">
+                        <thead>
+                        <tr>
+                            <th th:text="#{product}">Product Name</th>
+                            <th th:text="#{composition.amount}">Amount </th>
+                            <th th:text="#{device.info}">Product Info</th>
+
+                        </tr>
+                        </thead>
+                        <!-- IMPORTANT, class="list" have to be at tbody -->
+                        <tbody class="list">
+                        <tr th:each="ingred : ${mixture.compositions}">
+                            <td class='productname' th:value="${ingred.getProduct().getName()}"
+                                th:text="${ingred.getProduct().getName()}" >product Name</td>
+
+                            <td class='productname' th:value="${ingred.getAmount()}"
+                                th:text="${ingred.getAmount()}+ ' %'" >product amount</td>
+
+                            <td><a style="color: black"  th:href="@{/products/info/{id}/(id=${ingred.getProduct().id})}">
+                                <span class="fas fa-info"></span></a></td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+
                 </div>
             </div>
             <div class="card bg-light mb-3">

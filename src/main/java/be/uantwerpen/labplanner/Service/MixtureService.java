@@ -2,8 +2,6 @@ package be.uantwerpen.labplanner.Service;
 
 import be.uantwerpen.labplanner.Model.Mixture;
 import be.uantwerpen.labplanner.Repository.MixtureRepository;
-import be.uantwerpen.labplanner.common.model.stock.Tag;
-import com.zaxxer.hikari.metrics.micrometer.MicrometerMetricsTracker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -2,7 +2,6 @@ package be.uantwerpen.labplanner.Model;
 
 
 import be.uantwerpen.labplanner.LabplannerApplication;
-import be.uantwerpen.labplanner.common.model.stock.Product;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -38,7 +37,7 @@ public class CompositionTests {
         composition.setId(id);
         assertEquals(composition.getId(), id);
 
-        Product product = new Product();
+        OwnProduct product = new OwnProduct();
         composition.setProduct(product);
         assertEquals(composition.getProduct(), product);
 
