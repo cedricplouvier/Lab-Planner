@@ -140,6 +140,13 @@ public class UserController {
         return "Users/user-manage";
     }
 
+    private boolean isValidEmailAddress(String email) {
+        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+        java.util.regex.Matcher m = p.matcher(email);
+        return m.matches();
+    }
+
 
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = {"/usermanagement/users/","/usermanagement/users/{id}"}, method = RequestMethod.POST)
@@ -151,6 +158,16 @@ public class UserController {
 
             return "Users/user-manage";
         }
+
+        //check on invalid mail adres
+        if ((!isValidEmailAddress(user.getEmail()))&&(!user.getEmail().trim().equals(""))){
+            model.addAttribute("allRoles", roleService.findAll());
+            model.addAttribute("allUsers",userService.findAll());
+            model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.mailError") );
+
+            return "Users/user-manage";
+        }
+
 
 
         //test for duplicate UA number
