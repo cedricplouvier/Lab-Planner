@@ -207,35 +207,44 @@ public class StatisticsController {
         float occupancyDays;
         float totalDeviceHoursYear=0;
         float totalDeviceDaysYear=0;
+        boolean duplicate = false;
         //highestAbsoluteValueHours=10;
-        model.addAttribute("highestAbsoluteValueHours", 10);
-        if((int)model.getAttribute("deviceCounter")<5) {
-            listSelectedDevices.set((int)model.getAttribute("deviceCounter"), selectedDev);
-
-            //calculate occupancy of device by hours and year per year + total of device hours by year and month absolute
-            for (int i = 0; i < listSelectedDevices.size(); i++) {
-                Device dev = listSelectedDevices.get(i);
-                List<Step> selectedDeviceSteps = filterSelectedDeviceSteps(dev, allSteps);
-                occupancyHours = calculateOccupancyHours(model, selectedDeviceSteps, totalDeviceHoursYear);
-                occupancyDevicesHours.set(i, occupancyHours);
-                occupancyDays = calculateOccupancyDays(model, selectedDeviceSteps, totalDeviceDaysYear);
-                occupancyDevicesDays.set(i, occupancyDays);
-                totalHoursSelectedDevice = calculateTotalHoursDeviceByYearAndMonth(model, selectedDeviceSteps);
-                totalHours.set(i, totalHoursSelectedDevice);
-                //get highest absolute value to scale the y axis
-                for (int j = 0; j < totalHoursSelectedDevice.length; j++) {
-                    if (totalHoursSelectedDevice[j] >= (int) model.getAttribute("highestAbsoluteValueHours")) {
-                        model.addAttribute("highestAbsoluteValueHours", totalHoursSelectedDevice[j]);
+        //model.addAttribute("highestAbsoluteValueHours", 10);
+        for (int i = 0; i < listSelectedDevices.size(); i++) {
+            Device dev = listSelectedDevices.get(i);
+            if(dev.getDevicename().matches(selectedDev.getDevicename())){
+                duplicate = true;
+            }
+        }
+            if(!duplicate) {
+                if ((int) model.getAttribute("deviceCounter") < 5) {
+                    listSelectedDevices.set((int) model.getAttribute("deviceCounter"), selectedDev);
+                    //calculate occupancy of device by hours and year per year + total of device hours by year and month absolute
+                    for (int i = 0; i < listSelectedDevices.size(); i++) {
+                        Device dev = listSelectedDevices.get(i);
+                        List<Step> selectedDeviceSteps = filterSelectedDeviceSteps(dev, allSteps);
+                        occupancyHours = calculateOccupancyHours(model, selectedDeviceSteps, totalDeviceHoursYear);
+                        occupancyDevicesHours.set(i, occupancyHours);
+                        occupancyDays = calculateOccupancyDays(model, selectedDeviceSteps, totalDeviceDaysYear);
+                        occupancyDevicesDays.set(i, occupancyDays);
+                        totalHoursSelectedDevice = calculateTotalHoursDeviceByYearAndMonth(model, selectedDeviceSteps);
+                        totalHours.set(i, totalHoursSelectedDevice);
+                        //get highest absolute value to scale the y axis
+                        for (int j = 0; j < totalHoursSelectedDevice.length; j++) {
+                            if (totalHoursSelectedDevice[j] >= (int) model.getAttribute("highestAbsoluteValueHours")) {
+                                model.addAttribute("highestAbsoluteValueHours", totalHoursSelectedDevice[j]);
+                            }
+                        }
                     }
+                    int dc = (int) model.get("deviceCounter") + 1;
+                    model.addAttribute("deviceCounter", dc);
+                } else {
+                    redAttr.addFlashAttribute("Status", "deviceLimit");
                 }
             }
-            int dc = (int) model.get("deviceCounter") + 1;
-            model.addAttribute("deviceCounter",dc);
-        }
-        else{
-            redAttr.addFlashAttribute("Status","deviceLimit");
-            redAttr.addFlashAttribute("Message","You can only add 5 devices to the graph, Clear graph list to add new devices");
-        }
+            else{
+                redAttr.addFlashAttribute("Status", "deviceDuplicate");
+            }
         return "redirect:/statistics/statistics";
     }
 

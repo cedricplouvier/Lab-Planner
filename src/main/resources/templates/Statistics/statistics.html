@@ -78,6 +78,7 @@
         <br><br>
     </form>
     <div class="alert alert-danger" role="alert" th:if="${Status}==deviceLimit" th:text="#{statistics.amountErrorMessage}"></div>
+    <div class="alert alert-danger" role="alert" th:if="${Status}==deviceDuplicate" th:text="#{statistics.duplicateDevice}"></div>
     <p th:text="#{statistics.amountMessage}"></p>
     <hr style="color:rgb(0,115,250); background-color:rgb(0,115,250); height:1px">
 </div>
