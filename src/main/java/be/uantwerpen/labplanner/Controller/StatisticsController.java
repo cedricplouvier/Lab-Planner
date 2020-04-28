@@ -225,7 +225,6 @@ public class StatisticsController {
                 //get highest absolute value to scale the y axis
                 for (int j = 0; j < totalHoursSelectedDevice.length; j++) {
                     if (totalHoursSelectedDevice[j] >= (int) model.getAttribute("highestAbsoluteValueHours")) {
-                        //highestAbsoluteValueHours = totalHoursSelectedDevice[j];
                         model.addAttribute("highestAbsoluteValueHours", totalHoursSelectedDevice[j]);
                     }
                 }
@@ -301,7 +300,6 @@ public class StatisticsController {
             //get highest absolute value to scale the y axis
             for(int j=0; j<totalHoursSelectedDevice.length;j++){
                 if(totalHoursSelectedDevice[j] >= (int) model.getAttribute("highestAbsoluteValueHours")){
-                    //highestAbsoluteValueHours = totalHoursSelectedDevice[j];
                     model.addAttribute("highestAbsoluteValueHours", totalHoursSelectedDevice[j]);
                 }
             }

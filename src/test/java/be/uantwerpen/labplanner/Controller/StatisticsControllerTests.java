@@ -353,7 +353,9 @@ public class StatisticsControllerTests {
     //Should probably be divided in different test for each possible outcome
     @Test
     public void calculateOccupancyHoursTest(){
-        /*
+
+        ModelMap model = new ModelMap();
+        model.addAttribute("selectedYear","2020");
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
         Float labOpeningHoursInYear = statisticsController.getLabOpeningHoursInYear();
@@ -363,58 +365,58 @@ public class StatisticsControllerTests {
         step1.setStartHour("10:00");
         step1.setEndHour("17:00");
         steps.add(step1);
-        Assert.assertEquals((7/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(steps, 0),0.001);
+        Assert.assertEquals((7/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model,steps, 0),0.001);
         //calculate for month i if same month & not same day
         steps.clear();
         step1.setEnd("2020-01-11");
         steps.add(step1);
-        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(steps, 0),0.001);
+        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model,steps, 0),0.001);
 
 
         //not same month February => march leap
         steps.clear();
-        statisticsController.setSelectedYear("2016");
+        statisticsController.setSelectedYear(model,"2016");
         step1.setStart("2016-02-28");
         step1.setEnd("2016-03-01");
         steps.add(step1);
-        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(steps, 0),0.001);
+        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
 
         //not same month February => march not leap
         steps.clear();
-        statisticsController.setSelectedYear("2017");
+        statisticsController.setSelectedYear(model,"2017");
         step1.setStart("2017-02-28");
         step1.setEnd("2017-03-01");
         steps.add(step1);
-        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(steps, 0),0.001);
+        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
 
         //if even month -> odd month => +30
         steps.clear();
-        statisticsController.setSelectedYear("2020");
+        statisticsController.setSelectedYear(model,"2020");
         step1.setStart("2020-04-30");
         step1.setEnd("2020-05-01");
         steps.add(step1);
-        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(steps, 0),0.001);
+        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
         //if odd month -> even month => +31
         steps.clear();
         step1.setStart("2020-05-30");
         step1.setEnd("2020-06-01");
         steps.add(step1);
-        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(steps, 0),0.001);
+        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
 
         // multiple months
         steps.clear();
         step1.setStart("2020-09-30");
         step1.setEnd("2020-11-01");
         steps.add(step1);
-        Assert.assertEquals((385/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(steps, 0),0.5);
+        Assert.assertEquals((385/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.5);
 
-         */
     }
 
     //Should probably be divided in different test for each possible outcome
     @Test
     public void occupancyRateDaysTest(){
-        /*
+        ModelMap model = new ModelMap();
+        model.addAttribute("selectedYear","2020");
         List<String> bookedDaysStartTest = new ArrayList<>();
         List<String> bookedDaysEndTest = new ArrayList<>();
         Float amountOfWorkDaysInYear = statisticsController.getAmountOfWorkDaysInYear();
@@ -429,7 +431,7 @@ public class StatisticsControllerTests {
         stepTest.setStart("2020-01-10");
         stepTest.setEnd("2020-01-12");
         steps.add(stepTest);
-        Assert.assertEquals((3/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((3/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model,steps, 0),0.001);
 
         //same month same startdate other step ends
         steps.clear();
@@ -439,7 +441,7 @@ public class StatisticsControllerTests {
         stepTest.setStart("2020-01-10");
         stepTest.setEnd("2020-01-12");
         steps.add(stepTest);
-        Assert.assertEquals((5/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((5/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model,steps, 0),0.001);
 
         //same month same enddate other step starts
         steps.clear();
@@ -449,7 +451,7 @@ public class StatisticsControllerTests {
         stepTest.setStart("2020-01-10");
         stepTest.setEnd("2020-01-12");
         steps.add(stepTest);
-        Assert.assertEquals((5/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((5/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model,steps, 0),0.001);
 
         //same month steps with same start and enddate as other steps, more than one day difference
         steps.clear();
@@ -462,7 +464,7 @@ public class StatisticsControllerTests {
         stepTest.setStart("2020-01-10");
         stepTest.setEnd("2020-01-12");
         steps.add(stepTest);
-        Assert.assertEquals((7/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((7/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model,steps, 0),0.001);
 
         //same month steps with same start and enddate as other steps, more than one day difference
         steps.clear();
@@ -475,50 +477,50 @@ public class StatisticsControllerTests {
         stepTest.setStart("2020-01-10");
         stepTest.setEnd("2020-01-11");
         steps.add(stepTest);
-        Assert.assertEquals((6/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((6/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model,steps, 0),0.001);
 
         //different month device not booked on same start or end day february => march leap
-        statisticsController.setSelectedYear("2016");
+        statisticsController.setSelectedYear(model,"2016");
         steps.clear();
         stepTest.setStart("2016-02-28");
         stepTest.setEnd("2016-03-01");
         steps.add(stepTest);
-        Assert.assertEquals((3/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((3/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model,steps, 0),0.001);
         //different month device not booked on same start or end day february => march not leap
-        statisticsController.setSelectedYear("2017");
+        statisticsController.setSelectedYear(model,"2017");
         steps.clear();
         stepTest.setStart("2017-02-28");
         stepTest.setEnd("2017-03-01");
         steps.add(stepTest);
-        Assert.assertEquals((2/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((2/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model,steps, 0),0.001);
 
         //different month device not booked on same start or end day with even => odd month
-        statisticsController.setSelectedYear("2020");
+        statisticsController.setSelectedYear(model,"2020");
         steps.clear();
         stepTest.setStart("2020-04-30");
         stepTest.setEnd("2020-05-01");
         steps.add(stepTest);
-        Assert.assertEquals((2/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((2/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model,steps, 0),0.001);
 
         //different month device not booked on same start or end day with odd => even month
-        statisticsController.setSelectedYear("2020");
+        statisticsController.setSelectedYear(model,"2020");
         steps.clear();
         stepTest.setStart("2020-05-30");
         stepTest.setEnd("2020-06-01");
         steps.add(stepTest);
-        Assert.assertEquals((3/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((3/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model, steps, 0),0.001);
 
         //more than one month difference and no other steps on same start or end date
         steps.clear();
         stepTest.setStart("2020-05-01");
         stepTest.setEnd("2020-07-01");
         steps.add(stepTest);
-        Assert.assertEquals((62/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((62/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model, steps, 0),0.001);
 
         //********** 1 DAY OVERLAP ***********
 
         //different month device 1 step booked on same start or end day february => march leap
-        statisticsController.setSelectedYear("2016");
+        statisticsController.setSelectedYear(model,"2016");
         steps.clear();
         step1.setStart("2016-02-27");
         step1.setEnd("2016-02-28");
@@ -526,10 +528,10 @@ public class StatisticsControllerTests {
         stepTest.setStart("2016-02-28");
         stepTest.setEnd("2016-03-01");
         steps.add(stepTest);
-        Assert.assertEquals((4/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((4/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model, steps, 0),0.001);
 
         //different month device 1 booked on same start or end day february => march not leap
-        statisticsController.setSelectedYear("2017");
+        statisticsController.setSelectedYear(model,"2017");
         steps.clear();
         step1.setStart("2017-02-27");
         step1.setEnd("2017-02-28");
@@ -537,10 +539,10 @@ public class StatisticsControllerTests {
         stepTest.setStart("2017-02-28");
         stepTest.setEnd("2017-03-01");
         steps.add(stepTest);
-        Assert.assertEquals((3/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((3/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model, steps, 0),0.001);
 
         //different month device 1 booked on same start or end day with even => odd month
-        statisticsController.setSelectedYear("2020");
+        statisticsController.setSelectedYear(model,"2020");
         steps.clear();
         step1.setStart("2020-05-01");
         step1.setEnd("2020-05-02");
@@ -548,10 +550,10 @@ public class StatisticsControllerTests {
         stepTest.setStart("2020-04-30");
         stepTest.setEnd("2020-05-01");
         steps.add(stepTest);
-        Assert.assertEquals((3/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((3/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model, steps, 0),0.001);
 
         //different month device 1 booked on same start or end day with odd => even month
-        statisticsController.setSelectedYear("2020");
+        statisticsController.setSelectedYear(model,"2020");
         steps.clear();
         step1.setStart("2020-05-29");
         step1.setEnd("2020-05-30");
@@ -559,7 +561,7 @@ public class StatisticsControllerTests {
         stepTest.setStart("2020-05-30");
         stepTest.setEnd("2020-06-01");
         steps.add(stepTest);
-        Assert.assertEquals((4/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((4/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model,steps, 0),0.001);
 
         //more than one month difference and 1 other steps on same start or end date
         steps.clear();
@@ -569,12 +571,12 @@ public class StatisticsControllerTests {
         stepTest.setStart("2020-05-02");
         stepTest.setEnd("2020-07-02");
         steps.add(stepTest);
-        Assert.assertEquals((63/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.5);
+        Assert.assertEquals((63/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model, steps, 0),0.5);
 
         //******* 2 DAYS OVERLAP ************
 
         //different month device steps booked on same start and end day february => march leap
-        statisticsController.setSelectedYear("2016");
+        statisticsController.setSelectedYear(model,"2016");
         steps.clear();
         step1.setStart("2016-02-27");
         step1.setEnd("2016-02-28");
@@ -585,10 +587,10 @@ public class StatisticsControllerTests {
         stepTest.setStart("2016-02-28");
         stepTest.setEnd("2016-03-01");
         steps.add(stepTest);
-        Assert.assertEquals((5/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((5/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model, steps, 0),0.001);
 
         //different month device booked steps on same start and end day february => march not leap
-        statisticsController.setSelectedYear("2017");
+        statisticsController.setSelectedYear(model,"2017");
         steps.clear();
         step1.setStart("2017-02-27");
         step1.setEnd("2017-02-28");
@@ -599,10 +601,10 @@ public class StatisticsControllerTests {
         stepTest.setStart("2017-02-28");
         stepTest.setEnd("2017-03-01");
         steps.add(stepTest);
-        Assert.assertEquals((4/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((4/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model, steps, 0),0.001);
 
         //different month device booked steps on same start and end day with even => odd month
-        statisticsController.setSelectedYear("2020");
+        statisticsController.setSelectedYear(model,"2020");
         steps.clear();
         step1.setStart("2020-04-29");
         step1.setEnd("2020-04-30");
@@ -613,10 +615,10 @@ public class StatisticsControllerTests {
         stepTest.setStart("2020-04-30");
         stepTest.setEnd("2020-05-01");
         steps.add(stepTest);
-        Assert.assertEquals((4/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((4/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model, steps, 0),0.001);
 
         //different month device booked steps on same start and end day with odd => even month
-        statisticsController.setSelectedYear("2020");
+        statisticsController.setSelectedYear(model,"2020");
         steps.clear();
         step1.setStart("2020-05-29");
         step1.setEnd("2020-05-30");
@@ -627,7 +629,7 @@ public class StatisticsControllerTests {
         stepTest.setStart("2020-05-30");
         stepTest.setEnd("2020-06-01");
         steps.add(stepTest);
-        Assert.assertEquals((5/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.001);
+        Assert.assertEquals((5/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model, steps, 0),0.001);
 
         //more than one month difference and 2 other steps on same start or end date
         steps.clear();
@@ -640,9 +642,9 @@ public class StatisticsControllerTests {
         stepTest.setStart("2020-05-02");
         stepTest.setEnd("2020-07-02");
         steps.add(stepTest);
-        Assert.assertEquals((64/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(steps, 0),0.5);
+        Assert.assertEquals((64/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model, steps, 0),0.5);
 
-         */
+
     }
 
 }
