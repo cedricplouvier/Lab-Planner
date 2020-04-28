@@ -4,6 +4,7 @@
 /* eslint-env jquery */
 /* global moment, tui, chance */
 /* global findCalendar, CalendarList, ScheduleList, generateSchedule */
+ let filledInSteps=[];
 let newSchedule;
 let suggestion;
 (function(window, Calendar) {
@@ -331,6 +332,7 @@ let suggestion;
         }else{
             document.getElementById('row' + calendarUpdate.stepIndex + '').setAttribute("style", "background-color:#d9534f;");
         }
+        suggestion=null;
         if(calendarUpdate.stepIndex<allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length-1){
             calendarUpdate.stepIndex++;
             setSchedules();
@@ -571,48 +573,82 @@ let suggestion;
     function calculateExperimentSuggestion() {
         let numberOfSteps = allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length;
         for (let current = 0; current < numberOfSteps; current++){
-                calendarUpdate.stepIndex=current;
-            calculateSuggestion()
+            calculateSuggestion(current)
             newSchedule = suggestion;
             suggestion = null;
             addDevices(checkOverlap(newSchedule));
             saveScheduleChanges();
         }
     }
-    function calculateSuggestion() {
+    function calculateSuggestion(index) {
         let today = new Date();
         let currentDate;
-        if(newSchedule.start){
-            currentDate = newSchedule.start;
-        }else {
-            currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), today.getHours() + 1, 0);
+        let endDate
+
+        if(index!=calendarUpdate.stepIndex){
+            let temp = index;
+            temp--;
+            currentDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());
+            endDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());;
+            endDate.setDate(endDate.getDate()+14);
+        }else if(newSchedule.start){
+            currentDate = new Date(newSchedule.start.getFullYear(), newSchedule.start.getMonth(), newSchedule.start.getDate(), newSchedule.start.getHours(), newSchedule.start.getMinutes());
+            endDate = new Date(newSchedule.start.getFullYear(), newSchedule.start.getMonth(), newSchedule.start.getDate(), newSchedule.start.getHours(), newSchedule.start.getMinutes());;
+            endDate.setDate(endDate.getDate()+14);
+        }else if(index>0){
+            let temp = index;
+            temp--;
+
+            currentDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());
+            endDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());;
+            endDate.setDate(endDate.getDate()+14);
         }
-        let endDate = new Date(today.getFullYear(),today.getMonth(),today.getDate(),today.getHours()+1,0);
-        endDate.setDate(endDate.getDate()+14);
-        let step = 30; //in minutes
+        else {
+            currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), today.getHours(), 0);
+            currentDate.setHours(currentDate.getHours()+1)
+            endDate = new Date(today.getFullYear(),today.getMonth(),today.getDate(),today.getHours(),0);
+            endDate.setHours(endDate.getHours()+1)
+            endDate.setDate(endDate.getDate()+14);
+        }
+
+
+        let step = 60; //in minutes
         let length = 60;
         let found = false;
         var calendar = selectedCalendar ? selectedCalendar : CalendarList[0];
-
         let schedule = null;
+        currentDate.setMinutes(currentDate.getMinutes()-30);
+
         while(!found && currentDate<endDate){
             currentDate.setMinutes(currentDate.getMinutes()+30);
-
             let end = new Date(currentDate.getFullYear(),currentDate.getMonth(),currentDate.getDate(),currentDate.getHours(),currentDate.getMinutes());
             end.setMinutes(end.getMinutes()+60);
             schedule = createSuggestionSchedule(currentDate,end,calendar);
-            if(checkContinuity(calendarUpdate.stepIndex,schedule).ok&&checkOverlap(schedule).length!=0){
-                // if(checkOverlap()){
+            if(checkContinuity(index,schedule).ok&&checkOverlap(schedule).length!=0){
+                // check if other steps can still be found
+                if(index<allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length-1){
+                    filledInSteps[index] = schedule;
+                    let temp = index;
+                    temp++;
+                    if(calculateSuggestion(temp)){
+                        found = true;
+                    }
+                }else{
                     found = true;
-                // }
+                }
             }
         }
-        if(found){
+        if(found&&index==calendarUpdate.stepIndex){
             suggestion = schedule;
-            console.log("suggestion found, start:"+schedule.start);
             setSchedules();
+            $('#toastsuggestionsuccess').toast('show')
 
         }
+        if(!found&&index==calendarUpdate.stepIndex){
+            $('#toastsuggestionerror').toast('show')
+
+        }
+        return found;
     }
 
     function setDropdownCalendarType() {
@@ -681,7 +717,9 @@ let suggestion;
         $("#selectStep").on('click',saveScheduleChanges);
         $("#nextstep").on('click',nextStep);
         $("#previousstep").on('click',previousStep);
-        $("#suggestStep").on('click',calculateSuggestion);
+        $("#suggestStep").on('click',function () {
+            calculateSuggestion(calendarUpdate.stepIndex);
+        });
         $("#suggestExperiment").on('click',calculateExperimentSuggestion);
 
         window.addEventListener('resize', resizeThrottled);
