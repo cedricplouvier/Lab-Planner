@@ -166,39 +166,41 @@ function checkOverlap() {
                 if(otherSteps[currentStep]['device']['id']==deviceId){ //found step booked of same device
                     var stepStart = new Date(otherSteps[currentStep]['start']+ 'T'+otherSteps[currentStep]['startHour']);
                     var stepEnd = new Date(otherSteps[currentStep]['end']+ 'T'+otherSteps[currentStep]['endHour']);
-
                     //check if date overlaps with schedule
                     if(stepStart>scheduleStart&&stepStart<scheduleEnd){
                         overlap = true;
                     }else if(stepEnd>scheduleStart&&stepEnd<scheduleEnd){
                         overlap = true;
+                    }else if(stepStart<scheduleStart&&stepEnd>scheduleEnd){
+                        overlap=true;
                     }
                 }
             }
             //now check own steps
-            //first check other steps
             for(var currentStep=0;currentStep<userSteps.length;currentStep++){
                 if(userSteps[currentStep]['device']['id']==deviceId){ //found step booked of same device
-                    var stepStart = new Date(userSteps[currentStep]['start']+ 'T'+userSteps[currentStep]['startHour']);
-                    var stepEnd = new Date(userSteps[currentStep]['end']+ 'T'+userSteps[currentStep]['endHour']);
-
+                    stepStart = new Date(userSteps[currentStep]['start']+ 'T'+userSteps[currentStep]['startHour']);
+                    stepEnd = new Date(userSteps[currentStep]['end']+ 'T'+userSteps[currentStep]['endHour']);
                     //check if date overlaps with schedule
                     if(stepStart>scheduleStart&&stepStart<scheduleEnd){
                         overlap = true;
                     }else if(stepEnd>scheduleStart&&stepEnd<scheduleEnd){
                         overlap = true;
+                    }else if(stepStart<scheduleStart&&stepEnd>scheduleEnd){
+                        overlap=true;
                     }
                 }
             }
-
             if(!overlap){
                 const optionText = devices[current]['devicename'];
                 const optionValue = devices[current]['id'];
                 $('#deviceTypeDropdown').append($('<option>').val(optionValue).text(optionText));
                 document.getElementById('selectStep').disabled = false;
-
             }
         }
+    }
+    if(!checkContinuity(calendarUpdate.stepIndex,newSchedule).ok){
+        document.getElementById('selectStep').disabled = true;
     }
 }
 function checkContinuity(stepindex,schedule) {
@@ -303,7 +305,6 @@ function checkContinuity(stepindex,schedule) {
             ok:false,
         }
     }
-
     //check if there are available devices
     if($('#deviceTypeDropdown').children().length==0){
         return {
@@ -338,15 +339,12 @@ function generateSchedule(viewName, renderStart, renderEnd) {
                 schedule.bgColor = '#0275d8';
                 schedule.dragBgColor = '#0275d8';
                 schedule.borderColor = '#0275d8';
-
-
             schedule.category = 'time';
-
             ScheduleList.push(schedule);
         // }
     })
 
-    //Add all other steps of devicetpye
+    //Add all other steps of devicetype
     otherSteps.forEach(function (step) {
         if(step['device']['deviceType']['id'] === allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['id']) {
             let schedule = new ScheduleInfo();
@@ -373,7 +371,6 @@ function generateSchedule(viewName, renderStart, renderEnd) {
     //Add all current filled in steps
     let numberOfSteps = allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length;
     for (let current = 0; current < numberOfSteps; current++){
-
         let ok = true;
         let step = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current];
         let schedule = new ScheduleInfo();
@@ -383,10 +380,8 @@ function generateSchedule(viewName, renderStart, renderEnd) {
         schedule.title = 'Step '+(current+1)+' of Experiment '+allExperiments[calendarUpdate.experimentIndex]['experimentTypeName']+', \nDevice = '+step['deviceType']['deviceTypeName'];
         if(calendarUpdate.stepIndex==current){
             schedule.isReadOnly = false;
-
         }else{
             schedule.isReadOnly = true;
-
         }
         if(document.getElementById('startDate' + current + '')) {
             var start = document.getElementById('startDate' + current + '').value;
@@ -434,6 +429,12 @@ function generateSchedule(viewName, renderStart, renderEnd) {
                 schedule.body=check.message;
             }
             ScheduleList.push(schedule);
+        }
+        if(calendarUpdate.stepIndex==current){
+            newSchedule =schedule;
+            if(newSchedule.start&&newSchedule.end) {
+                checkOverlap(current,schedule);
+            }
         }
     }
 }
