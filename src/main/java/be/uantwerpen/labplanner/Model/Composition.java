@@ -1,6 +1,6 @@
 package be.uantwerpen.labplanner.Model;
 
-import be.uantwerpen.labplanner.common.model.stock.Product;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.Column;
@@ -14,9 +14,9 @@ public class Composition extends AbstractPersistable<Long> {
     private Double amount;
 
     @ManyToOne
-    private Product product;
+    private OwnProduct product;
 
-    public Composition(Double amount, Product prod){
+    public Composition(Double amount, OwnProduct prod){
         this.amount = amount;
         this.product = prod;
     }
@@ -36,11 +36,11 @@ public class Composition extends AbstractPersistable<Long> {
         }
     }
 
-    public Product getProduct() {
+    public OwnProduct getProduct() {
         return product;
     }
 
-    public void setProduct(Product product) {
+    public void setProduct(OwnProduct product) {
         this.product = product;
     }
 

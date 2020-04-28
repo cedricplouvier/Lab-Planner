@@ -51,7 +51,7 @@ public class PrivilegeController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/privileges/{id}",method = RequestMethod.GET)
     public String viewEditPrivilege(@PathVariable long id, final ModelMap model){
-        model.addAttribute("privilege",privilegeService.findById(id));
+        model.addAttribute("privilege",privilegeService.findById(id).orElse(null));
         return "Privileges/privilege-manage";
     }
 

@@ -17,11 +17,9 @@
             <th th:text="#{step.end}">End Date</th>
             <th th:text="#{step.endHour}">End Hour</th>
             <th>
-                <form method = "GET" action = "/calendar/user">
-                    <button class="btn btn-default btn-block lnb-new-schedule-btn "  id="btn-new-schedule" type="submit" >
-                        Go to personal calendar
-                    </button>
-                </form>
+                <a th:href="@{/calendar/user}" class="btn btn-default btn-block lnb-new-schedule-btn "  id="btn-new-schedule" type="button" >
+                    Go to personal calendar
+                </a>
             </th>
         </tr>
         </thead>
@@ -164,7 +162,7 @@
         </tbody>
     </table>
 
-    <a  sec:authorize="hasAuthority('Console Access')" href="/reports/list" th:text="#{report.list} + ' ('+${reportAmount}+')'" class="btn btn-primary"></a>
+    <a  sec:authorize="hasAuthority('Console Access')" th:href="@{/reports/list}" th:text="#{report.list} + ' ('+${reportAmount}+')'" class="btn btn-primary"></a>
     <a  th:href="@{/reports/put}" th:text="#{report.problem}" class="btn btn-primary"></a>
 
 </div>

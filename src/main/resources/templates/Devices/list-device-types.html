@@ -99,8 +99,8 @@
                 </tbody>
             </table>
             <p>
-                <a href="/devices" class="btn btn-primary" th:text="#{device.return}" ></a>
-                <a sec:authorize="hasAuthority('Device - Modify - All')" href="/devices/types/put" class="btn btn-primary" th:text="#{device.add.type}" ></a>
+                <a th:href="@{/devices}" class="btn btn-primary" th:text="#{device.return}" ></a>
+                <a sec:authorize="hasAuthority('Device - Modify - All')" th:href="@{/devices/types/put}" class="btn btn-primary" th:text="#{device.add.type}" ></a>
             </p>
         </div>
     </div>

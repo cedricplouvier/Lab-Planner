@@ -77,13 +77,20 @@
 
         </div>
 
-        <div> <label th:text="#{product.tag.tagName}"></label>
-            <tr></tr>
-            <select th:field="*{tags}" multiple="multiple" >
-                <option th:each="tag : ${allTags}"
-                        th:value="${{tag}}"
-                        th:text="${tag.name}">Wireframe</option>
-            </select>
+        <div class="form-group">
+            <label class="control-label" th:text="#{info.url}"></label>
+            <input class="form-control" type = url th:field="*{url}"/>
+
+        </div>
+
+        <div>
+            <h6 th:text="#{product.tag.tagName}">tags</h6>
+        </div>
+        <div class="form-check">
+            <input th:field ="*{tags}" class="form-check-input" type="checkbox"
+                   th:each="tag : ${allTags}"
+                   th:value="${{tag}}"
+                   th:utext="${tag.name} + '<br>'">
         </div>
 
 
@@ -93,7 +100,7 @@
 
         <p>
             <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
-            <a href="/products" th:text="#{close}" class="btn btn-secondary">Close</a>
+            <a th:href="@{/products}" th:text="#{close}" class="btn btn-secondary">Close</a>
 
         </p>
     </form>

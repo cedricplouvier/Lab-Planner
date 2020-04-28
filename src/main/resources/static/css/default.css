@@ -218,11 +218,11 @@ body {
 }
 
 #calendar {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 5px;
-    top: 64px;
+    /*position: absolute;*/
+    /*left: 0;*/
+    /*right: 0;*/
+    /*bottom: 5px;*/
+    /*top: 64px;*/
 }
 
 /** custom fontawesome */

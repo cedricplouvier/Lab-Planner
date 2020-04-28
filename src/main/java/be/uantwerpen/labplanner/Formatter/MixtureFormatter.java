@@ -5,8 +5,6 @@ import be.uantwerpen.labplanner.Model.DeviceType;
 import be.uantwerpen.labplanner.Model.Mixture;
 import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
 import be.uantwerpen.labplanner.Repository.MixtureRepository;
-import be.uantwerpen.labplanner.common.model.stock.Tag;
-import be.uantwerpen.labplanner.common.repository.stock.TagRepository;
 import com.zaxxer.hikari.metrics.micrometer.MicrometerMetricsTracker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.Formatter;
