@@ -21,6 +21,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -89,7 +90,7 @@ public class FileController {
 
 
 	@PostMapping("/upload/productimage/{productId}")
-	public String handleProductImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long productId) {
+	public String handleProductImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long productId) throws Exception{
 		OwnProduct temp =  productService.findById( productId).orElse(null);
 		Locale current = LocaleContextHolder.getLocale();
 
@@ -107,7 +108,7 @@ public class FileController {
 	}
 
 	@PostMapping("/upload/mixtureImage/{mixtureId}")
-	public String handleMixtureImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long mixtureId) {
+	public String handleMixtureImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long mixtureId) throws Exception {
 		Mixture temp =  mixtureService.findById( mixtureId).orElse(null);
 		Locale current = LocaleContextHolder.getLocale();
 
@@ -125,7 +126,7 @@ public class FileController {
 	}
 
 	@PostMapping("/upload/mixturePdf/{mixtureId}")
-	public String handleMixturePdfUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long mixtureId) {
+	public String handleMixturePdfUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long mixtureId) throws Exception{
 		Mixture temp =  mixtureService.findById( mixtureId).orElse(null);
 		Locale current = LocaleContextHolder.getLocale();
 
