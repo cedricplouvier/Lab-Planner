@@ -139,7 +139,7 @@ public class StockControllerTests {
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
         mockMvc.perform(post("/products/{id}","10").flashAttr("ownProduct",prod))
-                .andExpect(view().name("Stock/products-manage"))
+                .andExpect(view().name("redirect:/products"))
                 .andDo(print());
 
     }
@@ -363,7 +363,7 @@ public class StockControllerTests {
 
         when(mixtureService.findById(id)).thenReturn(Optional.of(mix));
         mockMvc.perform(post("/mixtures/{id}","10").flashAttr("mixture",mix))
-                .andExpect(view().name("Mixtures/mixtures-manage"))
+                .andExpect(view().name("redirect:/products"))
                 .andDo(print());
     }
 

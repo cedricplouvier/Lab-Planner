@@ -100,7 +100,7 @@
 
 
     <h4 th:text="#{mixture.create}">New Mixture</h4>
-    <form action="#" th:action="@{/mixtures/{id}(id=${mixture})}"
+    <form  action="#" th:action="@{/mixtures/{id}(id=${mixture})}"
           th:object="${mixture}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
 
@@ -218,10 +218,10 @@
             <div class="input-group mb-3">
                 <div class="custom-file">
                     <input type="file" class="custom-file-input" name="file" accept="image/png, image/jpeg, image/jpg" id="inputGroupFile02"/>
-                    <label class="custom-file-label" for="inputGroupFile02"th:text="#{mixture.image}"></label>
+                    <label class="custom-file-label" for="inputGroupFile02"  th:text="#{mixture.image}"></label>
                 </div>
                 <div class="input-group-append">
-                    <button class="btn btn-primary" id="upload-btn" disabled type="submit"  th:text="#{device.upload}"></button>
+                    <button class="btn btn-primary" id="upload-btn" disabled type="submit"   th:text="#{device.upload}"></button>
                 </div>
             </div>
             <script>
@@ -239,7 +239,7 @@
             <div class="input-group mb-3">
                 <div class="custom-file">
                     <input type="file" class="custom-file-input" name="file" accept="application/pdf" id="inputGroupFile03"/>
-                    <label class="custom-file-label" for="inputGroupFile03"th:text="#{mixture.pdf}"></label>
+                    <label class="custom-file-label" for="inputGroupFile03" th:value="${{mixture.getDocument()}}"  th:text="#{mixture.pdf}"></label>
                 </div>
                 <div class="input-group-append">
                     <button class="btn btn-primary" id="upload-btn2" disabled type="submit"  th:text="#{device.upload}"></button>

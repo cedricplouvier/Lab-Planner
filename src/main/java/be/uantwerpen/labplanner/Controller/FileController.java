@@ -61,7 +61,6 @@ public class FileController {
 			tempDeviceType.setDevicePictureName(filename);
 			deviceTypeService.saveNewDeviceType(tempDeviceType);
 
-		}else{
 		}
 
 		return "redirect:/devices/types/"+typeid;
@@ -92,6 +91,8 @@ public class FileController {
 	@PostMapping("/upload/productimage/{productId}")
 	public String handleProductImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long productId) {
 		OwnProduct temp =  productService.findById( productId).orElse(null);
+		Locale current = LocaleContextHolder.getLocale();
+
 		if(temp!=null) {
 			//append productid to filename to make sure file is unique for each product
 			String filename = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1)+productId.toString();
@@ -99,15 +100,17 @@ public class FileController {
 			temp.setImageName(filename);
 			productService.save(temp);
 
-		}else{
 		}
 
-		return "redirect:/products/"+productId;
+		redirectAttributes.addFlashAttribute("success", ResourceBundle.getBundle("messages",current).getString("image.success"));
+		return "redirect:/products";
 	}
 
 	@PostMapping("/upload/mixtureImage/{mixtureId}")
 	public String handleMixtureImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long mixtureId) {
 		Mixture temp =  mixtureService.findById( mixtureId).orElse(null);
+		Locale current = LocaleContextHolder.getLocale();
+
 		if(temp!=null) {
 			//append productid to filename to make sure file is unique for each product
 			String filename = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1)+mixtureId.toString();
@@ -115,15 +118,17 @@ public class FileController {
 			temp.setImage(filename);
 			mixtureService.save(temp);
 
-		}else{
 		}
+		redirectAttributes.addFlashAttribute("success", ResourceBundle.getBundle("messages",current).getString("image.success"));
 
-		return "redirect:/mixtures/"+mixtureId;
+		return "redirect:/products";
 	}
 
 	@PostMapping("/upload/mixturePdf/{mixtureId}")
 	public String handleMixturePdfUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long mixtureId) {
 		Mixture temp =  mixtureService.findById( mixtureId).orElse(null);
+		Locale current = LocaleContextHolder.getLocale();
+
 		if(temp!=null) {
 			//append productid to filename to make sure file is unique for each product
 			String filename = file.getOriginalFilename();
@@ -131,10 +136,10 @@ public class FileController {
 			temp.setDocument(filename);
 			mixtureService.save(temp);
 
-		}else{
 		}
+		redirectAttributes.addFlashAttribute("success", ResourceBundle.getBundle("messages",current).getString("pdf.success"));
 
-		return "redirect:/mixtures/"+mixtureId;
+		return "redirect:/products";
 	}
 
 
