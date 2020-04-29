@@ -10,13 +10,18 @@ import be.uantwerpen.labplanner.Service.RelationService;
 import be.uantwerpen.labplanner.Service.ReportService;
 import be.uantwerpen.labplanner.Service.StepService;
 import be.uantwerpen.labplanner.common.model.users.User;
+import org.junit.After;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.transaction.AfterTransaction;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -57,7 +62,13 @@ public class HomeControllerTests {
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(this.mockHomeController).build();
     }
-
+    @BeforeTransaction
+    public void setup1(){
+        new User("Cedric", "PW", "cedric.plouvier@student.uantwerpen.be", "Cedric", "Plouvier", "20152267", "", "", null, null, null);
+    }
+    @AfterTransaction
+    public void teardown(){
+    }
     @Test
     public void showUsermanagementPageTest() throws Exception {
 
@@ -106,7 +117,7 @@ public class HomeControllerTests {
     }
 
     @Test
-    @WithUserDetails("Cedric")
+    @WithUserDetails(value="cedric.plouvier@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     public void showStepsHomePageTest() throws Exception {
 
         long ID = 33;

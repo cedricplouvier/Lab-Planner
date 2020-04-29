@@ -55,9 +55,9 @@ public class OwnProduct extends AbstractPersistable<Long> {
     @Column
     private Unit units;
     @Column(
-            name = "image_url"
+            name = "image_name"
     )
-    private String imageUrl;
+    private String imageName;
     @Column(
             name = "properties_url"
     )
@@ -107,7 +107,7 @@ public class OwnProduct extends AbstractPersistable<Long> {
         this.lowStockLevel = lowStockLevel;
         this.reservedStockLevel = reservedStockLevel;
         this.units = units;
-        this.imageUrl = imageUrl;
+        this.imageName = imageName;
         this.properties = properties;
         this.productCreatorId = productCreatorId;
         this.lastUpdatedById = lastUpdatedById;
@@ -153,10 +153,6 @@ public class OwnProduct extends AbstractPersistable<Long> {
 
     public Unit getUnits() {
         return this.units;
-    }
-
-    public String getImageUrl() {
-        return this.imageUrl;
     }
 
     public String getProperties() {
@@ -211,8 +207,12 @@ public class OwnProduct extends AbstractPersistable<Long> {
         this.units = units;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 
     public void setProperties(String properties) {
