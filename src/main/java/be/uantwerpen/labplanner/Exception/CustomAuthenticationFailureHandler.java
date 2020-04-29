@@ -3,11 +3,13 @@ package be.uantwerpen.labplanner.Exception;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,7 +44,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         logger.error(HttpStatus.UNAUTHORIZED.toString()+"  => "+objectMapper.writeValueAsString(data));
         response.getOutputStream()
                 .println(objectMapper.writeValueAsString(data));
-        response.sendRedirect("/se/g3/login");
+        response.sendRedirect("login");
     }
 
 }

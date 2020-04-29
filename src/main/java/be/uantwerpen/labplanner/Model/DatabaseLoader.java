@@ -274,10 +274,10 @@ public class DatabaseLoader {
         User u4 = new User("Ali", "PW", "mohammad.amir2@student.uantwerpen.be", "Ali", "Amir", "20163446", "", "", null, null, null);
         User u5 = new User("Timo", "PW", "timo.nelen@student.uantwerpen.be", "Timo", "Nelen", "S0162117", "", "", null, null, null);
         User u6 = new User("Ondrej", "PW", "ondrej.bures@student.uantwerpen.be", "Ondrej", "Bures", "20160002", "", "", null, null, null);
-        User u7 = new User("Bachelor", "PW", "", "Bach", "Student", "20170001", "", "", null, null, null);
-        User u8 = new User("Master", "PW", "", "Mas", "Student", "20160009", "", "", null, null, null);
-        User u9 = new User("Researcher", "PW", "", "Researcher", "Developper", "20100001", "", "", null, null, null);
-        User admin = new User("admin", "admin", "", "admin", "admin", null, "", "", null, null, null);
+        User u7 = new User("Bachelor", "PW", "bachelor@student.uantwerpen.be", "Bach", "Student", "20170001", "", "", null, null, null);
+        User u8 = new User("Master", "PW", "master@student.uantwerpen.be", "Mas", "Student", "20160009", "", "", null, null, null);
+        User u9 = new User("Researcher", "PW", "researcher@uantwerpen.be", "Researcher", "Developper", "20100001", "", "", null, null, null);
+        User admin = new User("admin", "admin", "admin@uantwerpen.be", "admin", "admin", null, "", "", null, null, null);
         //Set<Role> roles = new HashSet<>();
         Set<Role> roles = new HashSet<>();
         roles.add(administrator);

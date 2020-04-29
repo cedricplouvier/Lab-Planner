@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
+@Service
 public class NewSecurityService implements UserDetailsService {
     @Autowired
     private UserService userService;
@@ -18,26 +20,20 @@ public class NewSecurityService implements UserDetailsService {
     private PrivilegeService privilegeService;
     @Autowired
     private UserRepository userRepository;
-    private static Logger logger = LoggerFactory.getLogger(SecurityService.class);
+    private static Logger logger = LoggerFactory.getLogger(NewSecurityService.class);
 
     public NewSecurityService()  {
     }
 
-    public User loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = (User)this.userService.findByUsername(username).orElse( null);
+    public User loadUserByUsername(String email) throws UsernameNotFoundException {
+
+        User user = (User)this.userService.findByEmail(email.toLowerCase()).orElse( null);
         if (user != null) {
             this.userRepository.save(user);
             logger.info("Attempting to login user " + user.getId() + "");
             return user;
         } else {
-            user = (User)this.userService.findByEmail(username.toLowerCase()).orElse( null);
-            if (user != null) {
-                this.userRepository.save(user);
-                logger.info("Attempting to login user " + user.getId() + "");
-                return user;
-            } else {
-                throw new UsernameNotFoundException("No user with email or name '" + username + "' found!");
-            }
+            throw new UsernameNotFoundException("No user with email '" + email + "' found!");
         }
     }
 }

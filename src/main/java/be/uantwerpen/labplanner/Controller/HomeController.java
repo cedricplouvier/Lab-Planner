@@ -135,15 +135,4 @@ public class HomeController {
         return "redirect:/statistics/statistics";
     }
 
-//    @RequestMapping(value = "/login",method = RequestMethod.GET)
-//    public String showLogin(final ModelMap model){
-//        model.addAttribute("LoginFormat", new LoginFormat());
-//        return "login";
-//    }
-//    @RequestMapping(value = "/login",method = RequestMethod.POST)
-//    public String checkLogin(@Valid LoginFormat loginFormat){
-//        if(loginFormat.getLoginName()!=null)
-//        {}
-//        return "redirect:/home";
-//    }
 }
