@@ -238,7 +238,7 @@
         <form th:if="${mixture.id}!=null" method="POST" enctype="multipart/form-data"  th:action="@{/upload/mixturePdf/{mixtureId}(mixtureId=${mixture.id})}">
             <div class="input-group mb-3">
                 <div class="custom-file">
-                    <input type="file" class="custom-file-input" name="file" accept="application/pdf" id="inputGroupFile03"/>
+                    <input type="file" class="custom-file-input" name="file" accept=".pdf" id="inputGroupFile03"/>
                     <label class="custom-file-label" for="inputGroupFile03" th:value="${{mixture.getDocument()}}"  th:text="#{mixture.pdf}"></label>
                 </div>
                 <div class="input-group-append">
