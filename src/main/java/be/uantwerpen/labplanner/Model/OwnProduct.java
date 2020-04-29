@@ -1,6 +1,7 @@
 package be.uantwerpen.labplanner.Model;
 
 
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;
@@ -26,6 +27,10 @@ public class OwnProduct extends AbstractPersistable<Long> {
             message = "{invalid.notblank}"
     )
     private String name;
+
+    @Column
+    private URL url;
+
     @Column
     private String description;
     @Column(
@@ -50,9 +55,9 @@ public class OwnProduct extends AbstractPersistable<Long> {
     @Column
     private Unit units;
     @Column(
-            name = "image_url"
+            name = "image_name"
     )
-    private String imageUrl;
+    private String imageName;
     @Column(
             name = "properties_url"
     )
@@ -94,7 +99,7 @@ public class OwnProduct extends AbstractPersistable<Long> {
     public OwnProduct() {
     }
 
-    public OwnProduct(String name, String description, Double unitCost, Double stockLevel, Double lowStockLevel, Double reservedStockLevel, Unit units, String imageUrl, String properties, Long productCreatorId, Long lastUpdatedById, LocalDateTime createDateTime, LocalDateTime updateDateTime, List<OwnTag> tags) {
+    public OwnProduct(String name, String description, Double unitCost, Double stockLevel, Double lowStockLevel, Double reservedStockLevel, Unit units, String imageUrl, String properties, Long productCreatorId, Long lastUpdatedById, LocalDateTime createDateTime, LocalDateTime updateDateTime, List<OwnTag> tags, URL url) {
         this.name = name;
         this.description = description;
         this.unitCost = unitCost;
@@ -102,13 +107,14 @@ public class OwnProduct extends AbstractPersistable<Long> {
         this.lowStockLevel = lowStockLevel;
         this.reservedStockLevel = reservedStockLevel;
         this.units = units;
-        this.imageUrl = imageUrl;
+        this.imageName = imageName;
         this.properties = properties;
         this.productCreatorId = productCreatorId;
         this.lastUpdatedById = lastUpdatedById;
         this.createDateTime = createDateTime;
         this.updateDateTime = updateDateTime;
         this.tags = tags;
+        this.url = url;
     }
 
     @Override
@@ -147,10 +153,6 @@ public class OwnProduct extends AbstractPersistable<Long> {
 
     public Unit getUnits() {
         return this.units;
-    }
-
-    public String getImageUrl() {
-        return this.imageUrl;
     }
 
     public String getProperties() {
@@ -205,8 +207,12 @@ public class OwnProduct extends AbstractPersistable<Long> {
         this.units = units;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 
     public void setProperties(String properties) {
@@ -231,6 +237,14 @@ public class OwnProduct extends AbstractPersistable<Long> {
 
     public void setTags(List<OwnTag> tags) {
         this.tags = tags;
+    }
+
+    public URL getUrl() {
+        return url;
+    }
+
+    public void setUrl(URL url) {
+        this.url = url;
     }
 }
 

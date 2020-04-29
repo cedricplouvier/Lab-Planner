@@ -32,6 +32,12 @@ public class MixtureTests {
 
         String desc = "description";
         mixture.setDescription(desc);
+        assertEquals(mixture.getDescription(), desc);
+
+        String filename = "filename";
+        mixture.setImage(filename);
+        assertEquals(mixture.getImage(), filename);
+
 
         Long id = (long) 5;
         mixture.setId(id);
