@@ -121,11 +121,9 @@ public class StepController {
         Boolean hasAdmin = false;
         Set<Role> userRoles = user.getRoles();
 
-        for(Role role: userRoles)
-        {
-            if(role.getName().equals("Administrator"))
-            {
-                hasAdmin=true;
+        for (Role role : userRoles) {
+            if (role.getName().equals("Administrator")) {
+                hasAdmin = true;
             }
         }
 
@@ -314,7 +312,7 @@ public class StepController {
     }
 
     //check if specific user is allowed to edit.
-    boolean allowedToEdit(User user, long id){
+    boolean allowedToEdit(User user, long id) {
         //also check for Researcher.
         Role adminole = roleService.findByName("Administrator").get();
         Role promotorRole = roleService.findByName("Researcher").get();
@@ -591,18 +589,10 @@ public class StepController {
 
     @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
     @RequestMapping(value = {"/planning/experiments/book", "/planning/experiments/book/{id}"}, method = RequestMethod.POST)
-        public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
+    public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Locale current = LocaleContextHolder.getLocale();
         Map<OwnProduct, Double> productMap = new HashMap<>();
-
-
-        if (experiment == null) {
-            ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save Experiment."));
-            return "redirect:/planning/";
-        }
-
 
         //Error message that is used as a feedback to user when there is a problem with his input
         String errorMessage = "";
@@ -620,12 +610,61 @@ public class StepController {
             }
         }
 
-        //set current experimentType by experimentType id
-        for (ExperimentType expType : experimentTypeService.findAll()) {
-            if (expType.getId().equals(experiment.getExperimentType().getId())) {
-                experiment.setExperimentType(expType);
+
+        //load experimentType by selected id
+        if (experiment.getExperimentType().getIsFixedType())
+            for (ExperimentType expType : experimentTypeService.findAll()) {
+                if (expType.getId().equals(experiment.getExperimentType().getId())) {
+                    experiment.setExperimentType(expType);
+                }
+            }
+
+
+        //check, if there are some steps in experiment
+        if (experiment.getSteps() == null || experiment.getExperimentType().getStepTypes() == null) {
+            errorMessage = "Error while trying to save Experiment. Experiment without steps can not be booked";
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            if (experiment.getExperimentType().getIsFixedType()) {
+                return "PlanningTool/planning-exp-book-fixed";
+            } else {
+                return "PlanningTool/planning-exp-book-custom";
             }
         }
+
+        //If this is custom experiment, some modifications needs to be performed
+        if (!experiment.getExperimentType().getIsFixedType()) {
+
+            //1. set name of experimentType if it's null
+            if (experiment.getExperimentType().getExpname() == null) {
+                int nameIndex = 0;
+                String expTypeName = "";
+                // check, if name already exists
+                boolean nameFound = false;
+                boolean nameAlreadyExists;
+                while (!nameFound) {
+                    nameAlreadyExists = false;
+                    expTypeName = "Custom" + nameIndex;
+                    for (int i = 0; i < experimentTypeService.findAll().size(); i++) {
+                        if (experimentTypeService.findAll().get(i).getExpname().equals(expTypeName)) {
+                            nameAlreadyExists = true;
+                        }
+                    }
+                    if (!nameAlreadyExists) {
+                        nameFound = true;
+                    }
+                    nameIndex++;
+                }
+                experiment.getExperimentType().setExpname(expTypeName);
+            }
+
+            //2. set stepTypes regarding to received experiment model
+            for (int i = 0; i < experiment.getExperimentType().getStepTypes().size(); i++) {
+                if (experiment.getExperimentType().getStepTypes().get(i).getContinuity() == null) {
+                    experiment.getExperimentType().getStepTypes().get(i).setContinuity(new Continuity());
+                }
+            }
+        }
+
 
         //check if experiment name is unique
         for (Experiment exp : experimentService.findAll()) {
@@ -633,14 +672,6 @@ public class StepController {
             if (experiment.getExperimentname().equals(exp.getExperimentname()) && !Objects.equals(experiment.getId(), exp.getId())) {
                 errorMessage = "Experiment with this name already exists";
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-                return "PlanningTool/planning-exp-book";
-            }
-        }
-
-        //set current experimentType by experimentType id
-        for (ExperimentType expType : experimentTypeService.findAll()) {
-            if (expType.getId().equals(experiment.getExperimentType().getId())) {
-                experiment.setExperimentType(expType);
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
                 } else {
@@ -649,12 +680,28 @@ public class StepController {
             }
         }
 
+        //set current experimentType by experimentType id
+        for (ExperimentType expType : experimentTypeService.findAll()) {
+            if (expType.getId().equals(experiment.getExperimentType().getId())) {
+                experiment.setExperimentType(expType);
+            }
+        }
+
         //check negative mixture
-        for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
-            if (pom.getMixtureAmount() < 0) {
-                errorMessage = "Ammount of mixture can't be negative";
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-                return "PlanningTool/planning-exp-book";
+        if (experiment.getPiecesOfMixture() != null) {
+            for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
+                if (pom.getMixtureAmount() < 0) {
+                    errorMessage = "Ammount of mixture can't be negative";
+                    prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+                    if (experiment.getExperimentType().getIsFixedType()) {
+                        return "PlanningTool/planning-exp-book-fixed";
+                    } else {
+                        return "PlanningTool/planning-exp-book-custom";
+                    }
+                }
+            }
+        }
+
         if (experiment.getPiecesOfMixture() != null) {
             for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
                 if (pom.getMixtureAmount() < 0) {
@@ -692,11 +739,11 @@ public class StepController {
             }
         }
 
+
         //Both, step size and stepType size has to be same
         if (experiment.getSteps().size() != experiment.getExperimentType().getStepTypes().size()) {
             errorMessage = "Error while trying to save Experiment. Problem with length of steps";
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
-            return "PlanningTool/planning-exp-book";
             if (experiment.getExperimentType().getIsFixedType()) {
                 return "PlanningTool/planning-exp-book-fixed";
             } else {
@@ -759,7 +806,7 @@ public class StepController {
             //proceed only if experiment still satisfies all needs
 
             //check, if step data are correct
-            if ((step.getStart() == null || step.getEnd() == null ||
+            if ((step.getDevice() == null || step.getStart() == null || step.getEnd() == null ||
                     step.getStartHour() == null || step.getEndHour() == null ||
                     step.getStart().trim().equals("") || step.getEnd().trim().equals("") ||
                     step.getStartHour().trim().equals("") || step.getEndHour().trim().equals(""))) {
@@ -816,7 +863,8 @@ public class StepController {
 
         //withdraw amounts from temp stock
         if (experiment.getPiecesOfMixture() != null)
-            for (PieceOfMixture piece : experiment.getPiecesOfMixture()) {
+            for (
+                    PieceOfMixture piece : experiment.getPiecesOfMixture()) {
                 Mixture mix = piece.getMixture();
                 List<Composition> compositions = mix.getCompositions();
                 for (Composition comp : compositions) {
@@ -861,11 +909,25 @@ public class StepController {
             productService.save(prod);
         }
 
+
+        //If it's custom experiment, save stepTypes and experimentType
+        if (!experiment.getExperimentType().getIsFixedType()) {
+            for (StepType stepType : experiment.getExperimentType().getStepTypes()) {
+                stepTypeService.saveNewStepType(stepType);
+            }
+        }
+
+
         //Save steps into database
         for (Step step : tmpListSteps) {
             stepService.saveSomeAttributes(step);
         }
         experiment.setSteps(tmpListSteps);
+
+        //If it's custom experiment, save also experimentType
+        if (!experiment.getExperimentType().getIsFixedType()) {
+            experimentTypeService.saveExperimentType(experiment.getExperimentType());
+        }
 
         //Save piecesOfExperiment in database
         if (experiment.getPiecesOfMixture() != null) {
@@ -1053,23 +1115,22 @@ public class StepController {
             }
             ra.addFlashAttribute("Status", new String("Success"));
             ra.addFlashAttribute("Message", new String("Experiment type successfully added."));
-        }
-        else{
+        } else {
 
 
-        for (StepType stepType : experimentType.getStepTypes()) {
-            if (stepType.getContinuity().getHours() < 0) {
-                ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
-                return "redirect:/planning/experiments/{id}";
+            for (StepType stepType : experimentType.getStepTypes()) {
+                if (stepType.getContinuity().getHours() < 0) {
+                    ra.addFlashAttribute("Status", new String("Error"));
+                    ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
+                    return "redirect:/planning/experiments/{id}";
+                }
+                if (stepType.getContinuity().getMinutes() > 59 || stepType.getContinuity().getMinutes() < 0) {
+                    ra.addFlashAttribute("Status", new String("Error"));
+                    ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
+                    return "redirect:/planning/experiments/{id}";
+                } else
+                    stepTypeService.saveNewStepType(stepType);
             }
-            if (stepType.getContinuity().getMinutes() > 59 || stepType.getContinuity().getMinutes() < 0) {
-                ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
-                return "redirect:/planning/experiments/{id}";
-            } else
-                stepTypeService.saveNewStepType(stepType);
-        }
             ra.addFlashAttribute("Status", new String("Success"));
             ra.addFlashAttribute("Message", new String("Experiment type successfully edited."));
         }

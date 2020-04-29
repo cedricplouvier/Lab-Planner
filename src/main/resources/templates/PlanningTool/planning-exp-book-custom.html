@@ -4,6 +4,7 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
 <head>
+    <div th:insert="navbar :: head"></div>
     <script src="/webjars/jquery/2.1.4/jquery.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -16,22 +17,20 @@
     <link rel='stylesheet' href='https://uicdn.toast.com/tui-calendar/latest/tui-calendar.css'>
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css"/>
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css"/>
-    <link rel="stylesheet" type="text/css" href="/css/default.css">
-    <link rel="stylesheet" type="text/css" href="/css/icons.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/default.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/icons.css}">
 </head>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
 <script th:inline="javascript">
-
-    toastr.options.extendedTimeOut = 5000;
+    let errorMsg = [[${errorMsg}]]
     $(document).ready(function () {
-        let message = [[${errorMsg}]];
-        if (message != null) {
-            toastr.error(message);
+        if (errorMsg) {
+            $("#myToast").toast('show');
         }
-    });
+        //check checkBox to make isfixedType variable false
+        document.getElementById("checkboxIsFixedType").checked = false;
 
+    });
     let devices = [[${allDevices}]];
     let deviceTypes = [[${allDeviceTypes}]];
     let steps = [[${allSteps}]];
@@ -94,15 +93,24 @@
             selectDevices.remove(i);
         }
 
-
+        var found = false
         //add new options by selected deviceType
         for (let j = 0; j < devices.length; j++) {
             if (devices[j].deviceType.id == selectDeviceType.options[selectDeviceType.selectedIndex].value) {
+                found = true;
                 var option = document.createElement("option");
                 option.text = devices[j].devicename;
                 option.value = devices[j].id;
                 selectDevices.appendChild(option);
             }
+        }
+        if (!found) {
+            var option = document.createElement("option");
+            option.text = "Select device";
+            option.hidden = true;
+            option.selected = true;
+            option.disabled = true;
+            selectDevices.appendChild(option);
         }
     }
 
@@ -112,6 +120,7 @@
         var tableRef = document.getElementById('list');
         let devices = [[${allDevices}]];
         let deviceTypes = [[${allDeviceTypes}]];
+
         tempStepIndex = i;
 
         var deviceTypeOprions = '';
@@ -188,7 +197,6 @@
                 '       <button style="width: 100%; font-size:80%;" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + i + ')" >Choose in calendar</button>' +
                 '   </td>' +
                 '</tr>');
-
     }
 
     function removeStepsRows() {
@@ -204,6 +212,8 @@
     function addStepsRows() {
         //reference table
         var experimentTypeId = $('#selectExperimentType :selected').val();
+
+        var tableLength = $('#list tr').length;
         //a = experimentType
         var a;
         var tableRef = document.getElementById('list');
@@ -213,13 +223,13 @@
         for (let i = 0; i < experimentTypes.length; i++) {
             if (experimentTypeId == experimentTypes[i].id) {
                 a = experimentTypes[i];
-                tempExpIndex = i;
+                //tempExpIndex = i;
             }
         }
         //only if experiment type is selected
         if (a) {
             for (let i = 0; i < a.stepTypes.length; i++) {
-                tempStepIndex = i;
+                //tempStepIndex = i;
 
                 var deviceOprions = '';
                 for (let j = 0; j < devices.length; j++) {
@@ -241,27 +251,26 @@
                             + deviceTypes[j].deviceTypeName +
                             '</option>';
                     }
-
                 }
-
+                var index = i + tableLength
                 $('#list')
                     .append(
-                        '<tr class="row' + i + '" id="row' + i + '">' +
-                        '   <input id="step" type="hidden" name="steps[' + i + ']">' +
-                        '   <input id="stepType" type="hidden" name="experimentType.stepTypes[' + i + ']">' +
+                        '<tr class="row' + index + '" id="row' + index + '">' +
+                        '   <input id="step" type="hidden" name="steps[' + index + ']">' +
+                        '   <input id="stepType" type="hidden" name="experimentType.stepTypes[' + index + ']">' +
                         '<td style="vertical-align:center;">' +
-                        '    <input required="" style="font-size:80%;" class=" form-control input-device" placeholder="Name" id="experimentType.stepTypes' + i + '.stepTypeName" name="experimentType.stepTypes[' + i + '].stepTypeName" value="' + a.stepTypes[i].stepTypeName + '">' +
+                        '    <input required="" style="font-size:80%;" class=" form-control input-device" placeholder="Name" id="experimentType.stepTypes' + index + '.stepTypeName" name="experimentType.stepTypes[' + index + '].stepTypeName" value="' + a.stepTypes[i].stepTypeName + '">' +
                         '</td>' +
                         '<td style="vertical-align:center;">' +
                         '    <p>Type</p>' +
                         '    <p>Device</p>' +
                         '</td>' +
                         '   <td style="vertical-align:center; text-align:center;">' +
-                        '       <select required style="font-size:80%;" class="form-control input-device" onchange="refreshDevices(this)" id="selectDeviceType" name="experimentType.stepTypes[' + i + '].deviceType">' +
+                        '       <select required style="font-size:80%;" class="form-control input-device" onchange="refreshDevices(this)" id="selectDeviceType" name="experimentType.stepTypes[' + index + '].deviceType">' +
                         '           <option hidden="" value="">Select</option>' +
                         deviceTypeOprions +
                         '       </select>' +
-                        '       <select required style="font-size:80%;" class=" form-control input-device" id="selectDevice' + i + '" name="steps[' + i + '].device" style=" width: 110%;font-size:90%;">' +
+                        '       <select required style="font-size:80%;" class=" form-control input-device" id="selectDevice' + index + '" name="steps[' + index + '].device" style=" width: 110%;font-size:90%;">' +
                         '           <option hidden selected disabled value="">Select device</option>' +
                         deviceOprions +
                         '       </select>' +
@@ -272,8 +281,8 @@
                         '   </td>' +
                         '   <td style="vertical-align:center; text-align:center;">' +
                         '       <div class="input-group">' +
-                        '           <input required style="width: 90%; font-size:80%;" id="startDate' + i + '" type="date"  class="form-control input-date" placeholder="Start date" name="steps[' + i + '].start">' +
-                        '           <input required style="width: 90%; font-size:80%; " id="endDate' + i + '" type="date"  class="form-control input-date" placeholder="End date" name="steps[' + i + '].end">' +
+                        '           <input required style="width: 90%; font-size:80%;" id="startDate' + index + '" type="date"  class="form-control input-date" placeholder="Start date" name="steps[' + index + '].start">' +
+                        '           <input required style="width: 90%; font-size:80%; " id="endDate' + index + '" type="date"  class="form-control input-date" placeholder="End date" name="steps[' + index + '].end">' +
                         '       </div>' +
                         '   </td>' +
                         '   <td style="vertical-align:center; text-align:center;">' +
@@ -281,16 +290,16 @@
                         '       <p>End</p>' +
                         '   </td>' +
                         '   <td style="vertical-align:center; text-align:center;">' +
-                        '       <input required="" style="width: 100%; font-size:80%;" type="time" id="startHour' + i + '" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + i + '].startHour">' +
-                        '        <input required="" style="width: 100%; font-size:80%; " type="time" id="endHour' + i + '" class="form-control float-right input-hour" placeholder="End hour" name="steps[' + i + '].endHour">' +
+                        '       <input required="" style="width: 100%; font-size:80%;" type="time" id="startHour' + index + '" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + index + '].startHour">' +
+                        '        <input required="" style="width: 100%; font-size:80%; " type="time" id="endHour' + index + '" class="form-control float-right input-hour" placeholder="End hour" name="steps[' + index + '].endHour">' +
                         '   </td> ' +
-                        '   <td style="width: 10%; font-size:80%; text-align:center" id="continuity' + i + '" name="continuity" value=""> ' + a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '<br />' + a.stepTypes[i].continuity.type + '' +
-                        '   </td> ' +
-                        '   <td>' +
-                        '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + i + '].comment" value="" >' +
+                        '   <td style="width: 10%; font-size:80%; text-align:center" id="continuity' + index + '" name="continuity" value=""> ' + a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '<br />' + a.stepTypes[i].continuity.type + '' +
                         '   </td> ' +
                         '   <td>' +
-                        '       <button style="width: 100%; font-size:80%;" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + i + ')" >Choose in calendar</button>' +
+                        '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + index + '].comment" value="" >' +
+                        '   </td> ' +
+                        '   <td>' +
+                        '       <button style="width: 100%; font-size:80%;" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + index + ')" >Choose in calendar</button>' +
                         '   </td>' +
                         '</tr>');
             }
@@ -415,6 +424,15 @@
 
     }
 </style>
+
+
+<div class="toast" id="myToast" data-delay="5000" style=" background-color:red ;position: absolute; top: 0; right: 0;">
+    <div class="toast-body">
+        <strong th:text="${errorMsg}"></strong>
+    </div>
+</div>
+
+
 <body>
 <div class="container">
     <div th:replace="navbar :: navbar"></div>
@@ -422,10 +440,8 @@
           th:object="${experiment}" method="post">
         <input th:field="*{id}" th:type="hidden"/>
         <input th:type="hidden" th:field="*{user}"/>
-        <input id="experimentType" th:type="hidden"
-               th:field="*{experimentType}">
-        <input type="checkbox"  id="isFixedExp" th:type="hidden"
-               th:field="*{experimentType.isFixedType}" checked>
+        <input th:type="hidden" th:field="*{experimentType}"/>
+        <input type="checkbox" id="checkboxIsFixedType" th:field="*{experimentType.isFixedType}" hidden/>
 
 
         <h3><span th:text="#{experiment.info}"></span></h3>
@@ -441,7 +457,7 @@
 
             <th>
                 <input type="text" class=" form-control input-device"
-                       th:text="#{experiment.custom}">
+                       th:value="#{experiment.custom}" disabled>
             </th>
             <th>
                 <input class=" form-control input-device" th:field="*{experimentname}" placeholder="Expirement Name"
@@ -530,9 +546,9 @@
                        th:field="*{{experimentType}}">
                 <tr th:each="stepType, itemStat : *{experimentType.stepTypes}">
                     <input id="step" th:type="hidden"
-                           th:field="*{{steps[__${itemStat.index}__]}}">
+                           th:field="*{steps[__${itemStat.index}__].id}">
                     <input id="stepType" th:type="hidden"
-                           th:field="*{{experimentType.stepTypes[__${itemStat.index}__]}}">
+                           th:field="*{experimentType.stepTypes[__${itemStat.index}__].id}">
                     <td style="vertical-align:center;">
 
                         <input required style="font-size:80%;" class=" form-control input-device"
@@ -727,42 +743,44 @@
         </table>
         <table>
             <tr>
-                <button style="margin-right: 10px;font-size: 90%" class="btn btn-primary "
-                        type="button"
-                        th:text="#{add.experiment.steps}"
-                        th:onclick="addStepRow()">
-                </button>
+                <th>
+                    <button style="margin-right: 10px;font-size: 90%" class="btn btn-primary "
+                            type="button"
+                            th:text="#{add.step}"
+                            th:onclick="addStepRow()">
+                    </button>
+                </th>
+                <th>
+                    <select class=" form-control input-device" id="selectExperimentType">
+                        <option selected hidden th:text="#{experiment.type.select}" value=""> Select
+                            experiment type
+                        </option>
+                        <option class="dropdown-item"
+                                th:each="experimentTypep : ${allExperimentTypes}"
+                                th:value="${{experimentTypep}}"
+                                th:text="${experimentTypep.getExperimentTypeName()}">
+                        </option>
+                    </select>
+                </th>
+                <th>
+                    <button style="margin-right: 10px;font-size: 90%" class="btn btn-primary "
+                            type="button"
+                            th:text="#{add.experiment.steps}"
+                            th:onclick="addStepsRows()">
+                    </button>
+                </th>
+                <th>
+                    <button style="margin-right: 10px;font-size: 90%" class="btn btn-outline-primary"
+                            type="button"
+                            th:text="#{step.remove}"
+                            th:onclick="removeStepsRows()">
+                    </button>
+                </th>
             </tr>
-            <tr>
-                <select class=" form-control input-device" id="selectExperimentType"
-                        th:field="*{experimentType.id}">
-                    <option selected hidden th:text="#{experiment.type.select}" value=""> Select
-                        experiment type
-                    </option>
-                    <option class="dropdown-item"
-                            th:each="experimentTypep : ${allExperimentTypes}"
-                            th:value="${{experimentTypep}}"
-                            th:text="${experimentTypep.getExperimentTypeName()}">
-                    </option>
-                </select>
-            </tr>
-            <tr>
-                <button style="margin-right: 10px;font-size: 90%" class="btn btn-primary "
-                        type="button"
-                        th:text="#{add.experiment.steps}"
-                        th:onclick="addStepsRows()">
-                </button>
-            </tr>
-            <tr>
-                <button style="margin-right: 10px;font-size: 90%" class="btn btn-info"
-                        type="button"
-                        th:text="#{step.remove}"
-                        th:onclick="removeStepsRows()">
-                </button>
-            </tr>
+            <tr></tr>
         </table>
         <div>
-            <a style="margin-right: 10px" href="/planning/" class="btn btn-outline-primary"
+            <a style="margin-right: 10px" th:href="@{/planning/}" class="btn btn-outline-primary"
                th:text="#{experimentstype.return}">Return</a>
 
             <button style="margin-right: 10px" type="submit" class="btn btn-primary"
