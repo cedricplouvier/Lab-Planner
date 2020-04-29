@@ -22,6 +22,8 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -96,10 +98,19 @@ public class FileController {
 
 		if(temp!=null) {
 			//append productid to filename to make sure file is unique for each product
-			String filename = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1)+productId.toString();
-			storageService.store(file,"images",filename);
-			temp.setImageName(filename);
-			productService.save(temp);
+			String fileContentType = file.getContentType();
+			List<String> extensions = new ArrayList<>();
+			extensions.add("image/png"); extensions.add("image/jpeg"); extensions.add("image.jpg");
+			if(extensions.contains(fileContentType)){
+				String filename = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1)+productId.toString();
+				storageService.store(file,"images",filename);
+				temp.setImageName(filename);
+				productService.save(temp);
+			}
+			else{
+				redirectAttributes.addFlashAttribute("error", ResourceBundle.getBundle("messages",current).getString("type.error"));
+				return "redirect:/products";
+			}
 
 		}
 
@@ -113,11 +124,20 @@ public class FileController {
 		Locale current = LocaleContextHolder.getLocale();
 
 		if(temp!=null) {
-			//append productid to filename to make sure file is unique for each product
-			String filename = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1)+mixtureId.toString();
-			storageService.store(file,"images",filename);
-			temp.setImage(filename);
-			mixtureService.save(temp);
+			String fileContentType = file.getContentType();
+			List<String> extensions = new ArrayList<>();
+			extensions.add("image/png"); extensions.add("image/jpeg"); extensions.add("image.jpg");
+			if(extensions.contains(fileContentType)) {
+				//append productid to filename to make sure file is unique for each product
+				String filename = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1) + mixtureId.toString();
+				storageService.store(file, "images", filename);
+				temp.setImage(filename);
+				mixtureService.save(temp);
+			}
+			else{
+				redirectAttributes.addFlashAttribute("error", ResourceBundle.getBundle("messages",current).getString("type.error"));
+				return "redirect:/products";
+			}
 
 		}
 		redirectAttributes.addFlashAttribute("success", ResourceBundle.getBundle("messages",current).getString("image.success"));
@@ -131,11 +151,19 @@ public class FileController {
 		Locale current = LocaleContextHolder.getLocale();
 
 		if(temp!=null) {
+			String fileContentType = file.getContentType();
+			List<String> extensions = new ArrayList<>();
+			extensions.add("application/pdf");
+			if(extensions.contains(fileContentType)) {
 			//append productid to filename to make sure file is unique for each product
 			String filename = file.getOriginalFilename();
 			storageService.store(file,"pdfs",filename);
 			temp.setDocument(filename);
-			mixtureService.save(temp);
+			mixtureService.save(temp);}
+			else{
+				redirectAttributes.addFlashAttribute("error", ResourceBundle.getBundle("messages",current).getString("type.error"));
+				return "redirect:/products";
+			}
 
 		}
 		redirectAttributes.addFlashAttribute("success", ResourceBundle.getBundle("messages",current).getString("pdf.success"));
