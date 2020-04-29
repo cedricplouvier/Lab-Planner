@@ -17,6 +17,12 @@ public class Mixture extends AbstractPersistable<Long> {
     @Column
     private String description;
 
+    @Column
+    private String image;
+
+    @Column
+    private String document;
+
     @JsonIgnore
     @ManyToMany
     @JoinTable(
@@ -47,11 +53,13 @@ public class Mixture extends AbstractPersistable<Long> {
     )
     private List<OwnTag> tags;
 
-    public Mixture(String name, List<Composition> compositions, String description, List<OwnTag> tags){
+    public Mixture(String name, List<Composition> compositions, String description, List<OwnTag> tags, String image, String document){
         this.name = name;
         this.compositions = compositions;
         this.description = description;
         this.tags = tags;
+        this.image = image;
+        this.document = document;
 
     }
 
@@ -114,4 +122,22 @@ public class Mixture extends AbstractPersistable<Long> {
     public void addComposition(Composition comp){
         this.compositions.add(comp);
     }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getDocument() {
+        return document;
+    }
+
+    public void setDocument(String document) {
+        this.document = document;
+    }
 }
+
+

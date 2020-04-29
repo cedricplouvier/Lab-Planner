@@ -238,15 +238,22 @@ public class StockController {
 
             return "Stock/products-manage";
         }
-        productService.save(ownProduct);
-        List<OwnProduct> agg_bit = getAggBitList();
-        List<OwnProduct> con_oth = getComOthList();
+
+        String ret = "";
+        if(ownProduct.getId() == null){
+            ret = "Stock/products-manage";
+        }
+        else {
+            ret = "redirect:/products";
+        }
+
+        productService.saveSome(ownProduct);
+
         model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("save.success"));
-        model.addAttribute("agg_bit", agg_bit);
-        model.addAttribute("con_oth", con_oth);
-        model.addAttribute("allMixtures", mixtureService.findAll());
-        model.addAttribute("allProductTags", tagService.findAll());
-        return "Stock/overview-stock";
+        model.addAttribute("allTags", tagService.findAll());
+        model.addAttribute("product",ownProduct);
+        model.addAttribute("units", Unit.values());
+        return ret;
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
@@ -606,15 +613,24 @@ public class StockController {
             compositionService.save(comp);
         }
 
-        mixtureService.save(mixture);
-        List<OwnProduct> agg_bit = getAggBitList();
-        List<OwnProduct> con_oth = getComOthList();
+        String ret = "";
+        if(mixture.getId() == null){
+           ret = "Mixtures/mixtures-manage";
+        }
+        else {
+            ret = "redirect:/products";
+        }
+
+        mixtureService.saveSome(mixture);
         model.addAttribute("success", ResourceBundle.getBundle("messages",current).getString("save.success"));
-        model.addAttribute("agg_bit", agg_bit);
-        model.addAttribute("con_oth", con_oth);
         model.addAttribute("allMixtures", mixtureService.findAll());
-        model.addAttribute("allProductTags", tagService.findAll());
-        return "Stock/overview-stock";
+        model.addAttribute("allProducts", productService.findAll());
+        model.addAttribute("composition", new Composition());
+        model.addAttribute("allTags", tagService.findAll());
+        model.addAttribute("mixture", mixture);
+        model.addAttribute("allCompositions", compositionService.findAll());
+
+        return ret ;
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
