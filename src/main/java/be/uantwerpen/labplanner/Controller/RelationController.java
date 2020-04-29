@@ -84,8 +84,19 @@ public class RelationController {
     @RequestMapping(value = "/usermanagement/users/relations/{id}",method = RequestMethod.GET)
     public String viewEditRelation(@PathVariable("id") long id, final ModelMap model){
 
+        Relation relation = relationService.findById(id).orElse(null);
+        if (relation == null){
+            model.addAttribute("allRelations",relationService.findAll());
+            model.addAttribute("RelationError", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("relation.error"));
+            return "Users/relation-list";
+        }
+
+
+
         // add list with all the users which have a Researcher Role in their role list.
         Role researcher = roleService.findByName("Researcher").orElse(null);
+
+
         List<User> researchers = new ArrayList<>();
         for (User user : userService.findAll()){
             if (user.getRoles().contains(researcher)){
@@ -157,10 +168,13 @@ public class RelationController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users/relations/{id}/delete",method = RequestMethod.GET)
     public String deleteRelation(@PathVariable long id, final ModelMap model) {
-        //get current locale
-        Locale current = LocaleContextHolder.getLocale();
-        //  List<Step> allSteps = stepService.findAll();
-        boolean isUsed = false;
+
+        Relation relation = relationService.findById(id).orElse(null);
+        if (relation == null){
+            model.addAttribute("allRelations",relationService.findAll());
+            model.addAttribute("RelationError", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("relation.error"));
+            return "Users/relation-list";
+        }
 
 
         relationService.deleteById(id);

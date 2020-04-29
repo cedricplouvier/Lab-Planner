@@ -10,6 +10,7 @@ import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
+import com.mysql.cj.x.protobuf.Mysqlx;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
@@ -63,6 +64,7 @@ public class UserControllerTests {
     }
 
     @Test
+    @WithUserDetails("Ruben")
     //View User list
     public void ViewUserListTest() throws Exception{
         User user = new User("admin","admin");
@@ -143,6 +145,7 @@ public class UserControllerTests {
 
 
     @Test
+    @WithUserDetails("Ruben")
     //TEst the validity of editing the user page
     public void viewEditUserTest() throws Exception {
         User user = new User("admin","admin");
@@ -156,7 +159,12 @@ public class UserControllerTests {
         List<Role> roles = new ArrayList<Role>();
         roles.add(r);
 
+        user.setRoles(new HashSet<Role>());
 
+        Role admin = new Role("Administrator");
+
+
+        when(roleService.findByName("Administrator")).thenReturn(Optional.of(admin));
         when(userService.findById(id)).thenReturn(Optional.of(user));
         when(roleService.findAll()).thenReturn(roles);
 
@@ -172,8 +180,78 @@ public class UserControllerTests {
                 .andExpect(status().is4xxClientError())
                 .andDo(print());
 
+
+
     }
 
+
+    @Test
+    @WithUserDetails("Ruben")
+    //TEst the validity of editing the user page
+    public void viewEditOtherAdminTest() throws Exception {
+        User user = new User("admin","admin");
+        long id = 10;
+        user.setId(id);
+        List<User> users = new ArrayList<User>();
+        users.add(user);
+
+        Role r = new Role("test");
+        r.setId((long) 15);
+        List<Role> roles = new ArrayList<Role>();
+        roles.add(r);
+        Set<Role> rols = new HashSet<Role>();
+
+        Role admin = new Role("Administrator");
+        rols.add(admin);
+        user.setRoles(rols);
+
+
+        when(roleService.findByName("Administrator")).thenReturn(Optional.of(admin));
+        when(userService.findById(id)).thenReturn(Optional.of(user));
+        when(roleService.findAll()).thenReturn(roles);
+
+        //editing with existing id as input
+        mockMvc.perform(get("/usermanagement/users/{id}",10))
+                .andExpect(status().isOk())
+                .andExpect(view().name("Users/user-list"))
+                .andDo(print());
+
+    }
+
+    @Test
+    @WithUserDetails("Ruben")
+    //TEst the validity of editing the user page
+    public void viewEditUserNullTest() throws Exception {
+        User user = new User("admin","admin");
+        long id = 10;
+        user.setId(id);
+        List<User> users = new ArrayList<User>();
+        users.add(user);
+
+        Role r = new Role("test");
+        r.setId((long) 15);
+        List<Role> roles = new ArrayList<Role>();
+        roles.add(r);
+
+        user.setRoles(new HashSet<Role>());
+
+        Role admin = new Role("Administrator");
+
+
+        when(roleService.findByName("Administrator")).thenReturn(Optional.of(admin));
+        when(userService.findById(id)).thenReturn(Optional.empty());
+        when(roleService.findAll()).thenReturn(roles);
+
+        //editing with existing id as input
+        mockMvc.perform(get("/usermanagement/users/{id}",10))
+                .andExpect(status().isOk())
+                .andExpect(view().name("Users/user-list"))
+                .andDo(print());
+
+
+
+
+    }
 
 
     @Test
@@ -448,8 +526,14 @@ public class UserControllerTests {
         User user2 = new User("student","student");
         long id2 = 11;
         user2.setId(id2);
+        user2.setRoles(new HashSet<>());
         Set<User> students = new HashSet<>();
         students.add(user2);
+
+            User user3 = new User("student","student");
+            long id3 = 12;
+            user3.setId(id3);
+            user3.setRoles(new HashSet<>());
 
         Relation relation = new Relation();
         relation.setResearcher(user2);
@@ -458,21 +542,28 @@ public class UserControllerTests {
         List<Relation> relations = new ArrayList<>();
         relations.add(relation);
 
+        user.setRoles(new HashSet<>());
 
+        Role admin = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(Optional.of(admin));
 
         Step step = new Step();
         step.setUser(user);
         List<Step> steps = new ArrayList<>();
         steps.add(step);
 
-        //admin deletes himself test
-         when(stepService.findAll()).thenReturn(steps);
+        //admin deletes himself tesµ
+
+         when(userService.findById(id)).thenReturn(Optional.of(user));
+         when(userService.findById(id2)).thenReturn(Optional.of(user2));
+            when(userService.findById(id3)).thenReturn(Optional.of(user3));
+
+            when(relationService.findAll()).thenReturn(relations);
+
+            when(stepService.findAll()).thenReturn(steps);
          mockMvc.perform(get("/usermanagement/users/{id}/delete","34"))
                     .andExpect(status().is(200))
-                    .andDo(print())
-                    .andExpect(model().attribute("inUseError",notNullValue()))
-
-                    .andExpect(view().name("Users/user-list"));
+                    .andDo(print());
 
 
 
@@ -485,23 +576,69 @@ public class UserControllerTests {
 
                 .andExpect(view().name("Users/user-list"));
 
-        //User is not in Use
-        mockMvc.perform(get("/usermanagement/users/{id}/delete","11"))
-                .andExpect(status().is(302))
+        //User is in relation
+        mockMvc.perform(get("/usermanagement/users/{id}/delete",id2))
+                .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(model().attributeDoesNotExist())
-                .andExpect(view().name("redirect:/usermanagement/users"));
+                .andExpect(view().name("Users/user-list"));
+
+        //User is in relation
+            mockMvc.perform(get("/usermanagement/users/{id}/delete",id3))
+                    .andExpect(status().is(302))
+                    .andDo(print())
+                    .andExpect(model().attributeDoesNotExist())
+                    .andExpect(view().name("redirect:/usermanagement/users"));
 
         //wrong url input
         mockMvc.perform(get("/usermanagement/users/{id}/delete","ff"))
                 .andExpect(status().is4xxClientError())
                 .andDo(print());
+    }
+
+    @Test
+    @WithUserDetails("Ruben")
+
+    //test for deleting
+    public void DeleteAdminTest() throws Exception {
+        User user = new User("admin", "admin");
+        long id = 10;
+        user.setId(id);
+
+        User user2 = new User("student", "student");
+        long id2 = 11;
+        user2.setId(id2);
+        Set<User> students = new HashSet<>();
+        students.add(user2);
+
+        Relation relation = new Relation();
+        relation.setResearcher(user2);
+        relation.setStudents(students);
+
+        List<Relation> relations = new ArrayList<>();
+        relations.add(relation);
+
+        Role admin = new Role("Administrator");
+        Set<Role> rols = new HashSet<>();
+        rols.add(admin);
+        user.setRoles(rols);
 
 
+        Step step = new Step();
+        step.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+
+        //admin deletes himself tesµ
+        when(roleService.findByName("Administrator")).thenReturn(Optional.of(admin));
+        when(userService.findById(id)).thenReturn(Optional.of(user));
+        when(stepService.findAll()).thenReturn(steps);
+        mockMvc.perform(get("/usermanagement/users/{id}/delete", id))
+                .andExpect(status().is(200))
+                .andDo(print());
 
 
     }
 
 
-
-}
+    }
