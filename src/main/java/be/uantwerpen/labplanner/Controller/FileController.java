@@ -10,6 +10,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -91,6 +92,7 @@ public class FileController {
 	}
 
 
+	@PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
 	@PostMapping("/upload/productimage/{productId}")
 	public String handleProductImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long productId) throws Exception{
 		OwnProduct temp =  productService.findById( productId).orElse(null);
@@ -118,6 +120,7 @@ public class FileController {
 		return "redirect:/products";
 	}
 
+	@PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
 	@PostMapping("/upload/mixtureImage/{mixtureId}")
 	public String handleMixtureImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long mixtureId) throws Exception {
 		Mixture temp =  mixtureService.findById( mixtureId).orElse(null);
@@ -145,6 +148,7 @@ public class FileController {
 		return "redirect:/products";
 	}
 
+	@PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
 	@PostMapping("/upload/mixturePdf/{mixtureId}")
 	public String handleMixturePdfUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long mixtureId) throws Exception{
 		Mixture temp =  mixtureService.findById( mixtureId).orElse(null);
