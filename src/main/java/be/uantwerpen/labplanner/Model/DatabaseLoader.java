@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-//@Profile("!prod")
+@Profile("!prod")
 public class DatabaseLoader {
 
     private final PrivilegeRepository privilegeRepository;
@@ -268,16 +268,16 @@ public class DatabaseLoader {
         roleRepository.save(administrator);
 
 
-        User u1 = new User("Cedric", "PW", "", "Cedric", "Plouvier", "20152267", "", "", null, null, null);
-        User u2 = new User("Ruben", "PW", "", "Ruben", "Joosen", "20164473", "", "", null, null, null);
-        User u3 = new User("Jaimie", "PW", "", "Jaimie", "Vranckx", "20155797", "", "", null, null, null);
-        User u4 = new User("Ali", "PW", "", "Ali", "Amir", "20163446", "", "", null, null, null);
-        User u5 = new User("Timo", "PW", "", "Timo", "Nelen", "S0162117", "", "", null, null, null);
-        User u6 = new User("Ondrej", "PW", "", "Ondrej", "Bures", "20160002", "", "", null, null, null);
-        User u7 = new User("Bachelor", "PW", "", "Bach", "Student", "20170001", "", "", null, null, null);
-        User u8 = new User("Master", "PW", "", "Mas", "Student", "20160009", "", "", null, null, null);
-        User u9 = new User("Researcher", "PW", "", "Researcher", "Developper", "20100001", "", "", null, null, null);
-        User admin = new User("admin", "admin", "", "admin", "admin", null, "", "", null, null, null);
+        User u1 = new User("Cedric", "PW", "cedric.plouvier@student.uantwerpen.be", "Cedric", "Plouvier", "20152267", "", "", null, null, null);
+        User u2 = new User("Ruben", "PW", "ruben.joosen@student.uantwerpen.be", "Ruben", "Joosen", "20164473", "", "", null, null, null);
+        User u3 = new User("Jaimie", "PW", "jaimie.vranckx@student.uantwerpen.be", "Jaimie", "Vranckx", "20155797", "", "", null, null, null);
+        User u4 = new User("Ali", "PW", "mohammad.amir2@student.uantwerpen.be", "Ali", "Amir", "20163446", "", "", null, null, null);
+        User u5 = new User("Timo", "PW", "timo.nelen@student.uantwerpen.be", "Timo", "Nelen", "S0162117", "", "", null, null, null);
+        User u6 = new User("Ondrej", "PW", "ondrej.bures@student.uantwerpen.be", "Ondrej", "Bures", "20160002", "", "", null, null, null);
+        User u7 = new User("Bachelor", "PW", "bachelor@student.uantwerpen.be", "Bach", "Student", "20170001", "", "", null, null, null);
+        User u8 = new User("Master", "PW", "master@student.uantwerpen.be", "Mas", "Student", "20160009", "", "", null, null, null);
+        User u9 = new User("Researcher", "PW", "researcher@uantwerpen.be", "Researcher", "Developper", "20100001", "", "", null, null, null);
+        User admin = new User("admin", "admin", "admin@uantwerpen.be", "admin", "admin", null, "", "", null, null, null);
         //Set<Role> roles = new HashSet<>();
         Set<Role> roles = new HashSet<>();
         roles.add(administrator);

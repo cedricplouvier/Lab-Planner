@@ -77,7 +77,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View step list with admin
     public void ViewStepListTest() throws Exception{
         Step step = new Step();
@@ -95,7 +95,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Bachelor")
+    @WithUserDetails(value="bachelor@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View step list with Bachelor and his steps
     public void ViewStepListBachelorTest() throws Exception{
         Step step = new Step();
@@ -118,7 +118,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Master")
+    @WithUserDetails(value="master@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View step list with no steps
     public void ViewStepListEnmptyTest() throws Exception{
         Step step = new Step();
@@ -141,7 +141,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Researcher")
+    @WithUserDetails(value="researcher@uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View step as researcher
     public void ViewStepListResearcherTest() throws Exception{
         Step step = new Step();
@@ -180,7 +180,7 @@ public class StepControllerTests {
 
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step
     public void ViewEditStepAdmin() throws Exception{
         Step step = new Step();
@@ -229,7 +229,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step
     public void ViewEditStepAdminNonValidId() throws Exception{
         Step step = new Step();
@@ -280,7 +280,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Bachelor")
+    @WithUserDetails(value="bachelor@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void ViewEditStepAsOwner() throws Exception{
         Step step = new Step();
@@ -330,7 +330,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Researcher")
+    @WithUserDetails(value="researcher@uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void ViewEditStepAsResearcher() throws Exception{
         Step step = new Step();
@@ -381,7 +381,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Master")
+    @WithUserDetails(value="master@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void ViewEditStepAsNonOwner() throws Exception{
         Step step = new Step();
@@ -433,7 +433,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void AddStepInvalidInput() throws Exception{
         Step step = new Step();
@@ -482,7 +482,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void AddStepOverlap() throws Exception{
         User user = new User("tester","tester");
@@ -539,7 +539,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void AddStepAdmin() throws Exception{
         User user = new User("tester","tester");
@@ -592,7 +592,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Bachelor")
+    @WithUserDetails(value="bachelor@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void AddStepOwner() throws Exception{
         User user = new User("tester","tester");
@@ -651,7 +651,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Researcher")
+    @WithUserDetails(value="researcher@uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void AddStepResearcher() throws Exception{
         User user = new User("tester","tester");
@@ -705,7 +705,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Master")
+    @WithUserDetails(value="master@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void AddStepNonValid() throws Exception{
         User user = new User("tester","tester");
@@ -761,7 +761,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void DeleteStepAdmin() throws Exception{
         User user = new User("tester","tester");
@@ -813,7 +813,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void DeleteStepAdminNonValid() throws Exception{
         User user = new User("tester","tester");
@@ -865,7 +865,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Bachelor")
+    @WithUserDetails(value="bachelor@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void DeleteStepOwner() throws Exception{
         User user = new User("tester","tester");
@@ -917,7 +917,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Researcher")
+    @WithUserDetails(value="researcher@uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void DeleteStepResearcher() throws Exception{
         User user = new User("tester","tester");
@@ -966,7 +966,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Researcher")
+    @WithUserDetails(value="researcher@uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void DeleteStepResearcherNotOfOwner() throws Exception{
         User user = new User("tester","tester");
@@ -1019,7 +1019,7 @@ public class StepControllerTests {
 
 
     @Test
-    @WithUserDetails("Master")
+    @WithUserDetails(value="master@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void DeleteStepNonOwner() throws Exception{
         User user = new User("tester","tester");
@@ -1071,7 +1071,7 @@ public class StepControllerTests {
                 .andExpect(view().name("redirect:/planning/"));
     }
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View experiment type list with admin
     public void ViewExperimentTypeListTest() throws Exception{
         DeviceType deviceType = new DeviceType();
@@ -1098,7 +1098,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Bachelor")
+    @WithUserDetails(value="bachelor@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View experiment type list with Bachelor
     public void ViewExperimentTypeListBachelorTest() throws Exception{
         DeviceType deviceType = new DeviceType();
@@ -1125,7 +1125,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //Add experiment type as admin
     public void AddExperimentTypeTest() throws Exception{
         DeviceType deviceType = new DeviceType();
@@ -1152,7 +1152,7 @@ public class StepControllerTests {
                 .andExpect(view().name("redirect:/planning/experiments"));
     }
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //Try adding a new experiment type with an invalid continuity
     public void AddExperimentTypeInvalidContinuityTest() throws Exception{
         DeviceType deviceType = new DeviceType();
@@ -1180,7 +1180,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //Try adding a new experiment type with an already used name
     public void AddExperimentTypeInvalidNameTest() throws Exception{
         DeviceType deviceType = new DeviceType();
@@ -1208,7 +1208,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //Delete an experiment type
     public void DeleteExperimentTypeTest() throws Exception{
         User user = new User("tester","tester");
@@ -1262,7 +1262,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //Try to delete an experiment type that has still an experiment in use
     public void DeleteExperimentTypeWhenStillInUseTest() throws Exception{
         User user = new User("tester","tester");
@@ -1351,7 +1351,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View of creating a new experiment type
     public void ViewCreateExperimentTypeTest() throws Exception{
         DeviceType deviceType = new DeviceType();
@@ -1379,7 +1379,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View of editing an exisiting experiment type
     public void ViewEditExperimentTypeTest() throws Exception{
         DeviceType deviceType = new DeviceType();
