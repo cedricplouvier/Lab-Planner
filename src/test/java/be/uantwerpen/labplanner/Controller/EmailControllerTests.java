@@ -3,6 +3,7 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.Device;
+import be.uantwerpen.labplanner.Model.Experiment;
 import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Model.Step;
 import be.uantwerpen.labplanner.Service.DeviceService;
@@ -43,6 +44,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class EmailControllerTests {
 
+    @Mock
+    private StepController stepController;
 
     @Mock
     private JavaMailSender emailSender;
@@ -164,5 +167,52 @@ public class EmailControllerTests {
                 .andExpect(view().name("redirect:/devices"))
                 .andExpect(model().attribute("deviceError", notNullValue()))
                 .andDo(print());
+    }
+
+    @Test
+    public void testPeriodicMail() throws Exception{
+        Role admin = new Role("Adminsitrator");
+        admin.setId((long) 32);
+        when(roleService.findByName("Administrator")).thenReturn(Optional.of(admin));
+
+        User user = new User("test","test");
+        user.setFirstName("first");
+        user.setLastName("last");
+        user.setEmail("ruben.joosen@student.uantwerpen.be");
+        user.setId((long) 10);
+        Set<Role> roles = new HashSet<>();
+        roles.add(admin);
+
+        user.setRoles(roles);
+
+        List<User> users = new ArrayList<>();
+        users.add(user);
+        when(userService.findAll()).thenReturn(users);
+
+        Step step = new Step();
+        step.setId((long) 5);
+
+        Experiment exp = new Experiment();
+        exp.setId((long)55);
+        exp.setExperimentname("test Exp");
+
+
+        Map<Step,User> stepmap = new HashMap<>();
+        stepmap.put(step,user);
+
+        Map<Experiment,User> exMap = new HashMap<>();
+        exMap.put(exp,user);
+
+
+        when(stepController.getAddedSteps()).thenReturn(stepmap);
+        when(stepController.getEditedSteps()).thenReturn(stepmap);
+        when(stepController.getDeletedSteps()).thenReturn(stepmap);
+
+        when(stepController.getAddedExperiments()).thenReturn(exMap);
+        when(stepController.getEditedExperiments()).thenReturn(exMap);
+        when(stepController.getDeletedExperiments()).thenReturn(exMap);
+
+        emailController.sendPeriodicMail();
+
     }
 }
