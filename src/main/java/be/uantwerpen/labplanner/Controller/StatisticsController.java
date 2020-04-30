@@ -115,35 +115,62 @@ public class StatisticsController {
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/statistics", method = RequestMethod.GET)
     public String showStatisticsPage(final ModelMap model) {
+        List<Device> listSelectedDevices = (List) model.getAttribute("selectedDevices");
+        List<int[]> totalHours = (List) model.getAttribute("totalHours");
+        List<Float> occupancyDevicesHours = (List) model.getAttribute("occupancyDevicesHours");
+        List<Float> occupancyDevicesDays = (List) model.getAttribute("occupancyDevicesDays");
+
         List<Device> devices = deviceService.findAll();
         List<DeviceType> deviceTypes = deviceTypeService.findAll();
+        List<Step> allSteps = stepService.findAll();
+
+        int[] totalHoursSelectedDevice;
+        float occupancyHours;
+        float occupancyDays;
+        float totalDeviceHoursYear=0;
+        float totalDeviceDaysYear=0;
+        model.addAttribute("highestAbsoluteValueHours", 10);
+
+        //calculate occupancy of device by hours and year per year + total of device hours by year and month absolute
+        for(int i=0;i<listSelectedDevices.size();i++){
+            Device dev = listSelectedDevices.get(i);
+            List<Step> selectedDeviceSteps = filterSelectedDeviceSteps(dev,allSteps);
+            occupancyHours = calculateOccupancyHours(model, selectedDeviceSteps, totalDeviceHoursYear);
+            occupancyDevicesHours.set(i,occupancyHours);
+            occupancyDays = calculateOccupancyDays(model, selectedDeviceSteps, totalDeviceDaysYear);
+            occupancyDevicesDays.set(i,occupancyDays);
+            totalHoursSelectedDevice= calculateTotalHoursDeviceByYearAndMonth(model, selectedDeviceSteps);
+            totalHours.set(i,totalHoursSelectedDevice);
+            //get highest absolute value to scale the y axis
+            for(int j=0; j<totalHoursSelectedDevice.length;j++){
+                if(totalHoursSelectedDevice[j] >= (int) model.getAttribute("highestAbsoluteValueHours")){
+                    model.addAttribute("highestAbsoluteValueHours", totalHoursSelectedDevice[j]);
+                }
+            }
+        }
 
         model.addAttribute("allDevices", devices);
         model.addAttribute("allDeviceTypes", deviceTypes);
         model.addAttribute("selectedDev",new Device());
 
-        List<Device> listSelectedDevices = (List) model.getAttribute("selectedDevices");
         model.addAttribute("dev1",listSelectedDevices.get(0));
         model.addAttribute("dev2",listSelectedDevices.get(1));
         model.addAttribute("dev3",listSelectedDevices.get(2));
         model.addAttribute("dev4",listSelectedDevices.get(3));
         model.addAttribute("dev5",listSelectedDevices.get(4));
         //Absolute hours of each device by year and month
-        List<int[]> totalHours = (List) model.getAttribute("totalHours");
         model.addAttribute("totalHours1",totalHours.get(0));
         model.addAttribute("totalHours2",totalHours.get(1));
         model.addAttribute("totalHours3",totalHours.get(2));
         model.addAttribute("totalHours4",totalHours.get(3));
         model.addAttribute("totalHours5",totalHours.get(4));
         //Occupancy rate of devices by year in hours
-        List<Float> occupancyDevicesHours = (List) model.getAttribute("occupancyDevicesHours");
         model.addAttribute("occupancyDevices1", occupancyDevicesHours.get(0));
         model.addAttribute("occupancyDevices2", occupancyDevicesHours.get(1));
         model.addAttribute("occupancyDevices3", occupancyDevicesHours.get(2));
         model.addAttribute("occupancyDevices4", occupancyDevicesHours.get(3));
         model.addAttribute("occupancyDevices5", occupancyDevicesHours.get(4));
         //Occupancy rate of devices by year in days
-        List<Float> occupancyDevicesDays = (List) model.getAttribute("occupancyDevicesDays");
         model.addAttribute("occupancyDevicesHours1", occupancyDevicesDays.get(0));
         model.addAttribute("occupancyDevicesHours2", occupancyDevicesDays.get(1));
         model.addAttribute("occupancyDevicesHours3", occupancyDevicesDays.get(2));
@@ -157,9 +184,6 @@ public class StatisticsController {
 
         model.addAttribute("selectableGraphTypes");
         model.addAttribute("selectedTypeOfGraph");
-
-        // value to scale the y-axis
-        model.addAttribute("highestAbsoluteValueHours");
 
         return "Statistics/statistics";
     }
