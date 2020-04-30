@@ -41,12 +41,12 @@ public class PrivilegeController {
         return "Privileges/privilege-list";
     }
 
-    @PreAuthorize("hasAnyAuthority('User Management')")
-    @RequestMapping(value = "/usermanagement/privileges/put", method = RequestMethod.GET)
-    public String ViewCreatePrivilege(final ModelMap model){
-        model.addAttribute(new Privilege("",""));
-        return "Privileges/privilege-manage";
-    }
+//    @PreAuthorize("hasAnyAuthority('User Management')")
+//    @RequestMapping(value = "/usermanagement/privileges/put", method = RequestMethod.GET)
+//    public String ViewCreatePrivilege(final ModelMap model){
+//        model.addAttribute(new Privilege("",""));
+//        return "Privileges/privilege-manage";
+//    }
 
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/privileges/{id}",method = RequestMethod.GET)
@@ -96,26 +96,26 @@ public class PrivilegeController {
         return "redirect:/usermanagement/privileges";
     }
 
-    @PreAuthorize("hasAnyAuthority('User Management')")
-    @RequestMapping(value = "/usermanagement/privileges/{id}/delete",method = RequestMethod.GET)
-    public String deletePrivilege(@PathVariable long id, final ModelMap model){
-        List<Role> allRoles = roleService.findAll();
-        boolean inUse = false;
-        for (Role role : allRoles) {
-            for (Privilege privilege : role.getPrivileges()) {
-                if (privilege.getId()==id){
-                    inUse = true;
-                }
-            }
-        }
-
-        if (inUse){
-            model.addAttribute("allPrivileges",privilegeService.findAll());
-            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("privilege.inUseError"));
-            return "Privileges/privilege-list";
-        }
-        privilegeService.deleteById(id);
-        model.clear();
-        return "redirect:/usermanagement/privileges";
-    }
+//    @PreAuthorize("hasAnyAuthority('User Management')")
+//    @RequestMapping(value = "/usermanagement/privileges/{id}/delete",method = RequestMethod.GET)
+//    public String deletePrivilege(@PathVariable long id, final ModelMap model){
+//        List<Role> allRoles = roleService.findAll();
+//        boolean inUse = false;
+//        for (Role role : allRoles) {
+//            for (Privilege privilege : role.getPrivileges()) {
+//                if (privilege.getId()==id){
+//                    inUse = true;
+//                }
+//            }
+//        }
+//
+//        if (inUse){
+//            model.addAttribute("allPrivileges",privilegeService.findAll());
+//            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("privilege.inUseError"));
+//            return "Privileges/privilege-list";
+//        }
+//        privilegeService.deleteById(id);
+//        model.clear();
+//        return "redirect:/usermanagement/privileges";
+//    }
 }
