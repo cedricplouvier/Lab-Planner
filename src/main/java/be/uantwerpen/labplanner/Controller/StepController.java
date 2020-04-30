@@ -71,6 +71,36 @@ public class StepController {
     @Autowired
     ExperimentRepository experimentservice;
 
+    private Map<Long,User> editedElements = new HashMap<>();
+
+    private Map<Step,User> deletedSteps = new HashMap<>();
+
+    private Map<Experiment,User> deletedExperiments = new HashMap<>();
+
+    public Map<Long, User> getEditedElements() {
+        return editedElements;
+    }
+
+    public void setEditedElements(Map<Long, User> editedElements) {
+        this.editedElements = editedElements;
+    }
+
+    public Map<Step, User> getDeletedSteps() {
+        return deletedSteps;
+    }
+
+    public void setDeletedSteps(Map<Step, User> deletedSteps) {
+        this.deletedSteps = deletedSteps;
+    }
+
+    public Map<Experiment, User> getDeletedExperiments() {
+        return deletedExperiments;
+    }
+
+    public void setDeletedExperiments(Map<Experiment, User> deletedExperiments) {
+        this.deletedExperiments = deletedExperiments;
+    }
+
     private Logger logger = LoggerFactory.getLogger(StepController.class);
 
     //Populate
@@ -275,6 +305,14 @@ public class StepController {
 
 
         stepService.save(step);
+
+        if (editedElements.containsKey(step.getId())){
+            editedElements.replace(step.getId(),currentUser);
+        }
+        else {
+            editedElements.put(step.getId(), currentUser);
+        }
+
         ra.addFlashAttribute("Status", "Success");
         String message = new String("Step has been added/edited.");
         ra.addFlashAttribute("Message", message);
@@ -374,6 +412,14 @@ public class StepController {
             ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " tried to delete step that is part of experiment!"));
             logger.error(user.getUsername() + " tried to delete step that is part of experiment!");
         } else if (userRoles.contains(adminRol)) {
+            if (deletedSteps.containsKey(id)){
+                deletedSteps.replace(foundStepById,user);
+            }
+            else {
+                deletedSteps.put(foundStepById, user);
+            }
+
+
             stepService.delete(id);
         } else if (userRoles.contains(promotorRole)) {
             List<Relation> relations = relationService.findAll();
@@ -392,6 +438,12 @@ public class StepController {
                 }
             }
             if (ownStep) {
+                if (deletedSteps.containsKey(id)){
+                    deletedSteps.replace(foundStepById,user);
+                }
+                else {
+                    deletedSteps.put(foundStepById, user);
+                }
                 stepService.delete(id);
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
@@ -409,6 +461,12 @@ public class StepController {
                 }
             }
             if (ownStep) {
+                if (deletedSteps.containsKey(id)){
+                    deletedSteps.replace(foundStepById,user);
+                }
+                else {
+                    deletedSteps.put(foundStepById, user);
+                }
                 stepService.delete(id);
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));

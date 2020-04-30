@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -108,5 +109,10 @@ public class EmailController   {
 
         ra.addAttribute("MailSuccess", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("mail.success"));
         return "redirect:/devices";
+    }
+
+    @Scheduled(cron =  "0 20 * * *")
+    private void SendEmailOfEditedStepsAndExperiemts(){
+
     }
 }
