@@ -690,7 +690,7 @@ public class DatabaseLoader {
         WhlTrkTest.add(styp3);
         WhlTrkTest.add(styp11);
         WhlTrkTest.add(styp10);
-        ExperimentType experimentType1 = new ExperimentType("ITSR", ITSRStyps, false);
+        ExperimentType experimentType1 = new ExperimentType("ITSR", ITSRStyps, true);
         experimentTypeRepository.save(experimentType1);
         ExperimentType experimentType2 = new ExperimentType("Wheel Tracking Test", WhlTrkTest, true);
         experimentTypeRepository.save(experimentType2);

@@ -550,11 +550,13 @@ public class StepController {
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
-        model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
+        model.addAttribute("allExperimentTypes", allFixedExperimentTypes());
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("experiment", new Experiment());
         model.addAttribute("holidays", holidays);
+
+
         return "PlanningTool/planning-exp-book-fixed";
     }
 
@@ -578,7 +580,7 @@ public class StepController {
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
-        model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
+        model.addAttribute("allExperimentTypes", allFixedExperimentTypes());
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("experiment", new Experiment());
@@ -738,7 +740,6 @@ public class StepController {
                 productMap.put(prod, prod.getStockLevel());
             }
         }
-
 
         //Both, step size and stepType size has to be same
         if (experiment.getSteps().size() != experiment.getExperimentType().getStepTypes().size()) {
@@ -956,8 +957,8 @@ public class StepController {
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allExperiments", experimentService.findAll());
-        model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
         model.addAttribute("allMixtures", mixtureService.findAll());
+        model.addAttribute("allExperimentTypes", allFixedExperimentTypes());
     }
 
     @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
@@ -1001,12 +1002,7 @@ public class StepController {
             }
 
             if (allowedToEdit) {
-                model.addAttribute("experiment", experiment);
-                model.addAttribute("allDevices", deviceService.findAll());
-                model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
-                model.addAttribute("allExperiments", experimentService.findAll());
-                model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
-                model.addAttribute("allMixtures", mixtureService.findAll());
+                prepareModelAtributesToRebookExperiment(model, experiment, "");
 
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
@@ -1379,4 +1375,16 @@ public class StepController {
         }
         return null;
     }
+
+    private List<ExperimentType> allFixedExperimentTypes() {
+        //Only fixed Experiment types should be show
+        List<ExperimentType> fixedExpTypes = new ArrayList<>();
+        for (ExperimentType expType : experimentTypeService.findAll()) {
+            if (expType.getIsFixedType()) {
+                fixedExpTypes.add(expType);
+            }
+        }
+            return fixedExpTypes;
+    }
+
 }
