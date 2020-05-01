@@ -600,6 +600,23 @@ public class StepController {
         //list of steps that is filled by selected steps and saved when there is no problem with input
         List<Step> tmpListSteps = new ArrayList<Step>();
 
+        //if the experiment is new, set current user to experiment. Otherwise keep the user same
+        if (experiment.getUser() == null) {
+            experiment.setUser(currentUser);
+        }
+
+        //Split steps on userSteps and otherSteps
+        //user steps - steps of user that has booked or want's to book this experiment
+        List<Step> userSteps = new ArrayList<Step>();
+        List<Step> otherSteps = new ArrayList<Step>();
+        for (Step step : stepService.findAll()) {
+            if (step.getUser().getId() == experiment.getUser().getId()) {
+                userSteps.add(step);
+            } else {
+                otherSteps.add(step);
+            }
+        }
+
         if (experiment == null || experiment.getExperimentType() == null) {
             errorMessage = "Error while trying to save Experiment.";
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
@@ -840,7 +857,11 @@ public class StepController {
                     return "PlanningTool/planning-exp-book-custom";
                 }
             }
-            step.setUser(currentUser);
+
+            //If Step has no assigned users, assign current user
+            if (step.getUser() == null) {
+                step.setUser(currentUser);
+            }
             step.setStepType(experiment.getExperimentType().getStepTypes().get(experiment.getSteps().indexOf(step)));
             tmpListSteps.add(step);
 
@@ -862,8 +883,7 @@ public class StepController {
 
         //withdraw amounts from temp stock
         if (experiment.getPiecesOfMixture() != null)
-            for (
-                    PieceOfMixture piece : experiment.getPiecesOfMixture()) {
+            for (PieceOfMixture piece : experiment.getPiecesOfMixture()) {
                 Mixture mix = piece.getMixture();
                 List<Composition> compositions = mix.getCompositions();
                 for (Composition comp : compositions) {
@@ -956,6 +976,9 @@ public class StepController {
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allExperiments", experimentService.findAll());
         model.addAttribute("allMixtures", mixtureService.findAll());
+        model.addAttribute("userSteps", userSteps);
+        model.addAttribute("otherSteps", otherSteps);
+
         model.addAttribute("allExperimentTypes", allFixedExperimentTypes());
     }
 
@@ -1000,6 +1023,20 @@ public class StepController {
             }
 
             if (allowedToEdit) {
+
+
+                //Split steps on userSteps and otherSteps
+                //user steps - steps of user that has booked or want's to book this experiment
+                List<Step> userSteps = new ArrayList<Step>();
+                List<Step> otherSteps = new ArrayList<Step>();
+                for (Step step : stepService.findAll()) {
+                    //if user of step is same as owner of experiment - put him in userSteps list
+                    if (step.getUser().getId() ==experimentService.findById(id).orElse(null).getUser().getId()) {
+                        userSteps.add(step);
+                    } else {
+                        otherSteps.add(step);
+                    }
+                }
                 prepareModelAtributesToRebookExperiment(model, experiment, "");
 
                 if (experiment.getExperimentType().getIsFixedType()) {
