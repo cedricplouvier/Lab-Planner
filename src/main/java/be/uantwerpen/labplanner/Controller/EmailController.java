@@ -103,44 +103,66 @@ public class EmailController   {
             //convert to string array
             String[] adressArray = adresses.toArray(new String[0]);
             String subject = "Daily update of steps & experiments";
-            StringBuilder text = new StringBuilder();
-            text.append("Added steps:\n");
-            for (Map.Entry<Step,User> pair : stepController.getAddedSteps().entrySet()){
-                text.append("Step with id "+ pair.getKey().getId() + " is added by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() +".\n");
-            }
-            text.append("\n");
+            StringBuilder text = new StringBuilder("");
 
-            text.append("Edited steps:\n");
-            for (Map.Entry<Step,User> pair : stepController.getEditedSteps().entrySet()){
-                text.append("Step with id "+ pair.getKey().getId() + " is edited by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() +".\n");
+            if (stepController.getAddedSteps().size()>0) {
+                text.append("Added steps:\n");
+                for (Map.Entry<Step, User> pair : stepController.getAddedSteps().entrySet()) {
+                    text.append("Step with id " + pair.getKey().getId() + " is added by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() + ".\n");
+                }
+                text.append("\n");
             }
-            text.append("\n");
 
-            text.append("Deleted steps:\n");
-            for (Map.Entry<Step,User> pair : stepController.getDeletedSteps().entrySet()){
-                text.append("Step with id "+ pair.getKey().getId() + " is deleted by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() +".\n");
-            }
-            text.append("\n");
+            if (stepController.getEditedSteps().size()>0) {
 
-            text.append("Added experiments:\n");
-            for (Map.Entry<Experiment,User> pair : stepController.getAddedExperiments().entrySet()){
-                text.append("Experiment "  + pair.getKey().getExperimentname() +  " with id "+ pair.getKey().getId() + " is added by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() +".\n");
+                text.append("Edited steps:\n");
+                for (Map.Entry<Step, User> pair : stepController.getEditedSteps().entrySet()) {
+                    text.append("Step with id " + pair.getKey().getId() + " is edited by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() + ".\n");
+                }
+                text.append("\n");
             }
-            text.append("\n");
 
-            text.append("Edited experiments:\n");
-            for (Map.Entry<Experiment,User> pair : stepController.getEditedExperiments().entrySet()){
-                text.append("Experiment "  + pair.getKey().getExperimentname() +  " with id "+ pair.getKey().getId() + " is edited by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() +".\n");
-            }
-            text.append("\n");
+            if (stepController.getDeletedSteps().size()>0) {
 
-            text.append("Deleted experiment:\n");
-            for (Map.Entry<Experiment,User> pair : stepController.getDeletedExperiments().entrySet()){
-                text.append("Experiment "  + pair.getKey().getExperimentname() +  " with id "+ pair.getKey().getId() + " is deleted by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() +".\n");
+                text.append("Deleted steps:\n");
+                for (Map.Entry<Step, User> pair : stepController.getDeletedSteps().entrySet()) {
+                    text.append("Step with id " + pair.getKey().getId() + " is deleted by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() + ".\n");
+                }
+                text.append("\n");
             }
-            text.append("\n");
+
+            if (stepController.getAddedExperiments().size()>0) {
+
+                text.append("Added experiments:\n");
+                for (Map.Entry<Experiment, User> pair : stepController.getAddedExperiments().entrySet()) {
+                    text.append("Experiment " + pair.getKey().getExperimentname() + " with id " + pair.getKey().getId() + " is added by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() + ".\n");
+                }
+                text.append("\n");
+            }
+
+            if (stepController.getEditedExperiments().size()>0) {
+
+                text.append("Edited experiments:\n");
+                for (Map.Entry<Experiment, User> pair : stepController.getEditedExperiments().entrySet()) {
+                    text.append("Experiment " + pair.getKey().getExperimentname() + " with id " + pair.getKey().getId() + " is edited by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() + ".\n");
+                }
+                text.append("\n");
+            }
+
+            if (stepController.getAddedSteps().size()>0) {
+
+                text.append("Deleted experiments:\n");
+                for (Map.Entry<Experiment, User> pair : stepController.getDeletedExperiments().entrySet()) {
+                    text.append("Experiment " + pair.getKey().getExperimentname() + " with id " + pair.getKey().getId() + " is deleted by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() + ".\n");
+                }
+                text.append("\n");
+            }
 
             stepController.clearLists();
+
+            if (text.length()<1){
+                text.append("No new updates.");
+            }
 
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(adressArray);

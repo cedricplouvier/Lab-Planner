@@ -215,6 +215,31 @@ public class EmailControllerTests {
     }
 
     @Test
+    public void testPeriodicMailNoUpdates() throws Exception{
+        Role admin = new Role("Adminsitrator");
+        admin.setId((long) 32);
+        when(roleService.findByName("Administrator")).thenReturn(Optional.of(admin));
+
+        User user = new User("test","test");
+        user.setFirstName("first");
+        user.setLastName("last");
+        user.setEmail("ruben.joosen@student.uantwerpen.be");
+        user.setId((long) 10);
+        Set<Role> roles = new HashSet<>();
+        roles.add(admin);
+
+        user.setRoles(roles);
+
+        List<User> users = new ArrayList<>();
+        users.add(user);
+        when(userService.findAll()).thenReturn(users);
+
+
+        emailController.sendPeriodicMail();
+
+    }
+
+    @Test
     public void testLowStockMail() throws Exception{
         Role admin = new Role("Adminsitrator");
         admin.setId((long) 32);
