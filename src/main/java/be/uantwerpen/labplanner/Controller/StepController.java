@@ -619,7 +619,7 @@ public class StepController {
 
         if (experiment == null || experiment.getExperimentType() == null) {
             errorMessage = "Error while trying to save Experiment.";
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
             if (experiment.getExperimentType().getIsFixedType()) {
                 return "PlanningTool/planning-exp-book-fixed";
             } else {
@@ -640,7 +640,7 @@ public class StepController {
         //check, if there are some steps in experiment
         if (experiment.getSteps() == null || experiment.getExperimentType().getStepTypes() == null) {
             errorMessage = "Error while trying to save Experiment. Experiment without steps can not be booked";
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
             if (experiment.getExperimentType().getIsFixedType()) {
                 return "PlanningTool/planning-exp-book-fixed";
             } else {
@@ -688,7 +688,7 @@ public class StepController {
             //If there is experiment with different ID and same name, it's not unique
             if (experiment.getExperimentname().equals(exp.getExperimentname()) && !Objects.equals(experiment.getId(), exp.getId())) {
                 errorMessage = "Experiment with this name already exists";
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
                 } else {
@@ -709,7 +709,7 @@ public class StepController {
             for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
                 if (pom.getMixtureAmount() < 0) {
                     errorMessage = "Ammount of mixture can't be negative";
-                    prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+                    prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
                     if (experiment.getExperimentType().getIsFixedType()) {
                         return "PlanningTool/planning-exp-book-fixed";
                     } else {
@@ -723,7 +723,7 @@ public class StepController {
             for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
                 if (pom.getMixtureAmount() < 0) {
                     errorMessage = "Ammount of mixture can't be negative";
-                    prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+                    prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
                     if (experiment.getExperimentType().getIsFixedType()) {
                         return "PlanningTool/planning-exp-book-fixed";
                     } else {
@@ -759,7 +759,7 @@ public class StepController {
         //Both, step size and stepType size has to be same
         if (experiment.getSteps().size() != experiment.getExperimentType().getStepTypes().size()) {
             errorMessage = "Error while trying to save Experiment. Problem with length of steps";
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
             if (experiment.getExperimentType().getIsFixedType()) {
                 return "PlanningTool/planning-exp-book-fixed";
             } else {
@@ -768,7 +768,7 @@ public class StepController {
 
         }
 
-        //if the experiment is new, set current user to experiment. Otherwise keep the user same
+        //if the experiment is new, set current user to experiment.
         if (experiment.getUser() == null) {
             experiment.setUser(currentUser);
         }
@@ -808,7 +808,7 @@ public class StepController {
         if (!allowedToEdit) {
             //no rights, so error message & save nothing
             errorMessage = "Student has no right to edit experiment";
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
             if (experiment.getExperimentType().getIsFixedType()) {
                 return "PlanningTool/planning-exp-book-fixed";
             } else {
@@ -816,10 +816,9 @@ public class StepController {
             }
         }
 
+        int index = 0;
         //check correctness of steps
         for (Step step : experiment.getSteps()) {
-
-            //proceed only if experiment still satisfies all needs
 
             //check, if step data are correct
             if ((step.getDevice() == null || step.getStart() == null || step.getEnd() == null ||
@@ -828,7 +827,17 @@ public class StepController {
                     step.getStartHour().trim().equals("") || step.getEndHour().trim().equals(""))) {
 
                 errorMessage = "Error while trying to save Experiment. Wrong input";
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+                if (experiment.getExperimentType().getIsFixedType()) {
+                    return "PlanningTool/planning-exp-book-fixed";
+                } else {
+                    return "PlanningTool/planning-exp-book-custom";
+                }
+            }
+
+            if (isPorblemWithFixedLength(experiment.getExperimentType().getStepTypes().get(index), step)) {
+                errorMessage = "Error while trying to save Experiment. Step" + step.getStepType().getStepTypeName() + " has fixed time";
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
                 } else {
@@ -839,7 +848,7 @@ public class StepController {
             //check, double booking
             if (overlapCheck(step)) {
                 errorMessage = "Error while trying to save Experiment. Problem with double booking of device " + step.getDevice().getDevicename();
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
                 } else {
@@ -850,7 +859,7 @@ public class StepController {
             //check holidays, weekend and opening hours
             if (dateTimeIsUnavailable(step)) {
                 errorMessage = getMessageForSelectedStep(step);
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
                 } else {
@@ -864,13 +873,14 @@ public class StepController {
             }
             step.setStepType(experiment.getExperimentType().getStepTypes().get(experiment.getSteps().indexOf(step)));
             tmpListSteps.add(step);
+            index++;
 
         }
 
         //check if steps inside this experiment fulfills continuity
         if (isProblemWithContinuity(experiment.getSteps())) {
             errorMessage = "Error while trying to save Experiment. Problem with continuity";
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
             if (experiment.getExperimentType().getIsFixedType()) {
                 return "PlanningTool/planning-exp-book-fixed";
             } else {
@@ -909,7 +919,7 @@ public class StepController {
         //if not enough stock, change stock levels back to previous edit
         if (!enoughStock) {
             errorMessage = ResourceBundle.getBundle("messages", current).getString("enough.stock");
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
             if (experiment.getExperimentType().getIsFixedType()) {
                 return "PlanningTool/planning-exp-book-fixed";
             } else {
@@ -969,7 +979,7 @@ public class StepController {
 
 
     //Method to prepare model atributes when user entered wrong input
-    private void prepareModelAtributesToRebookExperiment(final ModelMap model, Experiment experiment, String errorMessage) {
+    private void prepareModelAtributesToRebookExperiment(final ModelMap model, Experiment experiment, String errorMessage, List<Step> userSteps, List<Step> otherSteps) {
         model.addAttribute("errorMsg", errorMessage);
         model.addAttribute("experiment", experiment);
         model.addAttribute("allDevices", deviceService.findAll());
@@ -1031,13 +1041,13 @@ public class StepController {
                 List<Step> otherSteps = new ArrayList<Step>();
                 for (Step step : stepService.findAll()) {
                     //if user of step is same as owner of experiment - put him in userSteps list
-                    if (step.getUser().getId() ==experimentService.findById(id).orElse(null).getUser().getId()) {
+                    if (step.getUser().getId() == experimentService.findById(id).orElse(null).getUser().getId()) {
                         userSteps.add(step);
                     } else {
                         otherSteps.add(step);
                     }
                 }
-                prepareModelAtributesToRebookExperiment(model, experiment, "");
+                prepareModelAtributesToRebookExperiment(model, experiment, "", userSteps, otherSteps);
 
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
@@ -1078,14 +1088,20 @@ public class StepController {
         typeOptions.add("Soft (at most)");
         typeOptions.add("Hard");
 
+        List<String> allFixedTimeTypeOptions = new ArrayList<>();
+        allFixedTimeTypeOptions.add("Equal");
+        allFixedTimeTypeOptions.add("At least");
+        allFixedTimeTypeOptions.add("At most");
+
         List<String> directionOptions = new ArrayList<>();
-        directionOptions.add("Before");
         directionOptions.add("After");
+        directionOptions.add("Before");
 
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("experimentType", new ExperimentType());
         model.addAttribute("allTypeOptions", typeOptions);
+        model.addAttribute("allFixedTimeTypeOptions", allFixedTimeTypeOptions);
         model.addAttribute("allTypeDirections", directionOptions);
         return "PlanningTool/planning-exp-manage";
     }
@@ -1099,15 +1115,20 @@ public class StepController {
         typeOptions.add("Soft (at most)");
         typeOptions.add("Hard");
 
+        List<String> fixedTimeTypeOptions = new ArrayList<>();
+        fixedTimeTypeOptions.add("Equal");
+        fixedTimeTypeOptions.add("At least");
+        fixedTimeTypeOptions.add("At most");
 
         List<String> directionOptions = new ArrayList<>();
-        directionOptions.add("Before");
         directionOptions.add("After");
+        directionOptions.add("Before");
 
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("experimentType", experimentTypeService.findById(id).get());
         model.addAttribute("allTypeOptions", typeOptions);
+        model.addAttribute("allFixedTimeTypeOptions", fixedTimeTypeOptions);
         model.addAttribute("allTypeDirections", directionOptions);
 
         return "PlanningTool/planning-exp-manage";
@@ -1120,8 +1141,24 @@ public class StepController {
 
         if (result.hasErrors()) {
             ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type."));
-            return "redirect:/planning/experiments/{id}";
+            return "redirect:/planning/experiments/put";
         }
+
+        if (experimentType.getStepTypes() == null) {
+            ra.addFlashAttribute("Message", new String("You can not create experiment type with no steps"));
+            return "redirect:/planning/experiments/put";
+        }
+
+        //check if experimentType name is unique
+        for (ExperimentType expType : experimentTypeService.findAll()) {
+            //If there is experimentType with different ID and same name, it's not unique
+            if (experimentType.getExpname().equals(expType.getExpname()) && !Objects.equals(experimentType.getId(), expType.getId())) {
+                ra.addFlashAttribute("Message", new String("Experiment Type with this name already exists"));
+                return "redirect:/planning/experiments/put";
+
+            }
+        }
+
         ExperimentType tempExperimentType = experimentType.getId() == null ? null : experimentTypeService.findById(experimentType.getId()).orElse(null);
         if (tempExperimentType == null) {
             for (ExperimentType exptyp : experimentTypeService.findAll()) {
@@ -1189,6 +1226,38 @@ public class StepController {
             }
         }
         return false;
+    }
+
+    public boolean isPorblemWithFixedLength(StepType stepType, Step step) throws ParseException {
+        //If stepType doesn't have fixed length -> there is no problem with fixed length
+        if (!stepType.getHasFixedLength()) {
+            return false;
+        }
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
+        DateTime startDate = formatter.parseDateTime(step.getStart() + " " + step.getStartHour());
+        DateTime endDate = formatter.parseDateTime(step.getEnd() + " " + step.getEndHour());
+
+        //Check if selected dates fulfills fixedTime needs
+        switch (stepType.getFixedTimeType()) {
+            case "Equal":
+                if (!((endDate.getMillis() - startDate.getMillis()) == 1000 * 60 * 60 * stepType.getFixedTimeHours() + 1000 * 60 * 60 * stepType.getFixedTimeMinutes())) {
+                    return false;
+                }
+                break;
+            case "At least":
+                if (!((endDate.getMillis() - startDate.getMillis()) >= 1000 * 60 * 60 * stepType.getFixedTimeHours() + 1000 * 60 * 60 * stepType.getFixedTimeMinutes())) {
+                    return false;
+                }
+                break;
+            case "At most":
+                if (!((endDate.getMillis() - startDate.getMillis()) <= 1000 * 60 * 60 * stepType.getFixedTimeHours() + 1000 * 60 * 60 * stepType.getFixedTimeMinutes())) {
+                    return false;
+                }
+                break;
+            default:
+                return true;
+        }
+        return true;
     }
 
     // return error message that describes Problem with date of selected step
@@ -1304,32 +1373,83 @@ public class StepController {
             currentEndDate = formatter.parseDateTime(steps.get(i).getEnd() + " " + steps.get(i).getEndHour());
             nextStartDate = formatter.parseDateTime(steps.get(i + 1).getStart() + " " + steps.get(i + 1).getStartHour());
             nextEndDate = formatter.parseDateTime(steps.get(i + 1).getEnd() + " " + steps.get(i + 1).getEndHour());
-            //previousDates are not set when i == 0.
-            //check chronology - current start date shouldn't be after next start date.
-            if (currentStartDate.isAfter(nextStartDate) || currentEndDate.isAfter(nextEndDate)) {
-                return true;
-            }
+
             switch (steps.get(i).getStepType().getContinuity().getType()) {
                 case "Soft (at least)":
-                    //nextStartDate - currentStartTime >= currentStartTime
-                    if (!(nextStartDate.getMillis() - (currentEndDate.getMillis()) >= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
+                    if ((steps.get(i).getStepType().getContinuity().getDirectionType() == "After")) {
+                        //next step should be after end of previous
+                        //nextStartDate - currentEndTime >= currentStartTime
+                        if (!((nextStartDate.getMillis() - currentEndDate.getMillis()) >= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
+                            return true;
+                        }
+                        //if Continuity has time direction "after" then
+                        // current start date can't be after next start date.
+                        if (currentStartDate.isAfter(nextStartDate) || currentEndDate.isAfter(nextEndDate)) {
+                            return true;
+                        }
+                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType() == "Before")) {
+                        //next step should be before end of previous
+                        //currentEndTime - nextStartDate >= currentStartTime
+                        if (!((currentEndDate.getMillis() - nextStartDate.getMillis()) >= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
+                            return true;
+                        }
+                    } else {
+                        //If direction (before or after) is not specified - problem
                         return true;
                     }
                     break;
                 case "Soft (at most)":
-                    //nextStartDate - currentStartTime <= currentStartTime
-                    if (!(nextStartDate.getMillis() - (currentEndDate.getMillis()) <= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
+                    if ((steps.get(i).getStepType().getContinuity().getDirectionType() == "After")) {
+                        //next step should be after end of previous
+                        //nextStartDate - currentEndTime <= currentStartTime
+                        if (!((nextStartDate.getMillis() - currentEndDate.getMillis()) <= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
+                            return true;
+                        }
+                        //if Continuity has time direction "after" then
+                        // current start date can't be after next start date.
+                        if (currentStartDate.isAfter(nextStartDate) || currentEndDate.isAfter(nextEndDate)) {
+                            return true;
+                        }
+                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType() == "Before")) {
+                        //next step should be before end of previous
+                        //currentEndTime - nextStartDate <= currentStartTime
+                        if (!((currentEndDate.getMillis() - nextStartDate.getMillis()) <= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
+                            return true;
+                        }
+                    } else {
+                        //If direction (before or after) is not specified - problem
                         return true;
                     }
                     break;
                 case "Hard":
-                    //nextStartDate - currentStartTime == currentStartTime
-                    if (!(nextStartDate.getMillis() - (currentEndDate.getMillis()) == 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
+                    if ((steps.get(i).getStepType().getContinuity().getDirectionType() == "After")) {
+                        //next step should be after end of previous
+                        //nextStartDate - currentEndTime >= currentStartTime
+                        if (!((nextStartDate.getMillis() - currentEndDate.getMillis()) == 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
+                            return true;
+                        }
+                        //if Continuity has time direction "after" then
+                        // current start date can't be after next start date.
+                        if (currentStartDate.isAfter(nextStartDate) || currentEndDate.isAfter(nextEndDate)) {
+                            return true;
+                        }
+                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType() == "Before")) {
+                        //next step should be before end of previous
+                        //currentEndTime - nextStartDate >= currentStartTime
+                        if (!((currentEndDate.getMillis() - nextStartDate.getMillis()) == 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
+                            return true;
+                        }
+                    } else {
+                        //If direction (before or after) is not specified - problem
                         return true;
                     }
                     break;
                 case "No":
-                    // no continuity
+                    //If there is no continuity,
+                    //current start date can't be after next start, but can start at same time
+                    if (currentStartDate.isAfter(nextStartDate) || currentEndDate.isAfter(nextEndDate)) {
+                        return true;
+                    }
                     break;
                 default:
                     return true;
@@ -1419,7 +1539,7 @@ public class StepController {
                 fixedExpTypes.add(expType);
             }
         }
-            return fixedExpTypes;
+        return fixedExpTypes;
     }
 
 }

@@ -483,11 +483,11 @@ public class DatabaseLoader {
         productRepository.save(pr4);
         OwnProduct pr5 = new OwnProduct("Alzagri Rond Zand 0/1", lorem.getWords(20), 1.0, 1000.0, 100.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags2, new URL("https://nl.wikipedia.org/wiki/Zand"));
         productRepository.save(pr5);
-        OwnProduct pr6 = new OwnProduct("Vulstof duras 2a", lorem.getWords(20), 1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4,new URL("https://nl.wikipedia.org/wiki/Duras"));
+        OwnProduct pr6 = new OwnProduct("Vulstof duras 2a", lorem.getWords(20), 1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, new URL("https://nl.wikipedia.org/wiki/Duras"));
         productRepository.save(pr6);
         OwnProduct pr7 = new OwnProduct("Bitumen op aggregaten", lorem.getWords(20), 1.0, 200.0, 25.0, 1.0, Unit.LITRE, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, new URL("https://nl.wikipedia.org/wiki/Bitumen"));
         productRepository.save(pr7);
-        OwnProduct pr8 = new OwnProduct("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4,null);
+        OwnProduct pr8 = new OwnProduct("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, null);
         productRepository.save(pr8);
 
         Step s1 = new Step(u1, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
@@ -637,18 +637,59 @@ public class DatabaseLoader {
         mixtureRepository.save(m3);
 
 
+
+/*
+
+        //Step1 - No continuity, Device: Balance
+        Continuity cont1 = new Continuity(0, 0, "No", "After");
+        StepType styp1 = new StepType(t2, cont1, t2.getDeviceTypeName());
+
+        //Step2 - Continuity Soft (at least) 8h after, Device: Oven
+        Continuity cont2 = new Continuity(4, 0, "Hard", "Before");
+        StepType styp2 = new StepType(t8, cont2, t8.getDeviceTypeName());
+
+        //Step3,4,5 should be 4 hours before end of oven
+        //Step 3 - Continuity: Hard 4h before, DeviceType: Balance, FixedTime: 4h
+        Continuity cont3 = new Continuity(0, 0, "Hard", "Before");
+        StepType styp3 = new StepType(t2, cont3, "Mixer");
+
+        //Step 4 - Continuity: Hard 0h after, DeviceType: Mixer, FixedTime: 4h
+        Continuity cont4 = new Continuity(0, 0, "Hard", "After");
+        StepType styp4 = new StepType(t6, cont4, t6.getDeviceTypeName(), true,"Equal", 4, 0);
+
+        //Step 5 - Continuity: Hard 0h after, DeviceType: Mixer, FixedTime: 4h
+        Continuity cont5 = new Continuity(0, 0, "Hard", "After");
+        StepType styp5 = new StepType(t6, cont4, t6.getDeviceTypeName(), true,"Equal", 4, 0);
+
+        //Step 6 - Continuity: Hard 24h after, DeviceType: Autosaw, FixedTime: 2h
+        Continuity cont6 = new Continuity(24, 0, "Hard", "After");
+        StepType styp6 = new StepType(t1, cont4, t1.getDeviceTypeName(),true,"Equal", 2, 0);
+
+        //Step 7 - Continuity: At least 12h after, DeviceType: Caliper, FixedTime: 1h
+        Continuity cont7 = new Continuity(12, 0, "Hard", "After");
+        StepType styp7 = new StepType(t4, cont4, t4.getDeviceTypeName(),true,"Equal", 2, 0);
+
+        //Step 8 - Continuity: No, DeviceType: SVM, FixedTime: 1h
+        Continuity cont8 = new Continuity(12, 0, "Soft (At least)", "After");
+        StepType styp8 = new StepType(t10, cont4, t4.getDeviceTypeName(),true,"Equal", 2, 0);
+
+        //Step 9 - Continuity: No, DeviceType: Vacuum setup, FixedTime: 1h
+        Continuity cont9 = new Continuity(24, 0, "Hard", "After");
+        StepType styp9 = new StepType(t12, cont4, t4.getDeviceTypeName(),true,"Equal", 2, 0);
+*/
+
         //Continuities
-        Continuity cont1 = new Continuity(0, 0, "No");
+        Continuity cont1 = new Continuity(0, 0, "No", "After");
         continuityRepository.save(cont1);
-        Continuity cont2 = new Continuity(8, 0, "Soft (at least)");
+        Continuity cont2 = new Continuity(8, 0, "Soft (at least)", "After");
         continuityRepository.save(cont2);
-        Continuity cont3 = new Continuity(24, 0, "Hard");
+        Continuity cont3 = new Continuity(24, 0, "Hard", "After");
         continuityRepository.save(cont3);
-        Continuity cont4 = new Continuity(12, 0, "Soft (at least)");
+        Continuity cont4 = new Continuity(4, 0, "Soft (at least)", "Before");
         continuityRepository.save(cont4);
-        Continuity cont5 = new Continuity(0, 0, "Hard");
+        Continuity cont5 = new Continuity(0, 0, "Hard", "After");
         continuityRepository.save(cont5);
-        Continuity cont6 = new Continuity(24, 0, "Soft (at most)");
+        Continuity cont6 = new Continuity(24, 0, "Soft (at most)", "After");
         continuityRepository.save(cont6);
 
         //Steptypes

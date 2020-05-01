@@ -147,7 +147,7 @@
                     '</option>';
             }
         }
-
+        var fixedLengthText = a.stepTypes[i].hasFixedLength ? a.stepTypes[i].fixedTimeHours + ':' + a.stepTypes[i].fixedTimeMinutes : 'No'
         $('#list')
             .append(
                 '<tr class="row' + i + '" id="row' + i + '">' +
@@ -189,6 +189,8 @@
                 '        <input required="" style="width: 100%; font-size:80%; " type="time" id="endHour' + i + '" class="form-control float-right input-hour" placeholder="End hour" name="steps[' + i + '].endHour">' +
                 '   </td> ' +
                 '   <td style="width: 10%; font-size:80%; text-align:center" id="continuity' + i + '" name="continuity" value="">No ' +
+                '   </td> ' +
+                '   <td style="width: 10%; font-size:80%; text-align:center" id="fixedStepLength' + i + '" name="fixedStepLength" value=""> ' + fixedLengthText +
                 '   </td> ' +
                 '   <td>' +
                 '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + i + '].comment" value="" >' +
@@ -293,7 +295,7 @@
                         '       <input required="" style="width: 100%; font-size:80%;" type="time" id="startHour' + index + '" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + index + '].startHour">' +
                         '        <input required="" style="width: 100%; font-size:80%; " type="time" id="endHour' + index + '" class="form-control float-right input-hour" placeholder="End hour" name="steps[' + index + '].endHour">' +
                         '   </td> ' +
-                        '   <td style="width: 10%; font-size:80%; text-align:center" id="continuity' + index + '" name="continuity" value=""> ' + a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '<br />' + a.stepTypes[i].continuity.type + '' +
+                        '   <td style="width: 10%; font-size:80%; text-align:center" id="continuity' + index + '" name="continuity" value=""> ' + a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '<br />' + a.stepTypes[i].continuity.type + '<br />' + a.stepTypes[i].continuity.directionType + '' +
                         '   </td> ' +
                         '   <td>' +
                         '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + index + '].comment" value="" >' +
@@ -532,6 +534,7 @@
                 <th></th>
                 <th th:text="#{time}">Time</th>
                 <th>Continuity</th>
+                <th>Fixed step time</th>
                 <th>Comment</th>
                 <th>Choose in Calendar</th>
             </tr>
@@ -627,8 +630,16 @@
                     <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center" id="continuity"
                         name="continuity"
                         th:utext="*{experimentType.stepTypes[__${itemStat.index}__].continuity.hours} + ':' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}+
-                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.type}"
-                    >
+                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.type}+
+                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.directionType}">
+                    </td>
+
+                    <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center"
+                        id="fixedtimeLength"
+                        name="fixedtimeLength"
+                        th:text="*{experimentType.stepTypes[__${itemStat.index}__].hasFixedLength} ?
+                         *{experimentType.stepTypes[__${itemStat.index}__].fixedTimeHours}  +':' +*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeMinutes}
+                         : 'No'">
                     </td>
                     <td style="vertical-align:center;">
                         <input style="width: 100%; font-size:80%; " type="text" id="comment"

@@ -9,27 +9,34 @@
     var url = /*[[@{/planning/experiments/{id} (id=${experimentType})}]]*/ "";
 
     function showFixedTimeInput(i) {
-
         var checkBox = document.getElementById("myTable").rows[i + 1].cells[4].getElementsByTagName("input")[0];
-        var cell1 = document.getElementById("myTable").rows[i + 1].cells[5].getElementsByTagName("input")[0];
-        var cell2 = document.getElementById("myTable").rows[i + 1].cells[5].getElementsByTagName("input")[1];
+        var cell0 = document.getElementById("stepTypes" + i + ".fixedTimeType");
+        var cell1 = document.getElementById("myTable").rows[i + 1].cells[6].getElementsByTagName("input")[0];
+        var cell2 = document.getElementById("myTable").rows[i + 1].cells[6].getElementsByTagName("input")[1];
         if (checkBox.checked == true) {
+            cell0.disabled = false;
             cell1.disabled = false;
             cell2.disabled = false;
             checkBox.value = true;
         } else {
+            cell0.disabled = true;
             cell1.disabled = true;
             cell2.disabled = true;
             checkBox.value = false;
         }
     }
+
     toastr.options.extendedTimeOut = 5000;
     $(document).ready(function () {
         var messages =  /*[[${Message}]]*/ null;
         if (messages != null) {
             toastr.error(messages);
         }
+
+        //check checkBox to make isfixedType variable true
+        document.getElementById("checkboxIsFixedType").checked = true;
     })
+
     function addrow(a) {
         let allTypeOptions = [[${allTypeOptions}]];
         var typeOptions = '';
@@ -41,6 +48,14 @@
         var directionOptions = '';
         for (let j = 0; j < allTypeDirections.length; j++) {
             directionOptions += '<option class="dropdown-item"' + allTypeDirections[j] + '">' + allTypeDirections[j] + '</option>'
+
+        }
+
+
+        let allFixedTimeTypeOptions = [[${allFixedTimeTypeOptions}]];
+        var fixedTypesOptions = '';
+        for (let j = 0; j < allTypeDirections.length; j++) {
+            fixedTypesOptions += '<option class="dropdown-item"' + allFixedTimeTypeOptions[j] + '">' + allFixedTimeTypeOptions[j] + '</option>'
 
         }
 
@@ -70,11 +85,17 @@
                 '           <span class="input-group-btn" style="width:0px;"></span>' +
                 '           <input type="number" min="0" max="60" step="1" class="form-control input-device" style="width: 20%; transform: translate(-40%, 0%);" value="0" id="stepTypes0.continuity.minutes" name="stepTypes[0].continuity.minutes">' +
                 '       </div>' +
-                '   </td><td>' +
+                '   </td>' +
+                '   <td>' +
                 '       <label class="switch">' +
-                '           <input type="checkbox" onclick="showFixedTimeInput(' + rowCount + ')" value="false" id="stepTypes' + rowCount + '.hasFixedLength1" name="stepTypes[' + rowCount + '].hasFixedLength">' +
+                '           <input type="checkbox" onclick="showFixedTimeInput(' + rowCount + ')" value="false" id="stepTypes' + rowCount + '.hasFixedLength" name="stepTypes[' + rowCount + '].hasFixedLength">' +
                 '           <input type="hidden" name="_stepTypes[' + rowCount + '].hasFixedLength" value="on">' +
                 '       </label>' +
+                '   </td>' +
+                '   <td>' +
+                '       <select required id="stepTypes' + rowCount + '.fixedTimeType"' + rowCount + ' name="stepTypes[' + rowCount + '].fixedTimeType">' +
+                fixedTypesOptions +
+                '       </select>' +
                 '   </td>' +
                 '   <td>' +
                 '       <div class="input-group">' +
@@ -180,6 +201,7 @@
     <div th:replace="navbar :: navbar"></div>
     <form action="#" th:action="@{/planning/experiments/{id} (id=${experimentType.id})}" th:object="${experimentType}"
           method="post">
+        <input type="checkbox" id="checkboxIsFixedType" th:field="*{isFixedType}" hidden/>
 
         <table class="table table-hover" id="myTable">
             <div class="dropdown">
@@ -199,6 +221,7 @@
                 <th>Continuity direction</th>
                 <th>Continuity duration</th>
                 <th th:text="#{stepType.setFixedTime}">Set fixed time of step</th>
+                <th>Fixed time type</th>
                 <th th:text="#{stepType.fixedTime}">Fixed time of step</th>
             </tr>
             </thead>
@@ -247,6 +270,14 @@
                     </label>
                 </td>
                 <td>
+                    <select th:field="*{stepTypes[__${itemStat.index}__].fixedTimeType}"
+                            th:disabled="!${stepType.hasFixedLength}">
+                        <option class="dropdown-item" th:each="option : ${allFixedTimeTypeOptions}"
+                                th:value="${option}"
+                                th:text="${option}"></option>
+                    </select>
+                </td>
+                <td>
                     <div class="input-group">
                         <input type="number" min="0" step="1" class=" form-control input-device"
                                style="width: 20%; transform: translate(-40%, 0%);"
@@ -268,7 +299,7 @@
             </tbody>
         </table>
         <div>
-            <input th:field="*{expname}" placeholder="Expirement Type Name">
+            <input th:field="*{expname}" placeholder="Expirement Type Name" required>
             <input th:field="*{id}" th:type="hidden" th:value="experimentType.id">
         </div>
 

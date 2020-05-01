@@ -22,13 +22,14 @@ public class Continuity extends AbstractPersistable<Long> {
         type = "No";
         hours = 0;
         minutes = 0;
-        directionType = "After";
+        directionType = "Before";
     }
 
-    public Continuity(int hours, int minutes, String type) {
+    public Continuity(int hours, int minutes, String type, String directionType) {
         this.hours = hours;
         this.minutes = minutes;
         this.type = type;
+        this.directionType = directionType;
     }
 
     public int getHours() {

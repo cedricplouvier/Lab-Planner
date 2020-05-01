@@ -20,6 +20,8 @@ public class StepType extends AbstractPersistable<Long> {
 
     @Column(name = "hasFixedLength")
     private boolean hasFixedLength;
+    @Column(name = "fixedTimeType")
+    private String fixedTimeType;
     @Column(name = "fixedTimeHours")
     private int fixedTimeHours;
     @Column(name = "fixedTimeMinutes")
@@ -32,9 +34,10 @@ public class StepType extends AbstractPersistable<Long> {
         this.deviceType = deviceType;
         this.name = stepTypeName;
         this.continuity = continuity;
+        this.fixedTimeType = fixedTimeType;
     }
 
-    public StepType(DeviceType deviceType, Continuity continuity, String stepTypeName, boolean hasFixedLength, int fixedTimeHours, int fixedTimeMinutes) {
+    public StepType(DeviceType deviceType, Continuity continuity, String stepTypeName, boolean hasFixedLength, String fixedTimeType, int fixedTimeHours, int fixedTimeMinutes) {
         this.deviceType = deviceType;
         this.name = stepTypeName;
         this.continuity = continuity;
@@ -90,6 +93,14 @@ public class StepType extends AbstractPersistable<Long> {
 
     public void setFixedTimeMinutes(int fixedTimeMinutes) {
         this.fixedTimeMinutes = fixedTimeMinutes;
+    }
+
+    public String getFixedTimeType() {
+        return fixedTimeType;
+    }
+
+    public void setFixedTimeType(String fixedTimeType) {
+        this.fixedTimeType = fixedTimeType;
     }
 
     @Override
