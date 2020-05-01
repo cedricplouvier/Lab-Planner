@@ -72,6 +72,8 @@
                 </button></div></form>
     </div>
         </div>
+
+
     <div class="alert alert-info" role="alert" th:if="${deviceInfoObject.id}==null" th:text="#{device.savebeforeupload}"></div>
     <div class="alert alert-info" role="alert" th:if="${deviceInfoObject.id}!=null and ${deviceInfoObject.getFiles().size()}==0" th:text="#{device.noupload}"></div>
 

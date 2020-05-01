@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
-      xmlns:display="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
+      xmlns:display="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html"
+      xmlns:form="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
@@ -78,6 +79,7 @@
         <br><br>
     </form>
     <div class="alert alert-danger" role="alert" th:if="${Status}==deviceLimit" th:text="#{statistics.amountErrorMessage}"></div>
+    <div class="alert alert-danger" role="alert" th:if="${Status}==deviceDuplicate" th:text="#{statistics.duplicateDevice}"></div>
     <p th:text="#{statistics.amountMessage}"></p>
     <hr style="color:rgb(0,115,250); background-color:rgb(0,115,250); height:1px">
 </div>
@@ -342,7 +344,7 @@
         //tui.chart.registerTheme('myTheme', theme);
         //options.theme = 'myTheme';
         if (deviceCounter == 0) {
-            tui.chart.columnChart(container, data0, options);
+           //tui.chart.columnChart(container, data0, options);
         } else if (deviceCounter == 1) {
             tui.chart.columnChart(container, data1, options);
         } else if (deviceCounter == 2) {
@@ -475,7 +477,7 @@
          //tui.chart.registerTheme('myTheme', theme);
          //options2.theme = 'myTheme';
         if (deviceCounter == 0) {
-            tui.chart.columnChart(container2, data0, options2);
+            //tui.chart.columnChart(container2, data0, options2);
         } else if (deviceCounter == 1) {
             tui.chart.columnChart(container2, data1, options2);
         } else if (deviceCounter == 2) {
@@ -608,7 +610,7 @@
         //tui.chart.registerTheme('myTheme', theme);
         //options2.theme = 'myTheme';
         if (deviceCounter == 0) {
-            tui.chart.columnChart(container2, data0, options3);
+            //tui.chart.columnChart(container2, data0, options3);
         } else if (deviceCounter == 1) {
             tui.chart.columnChart(container2, data1, options3);
         } else if (deviceCounter == 2) {

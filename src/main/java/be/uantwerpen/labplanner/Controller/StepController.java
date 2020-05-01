@@ -2,7 +2,6 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Repository.ExperimentRepository;
-import be.uantwerpen.labplanner.Repository.ExperimentTypeRepository;
 import be.uantwerpen.labplanner.Service.*;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
@@ -56,8 +55,6 @@ public class StepController {
     private MixtureService mixtureService;
     @Autowired
     private StepTypeService stepTypeService;
-    @Autowired
-    private ExperimentTypeRepository experimentTypeRepository;
     @Autowired
     private PieceOfMixtureService pieceOfMixtureService;
     @Autowired
@@ -934,7 +931,7 @@ public class StepController {
             ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type."));
             return "redirect:/planning/experiments/{id}";
         }
-        ExperimentType tempExperimentType = experimentType.getId() == null ? null : experimentTypeRepository.findById(experimentType.getId()).orElse(null);
+        ExperimentType tempExperimentType = experimentType.getId() == null ? null : experimentTypeService.findById(experimentType.getId()).orElse(null);
         if (tempExperimentType == null) {
             for (ExperimentType exptyp : experimentTypeService.findAll()) {
                 if (experimentType.getExpname().equals(exptyp.getExpname())) {

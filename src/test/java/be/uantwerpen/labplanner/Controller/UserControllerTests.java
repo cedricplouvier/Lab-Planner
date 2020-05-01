@@ -80,7 +80,7 @@ public class UserControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     public void testPasswordSave()throws Exception{
         User u = new User("test","test");
         u.setId((long) 34);
@@ -135,7 +135,7 @@ public class UserControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     public void VieuwChangePasswordTest() throws Exception{
         mockMvc.perform(get("/password"))
                 .andExpect(status().isOk())
@@ -476,7 +476,7 @@ public class UserControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
 
     //test for deleting
     public void DeleteUserRelationTest() throws Exception {
@@ -515,7 +515,7 @@ public class UserControllerTests {
     }
 
         @Test
-        @WithUserDetails("Ruben")
+        @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
 
         //test for deleting
     public void DeleteUserTest() throws Exception{

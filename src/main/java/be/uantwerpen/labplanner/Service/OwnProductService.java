@@ -46,4 +46,33 @@ public class OwnProductService {
         OwnProduct product = (OwnProduct)this.productRepository.findById(id).orElse((OwnProduct)null);
         return product != null;
     }
+
+
+    public void saveSome(OwnProduct product){
+
+        OwnProduct tempProd = product.getId()==null?null : productRepository.findById(product.getId()).orElse(null);
+        if(tempProd!=null){
+            tempProd.setName(product.getName());
+            tempProd.setDescription(product.getDescription());
+            tempProd.setUnits(product.getUnits());
+            tempProd.setUnitCost(product.getUnitCost());
+            tempProd.setStockLevel(product.getStockLevel());
+            tempProd.setLowStockLevel(product.getLowStockLevel());
+            tempProd.setReservedStockLevel(product.getReservedStockLevel());
+            tempProd.setProperties(product.getProperties());
+            tempProd.setProductCreatorId(product.getProductCreatorId());
+            tempProd.setTags(product.getTags());
+            tempProd.setUrl(product.getUrl());
+
+            if(product.getImageName()!=null){
+                tempProd.setImageName(product.getImageName());
+            }
+
+            productRepository.save(tempProd);
+
+        }
+        else {
+            productRepository.save(product);
+        }
+    }
 }

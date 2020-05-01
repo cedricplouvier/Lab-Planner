@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +51,10 @@ public class ProductTests {
         assertEquals(product.getLowStockLevel(),stocklevel);
         product.setReservedStockLevel(stocklevel);
         assertEquals(product.getReservedStockLevel(),stocklevel);
+
+        URL url = new URL("https://www.google.com");
+        product.setUrl(url);
+        assertEquals(product.getUrl(), url);
 
         //invalid stockelvel
 
