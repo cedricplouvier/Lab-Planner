@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
-      xmlns:display="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
+      xmlns:display="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html"
+      xmlns:form="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
@@ -16,6 +17,15 @@
     <link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/theme/neo.css'/>
 
 </head>
+<script th:inline="javascript">
+    toastr.options.extendedTimeOut = 5000;
+    $(document).ready(function () {
+        var status = "[(${Status})]";
+        var messages =  /*[[${Message}]]*/ "TEST";
+        if (status !=null)
+            toastr.error(messages);
+    });
+</script>
 <body>
 <div class ="container" >
     <div th:replace="navbar :: navbar"></div>
@@ -29,12 +39,12 @@
                 <ul>
                     <ul th:each="graphType : ${selectableGraphTypes}">
                         <div>
-                            <input type="radio" th:name="selectedTypeOfGraph" th:value="${graphType}">
+                            <input type="radio" th:name="selectedTypeOfGraph" th:value="${graphType}" onclick="this.form.submit();">
                             <label th:text="${graphType}"></label>
                         </div>
                     </ul >
                 </ul>
-                <button class="btn btn-primary" type="submit" th:text="#{statistics.selectGraph}"></button><p><span th:text="#{statistics.reselectTypeToRefresh}"></span></p>
+                <p><span th:text="#{statistics.reselectTypeToRefresh}"></span></p>
             </form>
         </div>
         <div class="col-sm-4">
@@ -43,12 +53,12 @@
                 <ul>
                     <ul th:each="years : ${selectableYears}">
                         <div>
-                            <input type="radio" th:name="selectedYear" th:value="${years}">
+                            <input type="radio" th:name="selectedYear" th:value="${years}" onclick="this.form.submit();">
                             <label th:text="${years}"></label>
                         </div>
                     </ul >
                 </ul>
-                <button class="btn btn-primary" type="submit" th:text="#{statistics.selectYear}"></button><p><span th:text="#{statistics.currentYearStandard}"></span></p>
+                <p><span th:text="#{statistics.currentYearStandard}"></span></p>
             </form>
         </div>
     </div>
@@ -68,6 +78,8 @@
         <a th:href="@{/statistics/statistics/clearList}" class="btn btn-primary" th:text="#{statistics.clearList}"></a>
         <br><br>
     </form>
+    <div class="alert alert-danger" role="alert" th:if="${Status}==deviceLimit" th:text="#{statistics.amountErrorMessage}"></div>
+    <div class="alert alert-danger" role="alert" th:if="${Status}==deviceDuplicate" th:text="#{statistics.duplicateDevice}"></div>
     <p th:text="#{statistics.amountMessage}"></p>
     <hr style="color:rgb(0,115,250); background-color:rgb(0,115,250); height:1px">
 </div>
@@ -305,7 +317,7 @@
             chart: {
                 width: 1400,
                 height: 650,
-                title: '[(#{statistics.deviceHoursByMonth})]',
+                title: '[(#{statistics.deviceHoursByMonth})] in [(${selectedYear})]',
                 format: '1,000'
             },
             yAxis: {
@@ -332,7 +344,7 @@
         //tui.chart.registerTheme('myTheme', theme);
         //options.theme = 'myTheme';
         if (deviceCounter == 0) {
-            tui.chart.columnChart(container, data0, options);
+           //tui.chart.columnChart(container, data0, options);
         } else if (deviceCounter == 1) {
             tui.chart.columnChart(container, data1, options);
         } else if (deviceCounter == 2) {
@@ -438,7 +450,7 @@
             chart: {
                 width: 1400,
                 height: 650,
-                title: '[(#{statistics.occupancyRateInHours})]',
+                title: '[(#{statistics.occupancyRateInHours})] in [(${selectedYear})]',
                 format: '1,000'
             },
             yAxis: {
@@ -465,7 +477,7 @@
          //tui.chart.registerTheme('myTheme', theme);
          //options2.theme = 'myTheme';
         if (deviceCounter == 0) {
-            tui.chart.columnChart(container2, data0, options2);
+            //tui.chart.columnChart(container2, data0, options2);
         } else if (deviceCounter == 1) {
             tui.chart.columnChart(container2, data1, options2);
         } else if (deviceCounter == 2) {
@@ -571,7 +583,7 @@
             chart: {
                 width: 1400,
                 height: 650,
-                title: '[(#{statistics.occupancyRateInDays})]',
+                title: '[(#{statistics.occupancyRateInDays})] in [(${selectedYear})]',
                 format: '1,000'
             },
             yAxis: {
@@ -598,7 +610,7 @@
         //tui.chart.registerTheme('myTheme', theme);
         //options2.theme = 'myTheme';
         if (deviceCounter == 0) {
-            tui.chart.columnChart(container2, data0, options3);
+            //tui.chart.columnChart(container2, data0, options3);
         } else if (deviceCounter == 1) {
             tui.chart.columnChart(container2, data1, options3);
         } else if (deviceCounter == 2) {

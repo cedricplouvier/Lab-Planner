@@ -2,13 +2,10 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Repository.ExperimentRepository;
-import be.uantwerpen.labplanner.Repository.ExperimentTypeRepository;
 import be.uantwerpen.labplanner.Service.*;
-import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.repository.users.UserRepository;
-import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import de.jollyday.Holiday;
 import de.jollyday.HolidayCalendar;
@@ -59,11 +56,9 @@ public class StepController {
     @Autowired
     private StepTypeService stepTypeService;
     @Autowired
-    private ExperimentTypeRepository experimentTypeRepository;
-    @Autowired
     private PieceOfMixtureService pieceOfMixtureService;
     @Autowired
-    private ProductService productService;
+    private OwnProductService productService;
 
     @Autowired
     private RelationService relationService;
@@ -121,9 +116,11 @@ public class StepController {
         Boolean hasAdmin = false;
         Set<Role> userRoles = user.getRoles();
 
-        for (Role role : userRoles) {
-            if (role.getName().equals("Administrator")) {
-                hasAdmin = true;
+        for(Role role: userRoles)
+        {
+            if(role.getName().equals("Administrator"))
+            {
+                hasAdmin=true;
             }
         }
 
@@ -290,37 +287,8 @@ public class StepController {
 
 
         if (stepService.findById(id).isPresent()) {
-            //also check for Researcher.
-            Role adminole = roleService.findByName("Administrator").get();
-            Role promotorRole = roleService.findByName("Researcher").get();
-            Boolean allowedToEdit = false;
 
-            //Admin can edit all the steps
-            if (user.getRoles().contains(adminole)) {
-                allowedToEdit = true;
-            }
-
-            //user can edit his own step
-            else if (stepService.findById(id).get().getUser().equals(user)) {
-                allowedToEdit = true;
-            }
-
-            //researcher can edit step of one of his students.
-            else if (user.getRoles().contains(promotorRole)) {
-                //get all the relations of the specific researcher
-                List<Relation> relations = relationService.findAll();
-
-                for (Relation relation : relations) {
-                    //only select relation for specific researcher
-                    if (relation.getResearcher().equals(user)) {
-                        //check if the student is part of the student scope
-                        if (relation.getStudents().contains(stepService.findById(id).get().getUser())) {
-                            allowedToEdit = true;
-                        }
-                    }
-                }
-
-            }
+            Boolean allowedToEdit = allowedToEdit(user, id);
 
             if (allowedToEdit) {
                 model.addAttribute("Step", stepService.findById(id).orElse(null));
@@ -338,6 +306,43 @@ public class StepController {
             ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
             return "redirect:/planning/";
         }
+    }
+
+    //check if specific user is allowed to edit.
+    boolean allowedToEdit(User user, long id){
+        //also check for Researcher.
+        Role adminole = roleService.findByName("Administrator").get();
+        Role promotorRole = roleService.findByName("Researcher").get();
+        Boolean allowedToEdit = false;
+
+        //Admin can edit all the steps
+        if (user.getRoles().contains(adminole)) {
+            allowedToEdit = true;
+        }
+
+        //user can edit his own step
+        else if (stepService.findById(id).get().getUser().equals(user)) {
+            allowedToEdit = true;
+        }
+
+        //researcher can edit step of one of his students.
+        else if (user.getRoles().contains(promotorRole)) {
+            //get all the relations of the specific researcher
+            List<Relation> relations = relationService.findAll();
+
+            for (Relation relation : relations) {
+                //only select relation for specific researcher
+                if (relation.getResearcher().equals(user)) {
+                    //check if the student is part of the student scope
+                    if (relation.getStudents().contains(stepService.findById(id).get().getUser())) {
+                        allowedToEdit = true;
+                    }
+                }
+            }
+
+        }
+
+        return allowedToEdit;
     }
 
     @PreAuthorize("hasAuthority('Planning - Delete step/experiment own') or hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Delete step/experiment all')")
@@ -483,13 +488,13 @@ public class StepController {
             }
 
             //add amounts back to the stock.
-            Map<Product, Double> productMap = new HashMap<>();
+            Map<OwnProduct, Double> productMap = new HashMap<>();
 
             for (PieceOfMixture piece : experiment.getPiecesOfMixture()) {
                 Mixture mix = piece.getMixture();
                 List<Composition> compositions = mix.getCompositions();
                 for (Composition comp : compositions) {
-                    Product prod = comp.getProduct();
+                    OwnProduct prod = comp.getProduct();
                     if (!productMap.containsKey(prod)) {
                         productMap.put(prod, prod.getStockLevel());
                     }
@@ -501,7 +506,7 @@ public class StepController {
             Iterator it = productMap.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry pair = (Map.Entry) it.next();
-                Product prod = (Product) pair.getKey();
+                OwnProduct prod = (OwnProduct) pair.getKey();
                 prod.setStockLevel((Double) pair.getValue());
                 productService.save(prod);
             }
@@ -526,6 +531,11 @@ public class StepController {
     public String viewBookNewExperiment(final ModelMap model) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        List<Step> stepList = new ArrayList<Step>();
+        //prepare list of empty steps
+        for (int i = 0; i < 100; i++) {
+            stepList.add(new Step());
+        }
 
         List<Step> userSteps = new ArrayList<Step>();
         List<Step> otherSteps = new ArrayList<Step>();
@@ -557,7 +567,15 @@ public class StepController {
     public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Locale current = LocaleContextHolder.getLocale();
-        Map<Product, Double> productMap = new HashMap<>();
+        Map<OwnProduct, Double> productMap = new HashMap<>();
+
+
+        if (experiment == null) {
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String("Error while trying to save Experiment."));
+            return "redirect:/planning/";
+        }
+
 
         //Error message that is used as a feedback to user when there is a problem with his input
         String errorMessage = "";
@@ -584,8 +602,8 @@ public class StepController {
 
         if (experiment == null || experiment.getExperimentType() == null) {
             errorMessage = "Error while trying to save Experiment.";
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
-            return "/PlanningTool/planning-exp-book";
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            return "PlanningTool/planning-exp-book";
         }
 
         //check if experiment name is unique
@@ -593,8 +611,8 @@ public class StepController {
             //If there is experiment with different ID and same name, it's not unique
             if (experiment.getExperimentname().equals(exp.getExperimentname()) && !Objects.equals(experiment.getId(), exp.getId())) {
                 errorMessage = "Experiment with this name already exists";
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
-                return "/PlanningTool/planning-exp-book";
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+                return "PlanningTool/planning-exp-book";
             }
         }
 
@@ -611,7 +629,7 @@ public class StepController {
                 if (pom.getMixtureAmount() < 0) {
                     errorMessage = "Ammount of mixture can't be negative";
                     prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
-                    return "/PlanningTool/planning-exp-book";
+                    return "PlanningTool/planning-exp-book";
                 }
             }
         }
@@ -624,7 +642,7 @@ public class StepController {
                 Mixture mix = piece.getMixture();
                 List<Composition> compositions = mix.getCompositions();
                 for (Composition comp : compositions) {
-                    Product prod = comp.getProduct();
+                    OwnProduct prod = comp.getProduct();
                     if (!productMap.containsKey(prod)) {
                         productMap.put(prod, prod.getStockLevel());
                     }
@@ -634,7 +652,7 @@ public class StepController {
                 }
             }
         } else {
-            for (Product prod : productService.findAll()) {
+            for (OwnProduct prod : productService.findAll()) {
                 productMap.put(prod, prod.getStockLevel());
             }
         }
@@ -642,10 +660,14 @@ public class StepController {
         //Both, step size and stepType size has to be same
         if (experiment.getSteps().size() != experiment.getExperimentType().getStepTypes().size()) {
             errorMessage = "Error while trying to save Experiment. Problem with length of steps";
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
-            return "/PlanningTool/planning-exp-book";
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
+            return "PlanningTool/planning-exp-book";
         }
 
+        //if the experiment is new, set current user to experiment. Otherwise keep the user same
+        if (experiment.getUser() == null) {
+            experiment.setUser(currentUser);
+        }
 
         //Current user can only be, user of the Experiment, the promotor of the user or admin.
         Role adminole = roleService.findByName("Administrator").get();
@@ -682,7 +704,7 @@ public class StepController {
         if (!allowedToEdit) {
             //no rights, so error message & save nothing
             errorMessage = "Student has no right to edit experiment";
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
             return "/PlanningTool/planning-exp-book";
         }
 
@@ -698,21 +720,21 @@ public class StepController {
                     step.getStartHour().trim().equals("") || step.getEndHour().trim().equals(""))) {
 
                 errorMessage = "Error while trying to save Experiment. Wrong input";
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
                 return "/PlanningTool/planning-exp-book";
             }
 
             //check, double booking
             if (overlapCheck(step)) {
                 errorMessage = "Error while trying to save Experiment. Problem with double booking of device " + step.getDevice().getDevicename();
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
                 return "/PlanningTool/planning-exp-book";
             }
 
             //check holidays, weekend and opening hours
             if (dateTimeIsUnavailable(step)) {
                 errorMessage = getMessageForSelectedStep(step);
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
                 return "/PlanningTool/planning-exp-book";
             }
 
@@ -722,12 +744,13 @@ public class StepController {
             }
             step.setStepType(experiment.getExperimentType().getStepTypes().get(experiment.getSteps().indexOf(step)));
             tmpListSteps.add(step);
+
         }
 
         //check if steps inside this experiment fulfills continuity
         if (isProblemWithContinuity(experiment.getSteps())) {
             errorMessage = "Error while trying to save Experiment. Problem with continuity";
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
             return "/PlanningTool/planning-exp-book";
         }
 
@@ -740,7 +763,7 @@ public class StepController {
                 Mixture mix = piece.getMixture();
                 List<Composition> compositions = mix.getCompositions();
                 for (Composition comp : compositions) {
-                    Product prod = comp.getProduct();
+                    OwnProduct prod = comp.getProduct();
                     if (!productMap.containsKey(prod)) {
                         productMap.put(prod, prod.getStockLevel());
                     }
@@ -762,7 +785,7 @@ public class StepController {
         //if not enough stock, change stock levels back to previous edit
         if (!enoughStock) {
             errorMessage = ResourceBundle.getBundle("messages", current).getString("enough.stock");
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
             return "/PlanningTool/planning-exp-book";
         }
 
@@ -772,7 +795,7 @@ public class StepController {
         Iterator it2 = productMap.entrySet().iterator();
         while (it2.hasNext()) {
             Map.Entry pair = (Map.Entry) it2.next();
-            Product prod = (Product) pair.getKey();
+            OwnProduct prod = (OwnProduct) pair.getKey();
             prod.setStockLevel((Double) pair.getValue());
             productService.save(prod);
         }
@@ -805,7 +828,7 @@ public class StepController {
 
 
     //Method to prepare model atributes when user entered wrong input
-    private void prepareModelAtributesToRebookExperiment(final ModelMap model, Experiment experiment, String errorMessage, List<Step> userSteps, List<Step> otherSteps) {
+    private void prepareModelAtributesToRebookExperiment(final ModelMap model, Experiment experiment, String errorMessage) {
         model.addAttribute("errorMsg", errorMessage);
         model.addAttribute("experiment", experiment);
         model.addAttribute("allDevices", deviceService.findAll());
@@ -941,42 +964,52 @@ public class StepController {
             model, RedirectAttributes ra) {
 
         if (result.hasErrors()) {
-            ra.addFlashAttribute("Status", new String("Error"));
             ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type."));
-            return "redirect:/planning/experiments";
+            return "redirect:/planning/experiments/{id}";
         }
-        ExperimentType tempExperimentType = experimentType.getId() == null ? null : experimentTypeRepository.findById(experimentType.getId()).orElse(null);
+        ExperimentType tempExperimentType = experimentType.getId() == null ? null : experimentTypeService.findById(experimentType.getId()).orElse(null);
         if (tempExperimentType == null) {
             for (ExperimentType exptyp : experimentTypeService.findAll()) {
                 if (experimentType.getExpname().equals(exptyp.getExpname())) {
                     ra.addFlashAttribute("Status", new String("Error"));
                     ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nThis experiment type name is already occupied!"));
-                    return "redirect:/planning/experiments";
+                    return "redirect:/planning/experiments/put";
                 }
             }
+            for (StepType stepType : experimentType.getStepTypes()) {
+                if (stepType.getContinuity().getHours() < 0) {
+                    ra.addFlashAttribute("Status", new String("Error"));
+                    ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
+                    return "redirect:/planning/experiments/put";
+                }
+                if (stepType.getContinuity().getMinutes() > 59 || stepType.getContinuity().getMinutes() < 0) {
+                    ra.addFlashAttribute("Status", new String("Error"));
+                    ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
+                    return "redirect:/planning/experiments/put";
+                } else
+                    stepTypeService.saveNewStepType(stepType);
+            }
+            ra.addFlashAttribute("Status", new String("Success"));
+            ra.addFlashAttribute("Message", new String("Experiment type successfully added."));
         }
+        else{
 
 
         for (StepType stepType : experimentType.getStepTypes()) {
             if (stepType.getContinuity().getHours() < 0) {
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
-                return "redirect:/planning/experiments";
+                return "redirect:/planning/experiments/{id}";
             }
             if (stepType.getContinuity().getMinutes() > 59 || stepType.getContinuity().getMinutes() < 0) {
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
-                return "redirect:/planning/experiments";
+                return "redirect:/planning/experiments/{id}";
             } else
                 stepTypeService.saveNewStepType(stepType);
         }
-
-        if (tempExperimentType != null) {
             ra.addFlashAttribute("Status", new String("Success"));
             ra.addFlashAttribute("Message", new String("Experiment type successfully edited."));
-        } else {
-            ra.addFlashAttribute("Status", new String("Success"));
-            ra.addFlashAttribute("Message", new String("Experiment type successfully added."));
         }
         experimentTypeService.saveExperimentType(experimentType);
         return "redirect:/planning/experiments";

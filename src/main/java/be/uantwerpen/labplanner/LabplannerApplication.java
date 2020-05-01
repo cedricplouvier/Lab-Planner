@@ -1,10 +1,13 @@
 package be.uantwerpen.labplanner;
 
+import be.uantwerpen.labplanner.Service.NewSecurityService;
 import be.uantwerpen.labplanner.Service.StorageService;
-import be.uantwerpen.labplanner.common.service.SecurityService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +18,12 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
@@ -41,6 +46,7 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
         if (!registry.hasMappingForPattern("/webjars/**")) {
             registry.addResourceHandler("/webjars/**").addResourceLocations
                     ( "classpath:/META-INF/resources/webjars/");
+
         }
     }
 
@@ -68,13 +74,14 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
     protected static class AuthenticationSecurity extends
             GlobalAuthenticationConfigurerAdapter {
         @Autowired
-        private SecurityService securityService;
+        private NewSecurityService newSecurityService;
 
         @Override
         public void init(AuthenticationManagerBuilder auth) throws Exception
         {
-            auth.userDetailsService(securityService);
+            auth.userDetailsService(newSecurityService);
         }
+
     }
 
     @Bean
@@ -82,5 +89,6 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
         return (NoOpPasswordEncoder)
                 NoOpPasswordEncoder.getInstance();
     }
+
 
 }

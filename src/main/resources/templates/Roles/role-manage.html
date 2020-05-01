@@ -25,7 +25,7 @@
 
 <div class = "container">
     <div th:replace="navbar :: navbar"></div>
-    <form action="#" th:action="@{/usermanagement/roles/{id}(id=${role})}"
+    <form action="#" th:action="@{/usermanagement/roles/{id}(id=${role.id})}"
           th:object="${role}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
 

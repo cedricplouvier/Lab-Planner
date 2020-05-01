@@ -1,14 +1,10 @@
 package be.uantwerpen.labplanner.Model;
 
 import be.uantwerpen.labplanner.Repository.*;
-import be.uantwerpen.labplanner.common.model.stock.Product;
-import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.model.stock.Unit;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
-import be.uantwerpen.labplanner.common.repository.stock.ProductRepository;
-import be.uantwerpen.labplanner.common.repository.stock.TagRepository;
 import be.uantwerpen.labplanner.common.repository.users.PrivilegeRepository;
 import be.uantwerpen.labplanner.common.repository.users.RoleRepository;
 import be.uantwerpen.labplanner.common.repository.users.UserRepository;
@@ -20,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,8 +33,8 @@ public class DatabaseLoader {
     private final DeviceTypeRepository deviceTypeRepository;
     private final DeviceRepository deviceRepository;
     private final DeviceInformationRepository deviceInformationRepository;
-    private final ProductRepository productRepository;
-    private final TagRepository tagRepository;
+    private final OwnProductRepository productRepository;
+    private final OwnTagRepository tagRepository;
     private final StepRepository stepRepository;
     private final CompositionRepository compositionRepository;
     private final MixtureRepository mixtureRepository;
@@ -50,7 +47,7 @@ public class DatabaseLoader {
     private final ReportRepository reportRepository;
 
     @Autowired
-    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository, DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, ProductRepository productRepository, TagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository, PieceOfMixtureRepository pieceOfMixtureRepository, ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository, ExperimentRepository experimentRepository) {
+    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository, DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, OwnProductRepository productRepository, OwnTagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository, PieceOfMixtureRepository pieceOfMixtureRepository, ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository, ExperimentRepository experimentRepository) {
 
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
@@ -271,16 +268,16 @@ public class DatabaseLoader {
         roleRepository.save(administrator);
 
 
-        User u1 = new User("Cedric", "PW", "", "Cedric", "Plouvier", "20152267", "", "", null, null, null);
-        User u2 = new User("Ruben", "PW", "", "Ruben", "Joosen", "20164473", "", "", null, null, null);
-        User u3 = new User("Jaimie", "PW", "", "Jaimie", "Vranckx", "20155797", "", "", null, null, null);
-        User u4 = new User("Ali", "PW", "", "Ali", "Amir", "20163446", "", "", null, null, null);
-        User u5 = new User("Timo", "PW", "", "Timo", "Nelen", "S0162117", "", "", null, null, null);
-        User u6 = new User("Ondrej", "PW", "", "Ondrej", "Bures", "20160002", "", "", null, null, null);
-        User u7 = new User("Bachelor", "PW", "", "Bach", "Student", "20170001", "", "", null, null, null);
-        User u8 = new User("Master", "PW", "", "Mas", "Student", "20160009", "", "", null, null, null);
-        User u9 = new User("Researcher", "PW", "", "Researcher", "Developper", "20100001", "", "", null, null, null);
-        User admin = new User("admin", "admin", "", "admin", "admin", null, "", "", null, null, null);
+        User u1 = new User("Cedric", "PW", "cedric.plouvier@student.uantwerpen.be", "Cedric", "Plouvier", "20152267", "", "", null, null, null);
+        User u2 = new User("Ruben", "PW", "ruben.joosen@student.uantwerpen.be", "Ruben", "Joosen", "20164473", "", "", null, null, null);
+        User u3 = new User("Jaimie", "PW", "jaimie.vranckx@student.uantwerpen.be", "Jaimie", "Vranckx", "20155797", "", "", null, null, null);
+        User u4 = new User("Ali", "PW", "mohammad.amir2@student.uantwerpen.be", "Ali", "Amir", "20163446", "", "", null, null, null);
+        User u5 = new User("Timo", "PW", "timo.nelen@student.uantwerpen.be", "Timo", "Nelen", "S0162117", "", "", null, null, null);
+        User u6 = new User("Ondrej", "PW", "ondrej.bures@student.uantwerpen.be", "Ondrej", "Bures", "20160002", "", "", null, null, null);
+        User u7 = new User("Bachelor", "PW", "bachelor@student.uantwerpen.be", "Bach", "Student", "20170001", "", "", null, null, null);
+        User u8 = new User("Master", "PW", "master@student.uantwerpen.be", "Mas", "Student", "20160009", "", "", null, null, null);
+        User u9 = new User("Researcher", "PW", "researcher@uantwerpen.be", "Researcher", "Developper", "20100001", "", "", null, null, null);
+        User admin = new User("admin", "admin", "admin@uantwerpen.be", "admin", "admin", null, "", "", null, null, null);
         //Set<Role> roles = new HashSet<>();
         Set<Role> roles = new HashSet<>();
         roles.add(administrator);
@@ -460,37 +457,37 @@ public class DatabaseLoader {
 
 
         //create some products
-        Tag tag1 = new Tag("Aggregates");
-        List<Tag> tags1 = new ArrayList<>();
+        OwnTag tag1 = new OwnTag("Aggregates");
+        List<OwnTag> tags1 = new ArrayList<>();
         tags1.add(tag1);
         tagRepository.save(tag1);
-        Tag tag2 = new Tag("Bitumen");
-        List<Tag> tags2 = new ArrayList<>();
+        OwnTag tag2 = new OwnTag("Bitumen");
+        List<OwnTag> tags2 = new ArrayList<>();
         tags2.add(tag2);
         tagRepository.save(tag2);
-        Tag tag3 = new Tag("Consumables");
-        List<Tag> tags3 = new ArrayList<>();
+        OwnTag tag3 = new OwnTag("Consumables");
+        List<OwnTag> tags3 = new ArrayList<>();
         tags3.add(tag3);
         tagRepository.save(tag3);
-        Tag tag4 = new Tag("Other");
-        List<Tag> tags4 = new ArrayList<>();
+        OwnTag tag4 = new OwnTag("Other");
+        List<OwnTag> tags4 = new ArrayList<>();
         tags4.add(tag4);
         tagRepository.save(tag4);
-        Product pr1 = new Product("porfier63", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        OwnProduct pr1 = new OwnProduct("Gebroken Porfier 6,3/10", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3, new URL("https://nl.wikipedia.org/wiki/Porfier"));
         productRepository.save(pr1);
-        Product pr2 = new Product("porfier4", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        OwnProduct pr2 = new OwnProduct("Gebroken Porfier 4/6,3", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1, new URL("https://nl.wikipedia.org/wiki/Porfier"));
         productRepository.save(pr2);
-        Product pr3 = new Product("porfier2", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1);
+        OwnProduct pr3 = new OwnProduct("Gebroken Profier 2/4", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1, new URL("https://nl.wikipedia.org/wiki/Porfier"));
         productRepository.save(pr3);
-        Product pr4 = new Product("kalksteen", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3);
+        OwnProduct pr4 = new OwnProduct("Gewassen Kalksteen 0/2", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3, new URL("https://nl.wikipedia.org/wiki/Kalksteen"));
         productRepository.save(pr4);
-        Product pr5 = new Product("alzagrirondzan", lorem.getWords(20), 1.0, 1000.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags2);
+        OwnProduct pr5 = new OwnProduct("Alzagri Rond Zand 0/1", lorem.getWords(20), 1.0, 1000.0, 100.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags2, new URL("https://nl.wikipedia.org/wiki/Zand"));
         productRepository.save(pr5);
-        Product pr6 = new Product("duras", lorem.getWords(20), 1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        OwnProduct pr6 = new OwnProduct("Vulstof duras 2a", lorem.getWords(20), 1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4,new URL("https://nl.wikipedia.org/wiki/Duras"));
         productRepository.save(pr6);
-        Product pr7 = new Product("bitOpAggr", lorem.getWords(20), 1.0, 200.0, 25.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        OwnProduct pr7 = new OwnProduct("Bitumen op aggregaten", lorem.getWords(20), 1.0, 200.0, 25.0, 1.0, Unit.LITRE, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, new URL("https://nl.wikipedia.org/wiki/Bitumen"));
         productRepository.save(pr7);
-        Product pr8 = new Product("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4);
+        OwnProduct pr8 = new OwnProduct("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4,null);
         productRepository.save(pr8);
 
         Step s1 = new Step(u1, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
@@ -632,12 +629,14 @@ public class DatabaseLoader {
 
 
         //create mixtures and save them
-        Mixture m1 = new Mixture("APT-C", mix1, lorem.getWords(20), tags2);
+        Mixture m1 = new Mixture("APT-C", mix1, lorem.getWords(20), tags2, null, null);
         mixtureRepository.save(m1);
-        Mixture m2 = new Mixture("AB-4C", mix2, lorem.getWords(20), tags1);
+        Mixture m2 = new Mixture("AB-4C", mix2, lorem.getWords(20), tags1, null, null);
         mixtureRepository.save(m2);
-        Mixture m3 = new Mixture("SMA", mix3, lorem.getWords(20), tags4);
+        Mixture m3 = new Mixture("SMA", mix3, lorem.getWords(20), tags4, null, null);
         mixtureRepository.save(m3);
+
+
         //Continuities
         Continuity cont1 = new Continuity(0, 0, "No");
         continuityRepository.save(cont1);
@@ -700,7 +699,7 @@ public class DatabaseLoader {
 
         Report r1 = new Report("Autosaw is broken", lorem.getWords(25), userRepository.findByUsername("Timo").orElse(null));
         Report r2 = new Report("Fancy Title", lorem.getWords(10), userRepository.findByUsername("Ali").orElse(null));
-        Report r3 = new Report("Sand mixture is not in stock", lorem.getWords(30), userRepository.findByUsername("Ruben").orElse(null));
+        Report r3 = new Report("Sand mixture is not in stock", lorem.getWords(20), userRepository.findByUsername("Ruben").orElse(null));
         Report r4 = new Report("Lab was closed yesterday", lorem.getWords(20), userRepository.findByUsername("Master").orElse(null));
         Report r5 = new Report("Placeholder title", lorem.getWords(25), userRepository.findByUsername("Researcher").orElse(null));
 

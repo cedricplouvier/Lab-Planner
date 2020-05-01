@@ -2,8 +2,6 @@ package be.uantwerpen.labplanner.Service;
 
 import be.uantwerpen.labplanner.Model.Mixture;
 import be.uantwerpen.labplanner.Repository.MixtureRepository;
-import be.uantwerpen.labplanner.common.model.stock.Tag;
-import com.zaxxer.hikari.metrics.micrometer.MicrometerMetricsTracker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +34,30 @@ public class MixtureService {
     public Mixture save(Mixture mixture){
         return this.mixtureRepository.save(mixture);
     }
+
+    public void saveSome(Mixture mixture){
+
+        Mixture tempMix = mixture.getId() ==null? null: mixtureRepository.findById(mixture.getId()).orElse(null);
+        if (tempMix != null){
+            tempMix.setName(mixture.getName());
+            tempMix.setCompositions(mixture.getCompositions());
+            tempMix.setDescription(mixture.getDescription());
+            tempMix.setTags(mixture.getTags());
+            if(mixture.getImage() != null){
+                tempMix.setImage(mixture.getImage());
+            }
+            if(mixture.getDocument()!=null){
+                tempMix.setDocument(mixture.getDocument());
+            }
+
+            mixtureRepository.save(tempMix);
+
+        }
+        else {
+            mixtureRepository.save(mixture);
+        }
+    }
+    
 
     public void delete(Mixture mixture){
         this.mixtureRepository.delete(mixture);

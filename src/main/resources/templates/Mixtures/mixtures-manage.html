@@ -2,13 +2,105 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head th:replace="navbar :: head (title='#{Mixture  Management}')"></head>
 <body onload = "initPage()">
+<style>
+    .dropbtn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 16px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .dropbtn:hover, .dropbtn:focus {
+        background-color: #3e8e41;
+    }
+
+    #myInput {
+        box-sizing: border-box;
+        background-position: 14px 12px;
+        background-repeat: no-repeat;
+        padding: 14px 20px 12px 45px;
+        border: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    #myInput:focus {
+        outline: 3px solid #ddd;
+    }
+    #submitform { margin-top: 25px; }
+
+    #spacing { margin-top: 25px; }
+    #spacing2 { margin-top: 25px; }
+
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f6f6f6;
+        min-width: 230px;
+        overflow: auto;
+        border: 1px solid #ddd;
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown a:hover {
+        background-color: #ddd;
+    }
+
+
+</style>
+<script th:inline="javascript">
+
+    function addIngredientRow(products) {
+        var i = $('#compositionList tr').length;
+
+        var ingred = null;
+        for (let j = 0; j < products.length; j++) {
+            ingred += '<option class="dropdown-item" value="' + products[j].id + '" selected="selected">' + products[j].name + '</option>'
+        }
+        $('#compositionList')
+            .append(
+                '<tr>\n' +
+                '   <th>\n' +
+                '   <select required="" class=" form-control input-device" id="selectComposition" name="compositions[' + i + '].product">' +
+                '       <option hidden="" value="">Select product</option>' +
+                ingred +
+                '   </select>' +
+                '   </th>' +
+                '   <th>' +
+                '       <input type="number"  class=" form-control input-device" placeholder="Amount of ingredient" id="compositions' + i + '.amount" name="compositions[' + i + '].amount" required>' +
+                '   </th>' +
+                '</tr>');
+    }
+
+
+    function removeIngredientRow() {
+
+        var i = $('#compositionList tr').length;
+        if (i > 0) {
+            document.getElementById("compositionList").deleteRow(i - 1);
+        }
+    }
+</script>
 
 <div class = "container">
     <div th:replace="navbar :: navbar"></div>
 
 
     <h4 th:text="#{mixture.create}">New Mixture</h4>
-    <form action="#" th:action="@{/mixtures/{id}(id=${mixture})}"
+    <form  action="#" th:action="@{/mixtures/{id}(id=${mixture})}"
           th:object="${mixture}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
 
@@ -16,56 +108,156 @@
             <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>
             <div class="alert alert-secondary" role="alert" th:if="${amount}!=null" th:text="#{selected.amount} + ' '+ ${amount}+ ' %'"></div>
 
-            <label class="control-label" th:text="#{mixtures.name}"></label>
+            <h6 class="control-label" th:text="#{mixtures.name}"></h6>
             <input class="form-control" type = text th:field="*{name}"/>
 
-            <label class="control-label" th:text="#{product.description}"></label>
+            <h6 class="control-label" th:text="#{product.description}"></h6>
             <input class="form-control" type = text th:field="*{description}"/>
 
         </div>
-        <div>
-            <h6 th:text="#{mixtures.tag}">tags</h6>
+
+
+        <div class="form-row">
+            <div class="col">
+                <div class="form-check">
+                    <div>
+                        <h6 th:text="#{mixtures.tag}">tags</h6>
+                    </div>
+                    <div class="form-check">
+                        <input th:field ="*{tags}" class="form-check-input" type="checkbox"
+                               th:each="tag : ${allTags}"
+                               th:value="${{tag}}"
+                               th:utext="${tag.name} + '<br>'">
+                    </div>
+            </div>
+            </div>
+            <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+
+                <img style="max-height:200px; max-width:200px; overflow: hidden" th:src="@{${(mixture.getImage() != null ) ? '/files/images/'+mixture.getImage() : '/images/placeholder.jpg'}}" />
+
+            </div>
+
         </div>
-        <div class="form-check">
-            <input th:field ="*{tags}" class="form-check-input" type="checkbox"
-                   th:each="tag : ${allTags}"
-                   th:value="${{tag}}"
-                   th:utext="${tag.name} + '<br>'">
-        </div>
-        <div>
+
+
+        <div id="spacing">
             <h6 th:text="#{mixtures.ingredients}">Ingredients</h6>
         </div>
-        <div class="form-check">
-            <input th:field ="*{compositions}" class="form-check-input" type="checkbox"
-                   th:each="comp : ${allCompositions}"
-                   th:value="${{comp}}"
-                   th:utext="${comp.product.getName()} + '    ' + ${comp.getAmount()}+ ' %' + '<br>'">
+
+        <table class="table table-hover" style="text-align:center; font-size:90%;">
+            <thead>
+            <tr>
+                <th th:text="#{product}">Product</th>
+                <th th:text="#{mixtures.amount}+ ' (%)'">Amount</th>
+            </tr>
+            </thead>
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody id="compositionList">
+            <div th:if="(*{compositions}!=null)">
+                <tr th:each="composition, itemStat : *{compositions}">
+                    <th>
+                        <select required class=" form-control input-device" id="selectMixture"
+                                th:field="*{compositions[__${itemStat.index}__].product}">
+                            <option selected hidden value=""> Select composition
+                            </option>
+                            <option class="dropdown-item"
+                                    th:each="product  : ${allProducts}"
+                                    th:value="${{product}}"
+                                    th:text="${product.name}">
+                            </option>
+                        </select>
+                    </th>
+                    <th>
+                        <input type="number" class=" form-control input-device"
+                               th:field="*{compositions[__${itemStat.index}__].amount}"
+                               placeholder="Amount of product" required>
+                    </th>
+                </tr>
+
+            </div>
+            </tbody>
+        </table>
+
+        <div >
+            <a th:text="#{mixture.ingredInfo}">Ingredients</a>
+        </div>
+
+        <div>
+            <button style="margin-right: 10px;font-size: 90%" class="btn btn-outline-primary"
+                    type="button"
+                    th:text="#{composition.add}"
+                    th:onclick="addIngredientRow([[${allProducts}]])">
+            </button>
+
+            <button style="margin-right: 10px;font-size: 90%" class="btn btn-outline-secondary"
+                    type="button"
+                    th:text="#{composition.remove}"
+                    th:onclick="removeIngredientRow()">
+            </button>
+
         </div>
 
 
+        <div th:if="(${mixture.getDocument()!=null})" id="spacing2">
+            <a>Extra info:  </a>
+            <a   th:href="@{/files/pdfs/{name}(name=${mixture.getDocument()})}" th:text="${mixture.getDocument()}"></a>
+        </div>
 
-    <div>
+    <div id="submitform">
             <p>
-        <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
-                <a th:href="@{/mixtures}" th:text="#{close}" class="btn btn-secondary">Close</a>
-                <a th:href="@{/compositions}" th:text="#{manage.ingred}" class="btn btn-secondary">Close</a>
-
-
+        <button type="submit" th:text="#{mixture.save}" class="btn btn-primary">Save</button>
+                <a th:href="@{/products}" th:text="#{close}" class="btn btn-secondary">Close</a>
             </p>
     </div>
 
         <form class="form-inline">
 
-
-
-
-
     </form>
 
+        <form th:if="${mixture.id}!=null" method="POST" enctype="multipart/form-data"  th:action="@{/upload/mixtureImage/{mixtureId}(mixtureId=${mixture.id})}">
+            <div class="input-group mb-3">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" name="file" accept="image/png, image/jpeg, image/jpg" id="inputGroupFile02"/>
+                    <label class="custom-file-label" for="inputGroupFile02"  th:text="#{mixture.image}"></label>
+                </div>
+                <div class="input-group-append">
+                    <button class="btn btn-primary" id="upload-btn" disabled type="submit"   th:text="#{device.upload}"></button>
+                </div>
+            </div>
+            <script>
+                $('#inputGroupFile02').on('change',function(){
+                    //get the file name
+                    var fileName = $(this).val();
+                    //replace the "Choose a file" label
+                    $(this).next('.custom-file-label').html(fileName);
+                    $('#upload-btn').prop('disabled', false);
 
+                })
+            </script>
+        </form>
+        <form th:if="${mixture.id}!=null" method="POST" enctype="multipart/form-data"  th:action="@{/upload/mixturePdf/{mixtureId}(mixtureId=${mixture.id})}">
+            <div class="input-group mb-3">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" name="file" accept=".pdf" id="inputGroupFile03"/>
+                    <label class="custom-file-label" for="inputGroupFile03" th:value="${{mixture.getDocument()}}"  th:text="#{mixture.pdf}"></label>
+                </div>
+                <div class="input-group-append">
+                    <button class="btn btn-primary" id="upload-btn2" disabled type="submit"  th:text="#{device.upload}"></button>
+                </div>
+            </div>
+            <script>
+                $('#inputGroupFile03').on('change',function(){
+                    //get the file name
+                    var fileName2 = $(this).val();
+                    //replace the "Choose a file" label
+                    $(this).next('.custom-file-label').html(fileName2);
+                    $('#upload-btn2').prop('disabled', false);
 
-
-
+                })
+            </script>
+        </form>
+        <div class="alert alert-info" role="alert" th:if="${mixture.id}==null" th:text="#{product.savebeforeupload}"></div>
+        <div class="alert alert-info" role="alert" th:if="${mixture.id}==null" th:text="#{mixture.savebeforeinfo}"></div>
 
 
 

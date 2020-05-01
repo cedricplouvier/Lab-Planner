@@ -1,6 +1,5 @@
 package be.uantwerpen.labplanner.Model;
 
-import be.uantwerpen.labplanner.common.model.stock.Tag;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
@@ -17,6 +16,12 @@ public class Mixture extends AbstractPersistable<Long> {
 
     @Column
     private String description;
+
+    @Column
+    private String image;
+
+    @Column
+    private String document;
 
     @JsonIgnore
     @ManyToMany
@@ -46,13 +51,15 @@ public class Mixture extends AbstractPersistable<Long> {
                     referencedColumnName = "ID"
             )}
     )
-    private List<Tag> tags;
+    private List<OwnTag> tags;
 
-    public Mixture(String name, List<Composition> compositions, String description, List<Tag> tags){
+    public Mixture(String name, List<Composition> compositions, String description, List<OwnTag> tags, String image, String document){
         this.name = name;
         this.compositions = compositions;
         this.description = description;
         this.tags = tags;
+        this.image = image;
+        this.document = document;
 
     }
 
@@ -89,11 +96,11 @@ public class Mixture extends AbstractPersistable<Long> {
         this.name = name;
     }
 
-    public List<Tag> getTags() {
+    public List<OwnTag> getTags() {
         return tags;
     }
 
-    public void setTags(List<Tag> tags) {
+    public void setTags(List<OwnTag> tags) {
         this.tags = tags;
     }
 
@@ -115,4 +122,22 @@ public class Mixture extends AbstractPersistable<Long> {
     public void addComposition(Composition comp){
         this.compositions.add(comp);
     }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getDocument() {
+        return document;
+    }
+
+    public void setDocument(String document) {
+        this.document = document;
+    }
 }
+
+

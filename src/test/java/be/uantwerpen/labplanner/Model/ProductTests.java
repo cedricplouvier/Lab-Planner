@@ -2,13 +2,12 @@ package be.uantwerpen.labplanner.Model;
 
 
 import be.uantwerpen.labplanner.LabplannerApplication;
-import be.uantwerpen.labplanner.common.model.stock.Product;
-import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.model.stock.Unit;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,11 +17,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @WebAppConfiguration
 public class ProductTests {
 
-    private Product product;
+    private OwnProduct product;
 
     @Test
     public void TestProduct() throws Exception{
-        product = new Product();
+        product = new OwnProduct();
 
         assertNull(product.getName());
         assertNull(product.getTags());
@@ -36,8 +35,8 @@ public class ProductTests {
         product.setName(name);
         assertEquals(product.getName(), name);
 
-        List<Tag> tags= new ArrayList<>();
-        tags.add(new Tag("name"));
+        List<OwnTag> tags= new ArrayList<>();
+        tags.add(new OwnTag("name"));
         product.setTags(tags);
         assertEquals(product.getTags(), tags);
 
@@ -52,6 +51,10 @@ public class ProductTests {
         assertEquals(product.getLowStockLevel(),stocklevel);
         product.setReservedStockLevel(stocklevel);
         assertEquals(product.getReservedStockLevel(),stocklevel);
+
+        URL url = new URL("https://www.google.com");
+        product.setUrl(url);
+        assertEquals(product.getUrl(), url);
 
         //invalid stockelvel
 
