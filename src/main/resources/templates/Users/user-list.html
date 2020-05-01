@@ -75,9 +75,9 @@
                         th:utext="${role.name} + '<br />'"></a>
                     </td>
                     <td>
-                        <a th:href="@{/usermanagement/users/{id}/(id=${user.id})}"><span
+                        <a th:if="${!#sets.contains(user.roles,adminrole) or user.id == currentUserId}"  th:href="@{/usermanagement/users/{id}/(id=${user.id})}"><span
                                 class="fas fa-edit"></span></a>&nbsp;
-                        <a th:href="@{/usermanagement/users/{id}/delete(id=${user.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                        <a th:if="${!#sets.contains(user.roles,adminrole)}" th:href="@{/usermanagement/users/{id}/delete(id=${user.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
                             <span class="fas fa-trash" style="color: red" ></span> </a>
                     </td>
                 </tr>

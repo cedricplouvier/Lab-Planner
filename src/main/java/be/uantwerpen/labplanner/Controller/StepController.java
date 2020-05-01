@@ -71,6 +71,71 @@ public class StepController {
     @Autowired
     ExperimentRepository experimentservice;
 
+    private Map<Step,User> addedSteps = new HashMap<>();
+    private Map<Step,User> editedSteps = new HashMap<>();
+    private Map<Step,User> deletedSteps = new HashMap<>();
+
+    private Map<Experiment,User> addedExperiments = new HashMap<>();
+    private Map<Experiment,User> editedExperiments = new HashMap<>();
+    private Map<Experiment,User> deletedExperiments = new HashMap<>();
+
+    public Map<Step, User> getAddedSteps() {
+        return addedSteps;
+    }
+
+    public void setAddedSteps(Map<Step, User> addedSteps) {
+        this.addedSteps = addedSteps;
+    }
+
+    public Map<Step, User> getEditedSteps() {
+        return editedSteps;
+    }
+
+    public void setEditedSteps(Map<Step, User> editedSteps) {
+        this.editedSteps = editedSteps;
+    }
+
+    public Map<Step, User> getDeletedSteps() {
+        return deletedSteps;
+    }
+
+    public void setDeletedSteps(Map<Step, User> deletedSteps) {
+        this.deletedSteps = deletedSteps;
+    }
+
+    public Map<Experiment, User> getAddedExperiments() {
+        return addedExperiments;
+    }
+
+    public void setAddedExperiments(Map<Experiment, User> addedExperiments) {
+        this.addedExperiments = addedExperiments;
+    }
+
+    public Map<Experiment, User> getEditedExperiments() {
+        return editedExperiments;
+    }
+
+    public void setEditedExperiments(Map<Experiment, User> editedExperiments) {
+        this.editedExperiments = editedExperiments;
+    }
+
+    public Map<Experiment, User> getDeletedExperiments() {
+        return deletedExperiments;
+    }
+
+    public void setDeletedExperiments(Map<Experiment, User> deletedExperiments) {
+        this.deletedExperiments = deletedExperiments;
+    }
+
+    public void clearLists(){
+        addedSteps.clear();
+        editedSteps.clear();
+        deletedSteps.clear();
+        addedExperiments.clear();
+        editedExperiments.clear();
+        deletedExperiments.clear();
+    }
+
     private Logger logger = LoggerFactory.getLogger(StepController.class);
 
     //Populate
@@ -187,14 +252,14 @@ public class StepController {
         //check for valid input
         if ((step.getStart() == null || step.getEnd() == null || step.getStartHour() == null || step.getEndHour() == null) || (step.getStart().trim().equals("") || step.getEnd().trim().equals("") || step.getStartHour().trim().equals("") || step.getEndHour().trim().equals(""))) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save step."));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.inputError")));
             return "redirect:/planning/";
         }
 
         //check, double booking
         if (overlapCheck(step)) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save Experiment. Problem with double booking of device " + step.getDevice().getDevicename()));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.doubleBooking")));
             return "redirect:/planning/";
         }
 
@@ -225,10 +290,7 @@ public class StepController {
 
         if (result.hasErrors()) {
             ra.addFlashAttribute("Status", new String("Error"));
-            if (result.hasErrors()) {
-                ra.addFlashAttribute("Message", new String(result.getFieldError().toString()));
-            } else
-                ra.addFlashAttribute("Message", new String("Error while trying to save step."));
+            ra.addFlashAttribute("Message", new String(result.getFieldError().toString()));
             return "redirect:/planning/";
         }
 
@@ -267,17 +329,28 @@ public class StepController {
         if (!allowedToEdit) {
             //no rights, so error message & save nothing
             ra.addFlashAttribute("Status", "Error");
-            String message = new String("Student has no right to edit step");
-            ra.addFlashAttribute("Message", message);
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.notAllowed")));
             return "redirect:/planning/";
 
         }
 
+        boolean newStep = step.isNew();
 
         stepService.save(step);
+        if (newStep){
+            addedSteps.put(step,currentUser);
+        }
+        else {
+
+            if (editedSteps.containsKey(step)) {
+                editedSteps.replace(step, currentUser);
+            } else {
+                editedSteps.put(step, currentUser);
+            }
+        }
+
         ra.addFlashAttribute("Status", "Success");
-        String message = new String("Step has been added/edited.");
-        ra.addFlashAttribute("Message", message);
+        ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.success")));
         return "redirect:/planning/";
     }
 
@@ -301,12 +374,12 @@ public class StepController {
                 return "PlanningTool/step-manage";
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.EditError")));
                 return "redirect:/planning/";
             }
         } else {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.foundError")));
             return "redirect:/planning/";
         }
     }
@@ -354,6 +427,14 @@ public class StepController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
+        Step foundStepById = stepService.findById(id).orElse(null);
+        if (foundStepById == null){
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.foundError")));
+            return "redirect:/planning/";
+        }
+
+
         List<Step> allsteps = stepService.findAll();
         Set<Role> userRoles = user.getRoles();
         Role adminRol = roleService.findByName("Administrator").get();
@@ -362,11 +443,7 @@ public class StepController {
 
         boolean ownStep = false;
 
-        Step foundStepById = null;
-        for (Step tmpStep : allsteps) {
-            if (tmpStep.getId() == id)
-                foundStepById = tmpStep;
-        }
+
 
         //If Step is part of experiment, it can't be deleted
         if (foundStepById != null && isStepPartOfExperiment(foundStepById)) {
@@ -374,6 +451,16 @@ public class StepController {
             ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " tried to delete step that is part of experiment!"));
             logger.error(user.getUsername() + " tried to delete step that is part of experiment!");
         } else if (userRoles.contains(adminRol)) {
+            if (deletedSteps.containsKey(foundStepById)){
+                deletedSteps.replace(foundStepById,user);
+            }
+            else {
+                deletedSteps.put(foundStepById, user);
+            }
+
+
+            ra.addFlashAttribute("Status", new String("Success"));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
             stepService.delete(id);
         } else if (userRoles.contains(promotorRole)) {
             List<Relation> relations = relationService.findAll();
@@ -392,10 +479,18 @@ public class StepController {
                 }
             }
             if (ownStep) {
+                if (deletedSteps.containsKey(foundStepById)){
+                    deletedSteps.replace(foundStepById,user);
+                }
+                else {
+                    deletedSteps.put(foundStepById, user);
+                }
+                ra.addFlashAttribute("Status", new String("Success"));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
                 stepService.delete(id);
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " tried to delete someone elses step or step id doesn't exist"));
+                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " " + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleteError")));
                 logger.error(user.getUsername() + " tried to delete someone elses step or step id doesn't exist");
             }
 
@@ -409,13 +504,26 @@ public class StepController {
                 }
             }
             if (ownStep) {
+                if (deletedSteps.containsKey(foundStepById)){
+                    deletedSteps.replace(foundStepById,user);
+                }
+                else {
+                    deletedSteps.put(foundStepById, user);
+                }
+                ra.addFlashAttribute("Status", new String("Success"));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
                 stepService.delete(id);
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " tried to delete someone elses step or step id doesn't exist"));
+                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " " + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleteError")));
                 logger.error(user.getUsername() + " tried to delete someone elses step or step id doesn't exist");
             }
         }
+
+        //check if deleted step also in added or editedstep map & delete
+        addedSteps.remove(foundStepById);
+        editedSteps.remove(foundStepById);
+
         model.clear();
         return "redirect:/planning/";
     }
@@ -514,6 +622,17 @@ public class StepController {
                 productService.save(prod);
             }
 
+
+
+            // add deleted experiment to list
+            if (deletedExperiments.containsKey(experiment)){
+                deletedExperiments.replace(experiment,currentUser);
+            }
+            else {
+                deletedExperiments.put(experiment, currentUser);
+            }
+            addedExperiments.remove(experiment);
+            editedExperiments.remove(experiment);
 
             experimentService.delete(id);
             ra.addFlashAttribute("Status", new String("Success"));
@@ -721,7 +840,9 @@ public class StepController {
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
                 return "/PlanningTool/planning-exp-book";
             }
-            step.setUser(currentUser);
+            if (step.getUser() == null) {
+                step.setUser(currentUser);
+            }
             step.setStepType(experiment.getExperimentType().getStepTypes().get(experiment.getSteps().indexOf(step)));
             tmpListSteps.add(step);
 
@@ -797,8 +918,24 @@ public class StepController {
         experiment.setStartDate(tmpListSteps.get(0).getStart());
         experiment.setEndDate(tmpListSteps.get(tmpListSteps.size() - 1).getEnd());
 
+        //add edited experiment to logger
+        boolean newExperiment = experiment.isNew();
+
         //save experiment into database
         experimentService.saveExperiment(experiment);
+
+        if (newExperiment){
+            addedExperiments.put(experiment,currentUser);
+        }
+        else {
+
+            if (editedExperiments.containsKey(experiment)) {
+                editedExperiments.replace(experiment, currentUser);
+            } else {
+                editedExperiments.put(experiment, currentUser);
+            }
+        }
+
         ra.addFlashAttribute("Status", "Success");
         String message = new String("Experiment has been added/edited.");
         ra.addFlashAttribute("Message", message);

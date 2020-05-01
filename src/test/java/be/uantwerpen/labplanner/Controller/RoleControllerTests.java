@@ -119,6 +119,35 @@ public class RoleControllerTests {
 
    }
 
+    @Test
+    //TEst the validity of editing the role page
+    public void viewEditRoleNullTest() throws Exception {
+        Role role = new Role("testrol");
+        long id = 10;
+        role.setId(id);
+        List<Role> roles = new ArrayList<Role>();
+        roles.add(role);
+        Privilege p = new Privilege("test");
+        p.setId((long) 15);
+        List<Privilege> privileges = new ArrayList<Privilege>();
+        privileges.add(p);
+
+        when(roleService.findById(id)).thenReturn(Optional.empty());
+        when(privilegeService.findAll()).thenReturn(privileges);
+
+        //editing with existing id as input
+        mockMvc.perform(get("/usermanagement/roles/{id}",10))
+                .andExpect(status().isOk())
+                .andExpect(view().name("Roles/role-list"))
+                .andDo(print());
+
+        //wrong input
+        mockMvc.perform(get("/usermanagement/roles/{id}","fff"))
+                .andExpect(status().is4xxClientError())
+                .andDo(print());
+
+    }
+
    @Test
     //Ad role with non valid name
     public void AddNonValidNameRoleTest() throws Exception{
@@ -236,6 +265,10 @@ public class RoleControllerTests {
         long id = 10;
         role.setId(id);
 
+        Role role2 = new Role("testrole");
+        long id2 = 11;
+        role2.setId(id2);
+
         Set<Role> roles = new HashSet<Role>();
         roles.add(role);
 
@@ -246,6 +279,15 @@ public class RoleControllerTests {
 
         //Role is in Use
         when(userService.findAll()).thenReturn(users);
+        when(roleService.findById(id)).thenReturn(Optional.of(role));
+        when(roleService.findById(id2)).thenReturn(Optional.of(role2));
+
+        long idnull = 13;
+        when(roleService.findById(idnull)).thenReturn(Optional.empty());
+
+
+
+
         mockMvc.perform(get("/usermanagement/roles/{id}/delete","10"))
                 .andExpect(status().is(200))
                 .andDo(print())
@@ -255,11 +297,20 @@ public class RoleControllerTests {
 
         //Role is not in Use
         when(userService.findAll()).thenReturn(users);
-        mockMvc.perform(get("/usermanagement/roles/{id}/delete","11"))
+        mockMvc.perform(get("/usermanagement/roles/{id}/delete",id2))
                 .andExpect(status().is(302))
                 .andDo(print())
                 .andExpect(model().attributeDoesNotExist())
                 .andExpect(view().name("redirect:/usermanagement/roles"));
+
+
+        //no role
+        mockMvc.perform(get("/usermanagement/roles/{id}/delete",idnull))
+                .andExpect(status().is(200))
+                .andDo(print())
+                .andExpect(model().attribute("inUseError",notNullValue()))
+
+                .andExpect(view().name("Roles/role-list"));
 
         //wrong url input
         mockMvc.perform(get("/usermanagement/roles/{id}/delete","ff"))
