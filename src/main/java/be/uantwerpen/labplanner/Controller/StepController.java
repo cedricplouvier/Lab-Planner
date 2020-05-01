@@ -777,6 +777,13 @@ public class StepController {
             productService.save(prod);
         }
 
+        List<OwnProduct> products = productService.findAll();
+        for(OwnProduct tempProd: products){
+            if (tempProd.getStockLevel()<tempProd.getLowStockLevel()){
+                ///CODE FOR LOWSTOCK ALERT HERE.
+            }
+        }
+
         //Save steps into database
         for (Step step : tmpListSteps) {
             stepService.saveSomeAttributes(step);
