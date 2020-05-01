@@ -2,13 +2,11 @@ package be.uantwerpen.labplanner.Controller;
 
 
 import be.uantwerpen.labplanner.LabplannerApplication;
-import be.uantwerpen.labplanner.Model.Device;
-import be.uantwerpen.labplanner.Model.Experiment;
-import be.uantwerpen.labplanner.Model.Relation;
-import be.uantwerpen.labplanner.Model.Step;
+import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Service.DeviceService;
 import be.uantwerpen.labplanner.Service.RelationService;
 import be.uantwerpen.labplanner.Service.StepService;
+import be.uantwerpen.labplanner.common.model.stock.Product;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
@@ -215,4 +213,33 @@ public class EmailControllerTests {
         emailController.sendPeriodicMail();
 
     }
+
+    @Test
+    public void testLowStockMail() throws Exception{
+        Role admin = new Role("Adminsitrator");
+        admin.setId((long) 32);
+        when(roleService.findByName("Administrator")).thenReturn(Optional.of(admin));
+
+        User user = new User("test","test");
+        user.setFirstName("first");
+        user.setLastName("last");
+        user.setEmail("ruben.joosen@student.uantwerpen.be");
+        user.setId((long) 10);
+        Set<Role> roles = new HashSet<>();
+        roles.add(admin);
+
+        user.setRoles(roles);
+
+        List<User> users = new ArrayList<>();
+        users.add(user);
+        when(userService.findAll()).thenReturn(users);
+        OwnProduct p = new OwnProduct();
+        p.setName("test");
+        p.setLowStockLevel((double) 10);
+        p.setStockLevel((double) 5);
+        emailController.sendLowStockEmail(p,user);
+
+
+    }
+
 }
