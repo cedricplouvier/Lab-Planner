@@ -423,7 +423,7 @@ public class StepController {
     @RequestMapping(value = "/planning/experiments", method = RequestMethod.GET)
     public String viewShowExperiments(final ModelMap model) {
         model.addAttribute("allExperiments", experimentService.findAll());
-        model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
+        model.addAttribute("allExperimentTypes", allFixedExperimentTypes());
         return "PlanningTool/planning-exp-list";
     }
 
@@ -554,6 +554,7 @@ public class StepController {
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("experiment", new Experiment());
+        model.addAttribute("allExperiments", allFixedExperimentTypes());
         model.addAttribute("holidays", holidays);
 
 
