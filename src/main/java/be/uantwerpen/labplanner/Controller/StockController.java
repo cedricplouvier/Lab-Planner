@@ -121,6 +121,7 @@ public class StockController {
 
 
 
+
     @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value="/products/put", method= RequestMethod.GET)
     public String viewCreateProducts(final ModelMap model){
@@ -141,6 +142,31 @@ public class StockController {
         return "Stock/products-manage";
     }
 
+    public String checkProductValidity(OwnProduct ownProduct) {
+        if (ownProduct.getName().length() == 0) {
+            return "valid.name";
+        }
+        if(ownProduct.getDescription().length() == 0 ){
+            return "valid.description";
+        }
+        if(ownProduct.getProperties().length() == 0 ){
+            return "valid.properties";
+        }
+        if(ownProduct.getStockLevel() < 0){
+            return "valid.stock";
+        }
+        if(ownProduct.getLowStockLevel() < 0){
+            return "valid.lowstock";
+        }
+        if(ownProduct.getReservedStockLevel() < 0){
+            return "valid.reservedstock";
+        }
+        if(ownProduct.getTags().size() == 0){
+            return "valid.tag";
+        }
+        else return "valid";
+    }
+
     @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value={"/products/", "/products/{id}"},
             method= RequestMethod.POST)
@@ -158,68 +184,16 @@ public class StockController {
             }
         }
 
-        if(ownProduct.getName().length() == 0 ){
+        String errorKey = checkProductValidity(ownProduct);
+        if(!errorKey.equals("valid")){
             model.addAttribute("allTags", tagService.findAll());
             model.addAttribute("product",ownProduct);
-            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.name"));
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString(errorKey));
             model.addAttribute("units", Unit.values());
 
             return "Stock/products-manage";
         }
 
-        if(ownProduct.getDescription().length() == 0 ){
-            model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("product",ownProduct);
-            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.description"));
-            model.addAttribute("units", Unit.values());
-
-            return "Stock/products-manage";
-        }
-
-        if(ownProduct.getProperties().length() == 0 ){
-            model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("product",ownProduct);
-            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.properties"));
-            model.addAttribute("units", Unit.values());
-
-            return "Stock/products-manage";
-        }
-
-        if(ownProduct.getStockLevel() < 0){
-            model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("product",ownProduct);
-            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.stock"));
-            model.addAttribute("units", Unit.values());
-
-            return "Stock/products-manage";
-        }
-
-        if(ownProduct.getLowStockLevel() < 0){
-            model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("product",ownProduct);
-            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.lowstock"));
-            model.addAttribute("units", Unit.values());
-
-            return "Stock/products-manage";
-        }
-
-        if(ownProduct.getReservedStockLevel() < 0){
-            model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("product",ownProduct);
-            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.reservedstock"));
-            model.addAttribute("units", Unit.values());
-
-            return "Stock/products-manage";
-        }
-
-        if(ownProduct.getTags().size() == 0){
-            model.addAttribute("allTags", tagService.findAll());
-            model.addAttribute("product",ownProduct);
-            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("valid.tag"));
-            model.addAttribute("units", Unit.values());
-
-            return "Stock/products-manage";
-        }
 
         if(NameIsUsed != null){
             model.addAttribute("allTags", tagService.findAll());

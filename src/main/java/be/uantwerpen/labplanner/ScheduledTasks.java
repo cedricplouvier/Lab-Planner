@@ -38,7 +38,7 @@ public class ScheduledTasks {
         //iterate over all experiments
         for (Experiment exp : experimentService.findAll()) {
             //Get the data of the end experiment
-            String endDate = exp.getSteps().get(exp.getSteps().size() - 1).getEnd();
+            String endDate = exp.getEndDate();
             if(endDate.equals(today)){
                 for(PieceOfMixture pom : exp.getPiecesOfMixture()){
                     Mixture mix = pom.getMixture();

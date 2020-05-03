@@ -826,9 +826,9 @@ public class StepController {
         //Save steps into database
         for (Step step : tmpListSteps) {
             stepService.saveSomeAttributes(step);
-            System.out.println(step.getEnd());
         }
         experiment.setSteps(tmpListSteps);
+
 
         //Save piecesOfExperiment in database
         if (experiment.getPiecesOfMixture() != null) {
