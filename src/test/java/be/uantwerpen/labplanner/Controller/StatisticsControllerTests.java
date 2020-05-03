@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 
+import java.text.ParseException;
 import java.util.*;
 
 import static org.mockito.Mockito.when;
@@ -280,10 +281,11 @@ public class StatisticsControllerTests {
 
     //Should probably be divided in different test for each possible outcome
     @Test
-    public void calculateDeviceHoursByYearAndMonthTest(){
+    public void calculateDeviceHoursByYearAndMonthTest() throws ParseException {
 
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2020");
+        model.addAttribute("selectedTimePeriod","All");
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
         //calculate for month i if same month & same day
