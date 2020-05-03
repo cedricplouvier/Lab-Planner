@@ -337,6 +337,7 @@ public class StockControllerTests {
         OwnProduct product = new OwnProduct();
         Long id = 519L;
         product.setId(id);
+        when(productService.exists(id)).thenReturn(true);
         mockMvc.perform(get("/products/{id}",product.getId()))
                 .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
@@ -483,7 +484,7 @@ public class StockControllerTests {
     public void testViewEditTag() throws Exception{
         OwnTag tag = new OwnTag();
         tag.setId(586L);
-
+        when(tagService.exists(tag.getId())).thenReturn(true);
         mockMvc.perform(get("/tags/{id}",tag.getId()))
                 .andExpect(view().name("Tags/tags-manage"))
                 .andDo(print());
@@ -568,6 +569,7 @@ public class StockControllerTests {
     public void testViewEditMixture() throws Exception{
         Mixture mixture = new Mixture();
         mixture.setId(585L);
+        when(mixtureService.exists(mixture.getId())).thenReturn(true);
         mockMvc.perform(get("/mixtures/{id}",mixture.getId()))
                 .andExpect(view().name("Mixtures/mixtures-manage"))
                 .andDo(print());
@@ -713,6 +715,7 @@ public class StockControllerTests {
 
     @Test
     public void viewMixtureInfoTest() throws  Exception{
+        when(mixtureService.exists(10L)).thenReturn(true);
         mockMvc.perform(get("/mixtures/info/{id}","10"))
                 .andExpect(view().name("Mixtures/mixtures-info"))
                 .andDo(print());
