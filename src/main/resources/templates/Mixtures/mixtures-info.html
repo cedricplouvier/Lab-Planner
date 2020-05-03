@@ -19,7 +19,7 @@
     <div th:replace="navbar :: navbar"></div>
     <div class="row">
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
-            <a href="/products" th:text="#{close}" class="btn btn-primary">Close</a>
+            <a th:href="@{/products}" th:text="#{close}" class="btn btn-primary">Close</a>
         </div>
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
             <h2 th:text="#{mixtures.info}+ ': ' + ${mixture.getName()}">Mixture Info </h2>
@@ -29,7 +29,7 @@
     <div class="row">
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
 
-            <img th:src="${'/images/placeholder.jpg'}" />
+            <img style="max-height:450px; max-width:450px; overflow: hidden" th:src="@{${(mixture.getImage() != null) ? '/files/images/'+mixture.getImage() : '/images/placeholder.jpg'}}" />
 
         </div>
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
@@ -70,6 +70,14 @@
 
                 </div>
             </div>
+            <div th:if="(${mixture.getDocument()!=null})"  class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"> <a>Extra info:</a>  </h5>
+                    <div id="spacing2">
+                        <a   th:href="@{/files/pdfs/{name}(name=${mixture.getDocument()})}" th:text="${mixture.getDocument()}"></a>
+                    </div>
+                </div>
+            </div>
             <div class="card bg-light mb-3">
                 <div class="card-body">
                     <h5 class="card-title"> <a th:text="#{mixtures.tag}">Tags</a>  </h5>
@@ -79,6 +87,9 @@
                     </a>
                 </div>
             </div>
+
+
+
 
 
 

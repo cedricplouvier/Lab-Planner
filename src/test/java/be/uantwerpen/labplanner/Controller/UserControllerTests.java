@@ -64,7 +64,7 @@ public class UserControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View User list
     public void ViewUserListTest() throws Exception{
         User user = new User("admin","admin");
@@ -80,7 +80,7 @@ public class UserControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     public void testPasswordSave()throws Exception{
         User u = new User("test","test");
         u.setId((long) 34);
@@ -107,6 +107,17 @@ public class UserControllerTests {
         u.setPassword("TESTtest123");
         mockMvc.perform(post("/password").flashAttr("user",u))
                 .andExpect(model().attribute("PWError",nullValue()));
+
+    }
+
+    @Test
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
+    public void testPasswordWrongIdSave()throws Exception{
+        User u = new User("test","test");
+        u.setId((long) 33);
+
+        mockMvc.perform(post("/password").flashAttr("user",u))
+                .andExpect(model().attribute("PWError",notNullValue()));
 
 
 
@@ -135,7 +146,7 @@ public class UserControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     public void VieuwChangePasswordTest() throws Exception{
         mockMvc.perform(get("/password"))
                 .andExpect(status().isOk())
@@ -145,7 +156,7 @@ public class UserControllerTests {
 
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //TEst the validity of editing the user page
     public void viewEditUserTest() throws Exception {
         User user = new User("admin","admin");
@@ -186,7 +197,7 @@ public class UserControllerTests {
 
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //TEst the validity of editing the user page
     public void viewEditOtherAdminTest() throws Exception {
         User user = new User("admin","admin");
@@ -219,7 +230,7 @@ public class UserControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //TEst the validity of editing the user page
     public void viewEditUserNullTest() throws Exception {
         User user = new User("admin","admin");
@@ -476,7 +487,7 @@ public class UserControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
 
     //test for deleting
     public void DeleteUserRelationTest() throws Exception {
@@ -515,7 +526,7 @@ public class UserControllerTests {
     }
 
         @Test
-        @WithUserDetails("Ruben")
+        @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
 
         //test for deleting
     public void DeleteUserTest() throws Exception{
@@ -597,7 +608,7 @@ public class UserControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
 
     //test for deleting
     public void DeleteAdminTest() throws Exception {
