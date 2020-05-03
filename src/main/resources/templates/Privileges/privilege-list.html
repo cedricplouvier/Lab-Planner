@@ -28,8 +28,8 @@
     <div th:replace="navbar :: navbar"></div>
     <div class="content">
         <div id="privilege-list">
-            <a th:href="@{/usermanagement/privileges/put}" class="btn btn-primary"
-               th:text="#{privileges.create}"></a>
+<!--            <a th:href="@{/usermanagement/privileges/put}" class="btn btn-primary"-->
+<!--               th:text="#{privileges.create}"></a>-->
 
             <!-- still problem when u want to delete a role when this role is in use. -->
             <a th:href="@{/usermanagement/users}" class="btn btn-outline-secondary"
@@ -43,7 +43,6 @@
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th th:text="#{privileges.id}"></th>
                     <th th:text="#{privileges.name}"></th>
                     <th th:text="#{privileges.description}"></th>
                     <th th:text="#{quickEdit}"></th>
@@ -57,14 +56,13 @@
 
                 <tbody class="list" id="PrivilegeTable">
                 <tr th:each="privilege : ${allPrivileges}">
-                    <td class="ID" th:value="${privilege.id}" th:text="${privilege.id }"></td>
                     <td class="Name" th:value="${privilege.name}" th:text="${privilege.name }"></td>
                     <td class="Description" th:value="${privilege.description}" th:text="${privilege.description }"></td>
                     <td>
                         <a th:href="@{/usermanagement/privileges/{id}/(id=${privilege.id})}"><span
                                 class="fas fa-edit"></span></a>&nbsp;
-                        <a th:href="@{/usermanagement/privileges/{id}/delete(id=${privilege.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\');'">
-                            <span style="color: red" class="fas fa-trash"></span></a>
+<!--                        <a th:href="@{/usermanagement/privileges/{id}/delete(id=${privilege.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\');'">-->
+<!--                            <span style="color: red" class="fas fa-trash"></span></a>-->
                     </td>
                 </tr>
                 </tbody>
