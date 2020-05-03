@@ -70,6 +70,10 @@
                 '   <th>' +
                 '       <input type="number" min="0" step="0.01" class=" form-control input-device" placeholder="Amount of mixture" id="piecesOfMixture' + i + '.mixtureAmount" name="piecesOfMixture[' + i + '].mixtureAmount" required>' +
                 '   </th>' +
+                '<th>' +
+                '    <p style="text-align: center " class=" form-control input-device"' +
+                '           th:text="#{kg}" disabled>kg' +
+                '</th>'+
                 '   <th>' +
                 '       <input class=" form-control input-device" placeholder="Mixture comment" id="piecesOfMixture' + i + '.mixtureComment" name="piecesOfMixture[' + i + '].mixtureComment">' +
                 '   </th>' +
@@ -407,6 +411,10 @@
                         <input type="number" min="0" step="0.01" class=" form-control input-device"
                                th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
                                placeholder="Amount of mixture" required>
+                    </th>
+                    <th>
+                        <p style="text-align: center " class=" form-control input-device"
+                           th:text="#{kg}" disabled>
                     </th>
                     <th>
                         <input class=" form-control input-device"

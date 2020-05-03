@@ -990,7 +990,6 @@ public class StepController {
         HolidayManager manager = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
         Set<Holiday> holidays = manager.getHolidays(Calendar.getInstance().get(Calendar.YEAR));
         model.addAttribute("holidays", holidays);
-
         model.addAttribute("errorMsg", errorMessage);
         model.addAttribute("experiment", experiment);
         model.addAttribute("allDevices", deviceService.findAll());
@@ -1000,7 +999,6 @@ public class StepController {
         model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("otherSteps", otherSteps);
-
         model.addAttribute("allExperimentTypes", allFixedExperimentTypes());
     }
 
@@ -1010,7 +1008,6 @@ public class StepController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         Experiment experiment = experimentService.findById(id).orElse(null);
-
         if (experimentService.findById(id).isPresent()) {
             //also check for Researcher.
             Role adminole = roleService.findByName("Administrator").get();
@@ -1244,9 +1241,6 @@ public class StepController {
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
         DateTime startDate = formatter.parseDateTime(step.getStart() + " " + step.getStartHour());
         DateTime endDate = formatter.parseDateTime(step.getEnd() + " " + step.getEndHour());
-        int tmpH = 1000 * 60 * 60 * stepType.getFixedTimeHours();
-        int tmpM = 1000 * 60 * stepType.getFixedTimeMinutes();
-        long tmp = (endDate.getMillis() - startDate.getMillis());
         //Check if selected dates fulfills fixedTime needs
         switch (stepType.getFixedTimeType()) {
             case "Equal":
