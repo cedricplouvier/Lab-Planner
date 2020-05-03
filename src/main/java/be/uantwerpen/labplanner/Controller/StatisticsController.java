@@ -70,7 +70,7 @@ public class StatisticsController {
 
     @ModelAttribute("selectedTimePeriod")
     private String selectTimePeriod(){
-        return "Future";
+        return "Started";
     }
 
     @ModelAttribute("selectedDevices")
@@ -156,6 +156,11 @@ public class StatisticsController {
         return new ArrayList<>(Arrays.asList("Device hours by month","Device occupancy rate in hours","Device occupancy rate in days"));
     }
 
+    @ModelAttribute("selectableTimePeriods")
+    public List<String> selectableTimePeriods() {
+        return new ArrayList<>(Arrays.asList("Started","All","Future"));
+    }
+
     float amountOfWorkDaysInYear = 200;
     float labOpeningTime = 8;
     float labClosingTime = 20;
@@ -166,14 +171,8 @@ public class StatisticsController {
     public String showStatisticsPage(final ModelMap model) throws ParseException {
         List<Device> listSelectedDevices = (List) model.getAttribute("selectedDevices");
         List<int[]> totalHours = (List) model.getAttribute("totalHours");
-        List<int[]> totalHoursPast = (List) model.getAttribute("totalHoursPast");
-        List<int[]> totalHoursFuture = (List) model.getAttribute("totalHoursFuture");
         List<Float> occupancyDevicesHours = (List) model.getAttribute("occupancyDevicesHours");
-        List<Float> occupancyDevicesHoursPast = (List) model.getAttribute("occupancyDevicesHoursPast");
-        List<Float> occupancyDevicesHoursFuture = (List) model.getAttribute("occupancyDevicesHoursFuture");
         List<Float> occupancyDevicesDays = (List) model.getAttribute("occupancyDevicesDays");
-        List<Float> occupancyDevicesDaysPast = (List) model.getAttribute("occupancyDevicesDaysPast");
-        List<Float> occupancyDevicesDaysFuture = (List) model.getAttribute("occupancyDevicesDaysFuture");
 
         List<Device> devices = deviceService.findAll();
         List<DeviceType> deviceTypes = deviceTypeService.findAll();
@@ -236,9 +235,11 @@ public class StatisticsController {
         model.addAttribute("deviceCounter");
         model.addAttribute("selectableYears");
         model.addAttribute("selectedYear");
+        model.addAttribute("selectedTimePeriod");
 
         model.addAttribute("selectableGraphTypes");
         model.addAttribute("selectedTypeOfGraph");
+        model.addAttribute("selectableTimePeriods");
 
         return "Statistics/statistics";
     }
@@ -360,6 +361,13 @@ public class StatisticsController {
     }
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
+    @RequestMapping("/statistics/statistics/getSelectedTimePeriod")
+    public String getSelectedTimePeriod(final ModelMap model, String selectedTimePeriod){
+        model.addAttribute("selectedTimePeriod", selectedTimePeriod);
+        return "redirect:/statistics/statistics/refreshYear";
+    }
+
+    @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/refreshYear")
     public String refreshYear(final ModelMap model) throws ParseException {
         List<Device> listSelectedDevices = (List) model.getAttribute("selectedDevices");
@@ -443,7 +451,7 @@ public class StatisticsController {
             Date thisStepDateStart = formatDateHourMin.parse(devStep.getStart() + " " + devStep.getStartHour());
             Date thisStepDateEnd = formatDateHourMin.parse(devStep.getEnd() + " " + devStep.getEndHour());
 
-            if(selectedTimePeriod.matches("Past")) {
+            if(selectedTimePeriod.matches("Started")) {
                 if (thisStepDateStart.before(todaysDate)) {
                     for (int i = 0; i < months.length; i++) {
                         if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
@@ -691,7 +699,7 @@ public class StatisticsController {
 
             Date thisStepDateStart = formatDateHourMin.parse(devStep.getStart() + " " + devStep.getStartHour());
 
-            if(selectedTimePeriod.matches("Past")) {
+            if(selectedTimePeriod.matches("Started")) {
                 if(thisStepDateStart.before(todaysDate)) {
                     if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
                         String startDay = getStepDayStart(devStep);
@@ -890,7 +898,7 @@ public class StatisticsController {
 
             Date thisStepDateStart = formatDateHourMin.parse(devStep.getStart() + " " + devStep.getStartHour());
 
-            if(selectedTimePeriod.matches("Past")) {
+            if(selectedTimePeriod.matches("Started")) {
                 if(thisStepDateStart.before(todaysDate)) {
                     String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
                     if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
