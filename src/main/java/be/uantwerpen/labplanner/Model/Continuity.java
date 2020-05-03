@@ -22,7 +22,7 @@ public class Continuity extends AbstractPersistable<Long> {
         type = "No";
         hours = 0;
         minutes = 0;
-        directionType = "Before";
+        directionType = "After";
     }
 
     public Continuity(int hours, int minutes, String type, String directionType) {

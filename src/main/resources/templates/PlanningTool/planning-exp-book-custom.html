@@ -147,7 +147,6 @@
                     '</option>';
             }
         }
-        var fixedLengthText = a.stepTypes[i].hasFixedLength ? a.stepTypes[i].fixedTimeHours + ':' + a.stepTypes[i].fixedTimeMinutes : 'No'
         $('#list')
             .append(
                 '<tr class="row' + i + '" id="row' + i + '">' +
@@ -188,17 +187,32 @@
                 '       <input required="" style="width: 100%; font-size:80%;" type="time" id="startHour' + i + '" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + i + '].startHour">' +
                 '        <input required="" style="width: 100%; font-size:80%; " type="time" id="endHour' + i + '" class="form-control float-right input-hour" placeholder="End hour" name="steps[' + i + '].endHour">' +
                 '   </td> ' +
-                '   <td style="width: 10%; font-size:80%; text-align:center" id="continuity' + i + '" name="continuity" value="">No ' +
+                '   <td> '+
                 '   </td> ' +
-                '   <td style="width: 10%; font-size:80%; text-align:center" id="fixedStepLength' + i + '" name="fixedStepLength" value=""> ' + fixedLengthText +
+                '   <td style="width: 10%; font-size:80%; text-align:center" id="fixedStepLength' + i + '" name="fixedStepLength" value=""> No ' +
                 '   </td> ' +
                 '   <td>' +
                 '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + i + '].comment" value="" >' +
                 '   </td> ' +
                 '   <td>' +
-                '       <button style="width: 100%; font-size:80%;" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + i + ')" >Choose in calendar</button>' +
+                '       <button style="width: 100%; font-size:80%; "type="button" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + i + ')" >Choose in calendar</button>' +
                 '   </td>' +
-                '</tr>');
+                '</tr>' +
+                '<tr>' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '   <td style="width: 10%; font-size:80%; text-align:center" id="continuity' + i + '" name="continuity" value="">No ' +
+                '    </td> ' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '</tr>'
+            );
     }
 
     function removeStepsRows() {
@@ -207,7 +221,10 @@
         var rowCount = table.rows.length;
 
         if (rowCount > 0) {
+            //delete stepType row
             table.deleteRow(rowCount - 1);
+            //delete continuity
+            table.deleteRow(rowCount - 2);
         }
     }
 
@@ -254,6 +271,11 @@
                             '</option>';
                     }
                 }
+
+                // set continuity text if time steptype has fixed time, otherwise set to 'No'
+                var continuityText = a.stepTypes[i].continuity.type != "No" ? a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '<br />' + a.stepTypes[i].continuity.type + '<br />' + a.stepTypes[i].continuity.directionType + '' : 'No';
+                // set fixed length text if time steptype has fixed time, otherwise set to 'No'
+                var fixedLengthText = a.stepTypes[i].hasFixedLength ? a.stepTypes[i].fixedTimeHours + ':' + a.stepTypes[i].fixedTimeMinutes : 'No'
                 var index = i + tableLength
                 $('#list')
                     .append(
@@ -295,14 +317,30 @@
                         '       <input required="" style="width: 100%; font-size:80%;" type="time" id="startHour' + index + '" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + index + '].startHour">' +
                         '        <input required="" style="width: 100%; font-size:80%; " type="time" id="endHour' + index + '" class="form-control float-right input-hour" placeholder="End hour" name="steps[' + index + '].endHour">' +
                         '   </td> ' +
-                        '   <td style="width: 10%; font-size:80%; text-align:center" id="continuity' + index + '" name="continuity" value=""> ' + a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '<br />' + a.stepTypes[i].continuity.type + '<br />' + a.stepTypes[i].continuity.directionType + '' +
+                        '   <td>' +
+                        '   </td> ' +
+                        '   <td style="width: 10%; font-size:80%; text-align:center" id="fixedStepLength' + index + '" name="fixedStepLength" value=""> ' + fixedLengthText + '<br />' + a.stepTypes[i].fixedTimeType +
                         '   </td> ' +
                         '   <td>' +
                         '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + index + '].comment" value="" >' +
                         '   </td> ' +
                         '   <td>' +
-                        '       <button style="width: 100%; font-size:80%;" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + index + ')" >Choose in calendar</button>' +
+                        '       <button style="width: 100%; font-size:80%;" type="button" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + index + ')" >Choose in calendar</button>' +
                         '   </td>' +
+                        '</tr>' +
+                        '<tr>' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '    <td style="width: 10%; font-size:80%; text-align:center" id="continuity' + i + '" name="continuity" value=""> ' + continuityText +
+                        '    </td> ' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '    <td></td>' +
                         '</tr>');
             }
         } else {
@@ -544,116 +582,141 @@
             <tbody id="list" class="list" style=" font-size:100%;">
 
             <div th:if="(*{experimentType}!=null)">
+                <div th:each="stepType, itemStat : *{experimentType.stepTypes}">
+                    <input id="expType" th:type="hidden"
+                           th:field="*{{experimentType}}">
+                    <tr>
+                        <input id="step" th:type="hidden"
+                               th:field="*{steps[__${itemStat.index}__].id}">
+                        <input th:type="hidden" th:field="*{steps[__${itemStat.index}__].user}"/>
+                        <input id="stepType" th:type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].id}">
+                        <td style="vertical-align:center;">
 
-                <input id="expType" th:type="hidden"
-                       th:field="*{{experimentType}}">
-                <tr th:each="stepType, itemStat : *{experimentType.stepTypes}">
-                    <input id="step" th:type="hidden"
-                           th:field="*{steps[__${itemStat.index}__].id}">
-                    <input id="stepType" th:type="hidden"
-                           th:field="*{experimentType.stepTypes[__${itemStat.index}__].id}">
-                    <td style="vertical-align:center;">
+                            <input required style="font-size:80%;" class=" form-control input-device"
+                                   th:field="*{experimentType.stepTypes[__${itemStat.index}__].stepTypeName}"
+                                   placeholder="Name">
+                        </td>
 
-                        <input required style="font-size:80%;" class=" form-control input-device"
-                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].stepTypeName}"
-                               placeholder="Name">
-                    </td>
+                        <td style="vertical-align:center;">
+                            <p th:text="#{type}"></p>
+                            <p th:text="#{device}"></p>
+                        </td>
+                        <td style="vertical-align:center;">
 
-                    <td style="vertical-align:center;">
-                        <p th:text="#{type}"></p>
-                        <p th:text="#{device}"></p>
-                    </td>
-                    <td style="vertical-align:center;">
+                            <select required style="font-size:80%;" class="form-control input-device"
+                                    id="selectDeviceType"
+                                    th:field="*{experimentType.stepTypes[__${itemStat.index}__].deviceType}"
+                                    th:onchange="refreshDevices(this)">
+                                <option selected hidden th:text="#{select}" value=""> Select
+                                </option>
+                                <option class="dropdown-item"
+                                        th:each="deviceType  : ${allDeviceTypes}"
+                                        th:value="${{deviceType}}"
+                                        th:text="${deviceType.deviceTypeName}">
+                                </option>
+                            </select>
 
-                        <select required style="font-size:80%;" class="form-control input-device" id="selectDeviceType"
-                                th:field="*{experimentType.stepTypes[__${itemStat.index}__].deviceType}"
-                                th:onchange="refreshDevices(this)">
-                            <option selected hidden th:text="#{select}" value=""> Select
-                            </option>
-                            <option class="dropdown-item"
-                                    th:each="deviceType  : ${allDeviceTypes}"
-                                    th:value="${{deviceType}}"
-                                    th:text="${deviceType.deviceTypeName}">
-                            </option>
-                        </select>
+                            <select required style="font-size:80%;" class=" form-control input-device"
+                                    id="selectDevice"
+                                    th:field="*{steps[__${itemStat.index}__].device}">
+                                <option hidden selected th:text="#{device.select}" value=""> Select device
+                                </option>
+                                <option th:each="device : ${allDevices}"
+                                        th:if="${device.deviceType.id} == ${stepType.deviceType.id} "
+                                        class="dropdown-item"
+                                        th:value="${{device}}"
+                                        th:text="${device.devicename}">
+                                </option>
+                            </select>
+                        </td>
+                        <td style="vertical-align:center; ">
+                            <p th:text="#{start}"></p>
+                            <p th:text="#{end}"></p>
+                        </td>
+                        <td style="vertical-align:center; ">
+                            <div class="input-group">
+                                <input required style="width: 90%; font-size:80%;"
+                                       id="startDate" type="date"
+                                       th:value="*{steps[__${itemStat.index}__].start}"
+                                       th:field="*{steps[__${itemStat.index}__].start}"
+                                       class="form-control input-date"
+                                       placeholder="Start date"/>
 
-                        <select required style="font-size:80%;" class=" form-control input-device"
-                                id="selectDevice"
-                                th:field="*{steps[__${itemStat.index}__].device}">
-                            <option hidden selected th:text="#{device.select}" value=""> Select device
-                            </option>
-                            <option th:each="device : ${allDevices}"
-                                    th:if="${device.deviceType.id} == ${stepType.deviceType.id} " class="dropdown-item"
-                                    th:value="${{device}}"
-                                    th:text="${device.devicename}">
-                            </option>
-                        </select>
-                    </td>
-                    <td style="vertical-align:center; ">
-                        <p th:text="#{start}"></p>
-                        <p th:text="#{end}"></p>
-                    </td>
-                    <td style="vertical-align:center; ">
-                        <div class="input-group">
-                            <input required style="width: 90%; font-size:80%;"
-                                   id="startDate" type="date"
-                                   th:value="*{steps[__${itemStat.index}__].start}"
-                                   th:field="*{steps[__${itemStat.index}__].start}"
-                                   class="form-control input-date"
-                                   placeholder="Start date"/>
+                                <input required style="width: 90%; font-size:80%;"
+                                       id="endDate" type="date"
+                                       th:value="*{steps[__${itemStat.index}__].end}"
+                                       th:field="*{steps[__${itemStat.index}__].end}"
+                                       class="form-control input-date"
+                                       placeholder="End date"/>
+                            </div>
 
-                            <input required style="width: 90%; font-size:80%;"
-                                   id="endDate" type="date"
-                                   th:value="*{steps[__${itemStat.index}__].end}"
-                                   th:field="*{steps[__${itemStat.index}__].end}"
-                                   class="form-control input-date"
-                                   placeholder="End date"/>
-                        </div>
+                        </td>
+                        <td style="vertical-align:center; ">
+                            <p th:text="#{start}"></p>
+                            <p th:text="#{end}"></p>
+                        </td>
+                        <td style="vertical-align:center; ">
 
-                    </td>
-                    <td style="vertical-align:center; ">
-                        <p th:text="#{start}"></p>
-                        <p th:text="#{end}"></p>
-                    </td>
-                    <td style="vertical-align:center; ">
+                            <input required style="width: 100%; font-size:80%;" type="time" id="startHour"
+                                   class="form-control float-right input-hour"
+                                   th:value="*{steps[__${itemStat.index}__].startHour}"
+                                   th:field="*{steps[__${itemStat.index}__].startHour}" placeholder="Start hour">
+                            <input required style="width: 100%; font-size:80%; " type="time" id="endHour"
+                                   class="form-control float-right input-hour"
+                                   th:value="*{steps[__${itemStat.index}__].endHour}"
+                                   th:field="*{steps[__${itemStat.index}__].endHour}" placeholder="End hour">
+                        </td>
 
-                        <input required style="width: 100%; font-size:80%;" type="time" id="startHour"
-                               class="form-control float-right input-hour"
-                               th:value="*{steps[__${itemStat.index}__].startHour}"
-                               th:field="*{steps[__${itemStat.index}__].startHour}" placeholder="Start hour">
-                        <input required style="width: 100%; font-size:80%; " type="time" id="endHour"
-                               class="form-control float-right input-hour"
-                               th:value="*{steps[__${itemStat.index}__].endHour}"
-                               th:field="*{steps[__${itemStat.index}__].endHour}" placeholder="End hour">
-                    </td>
+                        <td>
+                        </td>
 
-                    <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center" id="continuity"
-                        name="continuity"
-                        th:utext="*{experimentType.stepTypes[__${itemStat.index}__].continuity.hours} + ':' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}+
-                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.type}+
-                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.directionType}">
-                    </td>
-
-                    <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center"
-                        id="fixedtimeLength"
-                        name="fixedtimeLength"
-                        th:text="*{experimentType.stepTypes[__${itemStat.index}__].hasFixedLength} ?
+                        <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center"
+                            id="fixedtimeLength"
+                            name="fixedtimeLength"
+                            th:text="*{experimentType.stepTypes[__${itemStat.index}__].hasFixedLength} ?
                          *{experimentType.stepTypes[__${itemStat.index}__].fixedTimeHours}  +':' +*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeMinutes}
                          : 'No'">
-                    </td>
-                    <td style="vertical-align:center;">
-                        <input style="width: 100%; font-size:80%; " type="text" id="comment"
-                               class="form-control float-right" placeholder="comment"
-                               th:field="*{steps[__${itemStat.index}__].comment}">
-                    </td>
-                </tr>
+                        </td>
+                        <td style="vertical-align:center;">
+                            <input style="width: 100%; font-size:80%; " type="text" id="comment"
+                                   class="form-control float-right" placeholder="comment"
+                                   th:field="*{steps[__${itemStat.index}__].comment}">
+                        </td>
+                        <td>
+                            <button  style="width: 100%; font-size:80%;" class="btn btn-primary" type="button" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex, tempStepIndex)" >Choose in calendar</button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center" id="continuity"
+                            name="continuity"
+                            th:utext="(*{experimentType.stepTypes[__${itemStat.index}__].continuity.type} != 'No') ?
+                        *{experimentType.stepTypes[__${itemStat.index}__].continuity.hours} + ':' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}+
+                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.type}+
+                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.directionType}
+                        : 'No'">
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </div>
             </div>
             <div id="extraLargeModal" class="modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Schedule picker</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;
+                            </button>
                         </div>
                         <div class="modal-body">
                             <div id="menu">

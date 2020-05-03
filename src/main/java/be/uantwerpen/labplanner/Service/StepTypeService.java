@@ -27,6 +27,7 @@ public class StepTypeService {
         if (tempStep != null){
             tempStep.setDeviceType(stepType.getDeviceType());
             tempStep.setStepTypeName(stepType.getStepTypeName());
+            tempStep.setFixedTimeType(stepType.getFixedTimeType());
             continuityRepository.save(stepType.getContinuity());
             tempStep.setContinuity(stepType.getContinuity());
             stepTypeRepository.save(tempStep);

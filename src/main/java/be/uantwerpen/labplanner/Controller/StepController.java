@@ -443,7 +443,7 @@ public class StepController {
             Iterator<Experiment> it = Experiments.iterator();
             while (it.hasNext()) {
                 Experiment temp = it.next();
-                if (temp.getExperimentType().getId() == id) {
+                if (temp.getExperimentType().getId().equals(id)) {
                     isUsed = true;
                 }
             }
@@ -476,7 +476,7 @@ public class StepController {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Set<Role> userRoles = currentUser.getRoles();
         Role adminRol = roleService.findByName("Administrator").get();
-        if (userRoles.contains(adminRol)) {
+        if (experimentService.findById(id).isPresent() && userRoles.contains(adminRol)) {
             Experiment experiment = experimentService.findById(id).get();
 
             for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
@@ -676,7 +676,13 @@ public class StepController {
 
             //2. set stepTypes regarding to received experiment model
             for (int i = 0; i < experiment.getExperimentType().getStepTypes().size(); i++) {
-                if (experiment.getExperimentType().getStepTypes().get(i).getContinuity() == null) {
+                //if stepType is not null delete it from list (happens when row was deleted during booking custom exp.)
+                if (experiment.getExperimentType().getStepTypes().get(i) == null) {
+                    experiment.getExperimentType().getStepTypes().remove(i);
+                    experiment.getSteps().remove(i);
+                    i--; //Size of array was changed, so same index needs to be check again
+                }
+                else if (experiment.getExperimentType().getStepTypes().get(i).getContinuity() == null) {
                     experiment.getExperimentType().getStepTypes().get(i).setContinuity(new Continuity());
                 }
             }
@@ -836,7 +842,7 @@ public class StepController {
             }
 
             if (isPorblemWithFixedLength(experiment.getExperimentType().getStepTypes().get(index), step)) {
-                errorMessage = "Error while trying to save Experiment. Step" + step.getStepType().getStepTypeName() + " has fixed time";
+                errorMessage = "Error while trying to save Experiment. Step" + experiment.getExperimentType().getStepTypes().get(index).getStepTypeName() + " has fixed time";
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
@@ -980,11 +986,17 @@ public class StepController {
 
     //Method to prepare model atributes when user entered wrong input
     private void prepareModelAtributesToRebookExperiment(final ModelMap model, Experiment experiment, String errorMessage, List<Step> userSteps, List<Step> otherSteps) {
+
+        HolidayManager manager = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
+        Set<Holiday> holidays = manager.getHolidays(Calendar.getInstance().get(Calendar.YEAR));
+        model.addAttribute("holidays", holidays);
+
         model.addAttribute("errorMsg", errorMessage);
         model.addAttribute("experiment", experiment);
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allExperiments", experimentService.findAll());
+        model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("otherSteps", otherSteps);
@@ -1061,12 +1073,8 @@ public class StepController {
             }
         } else {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
-            if (experiment.getExperimentType().getIsFixedType()) {
-                return "PlanningTool/planning-exp-book-fixed";
-            } else {
-                return "PlanningTool/planning-exp-book-custom";
-            }
+            ra.addFlashAttribute("Message", new String("Not found"));
+            return "redirect:/planning/experiments";
         }
     }
 
@@ -1236,21 +1244,23 @@ public class StepController {
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
         DateTime startDate = formatter.parseDateTime(step.getStart() + " " + step.getStartHour());
         DateTime endDate = formatter.parseDateTime(step.getEnd() + " " + step.getEndHour());
-
+        int tmpH = 1000 * 60 * 60 * stepType.getFixedTimeHours();
+        int tmpM = 1000 * 60 * stepType.getFixedTimeMinutes();
+        long tmp = (endDate.getMillis() - startDate.getMillis());
         //Check if selected dates fulfills fixedTime needs
         switch (stepType.getFixedTimeType()) {
             case "Equal":
-                if (!((endDate.getMillis() - startDate.getMillis()) == 1000 * 60 * 60 * stepType.getFixedTimeHours() + 1000 * 60 * 60 * stepType.getFixedTimeMinutes())) {
+                if (((endDate.getMillis() - startDate.getMillis()) == 1000 * 60 * 60 * stepType.getFixedTimeHours() + 1000 * 60 * stepType.getFixedTimeMinutes())) {
                     return false;
                 }
                 break;
             case "At least":
-                if (!((endDate.getMillis() - startDate.getMillis()) >= 1000 * 60 * 60 * stepType.getFixedTimeHours() + 1000 * 60 * 60 * stepType.getFixedTimeMinutes())) {
+                if (((endDate.getMillis() - startDate.getMillis()) >= 1000 * 60 * 60 * stepType.getFixedTimeHours() + 1000 * 60 * stepType.getFixedTimeMinutes())) {
                     return false;
                 }
                 break;
             case "At most":
-                if (!((endDate.getMillis() - startDate.getMillis()) <= 1000 * 60 * 60 * stepType.getFixedTimeHours() + 1000 * 60 * 60 * stepType.getFixedTimeMinutes())) {
+                if (((endDate.getMillis() - startDate.getMillis()) <= 1000 * 60 * 60 * stepType.getFixedTimeHours() + 1000 * 60 * stepType.getFixedTimeMinutes())) {
                     return false;
                 }
                 break;

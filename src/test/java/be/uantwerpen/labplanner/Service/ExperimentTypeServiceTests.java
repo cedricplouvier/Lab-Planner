@@ -44,7 +44,7 @@ public class ExperimentTypeServiceTests {
         List<StepType> stepTypes = new ArrayList<>();
         stepTypes.add(iterator.next());
         stepTypes.add(iterator.next());
-        ExperimentType experimentType= new ExperimentType("New ExperimentType",stepTypes,true);
+        ExperimentType experimentType= new ExperimentType("New ExpType",stepTypes,true);
         experimentTypeService.saveExperimentType(experimentType);
         experimentType.setExpname("Other experimenttype");
         experimentTypeService.saveExperimentType(experimentType);
@@ -58,7 +58,7 @@ public class ExperimentTypeServiceTests {
         List<StepType> stepTypes = new ArrayList<>();
         stepTypes.add(iterator.next());
         stepTypes.add(iterator.next());
-        ExperimentType experimentType= new ExperimentType("New ExperimentType",stepTypes,true);
+        ExperimentType experimentType= new ExperimentType("New ExpType",stepTypes,true);
         experimentTypeRepository.save(experimentType);
         List<ExperimentType> experimentTypes= experimentTypeRepository.findAll();
         experimentTypeService.delete(experimentType.getId());

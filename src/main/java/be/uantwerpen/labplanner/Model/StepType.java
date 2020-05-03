@@ -34,7 +34,7 @@ public class StepType extends AbstractPersistable<Long> {
         this.deviceType = deviceType;
         this.name = stepTypeName;
         this.continuity = continuity;
-        this.fixedTimeType = fixedTimeType;
+        this.fixedTimeType = "No";
     }
 
     public StepType(DeviceType deviceType, Continuity continuity, String stepTypeName, boolean hasFixedLength, String fixedTimeType, int fixedTimeHours, int fixedTimeMinutes) {
@@ -42,6 +42,7 @@ public class StepType extends AbstractPersistable<Long> {
         this.name = stepTypeName;
         this.continuity = continuity;
         this.hasFixedLength = hasFixedLength;
+        this.fixedTimeType = fixedTimeType;
         this.fixedTimeHours = fixedTimeHours;
         this.fixedTimeMinutes = fixedTimeMinutes;
 
