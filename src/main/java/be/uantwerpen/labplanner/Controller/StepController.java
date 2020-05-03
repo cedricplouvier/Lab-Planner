@@ -116,11 +116,9 @@ public class StepController {
         Boolean hasAdmin = false;
         Set<Role> userRoles = user.getRoles();
 
-        for(Role role: userRoles)
-        {
-            if(role.getName().equals("Administrator"))
-            {
-                hasAdmin=true;
+        for (Role role : userRoles) {
+            if (role.getName().equals("Administrator")) {
+                hasAdmin = true;
             }
         }
 
@@ -309,7 +307,7 @@ public class StepController {
     }
 
     //check if specific user is allowed to edit.
-    boolean allowedToEdit(User user, long id){
+    boolean allowedToEdit(User user, long id) {
         //also check for Researcher.
         Role adminole = roleService.findByName("Administrator").get();
         Role promotorRole = roleService.findByName("Researcher").get();
@@ -946,23 +944,22 @@ public class StepController {
             }
             ra.addFlashAttribute("Status", new String("Success"));
             ra.addFlashAttribute("Message", new String("Experiment type successfully added."));
-        }
-        else{
+        } else {
 
 
-        for (StepType stepType : experimentType.getStepTypes()) {
-            if (stepType.getContinuity().getHours() < 0) {
-                ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
-                return "redirect:/planning/experiments/{id}";
+            for (StepType stepType : experimentType.getStepTypes()) {
+                if (stepType.getContinuity().getHours() < 0) {
+                    ra.addFlashAttribute("Status", new String("Error"));
+                    ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
+                    return "redirect:/planning/experiments/{id}";
+                }
+                if (stepType.getContinuity().getMinutes() > 59 || stepType.getContinuity().getMinutes() < 0) {
+                    ra.addFlashAttribute("Status", new String("Error"));
+                    ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
+                    return "redirect:/planning/experiments/{id}";
+                } else
+                    stepTypeService.saveNewStepType(stepType);
             }
-            if (stepType.getContinuity().getMinutes() > 59 || stepType.getContinuity().getMinutes() < 0) {
-                ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
-                return "redirect:/planning/experiments/{id}";
-            } else
-                stepTypeService.saveNewStepType(stepType);
-        }
             ra.addFlashAttribute("Status", new String("Success"));
             ra.addFlashAttribute("Message", new String("Experiment type successfully edited."));
         }
@@ -1139,30 +1136,39 @@ public class StepController {
         return false;
     }
 
-
     //Check, if hours are between 9 and 17
     public boolean isInsideOpeningHours(DateTime dateTime) {
-        return ((dateTime.getHourOfDay() >= 9 &&
-                ((dateTime.getHourOfDay() < 17) || ((dateTime.getHourOfDay() == 17) && (dateTime.getMinuteOfHour() == 0)))) &&
-                (dateTime.getDayOfWeek() < 6));
+        return (GlobalVariables.currentOfficeHours.isHolidaysOn() &&
+                (dateTime.getMinuteOfDay() >= GlobalVariables.currentOfficeHours.getStartHour() * 60 + GlobalVariables.currentOfficeHours.getStartMinute()) &&
+                ((dateTime.getMinuteOfDay() <= GlobalVariables.currentOfficeHours.getEndHour() * 60 + GlobalVariables.currentOfficeHours.getEndMinute())));
     }
 
     //Check,if it's weekend
     public boolean isWeekend(DateTime dateTime) {
-        return ((dateTime.getDayOfWeek() > 5));
+        //if weekend is turned off, return false everytime
+        if (!GlobalVariables.currentOfficeHours.isWeekendOn()) {
+            return false;
+        } else {
+            return (dateTime.getDayOfWeek() > 5);
+        }
     }
 
     //Check hollidays
     public boolean isInsideHoliday(DateTime dateTime) {
-        HolidayManager m = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
-        Set<Holiday> holidays = m.getHolidays(dateTime.getYear());
-        for (Holiday tmpHoliday : holidays) {
-            if ((tmpHoliday.getDate().getMonth().getValue() == dateTime.getMonthOfYear()) &&
-                    (tmpHoliday.getDate().getDayOfMonth() == dateTime.getDayOfMonth())) {
-                return true;
+        //if holidays are turned off, return false everytime
+        if (!GlobalVariables.currentOfficeHours.isWeekendOn()) {
+            return false;
+        } else {
+            HolidayManager m = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
+            Set<Holiday> holidays = m.getHolidays(dateTime.getYear());
+            for (Holiday tmpHoliday : holidays) {
+                if ((tmpHoliday.getDate().getMonth().getValue() == dateTime.getMonthOfYear()) &&
+                        (tmpHoliday.getDate().getDayOfMonth() == dateTime.getDayOfMonth())) {
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
     }
 
     private boolean isStepPartOfExperiment(Step step) {
