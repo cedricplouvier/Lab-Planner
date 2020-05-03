@@ -354,10 +354,11 @@ public class StatisticsControllerTests {
 
     //Should probably be divided in different test for each possible outcome
     @Test
-    public void calculateOccupancyHoursTest(){
+    public void calculateOccupancyHoursTest() throws ParseException{
 
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2020");
+        model.addAttribute("selectedTimePeriod","All");
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
         Float labOpeningHoursInYear = statisticsController.getLabOpeningHoursInYear();

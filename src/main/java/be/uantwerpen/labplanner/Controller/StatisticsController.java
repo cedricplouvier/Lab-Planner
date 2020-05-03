@@ -70,7 +70,7 @@ public class StatisticsController {
 
     @ModelAttribute("selectedTimePeriod")
     private String selectTimePeriod(){
-        return "Future";
+        return "Past";
     }
 
     @ModelAttribute("selectedDevices")
@@ -388,8 +388,6 @@ public class StatisticsController {
             totalHoursSelectedDevice= calculateTotalHoursDeviceByYearAndMonth(model, selectedDeviceSteps);
             totalHours.set(i,totalHoursSelectedDevice);
 
-
-
             //get highest absolute value to scale the y axis
             for(int j=0; j<totalHoursSelectedDevice.length;j++){
                 if(totalHoursSelectedDevice[j] >= (int) model.getAttribute("highestAbsoluteValueHours")){
@@ -681,64 +679,196 @@ public class StatisticsController {
         return totalHoursByMonth;
     }
 
-    public float calculateOccupancyHours(final ModelMap model, List<Step> selectedDeviceSteps, float totalDeviceHoursYear){
+    public float calculateOccupancyHours(final ModelMap model, List<Step> selectedDeviceSteps, float totalDeviceHoursYear) throws ParseException {
         float occupancySelectedYearHours=0;
         for(int j=0;j<selectedDeviceSteps.size();j++){
             Step devStep = selectedDeviceSteps.get(j);
             String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
-            if(yearStep.matches((String)model.getAttribute("selectedYear"))) {
-                String startDay = getStepDayStart(devStep);
-                String endDay = getStepDayEnd(devStep);
-                String startMonth = getStepMonthStart(devStep);
-                String endMonth = getStepMonthEnd(devStep);
-                String startHour = getStepHourStart(devStep);
-                String endHour = getStepHourEnd(devStep);
-                String startYear = getStepYearStart(devStep);
-                // if step only takes one day
-                if((startDay.matches(endDay)==true) && (startMonth.matches(endMonth)==true)) {
-                    totalDeviceHoursYear = totalDeviceHoursYear + calculateHourDiff(selectedDeviceSteps.get(j));
-                }
-                // if step is accros multiple days in same month
-                else if((startDay.matches(endDay)==false) && (startMonth.matches(endMonth)==true)) {
-                    int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay)))-1;
-                    totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime-Integer.parseInt(startHour)) + (dayDiff*(labClosingTime-labOpeningTime)) + (Integer.parseInt(endHour)-labOpeningTime);
-                }
-                //if step over multiple months in same year
-                else if(startMonth.matches(endMonth)==false){
-                    float monthsDifference = (Integer.parseInt(endMonth))-(Integer.parseInt(startMonth));
-                    if(monthsDifference==1) {
-                        // If february -> march
-                        if (startMonth.matches("02")) {
-                            //check leap year
-                            int startYearInt = Integer.parseInt(startYear);
-                            boolean leap = checkLeapYear(startYearInt);
-                            //if leap +29
-                            if (leap) {
-                                float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) - 1;
-                                totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime-Integer.parseInt(startHour)) + (dayDiff*(labClosingTime-labOpeningTime)) + (Integer.parseInt(endHour)-labOpeningTime);
+
+            String selectedTimePeriod = (String) model.getAttribute("selectedTimePeriod");
+            SimpleDateFormat formatDateHourMin = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            Date thisStepDateStart = formatDateHourMin.parse(devStep.getStart() + " " + devStep.getStartHour());
+            Date thisStepDateEnd = formatDateHourMin.parse(devStep.getEnd() + " " + devStep.getEndHour());
+            Date todaysDate = new Date();
+
+            if(selectedTimePeriod.matches("Past")) {
+                if(thisStepDateStart.before(todaysDate)) {
+                    if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
+                        String startDay = getStepDayStart(devStep);
+                        String endDay = getStepDayEnd(devStep);
+                        String startMonth = getStepMonthStart(devStep);
+                        String endMonth = getStepMonthEnd(devStep);
+                        String startHour = getStepHourStart(devStep);
+                        String endHour = getStepHourEnd(devStep);
+                        String startYear = getStepYearStart(devStep);
+
+                        // if step only takes one day
+                        if ((startDay.matches(endDay) == true) && (startMonth.matches(endMonth) == true)) {
+                            totalDeviceHoursYear = totalDeviceHoursYear + calculateHourDiff(selectedDeviceSteps.get(j));
+                        }
+                        // if step is accros multiple days in same month
+                        else if ((startDay.matches(endDay) == false) && (startMonth.matches(endMonth) == true)) {
+                            int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;
+                            totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                        }
+                        //if step over multiple months in same year
+                        else if (startMonth.matches(endMonth) == false) {
+                            float monthsDifference = (Integer.parseInt(endMonth)) - (Integer.parseInt(startMonth));
+                            if (monthsDifference == 1) {
+                                // If february -> march
+                                if (startMonth.matches("02")) {
+                                    //check leap year
+                                    int startYearInt = Integer.parseInt(startYear);
+                                    boolean leap = checkLeapYear(startYearInt);
+                                    //if leap +29
+                                    if (leap) {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) - 1;
+                                        totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                    }
+                                    //if not leap +28
+                                    else {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) - 1;
+                                        totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                    }
+                                }
+                                //if even month -> odd month => +30
+                                else if (Integer.parseInt(startMonth) % 2 == 0) {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) - 1;
+                                    totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                }
+                                // if odd month -> even month => +31
+                                else {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) - 1;
+                                    totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                }
                             }
-                            //if not leap +28
+                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
-                                float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) - 1;
-                                totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime-Integer.parseInt(startHour)) + (dayDiff*(labClosingTime-labOpeningTime)) + (Integer.parseInt(endHour)-labOpeningTime);
+                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
+                                totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
                             }
-                        }
-                        //if even month -> odd month => +30
-                        else if (Integer.parseInt(startMonth) % 2 == 0) {
-                            float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) - 1;
-                            totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime-Integer.parseInt(startHour)) + (dayDiff*(labClosingTime-labOpeningTime)) + (Integer.parseInt(endHour)-labOpeningTime);
-                        }
-                        // if odd month -> even month => +31
-                        else {
-                            float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) - 1;
-                            totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime-Integer.parseInt(startHour)) + (dayDiff*(labClosingTime-labOpeningTime)) + (Integer.parseInt(endHour)-labOpeningTime);
                         }
                     }
-                    //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
-                    else{
-                        float extraDaysMonths = monthsDifference*((float)(30.5));
-                        float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
-                        totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime-Integer.parseInt(startHour)) + (dayDiff*(labClosingTime-labOpeningTime)) + (Integer.parseInt(endHour)-labOpeningTime);
+                }
+            }
+            if(selectedTimePeriod.matches("All")) {
+                if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
+                    String startDay = getStepDayStart(devStep);
+                    String endDay = getStepDayEnd(devStep);
+                    String startMonth = getStepMonthStart(devStep);
+                    String endMonth = getStepMonthEnd(devStep);
+                    String startHour = getStepHourStart(devStep);
+                    String endHour = getStepHourEnd(devStep);
+                    String startYear = getStepYearStart(devStep);
+
+                    // if step only takes one day
+                    if ((startDay.matches(endDay) == true) && (startMonth.matches(endMonth) == true)) {
+                        totalDeviceHoursYear = totalDeviceHoursYear + calculateHourDiff(selectedDeviceSteps.get(j));
+                    }
+                    // if step is accros multiple days in same month
+                    else if ((startDay.matches(endDay) == false) && (startMonth.matches(endMonth) == true)) {
+                        int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;
+                        totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                    }
+                    //if step over multiple months in same year
+                    else if (startMonth.matches(endMonth) == false) {
+                        float monthsDifference = (Integer.parseInt(endMonth)) - (Integer.parseInt(startMonth));
+                        if (monthsDifference == 1) {
+                            // If february -> march
+                            if (startMonth.matches("02")) {
+                                //check leap year
+                                int startYearInt = Integer.parseInt(startYear);
+                                boolean leap = checkLeapYear(startYearInt);
+                                //if leap +29
+                                if (leap) {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) - 1;
+                                    totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                }
+                                //if not leap +28
+                                else {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) - 1;
+                                    totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                }
+                            }
+                            //if even month -> odd month => +30
+                            else if (Integer.parseInt(startMonth) % 2 == 0) {
+                                float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) - 1;
+                                totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                            }
+                            // if odd month -> even month => +31
+                            else {
+                                float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) - 1;
+                                totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                            }
+                        }
+                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            else {
+                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
+                                totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                            }
+                    }
+                }
+            }
+            if(selectedTimePeriod.matches("Future")) {
+                if(thisStepDateStart.after(todaysDate)) {
+                    if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
+                        String startDay = getStepDayStart(devStep);
+                        String endDay = getStepDayEnd(devStep);
+                        String startMonth = getStepMonthStart(devStep);
+                        String endMonth = getStepMonthEnd(devStep);
+                        String startHour = getStepHourStart(devStep);
+                        String endHour = getStepHourEnd(devStep);
+                        String startYear = getStepYearStart(devStep);
+
+                        // if step only takes one day
+                        if ((startDay.matches(endDay) == true) && (startMonth.matches(endMonth) == true)) {
+                            totalDeviceHoursYear = totalDeviceHoursYear + calculateHourDiff(selectedDeviceSteps.get(j));
+                        }
+                        // if step is accros multiple days in same month
+                        else if ((startDay.matches(endDay) == false) && (startMonth.matches(endMonth) == true)) {
+                            int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;
+                            totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                        }
+                        //if step over multiple months in same year
+                        else if (startMonth.matches(endMonth) == false) {
+                            float monthsDifference = (Integer.parseInt(endMonth)) - (Integer.parseInt(startMonth));
+                            if (monthsDifference == 1) {
+                                // If february -> march
+                                if (startMonth.matches("02")) {
+                                    //check leap year
+                                    int startYearInt = Integer.parseInt(startYear);
+                                    boolean leap = checkLeapYear(startYearInt);
+                                    //if leap +29
+                                    if (leap) {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) - 1;
+                                        totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                    }
+                                    //if not leap +28
+                                    else {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) - 1;
+                                        totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                    }
+                                }
+                                //if even month -> odd month => +30
+                                else if (Integer.parseInt(startMonth) % 2 == 0) {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) - 1;
+                                    totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                }
+                                // if odd month -> even month => +31
+                                else {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) - 1;
+                                    totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                }
+                            }
+                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            else {
+                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
+                                totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                            }
+                        }
                     }
                 }
             }
