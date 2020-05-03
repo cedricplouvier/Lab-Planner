@@ -60,6 +60,9 @@ public class StepController {
     @Autowired
     private OwnProductService productService;
     @Autowired
+    private EmailController emailController;
+
+    @Autowired
     private RelationService relationService;
 
     @Autowired
@@ -74,6 +77,8 @@ public class StepController {
     private Map<Experiment,User> addedExperiments = new HashMap<>();
     private Map<Experiment,User> editedExperiments = new HashMap<>();
     private Map<Experiment,User> deletedExperiments = new HashMap<>();
+
+
 
     public Map<Step, User> getAddedSteps() {
         return addedSteps;
@@ -903,6 +908,15 @@ public class StepController {
             prod.setStockLevel((Double) pair.getValue());
             productService.save(prod);
         }
+
+        List<OwnProduct> products = productService.findAll();
+        for(OwnProduct tempProd: products){
+            if (tempProd.getStockLevel()<tempProd.getLowStockLevel()){
+                emailController.sendLowStockEmail(tempProd, experiment.getUser() );
+            }
+        }
+
+
 
         //Save steps into database
         for (Step step : tmpListSteps) {

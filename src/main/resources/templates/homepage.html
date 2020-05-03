@@ -166,7 +166,6 @@
 
     <a  sec:authorize="hasAuthority('Console Access')" th:href="@{/reports/list}" th:text="#{report.list} + ' ('+${reportAmount}+')'" class="btn btn-primary"></a>
     <a  th:href="@{/reports/put}" th:text="#{report.problem}" class="btn btn-primary"></a>
-    <a  th:href="@{/mail}" th:text="#{mail.send}" class="btn btn-primary"></a>
 
 </div>
     <div th:replace="footer :: footer"></div>
