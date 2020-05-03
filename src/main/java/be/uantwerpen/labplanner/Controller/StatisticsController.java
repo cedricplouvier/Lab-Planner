@@ -70,7 +70,7 @@ public class StatisticsController {
 
     @ModelAttribute("selectedTimePeriod")
     private String selectTimePeriod(){
-        return "Past";
+        return "Future";
     }
 
     @ModelAttribute("selectedDevices")
@@ -427,6 +427,9 @@ public class StatisticsController {
     public int[] calculateTotalHoursDeviceByYearAndMonth(final ModelMap model, List<Step> selectedDeviceSteps) throws ParseException {
         int[] totalHoursByMonth = new int[12];
         String[] months = new String[]{"01","02","03","04","05","06","07","08","09","10","11","12"};
+        String selectedTimePeriod = (String) model.getAttribute("selectedTimePeriod");
+        SimpleDateFormat formatDateHourMin = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date todaysDate = new Date();
         for(int j=0;j<selectedDeviceSteps.size();j++) {
             Step devStep = selectedDeviceSteps.get(j);
             String startMonth = getStepMonthStart(devStep);
@@ -437,11 +440,8 @@ public class StatisticsController {
             String endHour = getStepHourEnd(devStep);
             String yearStep = getStepYearStart(devStep);
 
-            String selectedTimePeriod = (String) model.getAttribute("selectedTimePeriod");
-            SimpleDateFormat formatDateHourMin = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             Date thisStepDateStart = formatDateHourMin.parse(devStep.getStart() + " " + devStep.getStartHour());
             Date thisStepDateEnd = formatDateHourMin.parse(devStep.getEnd() + " " + devStep.getEndHour());
-            Date todaysDate = new Date();
 
             if(selectedTimePeriod.matches("Past")) {
                 if (thisStepDateStart.before(todaysDate)) {
@@ -681,15 +681,15 @@ public class StatisticsController {
 
     public float calculateOccupancyHours(final ModelMap model, List<Step> selectedDeviceSteps, float totalDeviceHoursYear) throws ParseException {
         float occupancySelectedYearHours=0;
+        String selectedTimePeriod = (String) model.getAttribute("selectedTimePeriod");
+        SimpleDateFormat formatDateHourMin = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date todaysDate = new Date();
+
         for(int j=0;j<selectedDeviceSteps.size();j++){
             Step devStep = selectedDeviceSteps.get(j);
             String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
 
-            String selectedTimePeriod = (String) model.getAttribute("selectedTimePeriod");
-            SimpleDateFormat formatDateHourMin = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             Date thisStepDateStart = formatDateHourMin.parse(devStep.getStart() + " " + devStep.getStartHour());
-            Date thisStepDateEnd = formatDateHourMin.parse(devStep.getEnd() + " " + devStep.getEndHour());
-            Date todaysDate = new Date();
 
             if(selectedTimePeriod.matches("Past")) {
                 if(thisStepDateStart.before(todaysDate)) {
@@ -877,171 +877,507 @@ public class StatisticsController {
         return occupancySelectedYearHours;
     }
 
-    public float calculateOccupancyDays(final ModelMap model, List<Step> selectedDeviceSteps, float totalDeviceDaysYear){
+    public float calculateOccupancyDays(final ModelMap model, List<Step> selectedDeviceSteps, float totalDeviceDaysYear) throws ParseException {
         float occupancySelectedYearDays=0;
         List<String> bookedDaysStart = new ArrayList<>();
         List<String> bookedDaysEnd = new ArrayList<>();
+        String selectedTimePeriod = (String) model.getAttribute("selectedTimePeriod");
+        SimpleDateFormat formatDateHourMin = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date todaysDate = new Date();
+
         for(int j=0;j<selectedDeviceSteps.size();j++){
             Step devStep = selectedDeviceSteps.get(j);
-            String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
-            if(yearStep.matches((String) model.getAttribute("selectedYear"))) {
-                String stepDateStart = devStep.getStart();
-                String stepDateEnd = devStep.getEnd();
-                String startDay = getStepDayStart(devStep);
-                String endDay = getStepDayEnd(devStep);
-                String startMonth = getStepMonthStart(devStep);
-                String endMonth = getStepMonthEnd(devStep);
-                String startYear = getStepYearStart(devStep);
 
-                //If not same startDate and not same endDate as other step and same month just do (end - start)+1
-                if((bookedDaysEnd.contains(stepDateStart)==false) && (bookedDaysStart.contains(stepDateEnd)==false) && (startMonth.matches(endMonth)==true)){
-                    int dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay))+1;
-                    totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
-                }
-                // if same startDate but not same endDate as other step and same month do (end - start) OR not same startDate but same endDate
-                else if(((bookedDaysEnd.contains(stepDateStart)==true) && (bookedDaysStart.contains(stepDateEnd)==false) && (startMonth.matches(endMonth)==true))
-                        || ((bookedDaysEnd.contains(stepDateStart)==false) && (bookedDaysStart.contains(stepDateEnd)==true) && (startMonth.matches(endMonth)==true))){
-                    float dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay));
-                    totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
-                }
-                // if same startDate and same endDate as other step and same month do (end- start)-1 BUT look out for values smaller than 0 (occurs when step duration one day)
-                else if((bookedDaysEnd.contains(stepDateStart)==true) && (bookedDaysStart.contains(stepDateEnd)==true) && (startMonth.matches(endMonth)==true)){
-                    float dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay))-1;
-                    if(dayDiff >=0) {
-                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
-                    }
-                    else{
-                    }
-                }
-                // If not same startDate and not same endDate as other step and different month just do (end - start)+1
-                else if((bookedDaysEnd.contains(stepDateStart)==false) && (bookedDaysStart.contains(stepDateEnd)==false) && (startMonth.matches(endMonth)==false)){
-                    float monthsDifference = (Integer.parseInt(endMonth))-(Integer.parseInt(startMonth));
-                    if(monthsDifference==1) {
-                        // If february -> march
-                        if (startMonth.matches("02")) {
-                            //check leap year
-                            int startYearInt = Integer.parseInt(startYear);
-                            boolean leap = checkLeapYear(startYearInt);
-                            //if leap +29
-                            if (leap) {
-                                float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) + 1;
-                                totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
-                            }
-                            //if not leap +28
-                            else {
-                                float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) + 1;
-                                totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
-                            }
-                        }
-                        //if even month -> odd month => +30
-                        else if (Integer.parseInt(startMonth) % 2 == 0) {
-                            float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) + 1;
+            Date thisStepDateStart = formatDateHourMin.parse(devStep.getStart() + " " + devStep.getStartHour());
+
+            if(selectedTimePeriod.matches("Past")) {
+                if(thisStepDateStart.before(todaysDate)) {
+                    String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
+                    if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
+                        String stepDateStart = devStep.getStart();
+                        String stepDateEnd = devStep.getEnd();
+                        String startDay = getStepDayStart(devStep);
+                        String endDay = getStepDayEnd(devStep);
+                        String startMonth = getStepMonthStart(devStep);
+                        String endMonth = getStepMonthEnd(devStep);
+                        String startYear = getStepYearStart(devStep);
+
+                        //If not same startDate and not same endDate as other step and same month just do (end - start)+1
+                        if ((bookedDaysEnd.contains(stepDateStart) == false) && (bookedDaysStart.contains(stepDateEnd) == false) && (startMonth.matches(endMonth) == true)) {
+                            int dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay)) + 1;
                             totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                         }
-                        // if odd month -> even month => +31
-                        else {
-                            float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) + 1;
+                        // if same startDate but not same endDate as other step and same month do (end - start) OR not same startDate but same endDate
+                        else if (((bookedDaysEnd.contains(stepDateStart) == true) && (bookedDaysStart.contains(stepDateEnd) == false) && (startMonth.matches(endMonth) == true))
+                                || ((bookedDaysEnd.contains(stepDateStart) == false) && (bookedDaysStart.contains(stepDateEnd) == true) && (startMonth.matches(endMonth) == true))) {
+                            float dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay));
                             totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                         }
-                    }
-                    //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
-                    else{
-                        float extraDaysMonths = monthsDifference*((float)(30.5));
-                        float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) + 1;
-                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
-                    }
-                }
-                // if same startDate but not same endDate as other step and not same month do (end - start) OR not same startDate but same endDate
-                else if(((bookedDaysEnd.contains(stepDateStart)==true) && (bookedDaysStart.contains(stepDateEnd)==false) && (startMonth.matches(endMonth)==false))
-                        || ((bookedDaysEnd.contains(stepDateStart)==false) && (bookedDaysStart.contains(stepDateEnd)==true) && (startMonth.matches(endMonth)==false))){
-                    float monthsDifference = (Integer.parseInt(endMonth))-(Integer.parseInt(startMonth));
-                    if(monthsDifference==1) {
-                        // If february -> march
-                        if (startMonth.matches("02")) {
-                            //check leap year
-                            int startYearInt = Integer.parseInt(startYear);
-                            boolean leap = checkLeapYear(startYearInt);
-                            //if leap +29
-                            if (leap) {
-                                float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay));
+                        // if same startDate and same endDate as other step and same month do (end- start)-1 BUT look out for values smaller than 0 (occurs when step duration one day)
+                        else if ((bookedDaysEnd.contains(stepDateStart) == true) && (bookedDaysStart.contains(stepDateEnd) == true) && (startMonth.matches(endMonth) == true)) {
+                            float dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay)) - 1;
+                            if (dayDiff >= 0) {
                                 totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
-                            }
-                            //if not leap +28
-                            else {
-                                float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay));
-                                totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                            } else {
                             }
                         }
-                        //if even month -> odd month => +30
-                        else if (Integer.parseInt(startMonth) % 2 == 0) {
-                            float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay));
-                            totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
-                        }
-                        // if odd month -> even month => +31
-                        else {
-                            float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay));
-                            totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
-                        }
-                    }
-                    //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
-                    else{
-                        float extraDaysMonths = monthsDifference*((float)(30.5));
-                        float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay));
-                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
-                    }
-                }
-                // If same startDate and same endDate as other step and different month just do (end - start)-1
-                else if((bookedDaysEnd.contains(stepDateStart)==true) && (bookedDaysStart.contains(stepDateEnd)==true) && (startMonth.matches(endMonth)==false)){
-                    float monthsDifference = (Integer.parseInt(endMonth))-(Integer.parseInt(startMonth));
-                    if(monthsDifference==1) {
-                        // If february -> march
-                        if (startMonth.matches("02")) {
-                            //check leap year
-                            int startYearInt = Integer.parseInt(startYear);
-                            boolean leap = checkLeapYear(startYearInt);
-                            //if leap +29
-                            if (leap) {
-                                float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) - 1;
-                                if(dayDiff >=0) {
+                        // If not same startDate and not same endDate as other step and different month just do (end - start)+1
+                        else if ((bookedDaysEnd.contains(stepDateStart) == false) && (bookedDaysStart.contains(stepDateEnd) == false) && (startMonth.matches(endMonth) == false)) {
+                            float monthsDifference = (Integer.parseInt(endMonth)) - (Integer.parseInt(startMonth));
+                            if (monthsDifference == 1) {
+                                // If february -> march
+                                if (startMonth.matches("02")) {
+                                    //check leap year
+                                    int startYearInt = Integer.parseInt(startYear);
+                                    boolean leap = checkLeapYear(startYearInt);
+                                    //if leap +29
+                                    if (leap) {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) + 1;
+                                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                    }
+                                    //if not leap +28
+                                    else {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) + 1;
+                                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                    }
+                                }
+                                //if even month -> odd month => +30
+                                else if (Integer.parseInt(startMonth) % 2 == 0) {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) + 1;
+                                    totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                }
+                                // if odd month -> even month => +31
+                                else {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) + 1;
                                     totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                                 }
                             }
-                            //if not leap +28
+                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
-                                float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) - 1;
-                                if(dayDiff >=0) {
+                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) + 1;
+                                totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                            }
+                        }
+                        // if same startDate but not same endDate as other step and not same month do (end - start) OR not same startDate but same endDate
+                        else if (((bookedDaysEnd.contains(stepDateStart) == true) && (bookedDaysStart.contains(stepDateEnd) == false) && (startMonth.matches(endMonth) == false))
+                                || ((bookedDaysEnd.contains(stepDateStart) == false) && (bookedDaysStart.contains(stepDateEnd) == true) && (startMonth.matches(endMonth) == false))) {
+                            float monthsDifference = (Integer.parseInt(endMonth)) - (Integer.parseInt(startMonth));
+                            if (monthsDifference == 1) {
+                                // If february -> march
+                                if (startMonth.matches("02")) {
+                                    //check leap year
+                                    int startYearInt = Integer.parseInt(startYear);
+                                    boolean leap = checkLeapYear(startYearInt);
+                                    //if leap +29
+                                    if (leap) {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay));
+                                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                    }
+                                    //if not leap +28
+                                    else {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay));
+                                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                    }
+                                }
+                                //if even month -> odd month => +30
+                                else if (Integer.parseInt(startMonth) % 2 == 0) {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay));
+                                    totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                }
+                                // if odd month -> even month => +31
+                                else {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay));
+                                    totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                }
+                            }
+                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            else {
+                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay));
+                                totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                            }
+                        }
+                        // If same startDate and same endDate as other step and different month just do (end - start)-1
+                        else if ((bookedDaysEnd.contains(stepDateStart) == true) && (bookedDaysStart.contains(stepDateEnd) == true) && (startMonth.matches(endMonth) == false)) {
+                            float monthsDifference = (Integer.parseInt(endMonth)) - (Integer.parseInt(startMonth));
+                            if (monthsDifference == 1) {
+                                // If february -> march
+                                if (startMonth.matches("02")) {
+                                    //check leap year
+                                    int startYearInt = Integer.parseInt(startYear);
+                                    boolean leap = checkLeapYear(startYearInt);
+                                    //if leap +29
+                                    if (leap) {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) - 1;
+                                        if (dayDiff >= 0) {
+                                            totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                        }
+                                    }
+                                    //if not leap +28
+                                    else {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) - 1;
+                                        if (dayDiff >= 0) {
+                                            totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                        }
+                                    }
+                                }
+                                //if even month -> odd month => +30
+                                else if (Integer.parseInt(startMonth) % 2 == 0) {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) - 1;
+                                    if (dayDiff >= 0) {
+                                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                    }
+                                }
+                                // if odd month -> even month => +31
+                                else {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) - 1;
+                                    if (dayDiff >= 0) {
+                                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                    }
+                                }
+                            }
+                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            else {
+                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
+                                totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                            }
+                        }
+
+                        if (bookedDaysStart.contains(stepDateStart) == false) {
+                            bookedDaysStart.add(stepDateStart);
+                        }
+                        if (bookedDaysEnd.contains(stepDateEnd) == false) {
+                            bookedDaysEnd.add(stepDateEnd);
+                        }
+                    }
+                }
+            }
+            else if (selectedTimePeriod.matches("All")){
+                String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
+                if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
+                    String stepDateStart = devStep.getStart();
+                    String stepDateEnd = devStep.getEnd();
+                    String startDay = getStepDayStart(devStep);
+                    String endDay = getStepDayEnd(devStep);
+                    String startMonth = getStepMonthStart(devStep);
+                    String endMonth = getStepMonthEnd(devStep);
+                    String startYear = getStepYearStart(devStep);
+
+                    //If not same startDate and not same endDate as other step and same month just do (end - start)+1
+                    if ((bookedDaysEnd.contains(stepDateStart) == false) && (bookedDaysStart.contains(stepDateEnd) == false) && (startMonth.matches(endMonth) == true)) {
+                        int dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay)) + 1;
+                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                    }
+                    // if same startDate but not same endDate as other step and same month do (end - start) OR not same startDate but same endDate
+                    else if (((bookedDaysEnd.contains(stepDateStart) == true) && (bookedDaysStart.contains(stepDateEnd) == false) && (startMonth.matches(endMonth) == true))
+                            || ((bookedDaysEnd.contains(stepDateStart) == false) && (bookedDaysStart.contains(stepDateEnd) == true) && (startMonth.matches(endMonth) == true))) {
+                        float dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay));
+                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                    }
+                    // if same startDate and same endDate as other step and same month do (end- start)-1 BUT look out for values smaller than 0 (occurs when step duration one day)
+                    else if ((bookedDaysEnd.contains(stepDateStart) == true) && (bookedDaysStart.contains(stepDateEnd) == true) && (startMonth.matches(endMonth) == true)) {
+                        float dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay)) - 1;
+                        if (dayDiff >= 0) {
+                            totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                        } else {
+                        }
+                    }
+                    // If not same startDate and not same endDate as other step and different month just do (end - start)+1
+                    else if ((bookedDaysEnd.contains(stepDateStart) == false) && (bookedDaysStart.contains(stepDateEnd) == false) && (startMonth.matches(endMonth) == false)) {
+                        float monthsDifference = (Integer.parseInt(endMonth)) - (Integer.parseInt(startMonth));
+                        if (monthsDifference == 1) {
+                            // If february -> march
+                            if (startMonth.matches("02")) {
+                                //check leap year
+                                int startYearInt = Integer.parseInt(startYear);
+                                boolean leap = checkLeapYear(startYearInt);
+                                //if leap +29
+                                if (leap) {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) + 1;
+                                    totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                }
+                                //if not leap +28
+                                else {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) + 1;
+                                    totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                }
+                            }
+                            //if even month -> odd month => +30
+                            else if (Integer.parseInt(startMonth) % 2 == 0) {
+                                float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) + 1;
+                                totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                            }
+                            // if odd month -> even month => +31
+                            else {
+                                float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) + 1;
+                                totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                            }
+                        }
+                        //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                        else {
+                            float extraDaysMonths = monthsDifference * ((float) (30.5));
+                            float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) + 1;
+                            totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                        }
+                    }
+                    // if same startDate but not same endDate as other step and not same month do (end - start) OR not same startDate but same endDate
+                    else if (((bookedDaysEnd.contains(stepDateStart) == true) && (bookedDaysStart.contains(stepDateEnd) == false) && (startMonth.matches(endMonth) == false))
+                            || ((bookedDaysEnd.contains(stepDateStart) == false) && (bookedDaysStart.contains(stepDateEnd) == true) && (startMonth.matches(endMonth) == false))) {
+                        float monthsDifference = (Integer.parseInt(endMonth)) - (Integer.parseInt(startMonth));
+                        if (monthsDifference == 1) {
+                            // If february -> march
+                            if (startMonth.matches("02")) {
+                                //check leap year
+                                int startYearInt = Integer.parseInt(startYear);
+                                boolean leap = checkLeapYear(startYearInt);
+                                //if leap +29
+                                if (leap) {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay));
+                                    totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                }
+                                //if not leap +28
+                                else {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay));
+                                    totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                }
+                            }
+                            //if even month -> odd month => +30
+                            else if (Integer.parseInt(startMonth) % 2 == 0) {
+                                float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay));
+                                totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                            }
+                            // if odd month -> even month => +31
+                            else {
+                                float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay));
+                                totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                            }
+                        }
+                        //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                        else {
+                            float extraDaysMonths = monthsDifference * ((float) (30.5));
+                            float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay));
+                            totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                        }
+                    }
+                    // If same startDate and same endDate as other step and different month just do (end - start)-1
+                    else if ((bookedDaysEnd.contains(stepDateStart) == true) && (bookedDaysStart.contains(stepDateEnd) == true) && (startMonth.matches(endMonth) == false)) {
+                        float monthsDifference = (Integer.parseInt(endMonth)) - (Integer.parseInt(startMonth));
+                        if (monthsDifference == 1) {
+                            // If february -> march
+                            if (startMonth.matches("02")) {
+                                //check leap year
+                                int startYearInt = Integer.parseInt(startYear);
+                                boolean leap = checkLeapYear(startYearInt);
+                                //if leap +29
+                                if (leap) {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) - 1;
+                                    if (dayDiff >= 0) {
+                                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                    }
+                                }
+                                //if not leap +28
+                                else {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) - 1;
+                                    if (dayDiff >= 0) {
+                                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                    }
+                                }
+                            }
+                            //if even month -> odd month => +30
+                            else if (Integer.parseInt(startMonth) % 2 == 0) {
+                                float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) - 1;
+                                if (dayDiff >= 0) {
+                                    totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                }
+                            }
+                            // if odd month -> even month => +31
+                            else {
+                                float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) - 1;
+                                if (dayDiff >= 0) {
                                     totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                                 }
                             }
                         }
-                        //if even month -> odd month => +30
-                        else if (Integer.parseInt(startMonth) % 2 == 0) {
-                            float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) - 1;
-                            if(dayDiff >=0) {
-                                totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
-                            }
-                        }
-                        // if odd month -> even month => +31
+                        //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
                         else {
-                            float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) - 1;
-                            if(dayDiff >=0) {
+                            float extraDaysMonths = monthsDifference * ((float) (30.5));
+                            float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
+                            totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                        }
+                    }
+
+                    if (bookedDaysStart.contains(stepDateStart) == false) {
+                        bookedDaysStart.add(stepDateStart);
+                    }
+                    if (bookedDaysEnd.contains(stepDateEnd) == false) {
+                        bookedDaysEnd.add(stepDateEnd);
+                    }
+                }
+            }
+            if(selectedTimePeriod.matches("Future")) {
+                if(thisStepDateStart.after(todaysDate)) {
+                    String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
+                    if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
+                        String stepDateStart = devStep.getStart();
+                        String stepDateEnd = devStep.getEnd();
+                        String startDay = getStepDayStart(devStep);
+                        String endDay = getStepDayEnd(devStep);
+                        String startMonth = getStepMonthStart(devStep);
+                        String endMonth = getStepMonthEnd(devStep);
+                        String startYear = getStepYearStart(devStep);
+
+                        //If not same startDate and not same endDate as other step and same month just do (end - start)+1
+                        if ((bookedDaysEnd.contains(stepDateStart) == false) && (bookedDaysStart.contains(stepDateEnd) == false) && (startMonth.matches(endMonth) == true)) {
+                            int dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay)) + 1;
+                            totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                        }
+                        // if same startDate but not same endDate as other step and same month do (end - start) OR not same startDate but same endDate
+                        else if (((bookedDaysEnd.contains(stepDateStart) == true) && (bookedDaysStart.contains(stepDateEnd) == false) && (startMonth.matches(endMonth) == true))
+                                || ((bookedDaysEnd.contains(stepDateStart) == false) && (bookedDaysStart.contains(stepDateEnd) == true) && (startMonth.matches(endMonth) == true))) {
+                            float dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay));
+                            totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                        }
+                        // if same startDate and same endDate as other step and same month do (end- start)-1 BUT look out for values smaller than 0 (occurs when step duration one day)
+                        else if ((bookedDaysEnd.contains(stepDateStart) == true) && (bookedDaysStart.contains(stepDateEnd) == true) && (startMonth.matches(endMonth) == true)) {
+                            float dayDiff = (Integer.parseInt(endDay) - Integer.parseInt(startDay)) - 1;
+                            if (dayDiff >= 0) {
+                                totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                            } else {
+                            }
+                        }
+                        // If not same startDate and not same endDate as other step and different month just do (end - start)+1
+                        else if ((bookedDaysEnd.contains(stepDateStart) == false) && (bookedDaysStart.contains(stepDateEnd) == false) && (startMonth.matches(endMonth) == false)) {
+                            float monthsDifference = (Integer.parseInt(endMonth)) - (Integer.parseInt(startMonth));
+                            if (monthsDifference == 1) {
+                                // If february -> march
+                                if (startMonth.matches("02")) {
+                                    //check leap year
+                                    int startYearInt = Integer.parseInt(startYear);
+                                    boolean leap = checkLeapYear(startYearInt);
+                                    //if leap +29
+                                    if (leap) {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) + 1;
+                                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                    }
+                                    //if not leap +28
+                                    else {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) + 1;
+                                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                    }
+                                }
+                                //if even month -> odd month => +30
+                                else if (Integer.parseInt(startMonth) % 2 == 0) {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) + 1;
+                                    totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                }
+                                // if odd month -> even month => +31
+                                else {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) + 1;
+                                    totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                }
+                            }
+                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            else {
+                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) + 1;
                                 totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                             }
                         }
-                    }
-                    //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
-                    else{
-                        float extraDaysMonths = monthsDifference*((float)(30.5));
-                        float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
-                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
-                    }
-                }
+                        // if same startDate but not same endDate as other step and not same month do (end - start) OR not same startDate but same endDate
+                        else if (((bookedDaysEnd.contains(stepDateStart) == true) && (bookedDaysStart.contains(stepDateEnd) == false) && (startMonth.matches(endMonth) == false))
+                                || ((bookedDaysEnd.contains(stepDateStart) == false) && (bookedDaysStart.contains(stepDateEnd) == true) && (startMonth.matches(endMonth) == false))) {
+                            float monthsDifference = (Integer.parseInt(endMonth)) - (Integer.parseInt(startMonth));
+                            if (monthsDifference == 1) {
+                                // If february -> march
+                                if (startMonth.matches("02")) {
+                                    //check leap year
+                                    int startYearInt = Integer.parseInt(startYear);
+                                    boolean leap = checkLeapYear(startYearInt);
+                                    //if leap +29
+                                    if (leap) {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay));
+                                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                    }
+                                    //if not leap +28
+                                    else {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay));
+                                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                    }
+                                }
+                                //if even month -> odd month => +30
+                                else if (Integer.parseInt(startMonth) % 2 == 0) {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay));
+                                    totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                }
+                                // if odd month -> even month => +31
+                                else {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay));
+                                    totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                }
+                            }
+                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            else {
+                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay));
+                                totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                            }
+                        }
+                        // If same startDate and same endDate as other step and different month just do (end - start)-1
+                        else if ((bookedDaysEnd.contains(stepDateStart) == true) && (bookedDaysStart.contains(stepDateEnd) == true) && (startMonth.matches(endMonth) == false)) {
+                            float monthsDifference = (Integer.parseInt(endMonth)) - (Integer.parseInt(startMonth));
+                            if (monthsDifference == 1) {
+                                // If february -> march
+                                if (startMonth.matches("02")) {
+                                    //check leap year
+                                    int startYearInt = Integer.parseInt(startYear);
+                                    boolean leap = checkLeapYear(startYearInt);
+                                    //if leap +29
+                                    if (leap) {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) - 1;
+                                        if (dayDiff >= 0) {
+                                            totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                        }
+                                    }
+                                    //if not leap +28
+                                    else {
+                                        float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) - 1;
+                                        if (dayDiff >= 0) {
+                                            totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                        }
+                                    }
+                                }
+                                //if even month -> odd month => +30
+                                else if (Integer.parseInt(startMonth) % 2 == 0) {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) - 1;
+                                    if (dayDiff >= 0) {
+                                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                    }
+                                }
+                                // if odd month -> even month => +31
+                                else {
+                                    float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) - 1;
+                                    if (dayDiff >= 0) {
+                                        totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                                    }
+                                }
+                            }
+                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            else {
+                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
+                                totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
+                            }
+                        }
 
-                if(bookedDaysStart.contains(stepDateStart) == false){
-                    bookedDaysStart.add(stepDateStart);
-                }
-                if(bookedDaysEnd.contains(stepDateEnd)==false) {
-                    bookedDaysEnd.add(stepDateEnd);
+                        if (bookedDaysStart.contains(stepDateStart) == false) {
+                            bookedDaysStart.add(stepDateStart);
+                        }
+                        if (bookedDaysEnd.contains(stepDateEnd) == false) {
+                            bookedDaysEnd.add(stepDateEnd);
+                        }
+                    }
                 }
             }
         }

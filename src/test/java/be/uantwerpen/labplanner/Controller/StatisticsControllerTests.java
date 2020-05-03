@@ -417,16 +417,23 @@ public class StatisticsControllerTests {
 
     //Should probably be divided in different test for each possible outcome
     @Test
-    public void occupancyRateDaysTest(){
+    public void occupancyRateDaysTest() throws ParseException{
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2020");
+        model.addAttribute("selectedTimePeriod", "All");
         List<String> bookedDaysStartTest = new ArrayList<>();
         List<String> bookedDaysEndTest = new ArrayList<>();
         Float amountOfWorkDaysInYear = statisticsController.getAmountOfWorkDaysInYear();
         List<Step> steps = new ArrayList<>();
         Step stepTest = new Step();
+        stepTest.setStartHour("10:00");
+        stepTest.setEndHour("17:00");
         Step step1 = new Step();
+        step1.setStartHour("10:00");
+        step1.setEndHour("17:00");
         Step step2 = new Step();
+        step2.setStartHour("10:00");
+        step2.setEndHour("17:00");
 
         //********** NO OVERLAP **********
 
