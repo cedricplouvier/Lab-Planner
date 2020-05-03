@@ -105,6 +105,20 @@ public class StockController {
         return con_oth;
     }
 
+
+    public String invalidId(ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
+
+        List<OwnProduct> agg_bit = getAggBitList();
+        List<OwnProduct> con_oth = getComOthList();
+        model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("id.invalid"));
+        model.addAttribute("agg_bit", agg_bit);
+        model.addAttribute("con_oth", con_oth);
+        model.addAttribute("allMixtures", mixtureService.findAll());
+        model.addAttribute("allProductTags", tagService.findAll());
+        return "Stock/overview-stock";
+    }
+
     //Mappings
     //@PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Read only - Basic') or hasAuthority('Stock - Aggregates + Bitumen Read only - Advanced') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value="/products", method= RequestMethod.GET)
@@ -135,11 +149,26 @@ public class StockController {
     @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value="/products/{id}", method= RequestMethod.GET)
     public String viewEditProduct(@PathVariable Long id, final ModelMap model){
-        model.addAttribute("allProducts", productService.findAll());
-        model.addAttribute("allTags", tagService.findAll());
-        model.addAttribute("product",productService.findById(id).orElse(null));
-        model.addAttribute("units", Unit.values());
-        return "Stock/products-manage";
+        Locale current = LocaleContextHolder.getLocale();
+
+
+        if(productService.exists(id)) {
+            model.addAttribute("allProducts", productService.findAll());
+            model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("product", productService.findById(id).orElse(null));
+            model.addAttribute("units", Unit.values());
+            return "Stock/products-manage";
+        }
+        else{
+            List<OwnProduct> agg_bit = getAggBitList();
+            List<OwnProduct> con_oth = getComOthList();
+            model.addAttribute("error", ResourceBundle.getBundle("messages",current).getString("id.invalid"));
+            model.addAttribute("agg_bit", agg_bit);
+            model.addAttribute("con_oth", con_oth);
+            model.addAttribute("allMixtures", mixtureService.findAll());
+            model.addAttribute("allProductTags", tagService.findAll());
+            return "Stock/overview-stock";
+        }
     }
 
     public String checkProductValidity(OwnProduct ownProduct) {
@@ -236,6 +265,9 @@ public class StockController {
         Locale current = LocaleContextHolder.getLocale();
         Boolean inuse = false;
         OwnProduct prod = productService.findById(id).orElse(null);
+        if(prod == null){
+            return invalidId(model);
+        }
         //check for all mixtures if this product is used as ingredient
         List<Composition> compositions = compositionService.findAll();
         Iterator<Composition> it = compositions.iterator();
@@ -275,6 +307,9 @@ public class StockController {
     public String viewProductInfo(@PathVariable Long id, final ModelMap model){
 
         OwnProduct prod = productService.findById(id).orElse(null);
+        if(prod == null){
+            return invalidId(model);
+        }
 
         List<Mixture> mixtures = new ArrayList<>();
         List<Mixture> returnList = new ArrayList<>();
@@ -301,6 +336,8 @@ public class StockController {
 
 
 
+
+
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
     @RequestMapping(value="/tags/{id}/delete",method = RequestMethod.GET)
     public String deleteTag(@PathVariable Long id, final ModelMap model){
@@ -308,10 +345,11 @@ public class StockController {
         List<OwnProduct> products = productService.findAll();
         List<Mixture> mixtures = mixtureService.findAll();
         OwnTag tag = null;
-        Optional<OwnTag> tempTag = tagService.findById(id);
+        tag = tagService.findById(id).orElse(null);
         boolean isUsed = false;
-        if(tempTag.isPresent()){
-            tag = tempTag.get();
+
+        if(tag == null){
+            return invalidId(model);
         }
 
         Iterator<OwnProduct> it = products.iterator();
@@ -355,9 +393,14 @@ public class StockController {
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
     @RequestMapping(value="/tags/{id}", method= RequestMethod.GET)
     public String viewEditTag(@PathVariable Long id, final ModelMap model){
-        model.addAttribute("allTags", tagService.findAll());
-        model.addAttribute("tag",tagService.findById(id).orElse(null));
-        return "Tags/tags-manage";
+        if(tagService.exists(id)) {
+            model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("tag", tagService.findById(id).orElse(null));
+            return "Tags/tags-manage";
+        }
+        else{
+            return invalidId(model);
+        }
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All')")
@@ -423,6 +466,9 @@ public class StockController {
     @RequestMapping(value="/mixtures/{id}/delete",method = RequestMethod.GET)
     public String deleteMixture(@PathVariable Long id, final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
+        if(!mixtureService.exists(id)){
+            return invalidId(model);
+        }
         /*for(Composition comp: mixtureService.findById(id).orElse(null).getCompositions()){
             compositionService.delete(comp);
         }
@@ -449,15 +495,21 @@ public class StockController {
     @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
     @RequestMapping(value="/mixtures/{id}", method= RequestMethod.GET)
     public String viewEditMixture(@PathVariable Long id, final ModelMap model){
-        model.addAttribute("mixture",mixtureService.findById(id).orElse(null));
-        model.addAttribute("allProducts", productService.findAll());
-        model.addAttribute("allTags", tagService.findAll());
-        model.addAttribute("allMixtures", mixtureService.findAll());
-        model.addAttribute("allCompositions", compositionService.findAll());
-        model.addAttribute("composition", new Composition());
+        Locale current = LocaleContextHolder.getLocale();
 
-        return "Mixtures/mixtures-manage";
+        if(mixtureService.exists(id)){
+            model.addAttribute("mixture", mixtureService.findById(id).orElse(null));
+            model.addAttribute("allProducts", productService.findAll());
+            model.addAttribute("allTags", tagService.findAll());
+            model.addAttribute("allMixtures", mixtureService.findAll());
+            model.addAttribute("allCompositions", compositionService.findAll());
+            model.addAttribute("composition", new Composition());
 
+            return "Mixtures/mixtures-manage";
+        }
+        else{
+                return invalidId(model);
+        }
     }
 
     @PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
@@ -626,9 +678,14 @@ public class StockController {
 
     @RequestMapping(value ="/mixtures/info/{id}", method= RequestMethod.GET)
     public String viewMixtureInfo(@PathVariable Long id, final ModelMap model){
-        model.addAttribute("mixture",mixtureService.findById(id).orElse(null));
-        model.addAttribute("allProducts", productService.findAll());
-        return "Mixtures/mixtures-info";
+        if(mixtureService.exists(id)) {
+            model.addAttribute("mixture", mixtureService.findById(id).orElse(null));
+            model.addAttribute("allProducts", productService.findAll());
+            return "Mixtures/mixtures-info";
+        }
+        else{
+            return invalidId(model);
+        }
     }
 
 
