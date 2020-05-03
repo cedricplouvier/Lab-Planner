@@ -38,6 +38,9 @@ public class StepService {
             tempStep.setEndHour(step.getEndHour());
             tempStep.setUser(step.getUser());
             tempStep.setComment(step.getComment());
+            tempStep.setStepType(step.getStepType());
+            tempStep.setMixture(step.getMixture());
+            tempStep.setAmount(step.getAmount());
             stepRepository.save(tempStep);
         } else{
             stepRepository.save(step);

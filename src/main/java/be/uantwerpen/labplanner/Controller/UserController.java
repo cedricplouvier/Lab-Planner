@@ -1,7 +1,5 @@
 package be.uantwerpen.labplanner.Controller;
 
-import be.uantwerpen.labplanner.Model.GlobalVariables;
-import be.uantwerpen.labplanner.Model.OfficeHours;
 import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Model.Step;
 import be.uantwerpen.labplanner.Service.StepService;
@@ -10,9 +8,11 @@ import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -45,72 +46,38 @@ public class UserController {
 
     //Populate
     @ModelAttribute("allUsers")
-    public Iterable<User> populateUsers() {
-        return this.userService.findAll();
-    }
+    public Iterable<User> populateUsers() {return this.userService.findAll();}
 
     @ModelAttribute("allRoles")
-    public Iterable<Role> populateRoles() {
-        return this.roleService.findAll();
-    }
+    public Iterable<Role> populateRoles() {return this.roleService.findAll();}
+
 
     @PreAuthorize("hasAnyAuthority('User Management')")
-    @RequestMapping(value = "/usermanagement/users", method = RequestMethod.GET)
-    public String showUsers(final ModelMap model) {
-        model.addAttribute("allUsers", userService.findAll());
-        return "Users/user-list";
-    }
-
-    @PreAuthorize("hasAnyAuthority('User Management')")
-    @RequestMapping(value = "/usermanagement/users/put", method = RequestMethod.GET)
-    public String viewCreateUser(@org.jetbrains.annotations.NotNull final ModelMap model) {
-        model.addAttribute("allRoles", roleService.findAll());
-        model.addAttribute("allUsers", userService.findAll());
-        model.addAttribute(new User("", "", "", "", "", "", "", "", null, null, null));
-        return "Users/user-manage";
-    }
-
-
-    @RequestMapping(value = "/officeHours", method = RequestMethod.GET)
-    public String viewEditOfficeHours(@org.jetbrains.annotations.NotNull final ModelMap model) {
+    @RequestMapping(value = "/usermanagement/users",method = RequestMethod.GET)
+    public String showUsers(final ModelMap model){
         //get current user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
-        model.addAttribute(user);
-        model.addAttribute("officeHours", GlobalVariables.currentOfficeHours);
-        return "Users/officeHours-manage";
-    }
 
-    @RequestMapping(value = "/officeHours", method = RequestMethod.POST)
-    public String saveOfficeHours(@Valid OfficeHours officeHours, BindingResult result, @org.jetbrains.annotations.NotNull final ModelMap model) {
-        //get current user
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        //Set global openning hours if numbers are correct
-        if ((officeHours.getStartMinute() >= 0 && officeHours.getStartMinute() <= 59) ||
-                (officeHours.getStartHour() >= 0 && officeHours.getStartHour() <= 23) ||
-                (officeHours.getEndMinute() >= 0 && officeHours.getEndMinute() <= 59) ||
-                (officeHours.getEndHour() >= 0 && officeHours.getEndHour() <= 23)) {
-            GlobalVariables.currentOfficeHours.setStartHour(officeHours.getStartHour());
-            GlobalVariables.currentOfficeHours.setStartMinute(officeHours.getStartMinute());
-            GlobalVariables.currentOfficeHours.setEndHour(officeHours.getEndHour());
-            GlobalVariables.currentOfficeHours.setEndMinute(officeHours.getEndMinute());
-            GlobalVariables.currentOfficeHours.setOfficeHoursOn(officeHours.isOfficeHoursOn());
-            GlobalVariables.currentOfficeHours.setWeekendOn(officeHours.isWeekendOn());
-            GlobalVariables.currentOfficeHours.setHolidaysOn(officeHours.isHolidaysOn());
-        }
-
-        User curruser = (User) authentication.getPrincipal();
-
-        userService.save(curruser);
-
-
-        return "redirect:/home";
+        model.addAttribute("allUsers",userService.findAll());
+        model.addAttribute("adminrole",roleService.findByName("Administrator").orElse(null));
+        model.addAttribute("currentUserId",user.getId());
+        return "Users/user-list";
     }
 
 
-    @RequestMapping(value = "/password", method = RequestMethod.GET)
-    public String viewEditPassword(@org.jetbrains.annotations.NotNull final ModelMap model) {
+
+    @PreAuthorize("hasAnyAuthority('User Management')")
+    @RequestMapping(value = "/usermanagement/users/put",method = RequestMethod.GET)
+    public String viewCreateUser(@org.jetbrains.annotations.NotNull final ModelMap model){
+        model.addAttribute("allRoles",roleService.findAll());
+        model.addAttribute("allUsers",userService.findAll());
+        model.addAttribute(new User("","DEFAULT","","","","","","",null,null,null));
+        return "Users/user-manage";
+    }
+
+    @RequestMapping(value = "/password",method = RequestMethod.GET)
+    public String viewEditPassword(@org.jetbrains.annotations.NotNull final ModelMap model){
         //get current user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -120,92 +87,138 @@ public class UserController {
         return "Users/password-manage";
     }
 
-    @RequestMapping(value = "/password", method = RequestMethod.POST)
-    public String savePassword(@Valid User user, BindingResult result, @org.jetbrains.annotations.NotNull final ModelMap model) {
+    @RequestMapping(value = "/password",method = RequestMethod.POST)
+    public String savePassword(@Valid User user, BindingResult result, @org.jetbrains.annotations.NotNull final ModelMap model){
         //get current user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User curruser = (User) authentication.getPrincipal();
 
-        if (curruser.getId() != user.getId()) {
-            //error
-            return null;
-        } else if (user.getPassword().length() < 6) {
-            model.addAttribute("PWError", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("users.pwshort"));
-            model.addAttribute(user);
-            return "Users/password-manage";
-
-        } else if (user.getPassword().equals(user.getPassword().toLowerCase()) || user.getPassword().equals(user.getPassword().toUpperCase())) {
-
-            model.addAttribute(user);
-            model.addAttribute("PWError", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("users.pwcapital"));
-            return "Users/password-manage";
-        } else if (!user.getPassword().matches(".*\\d.*")) {
-            model.addAttribute("PWError", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("users.pwnumber"));
-            model.addAttribute(user);
-            return "Users/password-manage";
-        } else if (!user.getPassword().equals(user.getPassword().trim())) {
-            model.addAttribute("PWError", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("users.pwspace"));
+        if (curruser.getId() != user.getId()){
+            model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwfalse") );
             model.addAttribute(user);
             return "Users/password-manage";
         }
 
+        else if(user.getPassword().length()<6){
+            model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwshort") );
+            model.addAttribute(user);
+            return "Users/password-manage";
+
+        }
+
+        else if (user.getPassword().equals(user.getPassword().toLowerCase()) || user.getPassword().equals(user.getPassword().toUpperCase())){
+
+            model.addAttribute(user);
+            model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwcapital") );
+            return "Users/password-manage";
+        }
+
+        else if (!user.getPassword().matches(".*\\d.*")){
+            model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwnumber") );
+            model.addAttribute(user);
+            return "Users/password-manage";
+        }
+
+        else if (!user.getPassword().equals(user.getPassword().trim())){
+            model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwspace") );
+            model.addAttribute(user);
+            return "Users/password-manage";
+        }
+
+        //if it passes all tests
         curruser.setPassword(user.getPassword());
         userService.save(curruser);
+
+
+
 
 
         return "redirect:/home";
     }
 
 
+
+
+
     @PreAuthorize("hasAnyAuthority('User Management')")
-    @RequestMapping(value = "/usermanagement/users/{id}", method = RequestMethod.GET)
-    public String viewEditUser(@PathVariable("id") long id, final ModelMap model) {
-        model.addAttribute("allUsers", userService.findAll());
-        model.addAttribute("allRoles", roleService.findAll());
-        model.addAttribute("user", userService.findById(id).orElse(null));
+    @RequestMapping(value = "/usermanagement/users/{id}",method = RequestMethod.GET)
+    public String viewEditUser(@PathVariable("id") long id, final ModelMap model){
+        //get current user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User curruser = (User) authentication.getPrincipal();
+
+        Role admin = roleService.findByName("Administrator").orElse(null);
+        User editUser = userService.findById(id).orElse(null);
+
+        if (editUser==null){
+            model.addAttribute("allUsers",userService.findAll());
+            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.editError"));
+            model.addAttribute("adminrole",roleService.findByName("Administrator").orElse(null));
+            model.addAttribute("currentUserId",curruser.getId());
+            return "Users/user-list";
+        }
+
+        //curr user may not edit other admin
+        if ((editUser.getRoles().contains(admin)) && (!editUser.equals(curruser))){
+
+            model.addAttribute("allUsers",userService.findAll());
+            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.adminEditError"));
+            model.addAttribute("adminrole",roleService.findByName("Administrator").orElse(null));
+            model.addAttribute("currentUserId",curruser.getId());
+            return "Users/user-list";
+        }
+
+
+
+        model.addAttribute("allUsers",userService.findAll());
+        model.addAttribute("allRoles",roleService.findAll());
+        model.addAttribute("user",userService.findById(id).orElse(null));
+
+
         return "Users/user-manage";
     }
 
 
     @PreAuthorize("hasAnyAuthority('User Management')")
-    @RequestMapping(value = {"/usermanagement/users/", "/usermanagement/users/{id}"}, method = RequestMethod.POST)
-    public String addUser(@Valid User user, BindingResult result, final ModelMap model) {
-        if ((result.hasErrors()) || (user.getPassword() == null) || (user.getUsername() == null) || (user.getUsername().trim().equals("")) || (user.getPassword().trim().equals(""))) {
+    @RequestMapping(value = {"/usermanagement/users/","/usermanagement/users/{id}"}, method = RequestMethod.POST)
+    public String addUser(@Valid User user,  BindingResult result, final ModelMap model) {
+        if ((result.hasErrors())|| (user.getPassword() == null) || (user.getUsername() ==null) || (user.getUsername().trim().equals("")) || (user.getPassword().trim().equals(""))){
             model.addAttribute("allRoles", roleService.findAll());
-            model.addAttribute("allUsers", userService.findAll());
-            model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.addError"));
+            model.addAttribute("allUsers",userService.findAll());
+            model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.addError") );
 
             return "Users/user-manage";
         }
 
 
         //test for duplicate UA number
-        for (User temp : userService.findAll()) {
+        for(User temp : userService.findAll()){
 
-            if ((temp.getUaNumber() != null) && (user.getUaNumber() != null) && ((temp.getUaNumber().equals(user.getUaNumber())) && (temp.getId() != user.getId()))) {
+            if ( (temp.getUaNumber()!= null) && (user.getUaNumber()!=null)   && ((temp.getUaNumber().equals(user.getUaNumber()))&&(temp.getId()!=user.getId()))){
                 model.addAttribute("allRoles", roleService.findAll());
-                model.addAttribute("allUsers", userService.findAll());
-                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.UAError"));
+                model.addAttribute("allUsers",userService.findAll());
+                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.UAError") );
 
                 return "Users/user-manage";
             }
         }
 
 
+        //add new user
         if (user.getId() == null) {
             //if the given username is unique, save the user in the database
             if (userService.findByUsername(user.getUsername()).isPresent()) {
                 model.addAttribute("allRoles", roleService.findAll());
-                model.addAttribute("allUsers", userService.findAll());
-                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.uniqueError"));
+                model.addAttribute("allUsers",userService.findAll());
+                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.uniqueError") );
                 return "Users/user-manage";
             }
             //trim input and save
             user.setUsername(user.getUsername().trim());
-            if (!user.getPassword().equals(user.getPassword().trim())) {
-                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.passwordError"));
+            if (!user.getPassword().equals(user.getPassword().trim())){
+                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.passwordError") );
                 model.addAttribute("allRoles", roleService.findAll());
-                model.addAttribute("allUsers", userService.findAll());
+                model.addAttribute("allUsers",userService.findAll());
                 return "Users/user-manage";
             }
             userService.save(user);
@@ -215,31 +228,37 @@ public class UserController {
         // already id, so existing user
         //Check if name is not already used.
         User tempUser = userService.findById(user.getId()).orElse(null);
-        if (!tempUser.getUsername().equals(user.getUsername())) {
-            if (userService.findByUsername(user.getUsername()).isPresent()) {
-                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.uniqueError"));
+        //check password, if password equals default_password, it needs to be changed back to the pw if the database.
+        if (user.getPassword().equals("default_password")){
+            user.setPassword(tempUser.getPassword());
+        }
+
+        if(!tempUser.getUsername().equals(user.getUsername())){
+            if(userService.findByUsername(user.getUsername()).isPresent()){
+                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.uniqueError") );
                 model.addAttribute("allRoles", roleService.findAll());
-                model.addAttribute("allUsers", userService.findAll());
+                model.addAttribute("allUsers",userService.findAll());
                 return "Users/user-manage";
             }
 
             //trim input and save
             user.setUsername(user.getUsername().trim());
-            if (!user.getPassword().equals(user.getPassword().trim())) {
-                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.passwordError"));
+            if (!user.getPassword().equals(user.getPassword().trim())){
+                model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.passwordError") );
                 model.addAttribute("allRoles", roleService.findAll());
-                model.addAttribute("allUsers", userService.findAll());
+                model.addAttribute("allUsers",userService.findAll());
                 return "Users/user-manage";
             }
             userService.save(user);
             return "redirect:/usermanagement/users";
         }
+
         //trim input and save
         user.setUsername(user.getUsername().trim());
-        if (!user.getPassword().equals(user.getPassword().trim())) {
-            model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.passwordError"));
+        if (!user.getPassword().equals(user.getPassword().trim())){
+            model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.passwordError") );
             model.addAttribute("allRoles", roleService.findAll());
-            model.addAttribute("allUsers", userService.findAll());
+            model.addAttribute("allUsers",userService.findAll());
             return "Users/user-manage";
         }
         userService.save(user);
@@ -247,19 +266,43 @@ public class UserController {
     }
 
 
+
+
+
+
+
+
+
     @PreAuthorize("hasAnyAuthority('User Management')")
-    @RequestMapping(value = "/usermanagement/users/{id}/delete", method = RequestMethod.GET)
+    @RequestMapping(value = "/usermanagement/users/{id}/delete",method = RequestMethod.GET)
     public String deleteUser(@PathVariable long id, final ModelMap model) {
 
         //get current user.
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
-        if (user.getId() == id) {
-            model.addAttribute("allUsers", userService.findAll());
-            model.addAttribute("inUseError", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.selfDeleteError"));
+
+        Role admin = roleService.findByName("Administrator").orElse(null);
+        User userToDelete = userService.findById(id).orElse(null);
+
+        if (userToDelete==null){
+            model.addAttribute("allUsers",userService.findAll());
+            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.editError"));
+            model.addAttribute("adminrole",roleService.findByName("Administrator").orElse(null));
+            model.addAttribute("currentUserId",user.getId());
             return "Users/user-list";
         }
+
+
+        if (userToDelete.getRoles().contains(admin)){
+            model.addAttribute("allUsers",userService.findAll());
+            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.adminDeleteError"));
+            model.addAttribute("adminrole",roleService.findByName("Administrator").orElse(null));
+            model.addAttribute("currentUserId",user.getId());
+            return "Users/user-list";
+        }
+
+
 
 
         List<Step> allSteps = stepService.findAll();
@@ -270,15 +313,17 @@ public class UserController {
             }
         }
 
-        for (Relation relation : relationService.findAll()) {
-            if ((relation.getResearcher().getId() == id) || (relation.getStudents().contains(userService.findById(id).orElse(null)))) {
+        for (Relation relation : relationService.findAll()){
+            if ((relation.getResearcher().getId() == id) || (relation.getStudents().contains(userService.findById(id).orElse(null)))){
                 isUsed = true;
             }
         }
 
-        if (isUsed) {
-            model.addAttribute("allUsers", userService.findAll());
-            model.addAttribute("inUseError", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.deleteError"));
+        if (isUsed){
+            model.addAttribute("allUsers",userService.findAll());
+            model.addAttribute("inUseError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.deleteError"));
+            model.addAttribute("adminrole",roleService.findByName("Administrator").orElse(null));
+            model.addAttribute("currentUserId",user.getId());
             return "Users/user-list";
         }
 
@@ -286,6 +331,10 @@ public class UserController {
         model.clear();
         return "redirect:/usermanagement/users";
     }
+
+
+
+
 
 
 }
