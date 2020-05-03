@@ -583,6 +583,7 @@ public class StepController {
     public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Locale current = LocaleContextHolder.getLocale();
+
         Map<OwnProduct, Double> productMapStock = new HashMap<>();
         Map<OwnProduct, Double> productMapReserved = new HashMap<>();
 
@@ -825,6 +826,7 @@ public class StepController {
         //Save steps into database
         for (Step step : tmpListSteps) {
             stepService.saveSomeAttributes(step);
+            System.out.println(step.getEnd());
         }
         experiment.setSteps(tmpListSteps);
 
