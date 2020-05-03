@@ -2,7 +2,6 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Repository.ExperimentRepository;
-import be.uantwerpen.labplanner.Repository.ExperimentTypeRepository;
 import be.uantwerpen.labplanner.Service.*;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
@@ -57,12 +56,9 @@ public class StepController {
     @Autowired
     private StepTypeService stepTypeService;
     @Autowired
-    private ExperimentTypeRepository experimentTypeRepository;
-    @Autowired
     private PieceOfMixtureService pieceOfMixtureService;
     @Autowired
     private OwnProductService productService;
-
     @Autowired
     private EmailController emailController;
 
@@ -165,6 +161,7 @@ public class StepController {
     public String showStepPage(final ModelMap model) {
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+        model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("Step", new Step());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -298,6 +295,11 @@ public class StepController {
             ra.addFlashAttribute("Message", new String(result.getFieldError().toString()));
             return "redirect:/planning/";
         }
+        if(step.getAmount()<0){
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String("Error: Amount of mixture can't be negative."));
+            return "redirect:/planning/";
+        }
 
         //Current user can only be, user of the step, the promotor of the user or admin.
         Role adminole = roleService.findByName("Administrator").get();
@@ -376,6 +378,7 @@ public class StepController {
                 model.addAttribute("allDevices", deviceService.findAll());
                 model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
                 model.addAttribute("allSteps", stepService.findAll());
+                model.addAttribute("allMixtures",mixtureService.findAll());
                 return "PlanningTool/step-manage";
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
@@ -1076,7 +1079,7 @@ public class StepController {
             ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type."));
             return "redirect:/planning/experiments/{id}";
         }
-        ExperimentType tempExperimentType = experimentType.getId() == null ? null : experimentTypeRepository.findById(experimentType.getId()).orElse(null);
+        ExperimentType tempExperimentType = experimentType.getId() == null ? null : experimentTypeService.findById(experimentType.getId()).orElse(null);
         if (tempExperimentType == null) {
             for (ExperimentType exptyp : experimentTypeService.findAll()) {
                 if (experimentType.getExpname().equals(exptyp.getExpname())) {

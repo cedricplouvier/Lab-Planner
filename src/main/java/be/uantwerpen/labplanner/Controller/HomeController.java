@@ -8,15 +8,8 @@ import be.uantwerpen.labplanner.Service.ExperimentService;
 import be.uantwerpen.labplanner.Service.RelationService;
 import be.uantwerpen.labplanner.Service.ReportService;
 import be.uantwerpen.labplanner.Service.StepService;
-import be.uantwerpen.labplanner.Service.DeviceService;
-import be.uantwerpen.labplanner.Service.DeviceTypeService;
-import be.uantwerpen.labplanner.Service.RelationService;
-import be.uantwerpen.labplanner.Service.StepService;
-import be.uantwerpen.labplanner.Service.ReportService;
-import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
-import be.uantwerpen.labplanner.common.service.users.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
 
 import java.util.*;
 
@@ -141,4 +135,5 @@ public class HomeController {
     public String showStatisticsPage() {
         return "redirect:/statistics/statistics";
     }
+
 }

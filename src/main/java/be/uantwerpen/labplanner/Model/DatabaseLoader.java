@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-//@Profile("!prod")
+@Profile("!prod")
 public class DatabaseLoader {
 
     private final PrivilegeRepository privilegeRepository;
@@ -268,16 +268,16 @@ public class DatabaseLoader {
         roleRepository.save(administrator);
 
 
-        User u1 = new User("Cedric", "PW", "", "Cedric", "Plouvier", "20152267", "", "", null, null, null);
+        User u1 = new User("Cedric", "PW", "cedric.plouvier@student.uantwerpen.be", "Cedric", "Plouvier", "20152267", "", "", null, null, null);
         User u2 = new User("Ruben", "PW", "ruben.joosen@student.uantwerpen.be", "Ruben", "Joosen", "20164473", "", "", null, null, null);
-        User u3 = new User("Jaimie", "PW", "", "Jaimie", "Vranckx", "20155797", "", "", null, null, null);
-        User u4 = new User("Ali", "PW", "", "Ali", "Amir", "20163446", "", "", null, null, null);
-        User u5 = new User("Timo", "PW", "", "Timo", "Nelen", "S0162117", "", "", null, null, null);
-        User u6 = new User("Ondrej", "PW", "", "Ondrej", "Bures", "20160002", "", "", null, null, null);
-        User u7 = new User("Bachelor", "PW", "", "Bach", "Student", "20170001", "", "", null, null, null);
-        User u8 = new User("Master", "PW", "", "Mas", "Student", "20160009", "", "", null, null, null);
-        User u9 = new User("Researcher", "PW", "", "Researcher", "Developper", "20100001", "", "", null, null, null);
-        User admin = new User("admin", "admin", "", "admin", "admin", null, "", "", null, null, null);
+        User u3 = new User("Jaimie", "PW", "jaimie.vranckx@student.uantwerpen.be", "Jaimie", "Vranckx", "20155797", "", "", null, null, null);
+        User u4 = new User("Ali", "PW", "mohammad.amir2@student.uantwerpen.be", "Ali", "Amir", "20163446", "", "", null, null, null);
+        User u5 = new User("Timo", "PW", "timo.nelen@student.uantwerpen.be", "Timo", "Nelen", "S0162117", "", "", null, null, null);
+        User u6 = new User("Ondrej", "PW", "ondrej.bures@student.uantwerpen.be", "Ondrej", "Bures", "20160002", "", "", null, null, null);
+        User u7 = new User("Bachelor", "PW", "bachelor@student.uantwerpen.be", "Bach", "Student", "20170001", "", "", null, null, null);
+        User u8 = new User("Master", "PW", "master@student.uantwerpen.be", "Mas", "Student", "20160009", "", "", null, null, null);
+        User u9 = new User("Researcher", "PW", "researcher@uantwerpen.be", "Researcher", "Developper", "20100001", "", "", null, null, null);
+        User admin = new User("admin", "admin", "admin@uantwerpen.be", "admin", "admin", null, "", "", null, null, null);
         //Set<Role> roles = new HashSet<>();
         Set<Role> roles = new HashSet<>();
         roles.add(administrator);
@@ -473,21 +473,21 @@ public class DatabaseLoader {
         List<OwnTag> tags4 = new ArrayList<>();
         tags4.add(tag4);
         tagRepository.save(tag4);
-        OwnProduct pr1 = new OwnProduct("Gebroken Porfier 6,3/10", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3, new URL("https://nl.wikipedia.org/wiki/Porfier"));
+        OwnProduct pr1 = new OwnProduct("Gebroken Porfier 6,3/10", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3, new URL("https://nl.wikipedia.org/wiki/Porfier"));
         productRepository.save(pr1);
-        OwnProduct pr2 = new OwnProduct("Gebroken Porfier 4/6,3", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1, new URL("https://nl.wikipedia.org/wiki/Porfier"));
+        OwnProduct pr2 = new OwnProduct("Gebroken Porfier 4/6,3", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1, new URL("https://nl.wikipedia.org/wiki/Porfier"));
         productRepository.save(pr2);
-        OwnProduct pr3 = new OwnProduct("Gebroken Profier 2/4", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1, new URL("https://nl.wikipedia.org/wiki/Porfier"));
+        OwnProduct pr3 = new OwnProduct("Gebroken Profier 2/4", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1, new URL("https://nl.wikipedia.org/wiki/Porfier"));
         productRepository.save(pr3);
-        OwnProduct pr4 = new OwnProduct("Gewassen Kalksteen 0/2", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3, new URL("https://nl.wikipedia.org/wiki/Kalksteen"));
+        OwnProduct pr4 = new OwnProduct("Gewassen Kalksteen 0/2", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3, new URL("https://nl.wikipedia.org/wiki/Kalksteen"));
         productRepository.save(pr4);
-        OwnProduct pr5 = new OwnProduct("Alzagri Rond Zand 0/1", lorem.getWords(20), 1.0, 1000.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags2, new URL("https://nl.wikipedia.org/wiki/Zand"));
+        OwnProduct pr5 = new OwnProduct("Alzagri Rond Zand 0/1", lorem.getWords(20), 1.0, 1000.0, 100.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags2, new URL("https://nl.wikipedia.org/wiki/Zand"));
         productRepository.save(pr5);
-        OwnProduct pr6 = new OwnProduct("Vulstof duras 2a", lorem.getWords(20), 1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4,new URL("https://nl.wikipedia.org/wiki/Duras"));
+        OwnProduct pr6 = new OwnProduct("Vulstof duras 2a", lorem.getWords(20), 1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4,new URL("https://nl.wikipedia.org/wiki/Duras"));
         productRepository.save(pr6);
-        OwnProduct pr7 = new OwnProduct("Bitumen op aggregaten", lorem.getWords(20), 1.0, 200.0, 25.0, 1.0, Unit.LITRE, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, new URL("https://nl.wikipedia.org/wiki/Bitumen"));
+        OwnProduct pr7 = new OwnProduct("Bitumen op aggregaten", lorem.getWords(20), 1.0, 200.0, 25.0, 1.0, Unit.LITRE, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, new URL("https://nl.wikipedia.org/wiki/Bitumen"));
         productRepository.save(pr7);
-        OwnProduct pr8 = new OwnProduct("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, "locatie2", lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4,null);
+        OwnProduct pr8 = new OwnProduct("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4,null);
         productRepository.save(pr8);
 
         Step s1 = new Step(u1, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
@@ -629,12 +629,14 @@ public class DatabaseLoader {
 
 
         //create mixtures and save them
-        Mixture m1 = new Mixture("APT-C", mix1, lorem.getWords(20), tags2);
+        Mixture m1 = new Mixture("APT-C", mix1, lorem.getWords(20), tags2, null, null);
         mixtureRepository.save(m1);
-        Mixture m2 = new Mixture("AB-4C", mix2, lorem.getWords(20), tags1);
+        Mixture m2 = new Mixture("AB-4C", mix2, lorem.getWords(20), tags1, null, null);
         mixtureRepository.save(m2);
-        Mixture m3 = new Mixture("SMA", mix3, lorem.getWords(20), tags4);
+        Mixture m3 = new Mixture("SMA", mix3, lorem.getWords(20), tags4, null, null);
         mixtureRepository.save(m3);
+
+
         //Continuities
         Continuity cont1 = new Continuity(0, 0, "No");
         continuityRepository.save(cont1);

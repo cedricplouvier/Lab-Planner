@@ -29,6 +29,11 @@ public class Step extends AbstractPersistable<Long> {
     private String endHour;
     @Column(name = "comment")
     private String comment;
+    @OneToOne
+    @JoinColumn(name = "mixture")
+    private Mixture mixture;
+    @Column(name = "amount")
+    private int amount;
 
     public Step(){
     }
@@ -112,6 +117,22 @@ public class Step extends AbstractPersistable<Long> {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Mixture getMixture() {
+        return mixture;
+    }
+
+    public void setMixture(Mixture mixture) {
+        this.mixture = mixture;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 }
 

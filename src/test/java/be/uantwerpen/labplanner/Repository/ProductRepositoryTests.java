@@ -86,10 +86,10 @@ public class ProductRepositoryTests {
         assertEquals(fetchedproduct.getUnits(), fetchUpdatedProduct5.getUnits());
 
         //update imageurl
-        fetchedproduct.setImageUrl("thisIsAVeryFancyURL");
+        fetchedproduct.setImageName("thisIsAVeryFancyURL");
         productRepository.save(fetchedproduct);
         OwnProduct fetchUpdatedProduct6 = productRepository.findById(fetchedproduct.getId()).orElse(null);
-        assertEquals(fetchedproduct.getImageUrl(), fetchUpdatedProduct6.getImageUrl());
+        assertEquals(fetchedproduct.getImageName(), fetchUpdatedProduct6.getImageName());
 
         //update properties
         fetchedproduct.setProperties("testproperties");

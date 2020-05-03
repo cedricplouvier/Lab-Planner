@@ -125,6 +125,7 @@ public class UserController {
             return "Users/password-manage";
         }
 
+        //if it passes all tests
         curruser.setPassword(user.getPassword());
         userService.save(curruser);
 
@@ -220,7 +221,7 @@ public class UserController {
         }
 
 
-
+        //add new user
         if (user.getId() == null) {
             //if the given username is unique, save the user in the database
             if (userService.findByUsername(user.getUsername()).isPresent()) {
@@ -244,6 +245,11 @@ public class UserController {
         // already id, so existing user
         //Check if name is not already used.
         User tempUser = userService.findById(user.getId()).orElse(null);
+        //check password, if password equals default_password, it needs to be changed back to the pw if the database.
+        if (user.getPassword().equals("default_password")){
+            user.setPassword(tempUser.getPassword());
+        }
+
         if(!tempUser.getUsername().equals(user.getUsername())){
             if(userService.findByUsername(user.getUsername()).isPresent()){
                 model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.uniqueError") );
@@ -263,6 +269,7 @@ public class UserController {
             userService.save(user);
             return "redirect:/usermanagement/users";
         }
+
         //trim input and save
         user.setUsername(user.getUsername().trim());
         if (!user.getPassword().equals(user.getPassword().trim())){
