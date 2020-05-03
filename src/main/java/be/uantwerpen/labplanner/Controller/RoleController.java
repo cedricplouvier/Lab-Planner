@@ -1,6 +1,7 @@
 package be.uantwerpen.labplanner.Controller;
 
 
+import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Service.OwnPrivilegeService;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.model.users.Role;
@@ -67,6 +68,13 @@ public class RoleController {
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/roles/{id}",method = RequestMethod.GET)
     public String viewEditRole(@PathVariable long id, final ModelMap model){
+
+        Role role = roleService.findById(id).orElse(null);
+        if (role == null){
+            model.addAttribute("allRoles",roleService.findAll());
+            model.addAttribute("inUseError", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("roles.error"));
+            return "Roles/role-list";
+        }
         model.addAttribute("allPrivileges",privilegeService.findAll());
         model.addAttribute("role",roleService.findById(id).orElse(null));
         return "Roles/role-manage";
@@ -114,6 +122,14 @@ public class RoleController {
     @RequestMapping(value = "/usermanagement/roles/{id}/delete",method = RequestMethod.GET)
     public String deleteRole(@PathVariable long id, final ModelMap model){
         //print messages based in current locale
+
+        Role currrole = roleService.findById(id).orElse(null);
+        if (currrole == null){
+            model.addAttribute("allRoles",roleService.findAll());
+            model.addAttribute("inUseError", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("roles.error"));
+            return "Roles/role-list";
+        }
+
         List<User> allUsers = userService.findAll();
         boolean isUsed = false;
         for (User user : allUsers){
