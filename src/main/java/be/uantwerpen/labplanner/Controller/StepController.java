@@ -59,7 +59,6 @@ public class StepController {
     private PieceOfMixtureService pieceOfMixtureService;
     @Autowired
     private OwnProductService productService;
-
     @Autowired
     private RelationService relationService;
 
@@ -92,6 +91,7 @@ public class StepController {
     public String showStepPage(final ModelMap model) {
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+        model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("Step", new Step());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -228,6 +228,11 @@ public class StepController {
                 ra.addFlashAttribute("Message", new String("Error while trying to save step."));
             return "redirect:/planning/";
         }
+        if(step.getAmount()<0){
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String("Error: Amount of mixture can't be negative."));
+            return "redirect:/planning/";
+        }
 
         //Current user can only be, user of the step, the promotor of the user or admin.
         Role adminole = roleService.findByName("Administrator").get();
@@ -295,6 +300,7 @@ public class StepController {
                 model.addAttribute("allDevices", deviceService.findAll());
                 model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
                 model.addAttribute("allSteps", stepService.findAll());
+                model.addAttribute("allMixtures",mixtureService.findAll());
                 return "PlanningTool/step-manage";
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
