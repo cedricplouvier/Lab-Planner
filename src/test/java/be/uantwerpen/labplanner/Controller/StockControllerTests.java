@@ -125,7 +125,7 @@ public class StockControllerTests {
         tags.add(t1);
         OwnProduct prod = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags , null);
         mockMvc.perform(post("/products/").flashAttr("ownProduct",prod))
-                .andExpect(view().name("Stock/overview-stock"))
+                .andExpect(view().name("Stock/products-manage"))
                 .andDo(print());
     }
 
@@ -139,7 +139,7 @@ public class StockControllerTests {
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
         mockMvc.perform(post("/products/{id}","10").flashAttr("ownProduct",prod))
-                .andExpect(view().name("Stock/overview-stock"))
+                .andExpect(view().name("redirect:/products"))
                 .andDo(print());
 
     }
@@ -292,10 +292,10 @@ public class StockControllerTests {
         ingredients.add(new Composition(100.0, new OwnProduct()));
         List<OwnTag> tags = new ArrayList<>();
         tags.add(new OwnTag("test"));
-        Mixture mix = new Mixture("testing", ingredients, "blablabla",tags);
+        Mixture mix = new Mixture("testing", ingredients, "blablabla",tags, null, null);
 
         mockMvc.perform(post("/mixtures/").flashAttr("mixture",mix))
-                .andExpect(view().name("Stock/overview-stock"))
+                .andExpect(view().name("Mixtures/mixtures-manage"))
                 .andDo(print());
     }
 
@@ -308,7 +308,7 @@ public class StockControllerTests {
 
         List<OwnTag> tags = new ArrayList<>();
         tags.add(new OwnTag("test"));
-        Mixture mix = new Mixture("testingC", ingredients, "blablabla",tags);
+        Mixture mix = new Mixture("testingC", ingredients, "blablabla",tags, null, null);
 
         mockMvc.perform(post("/mixtures/").flashAttr("mixture",mix))
                 .andExpect(model().attribute("errormessage", notNullValue()))
@@ -325,7 +325,7 @@ public class StockControllerTests {
 
         List<OwnTag> tags = new ArrayList<>();
         tags.add(new OwnTag("test"));
-        Mixture mix = new Mixture("testingC", ingredients, "",tags);
+        Mixture mix = new Mixture("testingC", ingredients, "",tags, null, null);
 
         mockMvc.perform(post("/mixtures/").flashAttr("mixture",mix))
                 .andExpect(model().attribute("errormessage", notNullValue()))
@@ -341,7 +341,7 @@ public class StockControllerTests {
         ingredients.add(new Composition(50.0, new OwnProduct()));
 
         List<OwnTag> tags = new ArrayList<>();
-        Mixture mix = new Mixture("testingC", ingredients, "blabla",tags);
+        Mixture mix = new Mixture("testingC", ingredients, "blabla",tags, null, null);
 
         mockMvc.perform(post("/mixtures/").flashAttr("mixture",mix))
                 .andExpect(model().attribute("errormessage", notNullValue()))
@@ -357,13 +357,13 @@ public class StockControllerTests {
 
         List<OwnTag> tags = new ArrayList<>();
         tags.add(new OwnTag("test"));
-        Mixture mix = new Mixture("testingC", ingredients, "blablabla",tags);
+        Mixture mix = new Mixture("testingC", ingredients, "blablabla",tags, null, null);
 
         long id = 10;
 
         when(mixtureService.findById(id)).thenReturn(Optional.of(mix));
         mockMvc.perform(post("/mixtures/{id}","10").flashAttr("mixture",mix))
-                .andExpect(view().name("Stock/overview-stock"))
+                .andExpect(view().name("redirect:/products"))
                 .andDo(print());
     }
 
@@ -376,7 +376,7 @@ public class StockControllerTests {
 
         List<OwnTag> tags = new ArrayList<>();
         tags.add(new OwnTag("test"));
-        Mixture mix = new Mixture("", ingredients, "blablabla",tags);
+        Mixture mix = new Mixture("", ingredients, "blablabla",tags, null, null);
 
         long id = 10;
 
@@ -395,7 +395,7 @@ public class StockControllerTests {
         ingredients.add(new Composition(50.0, new OwnProduct()));
 
         List<OwnTag> tags = new ArrayList<>();
-        Mixture mix = new Mixture("test", ingredients, "blablabla",tags);
+        Mixture mix = new Mixture("test", ingredients, "blablabla",tags, null, null);
 
         long id = 10;
 
@@ -415,7 +415,7 @@ public class StockControllerTests {
 
         List<OwnTag> tags = new ArrayList<>();
         tags.add(new OwnTag("test"));
-        Mixture mix = new Mixture("test", ingredients, "blablabla",tags);
+        Mixture mix = new Mixture("test", ingredients, "blablabla",tags, null, null);
 
         long id = 10;
 
@@ -435,7 +435,7 @@ public class StockControllerTests {
 
         List<OwnTag> tags = new ArrayList<>();
         tags.add(new OwnTag("test"));
-        Mixture mix = new Mixture("test", ingredients, "",tags);
+        Mixture mix = new Mixture("test", ingredients, "",tags, null, null);
 
         long id = 10;
 

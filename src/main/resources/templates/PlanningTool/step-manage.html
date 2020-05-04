@@ -63,41 +63,85 @@
 
         <input th:type="hidden" th:field="*{user}"/>
 
-        <label class="control-label" th:text="#{device.type}"></label>
-        <select required class=" form-control input-device"  id="sel" onchange="selectDevices()">
-            <option th:value="none"  selected disabled hidden th:text="*{device.getDeviceType().getDeviceTypeName()}"> Device Type </option>
-            <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.getDeviceTypeName()}">Device Type</option>
-        </select>
+        <table class="table table-hover">
+            <tr>
+                <td class="control-label" th:text="#{device.type}"></td>
+                <td class="control-label" th:text="#{device}"></td>
+            </tr>
+            <tr>
+                <td>
+                    <select required class=" form-control" id="sel" onchange="selectDevices()">
+                        <option th:value="none"  selected disabled hidden th:text="*{device.getDeviceType().getDeviceTypeName()}"> Device Type </option>
+                        <option class="dropdown-item"  th:each="deviceType : ${allDeviceTypes}" th:value="${deviceType.getId()}" th:text="${deviceType.getDeviceTypeName()}">Device Type</option>
+                    </select>
+                </td>
+                <td>
+                    <select required class=" form-control"  id="deviceNames" th:field="*{device}">
+                        <option class="dropdown-item"   th:value="*{device.getId()}" th:text="*{device.getDevicename()}">Device</option>
+                        <option class="dropdown-item"   th:each="device : ${allDevices}" th:if="${device.deviceType.id} == *{device.getDeviceType().id} " th:value="${device.getId()}" th:text="${device.getDevicename()}">Device</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="control-label" th:text="#{step.start}">Start data</td>
+                <td class="control-label" th:text="#{step.startHour}">Start Hour</td>
+            </tr>
+            <tr>
+                <td>
+                    <input required id="startTime" type="date" th:field="*{start}" class="form-control" th:placeholder="#{step.start}">
+                </td>
+                <td>
+                    <input required id="startHour" type="time" class="form-control" th:field="*{startHour}" th:placeholder="#{step.startHour}">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label  class="control-label" th:text="#{step.end}">End date</label>
+                </td>
+                <td>
+                    <label class="control-label" th:text="#{step.endHour}">End Hour</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input th:type="number" required id="endTime"type="date" th:field="*{end}" class="form-control"  th:placeholder="#{step.end}">
+                </td>
+                <td>
+                    <input th:type="number" required id="endHour" type="time" class="form-control" th:field="*{endHour}" th:placeholder="#{step.endHour}">
+                </td>
+            </tr>
+            <tr>
+                <td><label  class="control-label" th:text="#{step.comment}">Comment</label></td>
+            </tr>
+            <tr>
+                <td><input class="form-control" th:placeholder="#{step.comment}"></td>
+            </tr>
+            <tr>
+                <td><label class="control-label" th:text="#{step.mixture}">Mixture</label></td>
+                <td><label class="control-label" th:text="#{step.amount}">Amount</label></td>
+            </tr>
+            <tr>
+                <td>
+                    <select required id="mixtures" th:field="*{mixture}" class="form-control input-mixture">
+                        <option value="" disabled th:selected="selected">Select Mixture</option>
+                        <option class="dropdown-item" th:each="Amixture : ${allMixtures}" th:value="${Amixture.getId()}" th:text="${Amixture.getName()}">
+                            Mixture
+                        </option>
+                    </select>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <input th:field="*{amount}" step="0.01" type="number" class="form-control" >
+                        <div class="input-group-append">
+                            <span class="input-group-text" style="color:#808080">kg</span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+<!--        <label class="control-label" th:text="#{device.type}"></label>-->
+<!--        <label class="control-label float-right" th:text="#{device}"></label>-->
 
-        <label class="control-label" th:text="#{device}"></label>
-        <select required class=" form-control input-device"  id="deviceNames" th:field="*{device}">
-            <option class="dropdown-item"   th:value="*{device.getId()}" th:text="*{device.getDevicename()}">Device</option>
-            <option class="dropdown-item"   th:each="device : ${allDevices}" th:if="${device.deviceType.id} == *{device.getDeviceType().id} " th:value="${device.getId()}" th:text="${device.getDevicename()}">Device</option>
-        </select>
-
-        <label class="control-label" text="Start data">Start data</label>
-
-        <div>
-            <input required id="startTime" type="date" th:field="*{start}" class="form-control input-date" placeholder="Start date">
-        </div>
-
-        <label class="control-label" text="Start hour">Start Hour</label>
-
-        <div>
-        <input required id="startHour" type="time" class="form-control float-right input-hour" th:field="*{startHour}" placeholder="Hour">
-        </div>
-
-        <label  class="control-label" text="End data">End data</label>
-
-        <div>
-            <input required id="endTime"  type="date" th:field="*{end}" class="form-control input-date"  placeholder="End date">
-        </div>
-
-        <label class="control-label" text="End hour">End Hour</label>
-
-        <div>
-            <input required id="endHour" type="time" class="form-control float-right input-hour" th:field="*{endHour}" placeholder="Hour">
-        </div>
 
         <!--        <div class="alert alert-danger" role="alert" th:if="${UserInUse}!=null" th:text="${UserInUse}"></div>-->
 
