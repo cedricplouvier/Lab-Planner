@@ -248,7 +248,7 @@ public class StatisticsControllerTests {
                 .with(user("test").password("test")
                         .authorities(new SimpleGrantedAuthority("Statistics Access"))))
                 .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/statistics/statistics/refreshYear"))
+                .andExpect(view().name("redirect:/statistics/statistics"))
                 .andDo(print());
     }
 
@@ -258,7 +258,7 @@ public class StatisticsControllerTests {
                 .with(user("test").password("test")
                         .authorities(new SimpleGrantedAuthority("Statistics Access"))))
                 .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/statistics/statistics/refreshYear"))
+                .andExpect(view().name("redirect:/statistics/statistics"))
                 .andDo(print());
     }
 
@@ -268,17 +268,7 @@ public class StatisticsControllerTests {
                 .with(user("test").password("test")
                 .authorities(new SimpleGrantedAuthority("Statistics Access"))))
                 .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/statistics/statistics/refreshYear"));
-    }
-
-    @Test
-    public void refreshYearTest() throws Exception {
-        mockMvc.perform(get("/statistics/statistics/refreshYear")
-                .with(user("test").password("test")
-                        .authorities(new SimpleGrantedAuthority("Statistics Access"))))
-                .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/statistics/statistics"))
-                .andDo(print());
+                .andExpect(view().name("redirect:/statistics/statistics"));
     }
 
     @Test

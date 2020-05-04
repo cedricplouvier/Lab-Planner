@@ -166,6 +166,15 @@ public class StatisticsController {
     float labClosingTime = 20;
     float labOpeningHoursInYear = amountOfWorkDaysInYear*(labClosingTime-labOpeningTime);
 
+
+    /**
+     *
+     * Method that adds all needed model attributes for the device statistics to the modelmap.
+     *
+     * @param model ModelMap that holds all model attributes
+     * @return path to html page for device statistics
+     * @throws ParseException if Date object is badly parsed
+     */
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/statistics", method = RequestMethod.GET)
     public String showStatisticsPage(final ModelMap model) throws ParseException {
@@ -218,6 +227,13 @@ public class StatisticsController {
         return "Statistics/statistics";
     }
 
+    /**
+     *
+     * method that add all correct attributes to the model map for the stock statistics
+     *
+     * @param model MolelMap that holds all the model attributes
+     * @return path to the html page of the stock statistics
+     */
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/stockStatistics", method = RequestMethod.GET)
     public String showStatisticsStockPage(final ModelMap model) {
@@ -247,6 +263,17 @@ public class StatisticsController {
     }
 
 
+    /**
+     *
+     * Method add the device that the user selected on the webpage to the graph.
+     * It checks if the device has already been added and amount of devices in the graph isn't exceeded
+     *
+     * @param model ModelMap that holds all the model attributes
+     * @param selectedDev The device the user selected from the devicelist on the webpage to be added to the graph
+     * @param redAttr Attributes that are passed to the redirected method
+     * @return path to the redirection method showStatisticsPage()
+     * @throws ParseException if date object is badly parsed
+     */
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value ="/statistics/statistics/submit")
     public String submit(final ModelMap model, Device selectedDev, RedirectAttributes redAttr) throws ParseException {
@@ -275,6 +302,14 @@ public class StatisticsController {
         return "redirect:/statistics/statistics";
     }
 
+    /**
+     *
+     * Method that clears all the submitted devices from the graphs. It also resets the y scale of the graph,
+     * resets all data to 0 and sets the device counter to 0.
+     *
+     * @param model ModelMap that holds the model attributes
+     * @return path to the redirected method, showStatisticsPage.
+     */
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/clearList")
     public String clearList(final ModelMap model) {
@@ -293,31 +328,49 @@ public class StatisticsController {
         return "redirect:/statistics";
     }
 
+    /**
+     *
+     * Method changes the year to be shown in the graph chosen by the user.
+     *
+     * @param model ModelMap that holds the model attributes
+     * @param selectedYear The year the user selected on the webpage to be shown in the graph
+     * @return path to the redirection method, showStatisticsPage().
+     */
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/getSelectedYear")
     public String getSelectedYear(final ModelMap model, String selectedYear){
         setSelectedYear(model, selectedYear);
-        return "redirect:/statistics/statistics/refreshYear";
+        return "redirect:/statistics/statistics";
     }
 
+    /**
+     *
+     * Method changes the wanted graph type chosen by the user.
+     *
+     * @param model ModelMap that holds the model attributes
+     * @param selectedTypeOfGraph The wanted graph type the user selected on the webpage
+     * @return path to the redirection method, showStatisticsPage().
+     */
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/getSelectedGraphType")
     public String getSelectedGraphType(final ModelMap model, String selectedTypeOfGraph){
         model.addAttribute("selectedTypeOfGraph", selectedTypeOfGraph);
-        return "redirect:/statistics/statistics/refreshYear";
+        return "redirect:/statistics/statistics";
     }
 
+    /**
+     *
+     * Method that sets the time period the user wants to be shown in the graph.
+     * Passed, All or Future are the 3 choices.
+     *
+     * @param model ModelMap that holds the model attributes
+     * @param selectedTimePeriod Users chosen time period
+     * @return path
+     */
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/getSelectedTimePeriod")
     public String getSelectedTimePeriod(final ModelMap model, String selectedTimePeriod){
         model.addAttribute("selectedTimePeriod", selectedTimePeriod);
-        return "redirect:/statistics/statistics/refreshYear";
-    }
-
-    @PreAuthorize("hasAnyAuthority('Statistics Access')")
-    @RequestMapping("/statistics/statistics/refreshYear")
-    public String refreshYear(final ModelMap model) throws ParseException {
-        calculateDataGraphs(model);
         return "redirect:/statistics/statistics";
     }
 
