@@ -55,7 +55,35 @@ function ScheduleInfo() {
         }
     };
 }
+function RGBAToHexA(r,g,b,a) {
+    r = r.toString(16);
+    g = g.toString(16);
+    b = b.toString(16);
+    a = Math.round(a * 255).toString(16);
 
+    if (r.length == 1)
+        r = "0" + r;
+    if (g.length == 1)
+        g = "0" + g;
+    if (b.length == 1)
+        b = "0" + b;
+    if (a.length == 1)
+        a = "0" + a;
+
+    return "#" + r + g + b + a;
+}
+function calculateGradient(colorHex,gradientNumber,gradientPercentage) {
+    var radix = 16;
+    var r = parseInt(colorHex.slice(1, 3), radix),
+        g = parseInt(colorHex.slice(3, 5), radix),
+        b = parseInt(colorHex.slice(5, 7), radix),
+        a = parseInt(colorHex.slice(7, 9), radix) / 255 || 1;
+    let red = r + (gradientNumber*gradientPercentage) * (255 - r);
+    let green =g + (gradientNumber*gradientPercentage) * (255 - g);
+    let blue = b + (gradientNumber*gradientPercentage) * (255 - b);
+
+    return RGBAToHexA(Math.floor(red),Math.floor(green),Math.floor(blue),Math.floor(a));
+}
 function generateSchedule(viewName, renderStart, renderEnd) {
     ScheduleList = [];
     steps.forEach(function (step) {
@@ -71,10 +99,27 @@ function generateSchedule(viewName, renderStart, renderEnd) {
         schedule.isReadOnly = false;
         schedule.start = new Date(step['start'] + 'T' + step['startHour']);
         schedule.end = new Date(step['end'] + 'T' + step['endHour']);
+        let gradientNumber=-1;
+        let numberOfDevicesOfType = 0;
+        devices.forEach(function (device) {
+            if(device['deviceType']['id'] ==calendar.id){
+                numberOfDevicesOfType++;
+                if(step['device']['id']==device['id']){
+                    if(gradientNumber==-1){
+                        gradientNumber=numberOfDevicesOfType;
+                    }
+                }
+            }
+        });
+        gradientNumber--;
+        if(gradientNumber<0){
+            gradientNumber++;
+        }
+        console.log(gradientNumber+" : "+numberOfDevicesOfType);
         schedule.color = calendar.color;
-        schedule.bgColor = calendar.bgColor;
-        schedule.dragBgColor = calendar.dragBgColor;
-        schedule.borderColor = calendar.borderColor;
+        schedule.bgColor = calculateGradient(calendar.bgColor,gradientNumber,1/numberOfDevicesOfType);
+        schedule.dragBgColor = calculateGradient(calendar.dragBgColor,gradientNumber,1/numberOfDevicesOfType);
+        schedule.borderColor = calculateGradient(calendar.borderColor,gradientNumber,1/numberOfDevicesOfType);
         schedule.category = 'time';
 
         ScheduleList.push(schedule);
