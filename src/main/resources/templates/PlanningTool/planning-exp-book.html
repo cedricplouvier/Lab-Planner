@@ -39,7 +39,6 @@
     let otherSteps = [[${otherSteps}]];
     let holidays = [[${holidays}]];
     let userAccessRights =[[${userAccessRights}]]
-    console.log(userAccessRights)
     let calendarUpdate = {
         experimentIndex: 0,
         stepIndex: 0,
@@ -48,7 +47,6 @@
         startHour: 0,
         endHour: 0,
     }
-
     function addMixtureRow(mixtures) {
         var i = $('#mixtureList tr').length;
 
@@ -383,8 +381,17 @@
         </button>
 
         <h3><span th:text="#{step.info}"></span></h3>
-
-<!--        <button type="button" id="suggestExperiment" class="btn btn-warning" style=" display:block;">Suggest Entire Experiment</button>-->
+        <div style="display: flex;flex-direction: row">
+        <button type="button" id="suggestExperiment" class="btn btn-warning" style="flex: 1">Suggest Entire Experiment</button>
+            <div class="custom-control custom-checkbox" style="display:flex;flex-direction:row;flex: 1">
+                <input style="flex:1;" type="checkbox" class="custom-control-input" id="defaultUnchecked" checked>
+                <label style="flex:1;" class="custom-control-label" for="defaultUnchecked">Allow personal overlap</label>
+            </div>
+            <div style="display:flex;flex-direction:row;flex: 1">
+                <input id="datePicker" style="flex:1;" type="date">
+                <label style="flex:1;">Starting Date</label>
+            </div>
+        </div>
 
         <table class="table table-hover" style=" font-size:100%; text-align:center;">
             <thead>
@@ -559,6 +566,10 @@
                                     </div>
                                 </div>
                             </div>
+<!--                            <div class="custom-control custom-checkbox" style="display:flex;flex-direction:row;flex: 1">-->
+<!--                                <input style="flex:1;" type="checkbox" class="custom-control-input" id="allowPersonal" checked>-->
+<!--                                <label style="flex:1;" class="custom-control-label" for="allowPersonal">Allow personal overlap</label>-->
+<!--                            </div>-->
                             <div style="flex: 1;margin: 10px;">
                                 <select required id="deviceTypeDropdown" class="form-control input-device" style="visibility: visible;">
                                     <option value="none" selected disabled hidden >No available device</option>
