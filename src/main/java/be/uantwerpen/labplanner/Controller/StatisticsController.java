@@ -175,36 +175,10 @@ public class StatisticsController {
         List<Float> occupancyDevicesDays = (List) model.getAttribute("occupancyDevicesDays");
 
         List<Device> devices = deviceService.findAll();
-        List<DeviceType> deviceTypes = deviceTypeService.findAll();
-        List<Step> allSteps = stepService.findAll();
 
-        int[] totalHoursSelectedDevice;
-        float occupancyHours;
-        float occupancyDays;
-        float totalDeviceHoursYear=0;
-        float totalDeviceDaysYear=0;
-        model.addAttribute("highestAbsoluteValueHours", 10);
-
-        //Recalculate everything when coming on the page to immediatly show changes in steps/experiments (double calculations after
-        for(int i=0;i<listSelectedDevices.size();i++){
-            Device dev = listSelectedDevices.get(i);
-            List<Step> selectedDeviceSteps = filterSelectedDeviceSteps(dev,allSteps);
-            occupancyHours = calculateOccupancyHours(model, selectedDeviceSteps, totalDeviceHoursYear);
-            occupancyDevicesHours.set(i,occupancyHours);
-            occupancyDays = calculateOccupancyDays(model, selectedDeviceSteps, totalDeviceDaysYear);
-            occupancyDevicesDays.set(i,occupancyDays);
-            totalHoursSelectedDevice= calculateTotalHoursDeviceByYearAndMonth(model, selectedDeviceSteps);
-            totalHours.set(i,totalHoursSelectedDevice);
-            //get highest absolute value to scale the y axis
-            for(int j=0; j<totalHoursSelectedDevice.length;j++){
-                if(totalHoursSelectedDevice[j] >= (int) model.getAttribute("highestAbsoluteValueHours")){
-                    model.addAttribute("highestAbsoluteValueHours", totalHoursSelectedDevice[j]);
-                }
-            }
-        }
+        calculateDataGraphs(model);
 
         model.addAttribute("allDevices", devices);
-        model.addAttribute("allDeviceTypes", deviceTypes);
         model.addAttribute("selectedDev",new Device());
 
         model.addAttribute("dev1",listSelectedDevices.get(0));
@@ -278,18 +252,7 @@ public class StatisticsController {
     public String submit(final ModelMap model, Device selectedDev, RedirectAttributes redAttr) throws ParseException {
 
         List<Device> listSelectedDevices = (List) model.getAttribute("selectedDevices");
-        List<int[]> totalHours = (List) model.getAttribute("totalHours");
-        List<Float> occupancyDevicesHours = (List) model.getAttribute("occupancyDevicesHours");
-        List<Float> occupancyDevicesDays = (List) model.getAttribute("occupancyDevicesDays");
-        List<Step> allSteps = stepService.findAll();
-        int[] totalHoursSelectedDevice;
-        float occupancyHours;
-        float occupancyDays;
-        float totalDeviceHoursYear=0;
-        float totalDeviceDaysYear=0;
         boolean duplicate = false;
-        //highestAbsoluteValueHours=10;
-        //model.addAttribute("highestAbsoluteValueHours", 10);
         for (int i = 0; i < listSelectedDevices.size(); i++) {
             Device dev = listSelectedDevices.get(i);
             if(dev.getDevicename().matches(selectedDev.getDevicename())){
@@ -299,23 +262,7 @@ public class StatisticsController {
             if(!duplicate) {
                 if ((int) model.getAttribute("deviceCounter") < 5) {
                     listSelectedDevices.set((int) model.getAttribute("deviceCounter"), selectedDev);
-                    //calculate occupancy of device by hours and year per year + total of device hours by year and month absolute
-                    for (int i = 0; i < listSelectedDevices.size(); i++) {
-                        Device dev = listSelectedDevices.get(i);
-                        List<Step> selectedDeviceSteps = filterSelectedDeviceSteps(dev, allSteps);
-                        occupancyHours = calculateOccupancyHours(model, selectedDeviceSteps, totalDeviceHoursYear);
-                        occupancyDevicesHours.set(i, occupancyHours);
-                        occupancyDays = calculateOccupancyDays(model, selectedDeviceSteps, totalDeviceDaysYear);
-                        occupancyDevicesDays.set(i, occupancyDays);
-                        totalHoursSelectedDevice = calculateTotalHoursDeviceByYearAndMonth(model, selectedDeviceSteps);
-                        totalHours.set(i, totalHoursSelectedDevice);
-                        //get highest absolute value to scale the y axis
-                        for (int j = 0; j < totalHoursSelectedDevice.length; j++) {
-                            if (totalHoursSelectedDevice[j] >= (int) model.getAttribute("highestAbsoluteValueHours")) {
-                                model.addAttribute("highestAbsoluteValueHours", totalHoursSelectedDevice[j]);
-                            }
-                        }
-                    }
+                    calculateDataGraphs(model);
                     int dc = (int) model.get("deviceCounter") + 1;
                     model.addAttribute("deviceCounter", dc);
                 } else {
@@ -370,12 +317,18 @@ public class StatisticsController {
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/refreshYear")
     public String refreshYear(final ModelMap model) throws ParseException {
+        calculateDataGraphs(model);
+        return "redirect:/statistics/statistics";
+    }
+
+    //calculate occupancy of device by hours and year per year + total of device hours by year and month absolute
+    public void calculateDataGraphs(final ModelMap model) throws ParseException{
+
         List<Device> listSelectedDevices = (List) model.getAttribute("selectedDevices");
+        List<int[]> totalHours = (List) model.getAttribute("totalHours");
         List<Float> occupancyDevicesHours = (List) model.getAttribute("occupancyDevicesHours");
         List<Float> occupancyDevicesDays = (List) model.getAttribute("occupancyDevicesDays");
-        List<int[]> totalHours = (List) model.getAttribute("totalHours");
         List<Step> allSteps = stepService.findAll();
-
         int[] totalHoursSelectedDevice;
         float occupancyHours;
         float occupancyDays;
@@ -383,19 +336,15 @@ public class StatisticsController {
         float totalDeviceDaysYear=0;
 
         model.addAttribute("highestAbsoluteValueHours", 10);
-
-        //calculate occupancy of device by hours and year per year + total of device hours by year and month absolute
         for(int i=0;i<listSelectedDevices.size();i++){
             Device dev = listSelectedDevices.get(i);
             List<Step> selectedDeviceSteps = filterSelectedDeviceSteps(dev,allSteps);
-
             occupancyHours = calculateOccupancyHours(model, selectedDeviceSteps, totalDeviceHoursYear);
             occupancyDevicesHours.set(i,occupancyHours);
             occupancyDays = calculateOccupancyDays(model, selectedDeviceSteps, totalDeviceDaysYear);
             occupancyDevicesDays.set(i,occupancyDays);
             totalHoursSelectedDevice= calculateTotalHoursDeviceByYearAndMonth(model, selectedDeviceSteps);
             totalHours.set(i,totalHoursSelectedDevice);
-
             //get highest absolute value to scale the y axis
             for(int j=0; j<totalHoursSelectedDevice.length;j++){
                 if(totalHoursSelectedDevice[j] >= (int) model.getAttribute("highestAbsoluteValueHours")){
@@ -403,9 +352,7 @@ public class StatisticsController {
                 }
             }
         }
-        return "redirect:/statistics/statistics";
     }
-
 
     public int calculateHourDiff(Step step){
         String startTime = step.getStartHour();
