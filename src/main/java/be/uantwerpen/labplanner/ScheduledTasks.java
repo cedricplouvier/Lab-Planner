@@ -5,6 +5,7 @@ import be.uantwerpen.labplanner.Controller.StepController;
 import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Service.ExperimentService;
 import be.uantwerpen.labplanner.Service.OwnProductService;
+import be.uantwerpen.labplanner.Service.StepService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +25,16 @@ public class ScheduledTasks {
     private ExperimentService experimentService;
 
     @Autowired
+    private StepService stepService;
+
+    @Autowired
     private OwnProductService productService;
 
     private Logger logger = LoggerFactory.getLogger(ScheduledTasks.class);
 
 
     @Scheduled(cron = "0 59 23 * * ?")  //each day at 23:59
-    public void adjustReservedstock() {
+    public void adjustReservedstockExperiments() {
 
         String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
@@ -54,7 +58,37 @@ public class ScheduledTasks {
             }
         }
 
-        logger.info("Reserved stock levels are adjusted");
+        logger.info("Reserved stock levels are adjusted -- EXPERIMENTS");
+
+    }
+
+    @Scheduled(cron = "0 59 23 * * ?")  //each day at 23:59
+    public void adjustReservedstockIndividualSteps() {
+
+        String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+
+
+        //iterate over all steps
+        for (Step step : stepService.findAll()) {
+            //Get the data of the end experiment
+            String endDate = step.getEnd();
+            if(endDate.equals(today)) {
+                if (step.getMixture() != null && step.getAmount() != 0.0) {
+                    Mixture mix = step.getMixture();
+                    List<Composition> compositions = mix.getCompositions();
+                    for (Composition comp : compositions) {
+                        OwnProduct product = comp.getProduct();
+                        double reservedStocklevel = product.getReservedStockLevel();
+                        reservedStocklevel -= comp.getAmount() * step.getAmount() / 100;
+                        product.setReservedStockLevel(reservedStocklevel);
+                        productService.save(product);
+                    }
+                }
+            }
+        }
+        logger.info("Reserved stock levels are adjusted -- STEP");
+
+
 
     }
 }
