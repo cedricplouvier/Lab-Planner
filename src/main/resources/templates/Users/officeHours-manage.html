@@ -21,15 +21,6 @@
                     <td align="center" style="margin: 10px; padding: 10px;"
                         th:text="#{officeHours.endMinute}">End minute
                     </td>
-                    <td align="center" style="margin: 10px; padding: 10px;"
-                        th:text="#{officeHours.on}">Office hours On
-                    </td>
-                    <td align="center" style="margin: 10px; padding: 10px;"
-                        th:text="#{officeHours.weekend.on}">Weekend On
-                    </td>
-                    <td align="center" style="margin: 10px; padding: 10px;"
-                        th:text="#{officeHours.holidays.on}">Holidays On
-                    </td>
                 </tr>
 
                 <tr>
@@ -52,18 +43,6 @@
                         <!-- Office end minute -->
                         <input type="number" min="0" max="59" step="1" class=" form-control input-device"
                                th:field="*{endMinute}" required>
-                    </td>
-                    <td align="center" style="margin: 10px; padding: 10px;">
-                        <input type="checkbox"
-                               th:field="*{officeHoursOn}"/>
-                    </td>
-                    <td align="center" style="margin: 10px; padding: 10px;">
-                        <input type="checkbox"
-                               th:field="*{weekendOn}"/>
-                    </td>
-                    <td align="center" style="margin: 10px; padding: 10px;">
-                        <input type="checkbox"
-                               th:field="*{holidaysOn}"/>
                     </td>
                 </tr>
             </table>
@@ -92,15 +71,6 @@
                 <td align="center" style="margin: 10px; padding: 10px;"
                     th:text="#{officeHours.endMinute}">End minute
                 </td>
-                <td align="center" style="margin: 10px; padding: 10px;"
-                    th:text="#{officeHours.on}">Office hours On
-                </td>
-                <td align="center" style="margin: 10px; padding: 10px;"
-                    th:text="#{officeHours.weekend.on}">Weekend On
-                </td>
-                <td align="center" style="margin: 10px; padding: 10px;"
-                    th:text="#{officeHours.holidays.on}">Holidays On
-                </td>
             </tr>
 
             <tr>
@@ -123,18 +93,6 @@
                     <!-- Office end minute -->
                     <input type="number" min="0" max="59" step="1" class=" form-control input-device"
                            th:field="${officeHours.endMinute}" required disabled>
-                </td>
-                <td align="center" style="margin: 10px; padding: 10px;">
-                    <input type="checkbox"
-                           th:field="${officeHours.officeHoursOn}" disabled/>
-                </td>
-                <td align="center" style="margin: 10px; padding: 10px;">
-                    <input type="checkbox"
-                           th:field="${officeHours.weekendOn}" disabled/>
-                </td>
-                <td align="center" style="margin: 10px; padding: 10px;">
-                    <input type="checkbox"
-                           th:field="${officeHours.holidaysOn}" disabled/>
                 </td>
             </tr>
         </table>

@@ -18,22 +18,13 @@ public class OfficeHours extends AbstractPersistable<Long> {
     private int endMinute;
     @Column(name = "endHour")
     private int endHour;
-    @Column(name = "officeHoursOn")
-    private boolean officeHoursOn;
-    @Column(name = "weekendOn")
-    private boolean weekendOn;
-    @Column(name = "holidaysOn")
-    private boolean holidaysOn;
 
 
-    public OfficeHours(int startMinute, int startHour, int endMinute, int endHour, boolean officeHoursOn, boolean weekendOn, boolean holidaysOn) {
+    public OfficeHours(int startMinute, int startHour, int endMinute, int endHour) {
         this.startMinute = startMinute;
         this.startHour = startHour;
         this.endMinute = endMinute;
         this.endHour = endHour;
-        this.officeHoursOn = officeHoursOn;
-        this.weekendOn = weekendOn;
-        this.holidaysOn = holidaysOn;
     }
 
     public OfficeHours() {
@@ -41,9 +32,6 @@ public class OfficeHours extends AbstractPersistable<Long> {
         this.startMinute = 0;
         this.endHour = 17;
         this.endMinute = 0;
-        this.officeHoursOn = true;
-        this.weekendOn = true;
-        this.holidaysOn= true;
     }
 
     public int getStartMinute() {
@@ -100,30 +88,6 @@ public class OfficeHours extends AbstractPersistable<Long> {
         } else {
             this.endMinute = endMinute;
         }
-    }
-
-    public boolean isOfficeHoursOn() {
-        return officeHoursOn;
-    }
-
-    public void setOfficeHoursOn(boolean officeHoursOn) {
-        this.officeHoursOn = officeHoursOn;
-    }
-
-    public boolean isWeekendOn() {
-        return weekendOn;
-    }
-
-    public void setWeekendOn(boolean weekendOn) {
-        this.weekendOn = weekendOn;
-    }
-
-    public boolean isHolidaysOn() {
-        return holidaysOn;
-    }
-
-    public void setHolidaysOn(boolean holidaysOn) {
-        this.holidaysOn = holidaysOn;
     }
 
     @Override

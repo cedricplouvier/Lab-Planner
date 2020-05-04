@@ -42,9 +42,6 @@ public class OfficeHoursService {
             tmpOfficeHours.setStartMinute(officeHours.getStartMinute());
             tmpOfficeHours.setEndHour(officeHours.getEndHour());
             tmpOfficeHours.setEndMinute(officeHours.getEndMinute());
-            tmpOfficeHours.setOfficeHoursOn(officeHours.isOfficeHoursOn());
-            tmpOfficeHours.setWeekendOn(officeHours.isWeekendOn());
-            tmpOfficeHours.setHolidaysOn(officeHours.isHolidaysOn());
             officeHoursRepository.save(tmpOfficeHours);
         }
     }

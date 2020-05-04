@@ -103,7 +103,6 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
 
-
         //Only admin can change
         Role adminole = roleService.findByName("Administrator").get();
         if (currentUser.getRoles().contains(adminole)) {
