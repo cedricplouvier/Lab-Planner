@@ -181,9 +181,9 @@ function checkOverlap(schedule) {
                     var stepStart = new Date(otherSteps[currentStep]['start']+ 'T'+otherSteps[currentStep]['startHour']);
                     var stepEnd = new Date(otherSteps[currentStep]['end']+ 'T'+otherSteps[currentStep]['endHour']);
                     //check if date overlaps with schedule
-                    if(scheduleStart.getTime()<stepStart.getTime()&&scheduleEnd.getTime()>stepStart.getTime()&&scheduleEnd.getTime()<=stepEnd.getTime()){
+                    if(scheduleStart.getTime()<=stepStart.getTime()&&scheduleEnd.getTime()>stepStart.getTime()&&scheduleEnd.getTime()<=stepEnd.getTime()){
                         overlap = true;
-                    }else if(scheduleEnd.getTime()>stepEnd.getTime()&&scheduleStart.getTime()<stepEnd.getTime()&&scheduleStart.getTime()>=stepStart.getTime()){
+                    }else if(scheduleEnd.getTime()>=stepEnd.getTime()&&scheduleStart.getTime()<stepEnd.getTime()&&scheduleStart.getTime()>=stepStart.getTime()){
                         overlap = true;
                     }else if(scheduleStart.getTime()<=stepStart.getTime()&&scheduleEnd.getTime()>=stepEnd.getTime()){
                         overlap=true;
@@ -196,9 +196,9 @@ function checkOverlap(schedule) {
                     stepStart = new Date(userSteps[currentStep]['start']+ 'T'+userSteps[currentStep]['startHour']);
                     stepEnd = new Date(userSteps[currentStep]['end']+ 'T'+userSteps[currentStep]['endHour']);
                     //check if date overlaps with schedule
-                    if(scheduleStart.getTime()<stepStart.getTime()&&scheduleEnd.getTime()>stepStart.getTime()&&scheduleEnd.getTime()<=stepEnd.getTime()){
+                    if(scheduleStart.getTime()<=stepStart.getTime()&&scheduleEnd.getTime()>stepStart.getTime()&&scheduleEnd.getTime()<=stepEnd.getTime()){
                         overlap = true;
-                    }else if(scheduleEnd.getTime()>stepEnd.getTime()&&scheduleStart.getTime()<stepEnd.getTime()&&scheduleStart.getTime()>=stepStart.getTime()){
+                    }else if(scheduleEnd.getTime()>=stepEnd.getTime()&&scheduleStart.getTime()<stepEnd.getTime()&&scheduleStart.getTime()>=stepStart.getTime()){
                         overlap = true;
                     }else if(scheduleStart.getTime()<=stepStart.getTime()&&scheduleEnd.getTime()>=stepEnd.getTime()){
                         overlap=true;
@@ -216,7 +216,7 @@ function checkOverlap(schedule) {
 function checkContinuity(stepindex,schedule) {
     let stepType =  allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex];
 
-    if(stepindex-1>=0){
+    if(stepindex-1>=0&&filledInSteps[stepindex-1]){
 
         let previousSchedule = filledInSteps[stepindex-1];
         //check not before previous step
@@ -275,10 +275,12 @@ function checkContinuity(stepindex,schedule) {
     //OvernightUse
     if(!stepType['deviceType']['overnightuse']){
         if(schedule.start.getDate()!=schedule.end.getDate())
-        return {
-            message: "This device cant be used overnight",
-            ok:false,
-        }
+            if(schedule.end.getHours()!=0&&schedule.end.getMinutes()!=0){
+                return {
+                    message: "This device cant be used overnight",
+                    ok:false,
+                }
+            }
     }
 
     //Weekend
@@ -286,9 +288,11 @@ function checkContinuity(stepindex,schedule) {
         if(schedule.end.getDay()!=0&&schedule.end.getDay()!=6){
 
         }else{
-            return {
-                message: "This device cant be used in weekends",
-                ok:false,
+            if(schedule.end.getDay()==6&&schedule.end.getHours()!=0&&schedule.end.getMinutes()!=0){
+                return {
+                    message: "This device cant be used overnight",
+                    ok:false,
+                }
             }
         }
     }else{

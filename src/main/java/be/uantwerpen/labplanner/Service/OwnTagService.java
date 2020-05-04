@@ -48,7 +48,7 @@ public class OwnTagService {
         }
     }
 
-    private Boolean exists(Long id) {
+    public Boolean exists(Long id) {
         OwnTag tag = (OwnTag)this.tagRepository.findById(id).orElse((OwnTag)null);
         return tag != null;
     }

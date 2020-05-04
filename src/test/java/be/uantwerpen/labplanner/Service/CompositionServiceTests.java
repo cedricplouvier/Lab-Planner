@@ -3,6 +3,7 @@ package be.uantwerpen.labplanner.Service;
 
 import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.Composition;
+import be.uantwerpen.labplanner.Model.Mixture;
 import be.uantwerpen.labplanner.Repository.CompositionRepository;
 import be.uantwerpen.labplanner.common.model.stock.Product;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,16 @@ public class CompositionServiceTests {
         List<Composition> fetchedList2  = compositionService.findAll();
         assertEquals(fetchedList.size()-1, fetchedList2.size());
     }
+
+    @Test
+    public void testDeleteByNonexistingId(){
+        List<Composition> fetchedList  = compositionService.findAll();
+        Long id = 5974631L;
+        compositionService.deleteById(id);
+        List<Composition> fetchedList2  = compositionService.findAll();
+        assertEquals(fetchedList.size(), fetchedList2.size());
+    }
+
 
     @Test
     public void testDeleteByComposition(){

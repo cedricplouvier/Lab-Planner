@@ -522,47 +522,25 @@ let suggestion;
             var type = cal.getViewName();
             if (type === 'week') {
                 for (let current = 0; current <= 6; current++) {
-                    let currentDay = (current + cal.getDateRangeStart().getDay()) % 7;
-                    if (currentDay == 0 || currentDay == 6) {
-                        var iDiv = document.createElement('div');
-                        iDiv.id = 'weekend';
-                        iDiv.className = 'weekend';
-
-                        iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:100%;width:100%;opacity:0.25; ";
-                        parent[0].children[current].prepend(iDiv);
-                    } else { // week day or holliday
-                        var startDate = new Date(cal.getDateRangeStart().getFullYear(), cal.getDateRangeStart().getMonth(), cal.getDateRangeStart().getDate(), cal.getDateRangeStart().getHours(), cal.getDateRangeStart().getMinutes());
-                        //add hours and minutes of continuity
-                        startDate.setDate(startDate.getDate() + current);
-                        var isHoliday = false;
-                        for (let current = 0; current < holidays.length; current++) {
-                            if (holidays[current]['date'] == startDate.getFullYear().toString() + "-" + ("0" + (startDate.getMonth() + 1)).slice(-2) + "-" + ("0" + (startDate.getDate())).slice(-2)) {
-                                isHoliday = true;
-                            }
-                        }
-                        if (isHoliday) {
-                            var iDiv = document.createElement('div');
-                            iDiv.id = 'holiday';
-                            iDiv.className = 'holiday';
-                            iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:100%;width:100%;opacity:0.25; ";
-                            parent[0].children[current].prepend(iDiv);
-                        } else { // add office hours and continuity
-                            //office hours
-                            if(userAccessRights.includes("Bachelorstudent")) {
+                    var startDate = new Date(cal.getDateRangeStart().getFullYear(), cal.getDateRangeStart().getMonth(), cal.getDateRangeStart().getDate(), 0,0);
+                    startDate.setDate(startDate.getDate() + current);
+                    let currentStartDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startDate.getHours(), startDate.getMinutes());
+                    let currentEndDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startDate.getHours(), startDate.getMinutes());
+                    currentEndDate.setMinutes(currentEndDate.getMinutes()+30);
+                    for(let currentTimeslot=0;currentTimeslot<48;currentTimeslot++){
+                        var schedule =  createSuggestionSchedule(currentStartDate,currentEndDate,CalendarList[0]);
+                        if(!checkContinuity(calendarUpdate.stepIndex,schedule).ok||checkOverlap(schedule).length==0){
                                 var iDiv = document.createElement('div');
-                                iDiv.id = 'officehours';
-                                iDiv.className = 'officehours';
-                                let percentage = 100 / 24 * 9;
-                                iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:" + percentage + "%;width:100%;opacity:0.25; ";
+                                iDiv.id = 'greyout';
+                                iDiv.className = 'greyout';
+                                let percentage = 100 / 48 * currentTimeslot;
+                                iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:2.084%;top:" + percentage + "%;width:100%;opacity:0.25; ";
                                 parent[0].children[current].prepend(iDiv);
-                                iDiv = document.createElement('div');
-                                iDiv.id = 'officehours';
-                                iDiv.className = 'officehours';
-                                percentage = 100 / 24 * 7;
-                                iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:" + percentage + "%;width:100%;opacity:0.25;bottom: 0px; ";
-                                parent[0].children[current].prepend(iDiv);
-                            }
+                            
                         }
+                        currentStartDate.setMinutes(currentStartDate.getMinutes()+30);
+                        currentEndDate.setMinutes(currentEndDate.getMinutes()+30);
+
                     }
                 }
             }
