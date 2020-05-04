@@ -69,7 +69,7 @@ public class EmailControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     public void MaintananceMailValidTest() throws Exception{
         Device dev = new Device();
         long id = 10;
@@ -101,7 +101,7 @@ public class EmailControllerTests {
                 .andDo(print());
     }
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     public void MaintananceMailInvalidDeviceTest() throws Exception{
         Device dev = new Device();
         long id = 15;
@@ -135,7 +135,7 @@ public class EmailControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     public void MaintananceMailInvalidEmailTest() throws Exception{
         Device dev = new Device();
         long id = 15;
@@ -168,6 +168,8 @@ public class EmailControllerTests {
     }
 
     @Test
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
+
     public void testPeriodicMail() throws Exception{
         Role admin = new Role("Adminsitrator");
         admin.setId((long) 32);
@@ -215,6 +217,8 @@ public class EmailControllerTests {
     }
 
     @Test
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
+
     public void testPeriodicMailNoUpdates() throws Exception{
         Role admin = new Role("Adminsitrator");
         admin.setId((long) 32);
@@ -240,6 +244,8 @@ public class EmailControllerTests {
     }
 
     @Test
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
+
     public void testLowStockMail() throws Exception{
         Role admin = new Role("Adminsitrator");
         admin.setId((long) 32);
