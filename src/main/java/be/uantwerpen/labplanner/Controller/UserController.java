@@ -84,9 +84,12 @@ public class UserController {
         //get current user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
+
+        Role adminole = roleService.findByName("Administrator").get();
         model.addAttribute(user);
         //Only one entity of system settings should be in database
         model.addAttribute("officeHours", systemSettingsService.findAll().get(0).getCurrentOfficeHours());
+        model.addAttribute("allowedToChangeOfficeHours", user.getRoles().contains(adminole));
         return "Users/officeHours-manage";
     }
 
