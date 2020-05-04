@@ -59,7 +59,6 @@ public class StepController {
     private PieceOfMixtureService pieceOfMixtureService;
     @Autowired
     private OwnProductService productService;
-
     @Autowired
     private RelationService relationService;
 
@@ -92,6 +91,7 @@ public class StepController {
     public String showStepPage(final ModelMap model) {
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+        model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("Step", new Step());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -225,6 +225,11 @@ public class StepController {
             ra.addFlashAttribute("Message", new String(result.getFieldError().toString()));
             return "redirect:/planning/";
         }
+        if(step.getAmount()<0){
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String("Error: Amount of mixture can't be negative."));
+            return "redirect:/planning/";
+        }
 
         //Current user can only be, user of the step, the promotor of the user or admin.
         Role adminole = roleService.findByName("Administrator").get();
@@ -290,6 +295,7 @@ public class StepController {
                 model.addAttribute("allDevices", deviceService.findAll());
                 model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
                 model.addAttribute("allSteps", stepService.findAll());
+                model.addAttribute("allMixtures",mixtureService.findAll());
                 return "PlanningTool/step-manage";
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
@@ -497,26 +503,42 @@ public class StepController {
             }
 
             //add amounts back to the stock.
-            Map<OwnProduct, Double> productMap = new HashMap<>();
+            Map<OwnProduct, Double> productMapStock = new HashMap<>();
+            Map<OwnProduct, Double> productMapReserved = new HashMap<>();
+
 
             for (PieceOfMixture piece : experiment.getPiecesOfMixture()) {
                 Mixture mix = piece.getMixture();
                 List<Composition> compositions = mix.getCompositions();
                 for (Composition comp : compositions) {
                     OwnProduct prod = comp.getProduct();
-                    if (!productMap.containsKey(prod)) {
-                        productMap.put(prod, prod.getStockLevel());
+                    if (!productMapStock.containsKey(prod)) {
+                        productMapStock.put(prod, prod.getStockLevel());
                     }
-                    double stocklevel = productMap.get(prod);
+                    if (!productMapReserved.containsKey(prod)) {
+                        productMapReserved.put(prod, prod.getReservedStockLevel());
+                    }
+                    double stocklevel = productMapStock.get(prod);
+                    double reservedLevel = productMapReserved.get(prod);
                     stocklevel += comp.getAmount() * piece.getMixtureAmount() / 100;
-                    productMap.put(prod, stocklevel);
+                    reservedLevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
+                    productMapStock.put(prod, stocklevel);
+                    productMapReserved.put(prod, reservedLevel);
                 }
             }
-            Iterator it = productMap.entrySet().iterator();
+            Iterator it = productMapStock.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry pair = (Map.Entry) it.next();
                 OwnProduct prod = (OwnProduct) pair.getKey();
                 prod.setStockLevel((Double) pair.getValue());
+                productService.save(prod);
+            }
+            //add amounts to reserved stock
+            Iterator it3 = productMapReserved.entrySet().iterator();
+            while (it3.hasNext()) {
+                Map.Entry pair = (Map.Entry) it3.next();
+                OwnProduct prod = (OwnProduct) pair.getKey();
+                prod.setReservedStockLevel((Double) pair.getValue());
                 productService.save(prod);
             }
 
@@ -556,6 +578,12 @@ public class StepController {
                 otherSteps.add(step);
             }
         }
+        ArrayList<String> accessRights = new ArrayList<String>();
+
+        for (Role role : currentUser.getRoles()) {
+          accessRights.add(role.getName());
+        }
+
         HolidayManager manager = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
         Set<Holiday> holidays = manager.getHolidays(Calendar.getInstance().get(Calendar.YEAR));
         model.addAttribute("allDevices", deviceService.findAll());
@@ -563,6 +591,7 @@ public class StepController {
         model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
+        model.addAttribute("userAccessRights",accessRights);
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("experiment", new Experiment());
@@ -576,8 +605,9 @@ public class StepController {
     public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Locale current = LocaleContextHolder.getLocale();
-        Map<OwnProduct, Double> productMap = new HashMap<>();
 
+        Map<OwnProduct, Double> productMapStock = new HashMap<>();
+        Map<OwnProduct, Double> productMapReserved = new HashMap<>();
 
         if (experiment == null) {
             ra.addFlashAttribute("Status", new String("Error"));
@@ -633,17 +663,25 @@ public class StepController {
                 List<Composition> compositions = mix.getCompositions();
                 for (Composition comp : compositions) {
                     OwnProduct prod = comp.getProduct();
-                    if (!productMap.containsKey(prod)) {
-                        productMap.put(prod, prod.getStockLevel());
+                    if (!productMapStock.containsKey(prod)) {
+                        productMapStock.put(prod, prod.getStockLevel());
                     }
-                    double stocklevel = productMap.get(prod);
+                    if (!productMapReserved.containsKey(prod)) {
+                        productMapReserved.put(prod, prod.getReservedStockLevel());
+                    }
+                    double stocklevel = productMapStock.get(prod);
+                    double reservedStocklevel = productMapReserved.get(prod);
                     stocklevel += comp.getAmount() * piece.getMixtureAmount() / 100;
-                    productMap.put(prod, stocklevel);
+                    reservedStocklevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
+
+                    productMapStock.put(prod, stocklevel);
+                    productMapReserved.put(prod, reservedStocklevel);
                 }
             }
         } else {
             for (OwnProduct prod : productService.findAll()) {
-                productMap.put(prod, prod.getStockLevel());
+                productMapStock.put(prod, prod.getStockLevel());
+                productMapReserved.put(prod, prod.getReservedStockLevel());
             }
         }
 
@@ -750,17 +788,23 @@ public class StepController {
                 List<Composition> compositions = mix.getCompositions();
                 for (Composition comp : compositions) {
                     OwnProduct prod = comp.getProduct();
-                    if (!productMap.containsKey(prod)) {
-                        productMap.put(prod, prod.getStockLevel());
+                    if (!productMapStock.containsKey(prod)) {
+                        productMapStock.put(prod, prod.getStockLevel());
                     }
-                    double stocklevel = productMap.get(prod);
+                    if (!productMapReserved.containsKey(prod)) {
+                        productMapReserved.put(prod, prod.getReservedStockLevel());
+                    }
+                    double stocklevel = productMapStock.get(prod);
+                    double reservedStockLevel  = productMapReserved.get(prod);
                     stocklevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
-                    productMap.put(prod, stocklevel);
+                    productMapStock.put(prod, stocklevel);
+                    reservedStockLevel += comp.getAmount() * piece.getMixtureAmount() / 100;
+                    productMapReserved.put(prod, reservedStockLevel);
                 }
             }
 
         //check if a temp stock level in map is <0, if so, there is unsuficient stock.
-        Iterator it = productMap.entrySet().iterator();
+        Iterator it = productMapStock.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             if ((Double) pair.getValue() < 0) {
@@ -778,12 +822,27 @@ public class StepController {
         // if experiment fulfills all needs, save it into database
 
         //withdraw amounts from temp stock
-        Iterator it2 = productMap.entrySet().iterator();
+        Iterator it2 = productMapStock.entrySet().iterator();
         while (it2.hasNext()) {
             Map.Entry pair = (Map.Entry) it2.next();
             OwnProduct prod = (OwnProduct) pair.getKey();
             prod.setStockLevel((Double) pair.getValue());
             productService.save(prod);
+        }
+        //add amounts to reserved stock
+        Iterator it3 = productMapReserved.entrySet().iterator();
+        while (it3.hasNext()) {
+            Map.Entry pair = (Map.Entry) it3.next();
+            OwnProduct prod = (OwnProduct) pair.getKey();
+            prod.setReservedStockLevel((Double) pair.getValue());
+            productService.save(prod);
+        }
+
+        List<OwnProduct> products = productService.findAll();
+        for(OwnProduct tempProd: products){
+            if (tempProd.getStockLevel()<tempProd.getLowStockLevel()){
+                ///CODE FOR LOWSTOCK ALERT HERE.
+            }
         }
 
         //Save steps into database
@@ -791,6 +850,7 @@ public class StepController {
             stepService.saveSomeAttributes(step);
         }
         experiment.setSteps(tmpListSteps);
+
 
         //Save piecesOfExperiment in database
         if (experiment.getPiecesOfMixture() != null) {

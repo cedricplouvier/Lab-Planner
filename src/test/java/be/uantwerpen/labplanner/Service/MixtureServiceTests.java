@@ -36,6 +36,45 @@ public class MixtureServiceTests {
     }
 
     @Test
+    public void testSaveSomeExisting(){
+        Mixture mixture = new Mixture();
+        mixture.setName("testmix");
+        mixtureService.save(mixture);
+        List<Mixture> fetchedList  = mixtureService.findAll();
+        mixture.setName("test2");
+        mixtureService.saveSome(mixture);
+        List<Mixture> fetchedList2  = mixtureService.findAll();
+        assertEquals(fetchedList.size(), fetchedList2.size());
+
+    }
+
+    @Test
+    public void testSaveSomeExistingWithImgAndDoc(){
+        Mixture mixture = new Mixture();
+        mixture.setName("testmix");
+        mixtureService.save(mixture);
+        List<Mixture> fetchedList  = mixtureService.findAll();
+        mixture.setName("test2");
+        mixture.setDocument("testdoc");
+        mixture.setImage("testimg");
+        mixtureService.saveSome(mixture);
+        List<Mixture> fetchedList2  = mixtureService.findAll();
+        assertEquals(fetchedList.size(), fetchedList2.size());
+
+    }
+
+    @Test
+    public void testSaveSomeNew(){
+        List<Mixture> fetchedList  = mixtureService.findAll();
+        Mixture mixture = new Mixture();
+        mixture.setName("testmix");
+        mixtureService.saveSome(mixture);
+        List<Mixture> fetchedList2  = mixtureService.findAll();
+        assertEquals(fetchedList.size(), fetchedList2.size()-1);
+
+    }
+
+    @Test
     public void testGetMixtureByName(){
         Mixture mixture = new Mixture();
         mixture.setName("test");
@@ -52,6 +91,15 @@ public class MixtureServiceTests {
         mixtureService.deleteById(mixture.getId());
         List<Mixture> fetchedList2  = mixtureService.findAll();
         assertEquals(fetchedList.size()-1, fetchedList2.size());
+    }
+
+    @Test
+    public void testDeleteByNonexistingId(){
+        List<Mixture> fetchedList  = mixtureService.findAll();
+        Long id = 5974631L;
+        mixtureService.deleteById(id);
+        List<Mixture> fetchedList2  = mixtureService.findAll();
+        assertEquals(fetchedList.size(), fetchedList2.size());
     }
 
     @Test

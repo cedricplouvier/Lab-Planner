@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +62,14 @@ public class ProductTests {
         Unit unit = Unit.KILOGRAM;
         product.setUnits(unit);
         assertEquals(product.getUnits(), unit);
+
+        LocalDateTime dateTime = LocalDateTime.now();
+        product.setCreateDateTime(dateTime);
+        assertEquals(product.getCreateDateTime(), dateTime);
+
+        LocalDateTime dateTime2 = LocalDateTime.now();
+        product.setUpdateDateTime(dateTime2);
+        assertEquals(product.getUpdateDateTime(), dateTime2);
 
 
     }
