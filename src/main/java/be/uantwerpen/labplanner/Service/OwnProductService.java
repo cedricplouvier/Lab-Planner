@@ -42,7 +42,7 @@ public class OwnProductService {
         }
     }
 
-    private Boolean exists(Long id) {
+    public Boolean exists(Long id) {
         OwnProduct product = (OwnProduct)this.productRepository.findById(id).orElse((OwnProduct)null);
         return product != null;
     }

@@ -171,7 +171,15 @@ public class RelationControllerTests {
                 .andExpect(status().is4xxClientError())
                 .andDo(print());
 
+        //null  relation
+        mockMvc.perform(get("/usermanagement/users/relations/{id}",11))
+                .andExpect(status().isOk())
+                .andExpect(view().name("Users/relation-list"))
+                .andDo(print());
+
     }
+
+
 
 
 
@@ -275,11 +283,22 @@ public class RelationControllerTests {
         long id = 10;
         rel.setId(id);
         //User is not in Use
-        mockMvc.perform(get("/usermanagement/users/relations/{id}/delete","11"))
+        long idnull = 11;
+
+
+        when(relationService.findById(id)).thenReturn(Optional.of(rel));
+        when(relationService.findById(idnull)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/usermanagement/users/relations/{id}/delete",id))
                 .andExpect(status().is(302))
                 .andDo(print())
                 .andExpect(model().attributeDoesNotExist())
                 .andExpect(view().name("redirect:/usermanagement/users/relations"));
+
+        //null relation
+        mockMvc.perform(get("/usermanagement/users/relations/{id}/delete",idnull))
+                .andExpect(status().isOk())
+                .andDo(print());
 
         //wrong url input
         mockMvc.perform(get("/usermanagement/users/relations/{id}/delete","ff"))

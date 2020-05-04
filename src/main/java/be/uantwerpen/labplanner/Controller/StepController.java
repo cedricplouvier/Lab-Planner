@@ -61,7 +61,6 @@ public class StepController {
     private PieceOfMixtureService pieceOfMixtureService;
     @Autowired
     private OwnProductService productService;
-
     @Autowired
     private RelationService relationService;
 
@@ -94,6 +93,7 @@ public class StepController {
     public String showStepPage(final ModelMap model) {
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+        model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("Step", new Step());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -171,6 +171,22 @@ public class StepController {
         return "PlanningTool/planningtool";
     }
 
+    public void resetStockLevels(Step step){
+        if(step.getAmount()!=0){
+            Mixture mix = step.getMixture();
+            for (Composition composition: mix.getCompositions()){
+                OwnProduct prod = composition.getProduct();
+                double stocklevel = prod.getStockLevel();
+                double reservedlevel = prod.getReservedStockLevel();
+                stocklevel+=composition.getAmount()*step.getAmount()/100;
+                reservedlevel -= composition.getAmount()*step.getAmount()/100;
+                prod.setStockLevel(stocklevel);
+                prod.setReservedStockLevel(reservedlevel);
+                productService.save(prod);
+            }
+        }
+    }
+
     @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
     @RequestMapping(value = {"/planning/", "/planning/{id}"}, method = RequestMethod.POST)
     public String addStep(@Valid Step step, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
@@ -184,14 +200,14 @@ public class StepController {
         //check for valid input
         if ((step.getStart() == null || step.getEnd() == null || step.getStartHour() == null || step.getEndHour() == null) || (step.getStart().trim().equals("") || step.getEnd().trim().equals("") || step.getStartHour().trim().equals("") || step.getEndHour().trim().equals(""))) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save step."));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.inputError")));
             return "redirect:/planning/";
         }
 
         //check, double booking
         if (overlapCheck(step)) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save Experiment. Problem with double booking of device " + step.getDevice().getDevicename()));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.doubleBooking")));
             return "redirect:/planning/";
         }
 
@@ -200,6 +216,25 @@ public class StepController {
             ra.addFlashAttribute("Status", new String("Error"));
             ra.addFlashAttribute("Message", getMessageForSelectedStep(step));
 
+            return "redirect:/planning/";
+        }
+
+        //check for enough stock level
+        Boolean enoughStock = true;
+        if(step.getAmount()!=0){
+            Mixture mix = step.getMixture();
+            for (Composition composition: mix.getCompositions()){
+                double stocklevel = composition.getProduct().getStockLevel();
+                stocklevel-=composition.getAmount()*step.getAmount()/100;
+                if (stocklevel < 0){
+                    enoughStock = false;
+                }
+
+            }
+        }
+        if(!enoughStock){
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("enough.stock")));
             return "redirect:/planning/";
         }
 
@@ -222,10 +257,12 @@ public class StepController {
 
         if (result.hasErrors()) {
             ra.addFlashAttribute("Status", new String("Error"));
-            if (result.hasErrors()) {
-                ra.addFlashAttribute("Message", new String(result.getFieldError().toString()));
-            } else
-                ra.addFlashAttribute("Message", new String("Error while trying to save step."));
+            ra.addFlashAttribute("Message", new String(result.getFieldError().toString()));
+            return "redirect:/planning/";
+        }
+        if(step.getAmount()<0){
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String("Error: Amount of mixture can't be negative."));
             return "redirect:/planning/";
         }
 
@@ -264,17 +301,42 @@ public class StepController {
         if (!allowedToEdit) {
             //no rights, so error message & save nothing
             ra.addFlashAttribute("Status", "Error");
-            String message = new String("Student has no right to edit step");
-            ra.addFlashAttribute("Message", message);
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.notAllowed")));
             return "redirect:/planning/";
 
+        }
+
+        if(step.getId()!=null){
+            //this is edit of existing step, so reset levels so new levels can be saved
+            Step previousStep = stepService.findById(step.getId()).orElse(null);
+            resetStockLevels(previousStep);
+        }
+
+        if(step.getAmount()!=0){
+            Mixture mix = step.getMixture();
+            for (Composition composition: mix.getCompositions()){
+                OwnProduct prod = composition.getProduct();
+                double stocklevel = prod.getStockLevel();
+                double reservedlevel = prod.getReservedStockLevel();
+                stocklevel-=composition.getAmount()*step.getAmount()/100;
+                reservedlevel += composition.getAmount()*step.getAmount()/100;
+                prod.setStockLevel(stocklevel);
+                prod.setReservedStockLevel(reservedlevel);
+                productService.save(prod);
+            }
+        }
+
+        List<OwnProduct> products = productService.findAll();
+        for(OwnProduct tempProd: products){
+            if (tempProd.getStockLevel()<tempProd.getLowStockLevel()){
+                ///CODE FOR LOWSTOCK ALERT HERE.
+            }
         }
 
 
         stepService.save(step);
         ra.addFlashAttribute("Status", "Success");
-        String message = new String("Step has been added/edited.");
-        ra.addFlashAttribute("Message", message);
+        ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.success")));
         return "redirect:/planning/";
     }
 
@@ -295,15 +357,16 @@ public class StepController {
                 model.addAttribute("allDevices", deviceService.findAll());
                 model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
                 model.addAttribute("allSteps", stepService.findAll());
+                model.addAttribute("allMixtures",mixtureService.findAll());
                 return "PlanningTool/step-manage";
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.EditError")));
                 return "redirect:/planning/";
             }
         } else {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.foundError")));
             return "redirect:/planning/";
         }
     }
@@ -351,6 +414,17 @@ public class StepController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
+        //if incorrect id
+        if (!stepService.findById(id).isPresent()){
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.foundError")));
+            return "redirect:/planning/";
+        }
+
+        Step step = stepService.findById(id).orElse(null);
+
+
+
         List<Step> allsteps = stepService.findAll();
         Set<Role> userRoles = user.getRoles();
         Role adminRol = roleService.findByName("Administrator").get();
@@ -371,6 +445,9 @@ public class StepController {
             ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " tried to delete step that is part of experiment!"));
             logger.error(user.getUsername() + " tried to delete step that is part of experiment!");
         } else if (userRoles.contains(adminRol)) {
+            ra.addFlashAttribute("Status", new String("Success"));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
+            resetStockLevels(step);
             stepService.delete(id);
         } else if (userRoles.contains(promotorRole)) {
             List<Relation> relations = relationService.findAll();
@@ -389,10 +466,13 @@ public class StepController {
                 }
             }
             if (ownStep) {
+                ra.addFlashAttribute("Status", new String("Success"));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
+                resetStockLevels(step);
                 stepService.delete(id);
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " tried to delete someone elses step or step id doesn't exist"));
+                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " " + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleteError")));
                 logger.error(user.getUsername() + " tried to delete someone elses step or step id doesn't exist");
             }
 
@@ -406,16 +486,21 @@ public class StepController {
                 }
             }
             if (ownStep) {
+                ra.addFlashAttribute("Status", new String("Success"));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
+                resetStockLevels(step);
                 stepService.delete(id);
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " tried to delete someone elses step or step id doesn't exist"));
+                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " " + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleteError")));
                 logger.error(user.getUsername() + " tried to delete someone elses step or step id doesn't exist");
             }
         }
         model.clear();
         return "redirect:/planning/";
     }
+
+
 
     @RequestMapping(value = "/planning/experiments", method = RequestMethod.GET)
     public String viewShowExperiments(final ModelMap model) {
@@ -488,26 +573,42 @@ public class StepController {
             }
 
             //add amounts back to the stock.
-            Map<OwnProduct, Double> productMap = new HashMap<>();
+            Map<OwnProduct, Double> productMapStock = new HashMap<>();
+            Map<OwnProduct, Double> productMapReserved = new HashMap<>();
+
 
             for (PieceOfMixture piece : experiment.getPiecesOfMixture()) {
                 Mixture mix = piece.getMixture();
                 List<Composition> compositions = mix.getCompositions();
                 for (Composition comp : compositions) {
                     OwnProduct prod = comp.getProduct();
-                    if (!productMap.containsKey(prod)) {
-                        productMap.put(prod, prod.getStockLevel());
+                    if (!productMapStock.containsKey(prod)) {
+                        productMapStock.put(prod, prod.getStockLevel());
                     }
-                    double stocklevel = productMap.get(prod);
+                    if (!productMapReserved.containsKey(prod)) {
+                        productMapReserved.put(prod, prod.getReservedStockLevel());
+                    }
+                    double stocklevel = productMapStock.get(prod);
+                    double reservedLevel = productMapReserved.get(prod);
                     stocklevel += comp.getAmount() * piece.getMixtureAmount() / 100;
-                    productMap.put(prod, stocklevel);
+                    reservedLevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
+                    productMapStock.put(prod, stocklevel);
+                    productMapReserved.put(prod, reservedLevel);
                 }
             }
-            Iterator it = productMap.entrySet().iterator();
+            Iterator it = productMapStock.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry pair = (Map.Entry) it.next();
                 OwnProduct prod = (OwnProduct) pair.getKey();
                 prod.setStockLevel((Double) pair.getValue());
+                productService.save(prod);
+            }
+            //add amounts to reserved stock
+            Iterator it3 = productMapReserved.entrySet().iterator();
+            while (it3.hasNext()) {
+                Map.Entry pair = (Map.Entry) it3.next();
+                OwnProduct prod = (OwnProduct) pair.getKey();
+                prod.setReservedStockLevel((Double) pair.getValue());
                 productService.save(prod);
             }
 
@@ -572,6 +673,12 @@ public class StepController {
                 otherSteps.add(step);
             }
         }
+        ArrayList<String> accessRights = new ArrayList<String>();
+
+        for (Role role : currentUser.getRoles()) {
+          accessRights.add(role.getName());
+        }
+
         HolidayManager manager = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
         Set<Holiday> holidays = manager.getHolidays(Calendar.getInstance().get(Calendar.YEAR));
         model.addAttribute("allDevices", deviceService.findAll());
@@ -579,6 +686,8 @@ public class StepController {
         model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("allExperimentTypes", allFixedExperimentTypes());
+        model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
+        model.addAttribute("userAccessRights",accessRights);
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("experiment", new Experiment());
@@ -592,7 +701,16 @@ public class StepController {
     public String addExperiment(@Valid Experiment experiment, BindingResult result, final ModelMap model, RedirectAttributes ra) throws ParseException {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Locale current = LocaleContextHolder.getLocale();
-        Map<OwnProduct, Double> productMap = new HashMap<>();
+
+        Map<OwnProduct, Double> productMapStock = new HashMap<>();
+        Map<OwnProduct, Double> productMapReserved = new HashMap<>();
+
+        if (experiment == null) {
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String("Error while trying to save Experiment."));
+            return "redirect:/planning/";
+        }
+
 
         //Error message that is used as a feedback to user when there is a problem with his input
         String errorMessage = "";
@@ -748,17 +866,25 @@ public class StepController {
                 List<Composition> compositions = mix.getCompositions();
                 for (Composition comp : compositions) {
                     OwnProduct prod = comp.getProduct();
-                    if (!productMap.containsKey(prod)) {
-                        productMap.put(prod, prod.getStockLevel());
+                    if (!productMapStock.containsKey(prod)) {
+                        productMapStock.put(prod, prod.getStockLevel());
                     }
-                    double stocklevel = productMap.get(prod);
+                    if (!productMapReserved.containsKey(prod)) {
+                        productMapReserved.put(prod, prod.getReservedStockLevel());
+                    }
+                    double stocklevel = productMapStock.get(prod);
+                    double reservedStocklevel = productMapReserved.get(prod);
                     stocklevel += comp.getAmount() * piece.getMixtureAmount() / 100;
-                    productMap.put(prod, stocklevel);
+                    reservedStocklevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
+
+                    productMapStock.put(prod, stocklevel);
+                    productMapReserved.put(prod, reservedStocklevel);
                 }
             }
         } else {
             for (OwnProduct prod : productService.findAll()) {
-                productMap.put(prod, prod.getStockLevel());
+                productMapStock.put(prod, prod.getStockLevel());
+                productMapReserved.put(prod, prod.getReservedStockLevel());
             }
         }
 
@@ -904,17 +1030,23 @@ public class StepController {
                 List<Composition> compositions = mix.getCompositions();
                 for (Composition comp : compositions) {
                     OwnProduct prod = comp.getProduct();
-                    if (!productMap.containsKey(prod)) {
-                        productMap.put(prod, prod.getStockLevel());
+                    if (!productMapStock.containsKey(prod)) {
+                        productMapStock.put(prod, prod.getStockLevel());
                     }
-                    double stocklevel = productMap.get(prod);
+                    if (!productMapReserved.containsKey(prod)) {
+                        productMapReserved.put(prod, prod.getReservedStockLevel());
+                    }
+                    double stocklevel = productMapStock.get(prod);
+                    double reservedStockLevel  = productMapReserved.get(prod);
                     stocklevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
-                    productMap.put(prod, stocklevel);
+                    productMapStock.put(prod, stocklevel);
+                    reservedStockLevel += comp.getAmount() * piece.getMixtureAmount() / 100;
+                    productMapReserved.put(prod, reservedStockLevel);
                 }
             }
 
         //check if a temp stock level in map is <0, if so, there is unsuficient stock.
-        Iterator it = productMap.entrySet().iterator();
+        Iterator it = productMapStock.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             if ((Double) pair.getValue() < 0) {
@@ -936,12 +1068,27 @@ public class StepController {
         // if experiment fulfills all needs, save it into database
 
         //withdraw amounts from temp stock
-        Iterator it2 = productMap.entrySet().iterator();
+        Iterator it2 = productMapStock.entrySet().iterator();
         while (it2.hasNext()) {
             Map.Entry pair = (Map.Entry) it2.next();
             OwnProduct prod = (OwnProduct) pair.getKey();
             prod.setStockLevel((Double) pair.getValue());
             productService.save(prod);
+        }
+        //add amounts to reserved stock
+        Iterator it3 = productMapReserved.entrySet().iterator();
+        while (it3.hasNext()) {
+            Map.Entry pair = (Map.Entry) it3.next();
+            OwnProduct prod = (OwnProduct) pair.getKey();
+            prod.setReservedStockLevel((Double) pair.getValue());
+            productService.save(prod);
+        }
+
+        List<OwnProduct> products = productService.findAll();
+        for(OwnProduct tempProd: products){
+            if (tempProd.getStockLevel()<tempProd.getLowStockLevel()){
+                ///CODE FOR LOWSTOCK ALERT HERE.
+            }
         }
 
 
@@ -958,6 +1105,7 @@ public class StepController {
             stepService.saveSomeAttributes(step);
         }
         experiment.setSteps(tmpListSteps);
+
 
         //If it's custom experiment, save also experimentType
         if (!experiment.getExperimentType().getIsFixedType()) {

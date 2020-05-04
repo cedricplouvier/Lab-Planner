@@ -2,6 +2,7 @@ package be.uantwerpen.labplanner.Service;
 
 
 import be.uantwerpen.labplanner.LabplannerApplication;
+import be.uantwerpen.labplanner.Model.Mixture;
 import be.uantwerpen.labplanner.Model.OwnProduct;
 import be.uantwerpen.labplanner.Repository.OwnProductRepository;
 import be.uantwerpen.labplanner.common.repository.stock.TagRepository;
@@ -63,6 +64,56 @@ public class ProductServiceTests {
         productService.deleteById(product.getId());
         List<OwnProduct> fetchedList2  = productService.findAll();
         assertEquals(fetchedList.size()-1, fetchedList2.size());
+    }
+
+    @Test
+    public void testDeleteBynonexistingId(){
+        OwnProduct product = new OwnProduct();
+        product.setName("test");
+        productRepository.save(product);
+        List<OwnProduct> fetchedList  = productService.findAll();
+        Long id = 16474641L;
+        productService.deleteById(id);
+        List<OwnProduct> fetchedList2  = productService.findAll();
+        assertEquals(fetchedList.size(), fetchedList2.size());
+    }
+
+    @Test
+    public void testSaveSomeExisting(){
+        OwnProduct product = new OwnProduct();
+        product.setName("test");
+        productService.save(product);
+        List<OwnProduct> fetchedList  = productService.findAll();
+        product.setName("test2");
+        productService.saveSome(product);
+        List<OwnProduct> fetchedList2  = productService.findAll();
+        assertEquals(fetchedList.size(), fetchedList2.size());
+
+    }
+
+    @Test
+    public void testSaveSomeExistingWithImgAndDoc(){
+        OwnProduct product = new OwnProduct();
+        product.setName("test");
+        productService.save(product);
+        List<OwnProduct> fetchedList  = productService.findAll();
+        product.setName("test2");
+        product.setImageName("tesimg");
+        productService.saveSome(product);
+        List<OwnProduct> fetchedList2  = productService.findAll();
+        assertEquals(fetchedList.size(), fetchedList2.size());
+
+    }
+
+    @Test
+    public void testSaveSomeNew(){
+        List<OwnProduct> fetchedList  = productService.findAll();
+        OwnProduct product = new OwnProduct();
+        product.setName("test");
+        productService.saveSome(product);
+        List<OwnProduct> fetchedList2  = productService.findAll();
+        assertEquals(fetchedList.size(), fetchedList2.size()-1);
+
     }
 
 }
