@@ -1,16 +1,28 @@
 package be.uantwerpen.labplanner.Model;
 
 
+import org.springframework.data.jpa.domain.AbstractPersistable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OfficeHours {
+@Entity
+public class OfficeHours extends AbstractPersistable<Long> {
+    @Column(name = "startMinute")
     private int startMinute;
+    @Column(name = "startHour")
     private int startHour;
+    @Column(name = "endMinute")
     private int endMinute;
+    @Column(name = "endHour")
     private int endHour;
+    @Column(name = "officeHoursOn")
     private boolean officeHoursOn;
+    @Column(name = "weekendOn")
     private boolean weekendOn;
+    @Column(name = "holidaysOn")
     private boolean holidaysOn;
 
 
@@ -30,6 +42,8 @@ public class OfficeHours {
         this.endHour = 17;
         this.endMinute = 0;
         this.officeHoursOn = true;
+        this.weekendOn = true;
+        this.holidaysOn= true;
     }
 
     public int getStartMinute() {
@@ -110,5 +124,15 @@ public class OfficeHours {
 
     public void setHolidaysOn(boolean holidaysOn) {
         this.holidaysOn = holidaysOn;
+    }
+
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Override
+    protected void setId(Long id) {
+        super.setId(id);
     }
 }

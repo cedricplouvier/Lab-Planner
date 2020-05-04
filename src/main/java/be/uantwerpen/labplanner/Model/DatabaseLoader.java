@@ -45,9 +45,11 @@ public class DatabaseLoader {
     private final RelationRepository relationRepository;
     private final ExperimentRepository experimentRepository;
     private final ReportRepository reportRepository;
+    private final OfficeHoursRepository officeHoursRepository;
+    private final SystemSettingsRepository systemSettingsRepository;
 
     @Autowired
-    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository, DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, OwnProductRepository productRepository, OwnTagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository, PieceOfMixtureRepository pieceOfMixtureRepository, ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository, ExperimentRepository experimentRepository) {
+    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository, DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, OwnProductRepository productRepository, OwnTagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository, PieceOfMixtureRepository pieceOfMixtureRepository, ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository, ExperimentRepository experimentRepository, OfficeHoursRepository officeHoursRepository, SystemSettingsRepository systemSettingsRepository) {
 
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
@@ -77,6 +79,8 @@ public class DatabaseLoader {
         this.reportRepository = reportRepository;
 
 
+        this.officeHoursRepository = officeHoursRepository;
+        this.systemSettingsRepository = systemSettingsRepository;
     }
 
     @PostConstruct
@@ -483,11 +487,11 @@ public class DatabaseLoader {
         productRepository.save(pr4);
         OwnProduct pr5 = new OwnProduct("Alzagri Rond Zand 0/1", lorem.getWords(20), 1.0, 1000.0, 100.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags2, new URL("https://nl.wikipedia.org/wiki/Zand"));
         productRepository.save(pr5);
-        OwnProduct pr6 = new OwnProduct("Vulstof duras 2a", lorem.getWords(20), 1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4,new URL("https://nl.wikipedia.org/wiki/Duras"));
+        OwnProduct pr6 = new OwnProduct("Vulstof duras 2a", lorem.getWords(20), 1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, new URL("https://nl.wikipedia.org/wiki/Duras"));
         productRepository.save(pr6);
         OwnProduct pr7 = new OwnProduct("Bitumen op aggregaten", lorem.getWords(20), 1.0, 200.0, 25.0, 1.0, Unit.LITRE, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, new URL("https://nl.wikipedia.org/wiki/Bitumen"));
         productRepository.save(pr7);
-        OwnProduct pr8 = new OwnProduct("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4,null);
+        OwnProduct pr8 = new OwnProduct("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, null);
         productRepository.save(pr8);
 
         Step s1 = new Step(u1, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
@@ -814,5 +818,10 @@ public class DatabaseLoader {
         experimentRepository.save(ex1);
         experimentRepository.save(ex2);
         experimentRepository.save(ex3);
+
+        OfficeHours oh = new OfficeHours();
+        officeHoursRepository.save(oh);
+        SystemSettings systemSettings = new SystemSettings(oh);
+        systemSettingsRepository.save(systemSettings);
     }
 }
