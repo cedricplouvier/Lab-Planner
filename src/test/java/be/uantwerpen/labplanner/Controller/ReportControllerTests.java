@@ -13,8 +13,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.assertj.core.internal.bytebuddy.implementation.FixedValue.nullValue;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(classes = LabplannerApplication.class)
@@ -85,6 +89,7 @@ public class ReportControllerTests {
     }
 
     @Test
+
     //invalid description
     public void addInValidDescriptionReport() throws Exception{
         Report report = new Report("titel", "", null);

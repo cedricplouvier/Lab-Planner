@@ -2,6 +2,7 @@ package be.uantwerpen.labplanner.Service;
 
 import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.OwnTag;
+import be.uantwerpen.labplanner.Model.Report;
 import be.uantwerpen.labplanner.Repository.OwnTagRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,36 @@ public class TagServiceTests {
     public void testGetAllTags(){
         List<OwnTag> fetchedList  = tagService.findAll();
         assertNotNull(fetchedList);
+    }
+
+    @Test
+    public void testDelete(){
+        OwnTag tag = new OwnTag("testID");
+        tagService.save(tag);
+        List<OwnTag> fetchedList  =tagService.findAll();
+        tagService.delete(tag);
+        List<OwnTag> fetchedList2 = tagService.findAll();
+        assertEquals(fetchedList.size()-1, fetchedList2.size());
+
+    }
+
+    @Test
+    public void testDeleteById(){
+        OwnTag tag = new OwnTag("testID");
+        tagService.save(tag );
+        List<OwnTag> fetchedList  =tagService.findAll();
+        tagService.deleteById(tag.getId());
+        List<OwnTag> fetchedList2 = tagService.findAll();
+        assertEquals(fetchedList.size()-1, fetchedList2.size());
+    }
+
+    @Test
+    public void testDeleteByNonexistingId(){
+        List<OwnTag> fetchedList  =tagService.findAll();
+        Long id = 5974631L;
+        tagService.deleteById(id);
+        List<OwnTag> fetchedList2 = tagService.findAll();
+        assertEquals(fetchedList.size(), fetchedList2.size());
     }
 
 }
