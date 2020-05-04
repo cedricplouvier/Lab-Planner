@@ -3,7 +3,6 @@ package be.uantwerpen.labplanner.Service;
 import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.Mixture;
 import be.uantwerpen.labplanner.Model.Report;
-import com.sun.org.apache.regexp.internal.RE;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
