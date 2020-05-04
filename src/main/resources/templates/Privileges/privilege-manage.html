@@ -19,8 +19,8 @@
         <input th:type="hidden" th:field="*{id}"/>
 
         <div class="form-group">
-            <label class="control-label" th:text="#{privileges.name}"></label>
-            <input class="form-control" type = text th:field="*{name}" required/>
+            <h2 class="control-label" th:text="*{name}"></h2>
+            <input hidden class="form-control" type = text th:field="*{name}" required/>
 
         </div>
 

@@ -8,22 +8,9 @@
             selectableHeader: '<div class="custom-header" th:text="#{selectable.items}"></div>',
             selectionHeader: '<div class="custom-header" th:text="#{selected.items}"></div>'
         });
-        -
 
-        if ($("Researcher").is(':checked')) {
-            $('.tab1_btn').prop('disabled', false);
-        } else {
-            $('.tab1_btn').prop('disabled', true);
-        }
     }
 </script>
-
-<script>
-    $(document).ready(function(){
-        goFurther();
-    });
-</script>
-
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -37,21 +24,11 @@
                 checkboxes[i].checked = source.checked;
 
             }
-
         }
-        goFurther();
-
     }
 </script>
 
-<script type="text/javascript">
-    function goFurther(){
-        if (document.getElementById("Researcher").checked == true)
-            document.getElementById("btnSelectStudents").disabled = false;
-        else
-            document.getElementById("btnSelectStudents").disabled = true;
-    }
-</script>
+
 
 <div class = "container">
 <div th:replace="navbar :: navbar"></div>
@@ -81,12 +58,7 @@
         </div>
         <div class="alert alert-danger" role="alert" th:if="${UserInUse}!=null" th:text="${UserInUse}"></div>
 
-<!--        password set to hidden.-->
-        <div hidden class="form-group" th:name="PassWord" >
-            <label class="control-label" th:text="#{users.password}"></label>
-            <input class="form-control" th:name="pword" text th:field="*{password}" required readonly/>
 
-        </div>
 
         <div>
             <label class="control-label" th:text="#{users.roles}"></label>
@@ -100,13 +72,11 @@
                    th:id="${{role.name}}"
                    th:value="${{role}}"
                    th:utext="${role.name} + '<br>'"
-            onclick="goFurther()">
+            >
         </div>
 
         <p></p>
-<!--        <div>-->
-<!--            <input class="btn btn-primary" type="button" data-toggle="modal" data-target="#studentSelectModal" id="btnSelectStudents" th:value="#{users.selectStudents}" disabled  >-->
-<!--        </div>-->
+
         <p></p>
         <div class="form-group">
             <label class="control-label" th:text="#{users.email}"></label>

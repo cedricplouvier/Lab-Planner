@@ -59,7 +59,6 @@ public class StepController {
     private PieceOfMixtureService pieceOfMixtureService;
     @Autowired
     private OwnProductService productService;
-
     @Autowired
     private RelationService relationService;
 
@@ -92,6 +91,7 @@ public class StepController {
     public String showStepPage(final ModelMap model) {
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+        model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("Step", new Step());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -184,14 +184,14 @@ public class StepController {
         //check for valid input
         if ((step.getStart() == null || step.getEnd() == null || step.getStartHour() == null || step.getEndHour() == null) || (step.getStart().trim().equals("") || step.getEnd().trim().equals("") || step.getStartHour().trim().equals("") || step.getEndHour().trim().equals(""))) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save step."));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.inputError")));
             return "redirect:/planning/";
         }
 
         //check, double booking
         if (overlapCheck(step)) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save Experiment. Problem with double booking of device " + step.getDevice().getDevicename()));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.doubleBooking")));
             return "redirect:/planning/";
         }
 
@@ -222,10 +222,12 @@ public class StepController {
 
         if (result.hasErrors()) {
             ra.addFlashAttribute("Status", new String("Error"));
-            if (result.hasErrors()) {
-                ra.addFlashAttribute("Message", new String(result.getFieldError().toString()));
-            } else
-                ra.addFlashAttribute("Message", new String("Error while trying to save step."));
+            ra.addFlashAttribute("Message", new String(result.getFieldError().toString()));
+            return "redirect:/planning/";
+        }
+        if(step.getAmount()<0){
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String("Error: Amount of mixture can't be negative."));
             return "redirect:/planning/";
         }
 
@@ -264,8 +266,7 @@ public class StepController {
         if (!allowedToEdit) {
             //no rights, so error message & save nothing
             ra.addFlashAttribute("Status", "Error");
-            String message = new String("Student has no right to edit step");
-            ra.addFlashAttribute("Message", message);
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.notAllowed")));
             return "redirect:/planning/";
 
         }
@@ -273,8 +274,7 @@ public class StepController {
 
         stepService.save(step);
         ra.addFlashAttribute("Status", "Success");
-        String message = new String("Step has been added/edited.");
-        ra.addFlashAttribute("Message", message);
+        ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.success")));
         return "redirect:/planning/";
     }
 
@@ -295,15 +295,16 @@ public class StepController {
                 model.addAttribute("allDevices", deviceService.findAll());
                 model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
                 model.addAttribute("allSteps", stepService.findAll());
+                model.addAttribute("allMixtures",mixtureService.findAll());
                 return "PlanningTool/step-manage";
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.EditError")));
                 return "redirect:/planning/";
             }
         } else {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.foundError")));
             return "redirect:/planning/";
         }
     }
@@ -351,6 +352,14 @@ public class StepController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
+        //if incorrect id
+        if (!stepService.findById(id).isPresent()){
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.foundError")));
+            return "redirect:/planning/";
+        }
+
+
         List<Step> allsteps = stepService.findAll();
         Set<Role> userRoles = user.getRoles();
         Role adminRol = roleService.findByName("Administrator").get();
@@ -371,6 +380,8 @@ public class StepController {
             ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " tried to delete step that is part of experiment!"));
             logger.error(user.getUsername() + " tried to delete step that is part of experiment!");
         } else if (userRoles.contains(adminRol)) {
+            ra.addFlashAttribute("Status", new String("Success"));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
             stepService.delete(id);
         } else if (userRoles.contains(promotorRole)) {
             List<Relation> relations = relationService.findAll();
@@ -389,10 +400,12 @@ public class StepController {
                 }
             }
             if (ownStep) {
+                ra.addFlashAttribute("Status", new String("Success"));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
                 stepService.delete(id);
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " tried to delete someone elses step or step id doesn't exist"));
+                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " " + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleteError")));
                 logger.error(user.getUsername() + " tried to delete someone elses step or step id doesn't exist");
             }
 
@@ -406,10 +419,12 @@ public class StepController {
                 }
             }
             if (ownStep) {
+                ra.addFlashAttribute("Status", new String("Success"));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
                 stepService.delete(id);
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " tried to delete someone elses step or step id doesn't exist"));
+                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " " + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleteError")));
                 logger.error(user.getUsername() + " tried to delete someone elses step or step id doesn't exist");
             }
         }
