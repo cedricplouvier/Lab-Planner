@@ -38,7 +38,8 @@
     let userSteps = [[${userSteps}]];
     let otherSteps = [[${otherSteps}]];
     let holidays = [[${holidays}]];
-
+    let userAccessRights =[[${userAccessRights}]]
+    console.log(userAccessRights)
     let calendarUpdate = {
         experimentIndex: 0,
         stepIndex: 0,
@@ -266,29 +267,17 @@
 
     .modal-dialog,
     .modal-content {
-        /* 80% of window height */
         height: 100%!important;
     }
 
     .modal-body {
-        /* 100% = dialog height, 120px = header + footer */
-        /*overflow-y: scroll;*/
         height: 100%;
     !important;
 
     }
-    /*#extraLargeModal{*/
-    /*    padding-right: 10px; !important*/
-    /*}*/
     body { padding-right: 0 !important }
     #calendar {
-        /*position: absolute;*/
-        /*left: 0;*/
-        /*overflow: hidden;*/
         overflow-y: auto;
-        /*right: 0;*/
-        /*bottom: 0px;*/
-        /*top: 64px;*/
     }
 
 </style>
@@ -395,8 +384,9 @@
 
         <h3><span th:text="#{step.info}"></span></h3>
 
-        <table class="table table-hover" style=" font-size:100%; text-align:center;">
+<!--        <button type="button" id="suggestExperiment" class="btn btn-warning" style=" display:block;">Suggest Entire Experiment</button>-->
 
+        <table class="table table-hover" style=" font-size:100%; text-align:center;">
             <thead>
             <tr>
                 <th>Step Type</th>
@@ -410,12 +400,9 @@
                 <th>Choose in Calendar</th>
             </tr>
             </thead>
-
             <!-- IMPORTANT, class="list" have to be at tbody -->
             <tbody id="list" class="list" style=" font-size:100%;">
-
             <div th:if="(*{experimentType}!=null)">
-
                 <tr th:each="stepType, itemStat : *{experimentType.stepTypes}">
                     <input id="step" th:type="hidden"
                            th:field="*{{steps[__${itemStat.index}__]}}"
@@ -448,9 +435,7 @@
                                class="form-control float-right input-hour"
                                th:value="*{steps[__${itemStat.index}__].startHour}"
                                th:field="*{steps[__${itemStat.index}__].startHour}" placeholder="Start hour">
-
                     </td>
-
                     <td>
                         <input required style="width: 90%; font-size:80%; " id="endDate" type="date"
                                th:value="*{steps[__${itemStat.index}__].end}"
@@ -580,14 +565,36 @@
                                 </select>
                             </div>
                             <div style="flex: 1;">
-                                <button type="button" id="suggestStep" class="btn btn-warning" style="width: 90%;  margin:auto;display:block;">Suggest a step</button>
+                                <button type="button" id="suggestStep" class="btn btn-warning"  style="width: 90%;  margin:auto;display:block;" data-placement="top" data-toggle="popover" title="Success" data-content="suggestion succesfully generated">Suggest a step</button>
                             </div>
                             <div style="flex: 1;">
                                  <button type="button" id="selectStep" class="btn btn-success" style="width: 90%;  margin:auto;display:block;" disabled>Save step</button>
                             </div>
+                            <div class="toast" id="toastsuggestionsuccess" data-delay="5000" style=" position: absolute; top: 100px; right: 0;">
+                                <div class="toast-header">
+                                    <svg class="bd-placeholder-img rounded mr-2" width="20" height="20" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img"><rect width="100%" height="100%" fill="#5cb85c"></rect></svg>
+                                    <strong class="mr-auto">Success</strong>
+                                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="toast-body">
+                                    A suggestion has successfully been generated
+                                </div>
+                            </div>
+                            <div class="toast" id="toastsuggestionerror" data-delay="5000" style=" position: absolute; top: 100px; right: 0;">
+                                <div class="toast-header">
+                                    <svg class="bd-placeholder-img rounded mr-2" width="20" height="20" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img"><rect width="100%" height="100%" fill="#d9534f"></rect></svg>
+                                    <strong class="mr-auto">Problem</strong>
+                                </div>
+                                <div class="toast-body">
+                                    A suggestion cant be generated within the next 14 days, try changing the requirements or changing the previous steps.
+                                </div>
+                            </div>
                         </div>
-                    </div>x`x
+                    </div>
                 </div>
+
             </div>
             </tbody>
         </table>
@@ -607,6 +614,7 @@
 </div>
 <div th:replace="footer :: footer"></div>
 </div>
+
 <!-- Modal -->
 
 
