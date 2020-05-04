@@ -194,9 +194,9 @@ public class StepController {
         }
 
         //check holidays, weekend and opening hours
-        if (dateTimeIsUnavailable(step)) {
+        if (dateTimeIsUnavailable(step,currentUser)) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", getMessageForSelectedStep(step));
+            ra.addFlashAttribute("Message", getMessageForSelectedStep(step, currentUser));
 
             return "redirect:/planning/";
         }
@@ -711,8 +711,8 @@ public class StepController {
             }
 
             //check holidays, weekend and opening hours
-            if (dateTimeIsUnavailable(step)) {
-                errorMessage = getMessageForSelectedStep(step);
+            if (dateTimeIsUnavailable(step,currentUser)) {
+                errorMessage = getMessageForSelectedStep(step, currentUser);
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
                 return "/PlanningTool/planning-exp-book";
             }
@@ -990,7 +990,7 @@ public class StepController {
     }
 
     // return error message that describes Problem with date of selected step
-    public String getMessageForSelectedStep(Step step) throws ParseException {
+    public String getMessageForSelectedStep(Step step, User currentUser) throws ParseException {
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
         DateTime currentStartDate = formatter.parseDateTime(step.getStart() + " " + step.getStartHour());
         DateTime currentEndDate = formatter.parseDateTime(step.getEnd() + " " + step.getEndHour());
@@ -1004,13 +1004,20 @@ public class StepController {
             return "Error while trying to save Experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is the same as end date.";
         }
 
+        Role adminole = roleService.findByName("Administrator").get();
+        Role promotorRole = roleService.findByName("Researcher").get();
+        Role masterstudentRole = roleService.findByName("Masterstudent").get();
 
-        //check opening hours
-        if (!isInsideOpeningHours(currentStartDate)) {
-            return "Error while trying to save step as a part of experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours.";
-        }
-        if (!isInsideOpeningHours(currentEndDate)) {
-            return "Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours.";
+        //if it isn't admin, researcher or master student, it needs to be inside openning hours
+        if (!currentUser.getRoles().contains(adminole) && !currentUser.getRoles().contains(promotorRole) && !currentUser.getRoles().contains(masterstudentRole)) {
+
+            //check opening hours
+            if (!isInsideOpeningHours(currentStartDate)) {
+                return "Error while trying to save step as a part of experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours.";
+            }
+            if (!isInsideOpeningHours(currentEndDate)) {
+                return "Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours.";
+            }
         }
         //check weekend
         if (isWeekend(currentStartDate)) {
@@ -1040,7 +1047,7 @@ public class StepController {
     }
 
     // returns true, when there is a problem with continuity
-    public boolean dateTimeIsUnavailable(Step step) throws ParseException {
+    public boolean dateTimeIsUnavailable(Step step, User currentUser) throws ParseException {
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
         DateTime currentStartDate = formatter.parseDateTime(step.getStart() + " " + step.getStartHour());
         DateTime currentEndDate = formatter.parseDateTime(step.getEnd() + " " + step.getEndHour());
@@ -1054,10 +1061,17 @@ public class StepController {
             return true;
         }
 
+        Role adminole = roleService.findByName("Administrator").get();
+        Role promotorRole = roleService.findByName("Researcher").get();
+        Role masterstudentRole = roleService.findByName("Masterstudent").get();
 
-        //check opening hours
-        if (!isInsideOpeningHours(currentStartDate)) {
-            return true;
+        //if it isn't admin, researcher or master student, it needs to be inside openning hours
+        if (!currentUser.getRoles().contains(adminole) && !currentUser.getRoles().contains(promotorRole) && !currentUser.getRoles().contains(masterstudentRole)) {
+
+            //check opening hours
+            if (!isInsideOpeningHours(currentStartDate)) {
+                return true;
+            }
         }
         if (!isInsideOpeningHours(currentEndDate)) {
             return true;
@@ -1136,7 +1150,7 @@ public class StepController {
         return false;
     }
 
-    //Check, if hours are between 9 and 17
+    //Check, if dateTime is inside officeHours
     public boolean isInsideOpeningHours(DateTime dateTime) {
         return (GlobalVariables.currentOfficeHours.isHolidaysOn() &&
                 (dateTime.getMinuteOfDay() >= GlobalVariables.currentOfficeHours.getStartHour() * 60 + GlobalVariables.currentOfficeHours.getStartMinute()) &&

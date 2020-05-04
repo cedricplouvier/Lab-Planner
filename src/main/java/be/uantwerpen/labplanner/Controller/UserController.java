@@ -85,25 +85,26 @@ public class UserController {
     public String saveOfficeHours(@Valid OfficeHours officeHours, BindingResult result, @org.jetbrains.annotations.NotNull final ModelMap model) {
         //get current user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
 
-        //Set global openning hours if numbers are correct
-        if ((officeHours.getStartMinute() >= 0 && officeHours.getStartMinute() <= 59) ||
-                (officeHours.getStartHour() >= 0 && officeHours.getStartHour() <= 23) ||
-                (officeHours.getEndMinute() >= 0 && officeHours.getEndMinute() <= 59) ||
-                (officeHours.getEndHour() >= 0 && officeHours.getEndHour() <= 23)) {
-            GlobalVariables.currentOfficeHours.setStartHour(officeHours.getStartHour());
-            GlobalVariables.currentOfficeHours.setStartMinute(officeHours.getStartMinute());
-            GlobalVariables.currentOfficeHours.setEndHour(officeHours.getEndHour());
-            GlobalVariables.currentOfficeHours.setEndMinute(officeHours.getEndMinute());
-            GlobalVariables.currentOfficeHours.setOfficeHoursOn(officeHours.isOfficeHoursOn());
-            GlobalVariables.currentOfficeHours.setWeekendOn(officeHours.isWeekendOn());
-            GlobalVariables.currentOfficeHours.setHolidaysOn(officeHours.isHolidaysOn());
+
+        //Only admin can change
+        Role adminole = roleService.findByName("Administrator").get();
+        if (currentUser.getRoles().contains(adminole)) {
+            //Set global openning hours if numbers are correct
+            if ((officeHours.getStartMinute() >= 0 && officeHours.getStartMinute() <= 59) ||
+                    (officeHours.getStartHour() >= 0 && officeHours.getStartHour() <= 23) ||
+                    (officeHours.getEndMinute() >= 0 && officeHours.getEndMinute() <= 59) ||
+                    (officeHours.getEndHour() >= 0 && officeHours.getEndHour() <= 23)) {
+                GlobalVariables.currentOfficeHours.setStartHour(officeHours.getStartHour());
+                GlobalVariables.currentOfficeHours.setStartMinute(officeHours.getStartMinute());
+                GlobalVariables.currentOfficeHours.setEndHour(officeHours.getEndHour());
+                GlobalVariables.currentOfficeHours.setEndMinute(officeHours.getEndMinute());
+                GlobalVariables.currentOfficeHours.setOfficeHoursOn(officeHours.isOfficeHoursOn());
+                GlobalVariables.currentOfficeHours.setWeekendOn(officeHours.isWeekendOn());
+                GlobalVariables.currentOfficeHours.setHolidaysOn(officeHours.isHolidaysOn());
+            }
         }
-
-        User curruser = (User) authentication.getPrincipal();
-
-        userService.save(curruser);
-
 
         return "redirect:/home";
     }
