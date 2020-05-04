@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="navbar :: head (title='#{User Management}')">
+
+<body>
+<div class="container">
+    <div th:replace="navbar :: navbar"></div>
+    <div th:if="${allowedToChangeOfficeHours}">
+        <form action="#" th:action="@{/officeHours}" th:object="${officeHours}" method="post">
+            <table align="center">
+                <tr>
+                    <td align="center" style="margin: 10px; padding: 10px;"
+                        th:text="#{officeHours.startHour}">Start hour
+                    </td>
+                    <td align="center" style="margin: 10px; padding: 10px;"
+                        th:text="#{officeHours.startMinute}">Start minute
+                    </td>
+                    <td align="center" style="margin: 10px; padding: 10px;"
+                        th:text="#{officeHours.endHour}">End hour
+                    </td>
+                    <td align="center" style="margin: 10px; padding: 10px;"
+                        th:text="#{officeHours.endMinute}">End minute
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center" style="margin: 10px; padding: 10px;">
+                        <!-- Office start hour -->
+                        <input type="number" min="0" max="23" step="1" class=" form-control input-device"
+                               th:field="*{startHour}" required>
+                    </td>
+                    <td align="center" style="margin: 10px; padding: 10px;">
+                        <!-- Office start minute -->
+                        <input type="number" min="0" max="59" step="1" class=" form-control input-device"
+                               th:field="*{startMinute}" required>
+                    </td>
+                    <td align="center" style="margin: 10px; padding: 10px;">
+                        <!-- Office end hour -->
+                        <input type="number" min="0" max="23" step="1" class=" form-control input-device"
+                               th:field="*{endHour}" required>
+                    </td>
+                    <td align="center" style="margin: 10px; padding: 10px;">
+                        <!-- Office end minute -->
+                        <input type="number" min="0" max="59" step="1" class=" form-control input-device"
+                               th:field="*{endMinute}" required>
+                    </td>
+                </tr>
+            </table>
+            <div>
+                <button class="btn btn-primary" th:text="#{confirm}"></button>
+                <a type="button" th:href="@{/}" class="btn btn-outline-primary "
+                   id="btnBack" th:text="#{homepage}">
+                    Homepage
+                </a>
+            </div>
+            <div th:replace="footer :: footer"></div>
+        </form>
+    </div>
+    <div th:unless="${allowedToChangeOfficeHours}">
+        <table align="center">
+            <tr>
+                <td align="center" style="margin: 10px; padding: 10px;"
+                    th:text="#{officeHours.startHour}">Start hour
+                </td>
+                <td align="center" style="margin: 10px; padding: 10px;"
+                    th:text="#{officeHours.startMinute}">Start minute
+                </td>
+                <td align="center" style="margin: 10px; padding: 10px;"
+                    th:text="#{officeHours.endHour}">End hour
+                </td>
+                <td align="center" style="margin: 10px; padding: 10px;"
+                    th:text="#{officeHours.endMinute}">End minute
+                </td>
+            </tr>
+
+            <tr>
+                <td align="center" style="margin: 10px; padding: 10px;">
+                    <!-- Office start hour -->
+                    <input type="number" min="0" max="23" step="1" class=" form-control input-device"
+                           th:field="${officeHours.startHour}" required disabled>
+                </td>
+                <td align="center" style="margin: 10px; padding: 10px;">
+                    <!-- Office start minute -->
+                    <input type="number" min="0" max="59" step="1" class=" form-control input-device"
+                           th:field="${officeHours.startMinute}" required disabled>
+                </td>
+                <td align="center" style="margin: 10px; padding: 10px;">
+                    <!-- Office end hour -->
+                    <input type="number" min="0" max="23" step="1" class=" form-control input-device"
+                           th:field="${officeHours.endHour}" required disabled>
+                </td>
+                <td align="center" style="margin: 10px; padding: 10px;">
+                    <!-- Office end minute -->
+                    <input type="number" min="0" max="59" step="1" class=" form-control input-device"
+                           th:field="${officeHours.endMinute}" required disabled>
+                </td>
+            </tr>
+        </table>
+        <div>
+            <a type="button" th:href="@{/}" class="btn btn-outline-primary "
+               id="btn-back" th:text="#{homepage}">
+                Homepage
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

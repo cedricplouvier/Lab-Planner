@@ -61,6 +61,10 @@ public class StepController {
     private OwnProductService productService;
     @Autowired
     private RelationService relationService;
+    @Autowired
+    private SystemSettingsService systemSettingsService;
+    @Autowired
+    private OfficeHoursService officeHoursService;
 
     @Autowired
     UserRepository userRepository;
@@ -116,11 +120,9 @@ public class StepController {
         Boolean hasAdmin = false;
         Set<Role> userRoles = user.getRoles();
 
-        for(Role role: userRoles)
-        {
-            if(role.getName().equals("Administrator"))
-            {
-                hasAdmin=true;
+        for (Role role : userRoles) {
+            if (role.getName().equals("Administrator")) {
+                hasAdmin = true;
             }
         }
 
@@ -171,15 +173,15 @@ public class StepController {
         return "PlanningTool/planningtool";
     }
 
-    public void resetStockLevels(Step step){
-        if(step.getAmount()!=0){
+    public void resetStockLevels(Step step) {
+        if (step.getAmount() != 0) {
             Mixture mix = step.getMixture();
-            for (Composition composition: mix.getCompositions()){
+            for (Composition composition : mix.getCompositions()) {
                 OwnProduct prod = composition.getProduct();
                 double stocklevel = prod.getStockLevel();
                 double reservedlevel = prod.getReservedStockLevel();
-                stocklevel+=composition.getAmount()*step.getAmount()/100;
-                reservedlevel -= composition.getAmount()*step.getAmount()/100;
+                stocklevel += composition.getAmount() * step.getAmount() / 100;
+                reservedlevel -= composition.getAmount() * step.getAmount() / 100;
                 prod.setStockLevel(stocklevel);
                 prod.setReservedStockLevel(reservedlevel);
                 productService.save(prod);
@@ -200,41 +202,41 @@ public class StepController {
         //check for valid input
         if ((step.getStart() == null || step.getEnd() == null || step.getStartHour() == null || step.getEndHour() == null) || (step.getStart().trim().equals("") || step.getEnd().trim().equals("") || step.getStartHour().trim().equals("") || step.getEndHour().trim().equals(""))) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.inputError")));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.inputError")));
             return "redirect:/planning/";
         }
 
         //check, double booking
         if (overlapCheck(step)) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.doubleBooking")));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.doubleBooking")));
             return "redirect:/planning/";
         }
 
         //check holidays, weekend and opening hours
-        if (dateTimeIsUnavailable(step)) {
+        if (dateTimeIsUnavailable(step, currentUser)) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", getMessageForSelectedStep(step));
+            ra.addFlashAttribute("Message", getMessageForSelectedStep(step, currentUser));
 
             return "redirect:/planning/";
         }
 
         //check for enough stock level
         Boolean enoughStock = true;
-        if(step.getAmount()!=0){
+        if (step.getAmount() != 0) {
             Mixture mix = step.getMixture();
-            for (Composition composition: mix.getCompositions()){
+            for (Composition composition : mix.getCompositions()) {
                 double stocklevel = composition.getProduct().getStockLevel();
-                stocklevel-=composition.getAmount()*step.getAmount()/100;
-                if (stocklevel < 0){
+                stocklevel -= composition.getAmount() * step.getAmount() / 100;
+                if (stocklevel < 0) {
                     enoughStock = false;
                 }
 
             }
         }
-        if(!enoughStock){
+        if (!enoughStock) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("enough.stock")));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("enough.stock")));
             return "redirect:/planning/";
         }
 
@@ -260,7 +262,7 @@ public class StepController {
             ra.addFlashAttribute("Message", new String(result.getFieldError().toString()));
             return "redirect:/planning/";
         }
-        if(step.getAmount()<0){
+        if (step.getAmount() < 0) {
             ra.addFlashAttribute("Status", new String("Error"));
             ra.addFlashAttribute("Message", new String("Error: Amount of mixture can't be negative."));
             return "redirect:/planning/";
@@ -301,25 +303,25 @@ public class StepController {
         if (!allowedToEdit) {
             //no rights, so error message & save nothing
             ra.addFlashAttribute("Status", "Error");
-            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.notAllowed")));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.notAllowed")));
             return "redirect:/planning/";
 
         }
 
-        if(step.getId()!=null){
+        if (step.getId() != null) {
             //this is edit of existing step, so reset levels so new levels can be saved
             Step previousStep = stepService.findById(step.getId()).orElse(null);
             resetStockLevels(previousStep);
         }
 
-        if(step.getAmount()!=0){
+        if (step.getAmount() != 0) {
             Mixture mix = step.getMixture();
-            for (Composition composition: mix.getCompositions()){
+            for (Composition composition : mix.getCompositions()) {
                 OwnProduct prod = composition.getProduct();
                 double stocklevel = prod.getStockLevel();
                 double reservedlevel = prod.getReservedStockLevel();
-                stocklevel-=composition.getAmount()*step.getAmount()/100;
-                reservedlevel += composition.getAmount()*step.getAmount()/100;
+                stocklevel -= composition.getAmount() * step.getAmount() / 100;
+                reservedlevel += composition.getAmount() * step.getAmount() / 100;
                 prod.setStockLevel(stocklevel);
                 prod.setReservedStockLevel(reservedlevel);
                 productService.save(prod);
@@ -327,8 +329,8 @@ public class StepController {
         }
 
         List<OwnProduct> products = productService.findAll();
-        for(OwnProduct tempProd: products){
-            if (tempProd.getStockLevel()<tempProd.getLowStockLevel()){
+        for (OwnProduct tempProd : products) {
+            if (tempProd.getStockLevel() < tempProd.getLowStockLevel()) {
                 ///CODE FOR LOWSTOCK ALERT HERE.
             }
         }
@@ -336,7 +338,7 @@ public class StepController {
 
         stepService.save(step);
         ra.addFlashAttribute("Status", "Success");
-        ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.success")));
+        ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.success")));
         return "redirect:/planning/";
     }
 
@@ -357,22 +359,22 @@ public class StepController {
                 model.addAttribute("allDevices", deviceService.findAll());
                 model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
                 model.addAttribute("allSteps", stepService.findAll());
-                model.addAttribute("allMixtures",mixtureService.findAll());
+                model.addAttribute("allMixtures", mixtureService.findAll());
                 return "PlanningTool/step-manage";
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.EditError")));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.EditError")));
                 return "redirect:/planning/";
             }
         } else {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.foundError")));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.foundError")));
             return "redirect:/planning/";
         }
     }
 
     //check if specific user is allowed to edit.
-    boolean allowedToEdit(User user, long id){
+    boolean allowedToEdit(User user, long id) {
         //also check for Researcher.
         Role adminole = roleService.findByName("Administrator").get();
         Role promotorRole = roleService.findByName("Researcher").get();
@@ -415,14 +417,13 @@ public class StepController {
         User user = (User) authentication.getPrincipal();
 
         //if incorrect id
-        if (!stepService.findById(id).isPresent()){
+        if (!stepService.findById(id).isPresent()) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.foundError")));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.foundError")));
             return "redirect:/planning/";
         }
 
         Step step = stepService.findById(id).orElse(null);
-
 
 
         List<Step> allsteps = stepService.findAll();
@@ -446,7 +447,7 @@ public class StepController {
             logger.error(user.getUsername() + " tried to delete step that is part of experiment!");
         } else if (userRoles.contains(adminRol)) {
             ra.addFlashAttribute("Status", new String("Success"));
-            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.deleted")));
             resetStockLevels(step);
             stepService.delete(id);
         } else if (userRoles.contains(promotorRole)) {
@@ -467,12 +468,12 @@ public class StepController {
             }
             if (ownStep) {
                 ra.addFlashAttribute("Status", new String("Success"));
-                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.deleted")));
                 resetStockLevels(step);
                 stepService.delete(id);
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " " + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleteError")));
+                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " " + ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.deleteError")));
                 logger.error(user.getUsername() + " tried to delete someone elses step or step id doesn't exist");
             }
 
@@ -487,19 +488,18 @@ public class StepController {
             }
             if (ownStep) {
                 ra.addFlashAttribute("Status", new String("Success"));
-                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.deleted")));
                 resetStockLevels(step);
                 stepService.delete(id);
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " " + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleteError")));
+                ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " " + ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.deleteError")));
                 logger.error(user.getUsername() + " tried to delete someone elses step or step id doesn't exist");
             }
         }
         model.clear();
         return "redirect:/planning/";
     }
-
 
 
     @RequestMapping(value = "/planning/experiments", method = RequestMethod.GET)
@@ -651,7 +651,7 @@ public class StepController {
         ArrayList<String> accessRights = new ArrayList<String>();
 
         for (Role role : currentUser.getRoles()) {
-          accessRights.add(role.getName());
+            accessRights.add(role.getName());
         }
 
         HolidayManager manager = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
@@ -661,7 +661,7 @@ public class StepController {
         model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
-        model.addAttribute("userAccessRights",accessRights);
+        model.addAttribute("userAccessRights", accessRights);
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("experiment", new Experiment());
@@ -830,8 +830,8 @@ public class StepController {
             }
 
             //check holidays, weekend and opening hours
-            if (dateTimeIsUnavailable(step)) {
-                errorMessage = getMessageForSelectedStep(step);
+            if (dateTimeIsUnavailable(step, currentUser)) {
+                errorMessage = getMessageForSelectedStep(step, currentUser);
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage);
                 return "/PlanningTool/planning-exp-book";
             }
@@ -865,7 +865,7 @@ public class StepController {
                         productMapReserved.put(prod, prod.getReservedStockLevel());
                     }
                     double stocklevel = productMapStock.get(prod);
-                    double reservedStockLevel  = productMapReserved.get(prod);
+                    double reservedStockLevel = productMapReserved.get(prod);
                     stocklevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
                     productMapStock.put(prod, stocklevel);
                     reservedStockLevel += comp.getAmount() * piece.getMixtureAmount() / 100;
@@ -909,8 +909,8 @@ public class StepController {
         }
 
         List<OwnProduct> products = productService.findAll();
-        for(OwnProduct tempProd: products){
-            if (tempProd.getStockLevel()<tempProd.getLowStockLevel()){
+        for (OwnProduct tempProd : products) {
+            if (tempProd.getStockLevel() < tempProd.getLowStockLevel()) {
                 ///CODE FOR LOWSTOCK ALERT HERE.
             }
         }
@@ -1085,23 +1085,22 @@ public class StepController {
             }
             ra.addFlashAttribute("Status", new String("Success"));
             ra.addFlashAttribute("Message", new String("Experiment type successfully added."));
-        }
-        else{
+        } else {
 
 
-        for (StepType stepType : experimentType.getStepTypes()) {
-            if (stepType.getContinuity().getHours() < 0) {
-                ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
-                return "redirect:/planning/experiments/{id}";
+            for (StepType stepType : experimentType.getStepTypes()) {
+                if (stepType.getContinuity().getHours() < 0) {
+                    ra.addFlashAttribute("Status", new String("Error"));
+                    ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
+                    return "redirect:/planning/experiments/{id}";
+                }
+                if (stepType.getContinuity().getMinutes() > 59 || stepType.getContinuity().getMinutes() < 0) {
+                    ra.addFlashAttribute("Status", new String("Error"));
+                    ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
+                    return "redirect:/planning/experiments/{id}";
+                } else
+                    stepTypeService.saveNewStepType(stepType);
             }
-            if (stepType.getContinuity().getMinutes() > 59 || stepType.getContinuity().getMinutes() < 0) {
-                ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
-                return "redirect:/planning/experiments/{id}";
-            } else
-                stepTypeService.saveNewStepType(stepType);
-        }
             ra.addFlashAttribute("Status", new String("Success"));
             ra.addFlashAttribute("Message", new String("Experiment type successfully edited."));
         }
@@ -1132,7 +1131,7 @@ public class StepController {
     }
 
     // return error message that describes Problem with date of selected step
-    public String getMessageForSelectedStep(Step step) throws ParseException {
+    public String getMessageForSelectedStep(Step step, User currentUser) throws ParseException {
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
         DateTime currentStartDate = formatter.parseDateTime(step.getStart() + " " + step.getStartHour());
         DateTime currentEndDate = formatter.parseDateTime(step.getEnd() + " " + step.getEndHour());
@@ -1146,13 +1145,19 @@ public class StepController {
             return "Error while trying to save Experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is the same as end date.";
         }
 
+        Role adminole = roleService.findByName("Administrator").get();
+        Role promotorRole = roleService.findByName("Researcher").get();
+        Role masterstudentRole = roleService.findByName("Masterstudent").get();
 
-        //check opening hours
-        if (!isInsideOpeningHours(currentStartDate)) {
-            return "Error while trying to save step as a part of experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours.";
-        }
-        if (!isInsideOpeningHours(currentEndDate)) {
-            return "Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours.";
+        //if it isn't admin, researcher or master student, it needs to be inside openning hours
+        if (!currentUser.getRoles().contains(adminole) && !currentUser.getRoles().contains(promotorRole) && !currentUser.getRoles().contains(masterstudentRole)) {
+            //check opening hours
+            if (!isInsideOpeningHours(currentStartDate)) {
+                return "Error while trying to save step as a part of experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours.";
+            }
+            if (!isInsideOpeningHours(currentEndDate)) {
+                return "Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours.";
+            }
         }
         //check weekend
         if (isWeekend(currentStartDate)) {
@@ -1182,7 +1187,7 @@ public class StepController {
     }
 
     // returns true, when there is a problem with continuity
-    public boolean dateTimeIsUnavailable(Step step) throws ParseException {
+    public boolean dateTimeIsUnavailable(Step step, User currentUser) throws ParseException {
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
         DateTime currentStartDate = formatter.parseDateTime(step.getStart() + " " + step.getStartHour());
         DateTime currentEndDate = formatter.parseDateTime(step.getEnd() + " " + step.getEndHour());
@@ -1196,13 +1201,20 @@ public class StepController {
             return true;
         }
 
+        Role adminole = roleService.findByName("Administrator").orElse(null);
+        Role promotorRole = roleService.findByName("Researcher").orElse(null);
+        Role masterstudentRole = roleService.findByName("Masterstudent").orElse(null);
 
-        //check opening hours
-        if (!isInsideOpeningHours(currentStartDate)) {
-            return true;
-        }
-        if (!isInsideOpeningHours(currentEndDate)) {
-            return true;
+        //if it isn't admin, researcher or master student, it needs to be inside openning hours
+        if (!currentUser.getRoles().contains(adminole) && !currentUser.getRoles().contains(promotorRole) && !currentUser.getRoles().contains(masterstudentRole)) {
+
+            //check opening hours
+            if (!isInsideOpeningHours(currentStartDate)) {
+                return true;
+            }
+            if (!isInsideOpeningHours(currentEndDate)) {
+                return true;
+            }
         }
         //check weekend
         if (isWeekend(currentStartDate)) {
@@ -1278,17 +1290,15 @@ public class StepController {
         return false;
     }
 
-
-    //Check, if hours are between 9 and 17
+    //Check, if dateTime is inside officeHours
     public boolean isInsideOpeningHours(DateTime dateTime) {
-        return ((dateTime.getHourOfDay() >= 9 &&
-                ((dateTime.getHourOfDay() < 17) || ((dateTime.getHourOfDay() == 17) && (dateTime.getMinuteOfHour() == 0)))) &&
-                (dateTime.getDayOfWeek() < 6));
+        return ((dateTime.getMinuteOfDay() >= SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getStartHour() * 60 + SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getStartMinute()) &&
+                ((dateTime.getMinuteOfDay() <= SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getEndHour() * 60 + SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getEndMinute())));
     }
 
     //Check,if it's weekend
     public boolean isWeekend(DateTime dateTime) {
-        return ((dateTime.getDayOfWeek() > 5));
+        return (dateTime.getDayOfWeek() > 5);
     }
 
     //Check hollidays
@@ -1302,6 +1312,7 @@ public class StepController {
             }
         }
         return false;
+
     }
 
     private boolean isStepPartOfExperiment(Step step) {

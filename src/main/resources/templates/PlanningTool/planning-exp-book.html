@@ -405,8 +405,7 @@
             <div th:if="(*{experimentType}!=null)">
                 <tr th:each="stepType, itemStat : *{experimentType.stepTypes}">
                     <input id="step" th:type="hidden"
-                           th:field="*{{steps[__${itemStat.index}__]}}"
-                           th:value="*{{steps[__${itemStat.index}__]}}">
+                           th:field="*{steps[__${itemStat.index}__].id}">
                     <td style="text-align:left;"
                         th:text="${stepType.stepTypeName}" th:value="${{stepType}}"
                         th:field="*{steps[__${itemStat.index}__].stepType}">

@@ -4,6 +4,8 @@ package be.uantwerpen.labplanner.Controller;
 import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Repository.ExperimentTypeRepository;
+import be.uantwerpen.labplanner.Repository.OfficeHoursRepository;
+import be.uantwerpen.labplanner.Repository.SystemSettingsRepository;
 import be.uantwerpen.labplanner.Service.*;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
@@ -60,6 +62,14 @@ public class StepControllerTests {
 
     @Mock
     private RelationService relationService;
+    @Mock
+    private SystemSettingsService systemSettingsService;
+    @Mock
+    private OfficeHoursService officeHoursService;
+    @Mock
+    private SystemSettingsRepository systemSettingsRepository;
+    @Mock
+    private OfficeHoursRepository officeHoursRepository;
 
     @Mock
     UserRepository userRepository;
