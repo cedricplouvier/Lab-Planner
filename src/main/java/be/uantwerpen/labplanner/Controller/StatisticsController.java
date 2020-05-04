@@ -405,6 +405,7 @@ public class StatisticsController {
                             //calculate for month i if same month
                             if ((startMonth.matches(months[i])) && (startMonth.matches(endMonth) == true)) {
                                 if (startDay.matches(endDay) == true) {
+                                    //Problem: this code to calculate days only take into account days longer than 24h
                                     //long diff = thisStepDateEnd.getDate() - thisStepDateStart.getDate();
                                     //System.out.println ("Days: " + TimeUnit.DAYS.convert(diff, TimeUnit.HOURS));
                                     totalHoursByMonth[i] = totalHoursByMonth[i] + calculateHourDiff(selectedDeviceSteps.get(j));
