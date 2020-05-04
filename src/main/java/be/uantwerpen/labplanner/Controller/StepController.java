@@ -62,6 +62,10 @@ public class StepController {
 
     @Autowired
     private RelationService relationService;
+    @Autowired
+    private SystemSettingsService systemSettingsService;
+    @Autowired
+    private OfficeHoursService officeHoursService;
 
     @Autowired
     UserRepository userRepository;
@@ -1152,15 +1156,15 @@ public class StepController {
 
     //Check, if dateTime is inside officeHours
     public boolean isInsideOpeningHours(DateTime dateTime) {
-        return (GlobalVariables.currentOfficeHours.isHolidaysOn() &&
-                (dateTime.getMinuteOfDay() >= GlobalVariables.currentOfficeHours.getStartHour() * 60 + GlobalVariables.currentOfficeHours.getStartMinute()) &&
-                ((dateTime.getMinuteOfDay() <= GlobalVariables.currentOfficeHours.getEndHour() * 60 + GlobalVariables.currentOfficeHours.getEndMinute())));
+        return (officeHoursService.findAll().get(0).isHolidaysOn() &&
+                (dateTime.getMinuteOfDay() >= officeHoursService.findAll().get(0).getStartHour() * 60 + officeHoursService.findAll().get(0).getStartMinute()) &&
+                ((dateTime.getMinuteOfDay() <= officeHoursService.findAll().get(0).getEndHour() * 60 + officeHoursService.findAll().get(0).getEndMinute())));
     }
 
     //Check,if it's weekend
     public boolean isWeekend(DateTime dateTime) {
         //if weekend is turned off, return false everytime
-        if (!GlobalVariables.currentOfficeHours.isWeekendOn()) {
+        if (!officeHoursService.findAll().get(0).isWeekendOn()) {
             return false;
         } else {
             return (dateTime.getDayOfWeek() > 5);
@@ -1170,7 +1174,7 @@ public class StepController {
     //Check hollidays
     public boolean isInsideHoliday(DateTime dateTime) {
         //if holidays are turned off, return false everytime
-        if (!GlobalVariables.currentOfficeHours.isWeekendOn()) {
+        if (!officeHoursService.findAll().get(0).isWeekendOn()) {
             return false;
         } else {
             HolidayManager m = HolidayManager.getInstance(HolidayCalendar.BELGIUM);

@@ -1,11 +1,13 @@
 package be.uantwerpen.labplanner.Controller;
 
-import be.uantwerpen.labplanner.Model.GlobalVariables;
+import be.uantwerpen.labplanner.Model.SystemSettings;
 import be.uantwerpen.labplanner.Model.OfficeHours;
 import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Model.Step;
+import be.uantwerpen.labplanner.Service.OfficeHoursService;
 import be.uantwerpen.labplanner.Service.StepService;
 import be.uantwerpen.labplanner.Service.RelationService;
+import be.uantwerpen.labplanner.Service.SystemSettingsService;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.RoleService;
@@ -42,6 +44,12 @@ public class UserController {
     @Autowired
     private RelationService relationService;
 
+    @Autowired
+    private SystemSettingsService systemSettingsService;
+
+    @Autowired
+    private OfficeHoursService officeHoursService;
+
 
     //Populate
     @ModelAttribute("allUsers")
@@ -77,7 +85,8 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         model.addAttribute(user);
-        model.addAttribute("officeHours", GlobalVariables.currentOfficeHours);
+        //Only one entity of system settings should be in database
+        model.addAttribute("officeHours", systemSettingsService.findAll().get(0).getCurrentOfficeHours());
         return "Users/officeHours-manage";
     }
 
@@ -96,13 +105,7 @@ public class UserController {
                     (officeHours.getStartHour() >= 0 && officeHours.getStartHour() <= 23) ||
                     (officeHours.getEndMinute() >= 0 && officeHours.getEndMinute() <= 59) ||
                     (officeHours.getEndHour() >= 0 && officeHours.getEndHour() <= 23)) {
-                GlobalVariables.currentOfficeHours.setStartHour(officeHours.getStartHour());
-                GlobalVariables.currentOfficeHours.setStartMinute(officeHours.getStartMinute());
-                GlobalVariables.currentOfficeHours.setEndHour(officeHours.getEndHour());
-                GlobalVariables.currentOfficeHours.setEndMinute(officeHours.getEndMinute());
-                GlobalVariables.currentOfficeHours.setOfficeHoursOn(officeHours.isOfficeHoursOn());
-                GlobalVariables.currentOfficeHours.setWeekendOn(officeHours.isWeekendOn());
-                GlobalVariables.currentOfficeHours.setHolidaysOn(officeHours.isHolidaysOn());
+                officeHoursService.save(officeHours);
             }
         }
 
@@ -287,6 +290,4 @@ public class UserController {
         model.clear();
         return "redirect:/usermanagement/users";
     }
-
-
 }
