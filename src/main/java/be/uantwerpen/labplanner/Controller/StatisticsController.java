@@ -454,7 +454,7 @@ public class StatisticsController {
                                         totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
                                     }
                                 }
-                                //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                                //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity
                                 else {
                                     int fullDaysThisMonth;
                                     if (Integer.parseInt(startMonth) % 2 == 0) {
@@ -463,7 +463,7 @@ public class StatisticsController {
                                         fullDaysThisMonth = 31 - Integer.parseInt(startDay);
                                     }
                                     int fullDaysLastMonth = Integer.parseInt(endDay) - 1;
-                                    float fullDaysMonthsInbetween = (float) 30.5;
+                                    float fullDaysMonthsInbetween = (float) 30.4375;
                                     totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
                                     totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
                                     // Calculate months in between
@@ -531,7 +531,7 @@ public class StatisticsController {
                                     totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
                                 }
                             }
-                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
                                 int fullDaysThisMonth;
                                 if (Integer.parseInt(startMonth) % 2 == 0) {
@@ -540,7 +540,7 @@ public class StatisticsController {
                                     fullDaysThisMonth = 31 - Integer.parseInt(startDay);
                                 }
                                 int fullDaysLastMonth = Integer.parseInt(endDay) - 1;
-                                float fullDaysMonthsInbetween = (float) 30.5;
+                                float fullDaysMonthsInbetween = (float) 30.4375;
                                 totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
                                 totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
                                 // Calculate months in between
@@ -608,7 +608,7 @@ public class StatisticsController {
                                         totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
                                     }
                                 }
-                                //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                                //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                                 else {
                                     int fullDaysThisMonth;
                                     if (Integer.parseInt(startMonth) % 2 == 0) {
@@ -617,7 +617,7 @@ public class StatisticsController {
                                         fullDaysThisMonth = 31 - Integer.parseInt(startDay);
                                     }
                                     int fullDaysLastMonth = Integer.parseInt(endDay) - 1;
-                                    float fullDaysMonthsInbetween = (float) 30.5;
+                                    float fullDaysMonthsInbetween = (float) 30.4375;
                                     totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
                                     totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
                                     // Calculate months in between
@@ -697,9 +697,9 @@ public class StatisticsController {
                                     totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
                                 }
                             }
-                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
-                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float extraDaysMonths = monthsDifference * ((float) (30.4375));
                                 float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
                                 totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
                             }
@@ -757,9 +757,9 @@ public class StatisticsController {
                                 totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
                             }
                         }
-                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
-                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float extraDaysMonths = monthsDifference * ((float) (30.4375));
                                 float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
                                 totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
                             }
@@ -817,9 +817,9 @@ public class StatisticsController {
                                     totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
                                 }
                             }
-                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
-                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float extraDaysMonths = monthsDifference * ((float) (30.4375));
                                 float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
                                 totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
                             }
@@ -907,9 +907,9 @@ public class StatisticsController {
                                     totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                                 }
                             }
-                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
-                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float extraDaysMonths = monthsDifference * ((float) (30.4375));
                                 float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) + 1;
                                 totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                             }
@@ -946,9 +946,9 @@ public class StatisticsController {
                                     totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                                 }
                             }
-                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
-                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float extraDaysMonths = monthsDifference * ((float) (30.4375));
                                 float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay));
                                 totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                             }
@@ -992,9 +992,9 @@ public class StatisticsController {
                                     }
                                 }
                             }
-                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
-                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float extraDaysMonths = monthsDifference * ((float) (30.4375));
                                 float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
                                 totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                             }
@@ -1070,9 +1070,9 @@ public class StatisticsController {
                                 totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                             }
                         }
-                        //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                        //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                         else {
-                            float extraDaysMonths = monthsDifference * ((float) (30.5));
+                            float extraDaysMonths = monthsDifference * ((float) (30.4375));
                             float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) + 1;
                             totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                         }
@@ -1109,9 +1109,9 @@ public class StatisticsController {
                                 totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                             }
                         }
-                        //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                        //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                         else {
-                            float extraDaysMonths = monthsDifference * ((float) (30.5));
+                            float extraDaysMonths = monthsDifference * ((float) (30.4375));
                             float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay));
                             totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                         }
@@ -1155,9 +1155,9 @@ public class StatisticsController {
                                 }
                             }
                         }
-                        //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                        //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                         else {
-                            float extraDaysMonths = monthsDifference * ((float) (30.5));
+                            float extraDaysMonths = monthsDifference * ((float) (30.4375));
                             float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
                             totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                         }
@@ -1233,9 +1233,9 @@ public class StatisticsController {
                                     totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                                 }
                             }
-                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
-                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float extraDaysMonths = monthsDifference * ((float) (30.4375));
                                 float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) + 1;
                                 totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                             }
@@ -1272,9 +1272,9 @@ public class StatisticsController {
                                     totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                                 }
                             }
-                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
-                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float extraDaysMonths = monthsDifference * ((float) (30.4375));
                                 float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay));
                                 totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                             }
@@ -1318,9 +1318,9 @@ public class StatisticsController {
                                     }
                                 }
                             }
-                            //If more than one month we take 30.5 as average and don't take into account februari or leap years, to reduce complexity....
+                            //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
-                                float extraDaysMonths = monthsDifference * ((float) (30.5));
+                                float extraDaysMonths = monthsDifference * ((float) (30.4375));
                                 float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
                                 totalDeviceDaysYear = totalDeviceDaysYear + dayDiff;
                             }

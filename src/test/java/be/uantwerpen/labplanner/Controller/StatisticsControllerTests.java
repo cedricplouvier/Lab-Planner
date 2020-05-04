@@ -340,7 +340,7 @@ public class StatisticsControllerTests {
         step1.setEnd("2020-06-01");
         steps.add(step1);
         Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
-        Assert.assertEquals(366,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(365,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
         Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
         //more than one month start odd month
         steps.clear();
@@ -348,7 +348,7 @@ public class StatisticsControllerTests {
         step1.setEnd("2020-11-01");
         steps.add(step1);
         Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[8]);
-        Assert.assertEquals(366,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[9]);
+        Assert.assertEquals(365,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[9]);
         Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[10]);
     }
 
@@ -525,7 +525,7 @@ public class StatisticsControllerTests {
         stepTest.setStart("2020-05-01");
         stepTest.setEnd("2020-07-01");
         steps.add(stepTest);
-        Assert.assertEquals((62/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model, steps, 0),0.001);
+        Assert.assertEquals(((61.875)/amountOfWorkDaysInYear)*100, statisticsController.calculateOccupancyDays(model, steps, 0),0.001);
 
         //********** 1 DAY OVERLAP ***********
 
