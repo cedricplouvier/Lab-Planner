@@ -548,18 +548,20 @@ let suggestion;
                             parent[0].children[current].prepend(iDiv);
                         } else { // add office hours and continuity
                             //office hours
-                            var iDiv = document.createElement('div');
-                            iDiv.id = 'officehours';
-                            iDiv.className = 'officehours';
-                            let percentage = 100 / 24 * 9;
-                            iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:" + percentage + "%;width:100%;opacity:0.25; ";
-                            parent[0].children[current].prepend(iDiv);
-                            iDiv = document.createElement('div');
-                            iDiv.id = 'officehours';
-                            iDiv.className = 'officehours';
-                            percentage = 100 / 24 * 7;
-                            iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:" + percentage + "%;width:100%;opacity:0.25;bottom: 0px; ";
-                            parent[0].children[current].prepend(iDiv);
+                            if(userAccessRights.includes("Bachelorstudent")) {
+                                var iDiv = document.createElement('div');
+                                iDiv.id = 'officehours';
+                                iDiv.className = 'officehours';
+                                let percentage = 100 / 24 * 9;
+                                iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:" + percentage + "%;width:100%;opacity:0.25; ";
+                                parent[0].children[current].prepend(iDiv);
+                                iDiv = document.createElement('div');
+                                iDiv.id = 'officehours';
+                                iDiv.className = 'officehours';
+                                percentage = 100 / 24 * 7;
+                                iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:" + percentage + "%;width:100%;opacity:0.25;bottom: 0px; ";
+                                parent[0].children[current].prepend(iDiv);
+                            }
                         }
                     }
                 }

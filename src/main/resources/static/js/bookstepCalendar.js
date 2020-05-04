@@ -219,15 +219,6 @@ function checkContinuity(stepindex,schedule) {
     if(stepindex-1>=0){
 
         let previousSchedule = filledInSteps[stepindex-1];
-        // for (let current = 0; current < filledInSteps.length; current++){
-        //     if(filledInSteps[current]!=null){
-        //         if(filledInSteps[current].stepIndex==stepindex-1){
-        //             previousSchedule= filledInSteps[current];
-        //         }
-        //     }
-        //
-        // }
-
         //check not before previous step
         let previousStepType = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex-1];
         var firstDate = new Date(previousSchedule.end.getFullYear(), previousSchedule.end.getMonth(), previousSchedule.end.getDate(), previousSchedule.end.getHours(), previousSchedule.end.getMinutes());
@@ -322,18 +313,20 @@ function checkContinuity(stepindex,schedule) {
     let endTime = schedule.end.getMinutes()+schedule.end.getHours()*60;
 
     //OpeningsHours\
-    if(startTime>=9*60&&startTime<=17*60&&schedule.start.getDay()!=6&&schedule.start.getDay()!=0){
-        if(endTime>=9*60&&endTime<=17*60&&schedule.end.getDay()!=0&&schedule.end.getDay()!=6){
-        }else{
+    if(userAccessRights.includes("Bachelorstudent")) {
+        if (startTime >= 9 * 60 && startTime <= 17 * 60 && schedule.start.getDay() != 6 && schedule.start.getDay() != 0) {
+            if (endTime >= 9 * 60 && endTime <= 17 * 60 && schedule.end.getDay() != 0 && schedule.end.getDay() != 6) {
+            } else {
+                return {
+                    message: "This device cant be used out of office hours",
+                    ok: false,
+                }
+            }
+        } else {
             return {
                 message: "This device cant be used out of office hours",
-                ok:false,
+                ok: false,
             }
-        }
-    }else{
-        return {
-            message: "This device cant be used out of office hours",
-            ok:false,
         }
     }
 
