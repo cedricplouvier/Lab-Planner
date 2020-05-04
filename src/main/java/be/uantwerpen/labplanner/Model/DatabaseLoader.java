@@ -823,5 +823,6 @@ public class DatabaseLoader {
         officeHoursRepository.save(oh);
         SystemSettings systemSettings = new SystemSettings(oh);
         systemSettingsRepository.save(systemSettings);
+        SystemSettings.setCurrentSystemSettings(systemSettings);
     }
 }

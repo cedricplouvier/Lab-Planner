@@ -10,23 +10,34 @@ import javax.persistence.OneToOne;
 @Entity
 public class SystemSettings extends AbstractPersistable<Long> {
 
+    private static SystemSettings currentSystemSettings = new SystemSettings();
+
+    public static SystemSettings getCurrentSystemSettings() {
+        return currentSystemSettings;
+    }
+
+    public static void setCurrentSystemSettings(SystemSettings currentSystemSettings) {
+        SystemSettings.currentSystemSettings = currentSystemSettings;
+    }
+
     @OneToOne
-    @JoinColumn(name = "currentOfficeHours", unique = true, nullable = false)
-    private OfficeHours currentOfficeHours;
+    @JoinColumn(name = "officeHours", unique = true, nullable = false)
+    private OfficeHours officeHours;
 
    public SystemSettings() {
+       this.officeHours = new OfficeHours();
    }
 
-   public SystemSettings(OfficeHours currentOfficeHours) {
-        this.currentOfficeHours = currentOfficeHours;
+   public SystemSettings(OfficeHours officeHours) {
+        this.officeHours = officeHours;
     }
 
     public OfficeHours getCurrentOfficeHours() {
-        return currentOfficeHours;
+        return officeHours;
     }
 
-    public void setCurrentOfficeHours(OfficeHours currentOfficeHours) {
-        this.currentOfficeHours = currentOfficeHours;
+    public void setCurrentOfficeHours(OfficeHours officeHours) {
+        this.officeHours = officeHours;
     }
 
     @Override

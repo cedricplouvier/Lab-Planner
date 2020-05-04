@@ -20,6 +20,14 @@ public class SystemSettingsService {
 
     }
 
+    public SystemSettings getSystemSetting() {
+        //only one entity is present
+        if (this.systemSettingsRepository.findAll().get(0) != null)
+            return this.systemSettingsRepository.findAll().get(0);
+        else
+            return null;
+    }
+
     public List<SystemSettings> findAll() {
         return this.systemSettingsRepository.findAll();
     }

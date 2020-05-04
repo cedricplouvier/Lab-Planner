@@ -88,7 +88,7 @@ public class UserController {
         Role adminole = roleService.findByName("Administrator").get();
         model.addAttribute(user);
         //Only one entity of system settings should be in database
-        model.addAttribute("officeHours", systemSettingsService.findAll().get(0).getCurrentOfficeHours());
+        model.addAttribute("officeHours", SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours());
         model.addAttribute("allowedToChangeOfficeHours", user.getRoles().contains(adminole));
         return "Users/officeHours-manage";
     }
@@ -109,6 +109,7 @@ public class UserController {
                     (officeHours.getEndMinute() >= 0 && officeHours.getEndMinute() <= 59) ||
                     (officeHours.getEndHour() >= 0 && officeHours.getEndHour() <= 23)) {
                 officeHoursService.save(officeHours);
+                SystemSettings.getCurrentSystemSettings().setCurrentOfficeHours(officeHours);
             }
         }
 
@@ -134,8 +135,9 @@ public class UserController {
         User curruser = (User) authentication.getPrincipal();
 
         if (curruser.getId() != user.getId()) {
-            //error
-            return null;
+            model.addAttribute("PWError", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("users.pwfalse"));
+            model.addAttribute(user);
+            return "Users/password-manage";
         } else if (user.getPassword().length() < 6) {
             model.addAttribute("PWError", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("users.pwshort"));
             model.addAttribute(user);
@@ -156,6 +158,7 @@ public class UserController {
             return "Users/password-manage";
         }
 
+        //if it passes all tests
         curruser.setPassword(user.getPassword());
         userService.save(curruser);
 

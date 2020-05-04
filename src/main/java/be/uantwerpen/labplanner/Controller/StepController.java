@@ -1225,15 +1225,15 @@ public class StepController {
 
     //Check, if dateTime is inside officeHours
     public boolean isInsideOpeningHours(DateTime dateTime) {
-        return (officeHoursService.findAll().get(0).isHolidaysOn() &&
-                (dateTime.getMinuteOfDay() >= officeHoursService.findAll().get(0).getStartHour() * 60 + officeHoursService.findAll().get(0).getStartMinute()) &&
-                ((dateTime.getMinuteOfDay() <= officeHoursService.findAll().get(0).getEndHour() * 60 + officeHoursService.findAll().get(0).getEndMinute())));
+        return (SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().isHolidaysOn() &&
+                (dateTime.getMinuteOfDay() >= SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getStartHour() * 60 + SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getStartMinute()) &&
+                ((dateTime.getMinuteOfDay() <= SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getEndHour() * 60 + SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getEndMinute())));
     }
 
     //Check,if it's weekend
     public boolean isWeekend(DateTime dateTime) {
         //if weekend is turned off, return false everytime
-        if (!officeHoursService.findAll().get(0).isWeekendOn()) {
+        if (!SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().isWeekendOn()) {
             return false;
         } else {
             return (dateTime.getDayOfWeek() > 5);
@@ -1243,7 +1243,7 @@ public class StepController {
     //Check hollidays
     public boolean isInsideHoliday(DateTime dateTime) {
         //if holidays are turned off, return false everytime
-        if (!officeHoursService.findAll().get(0).isWeekendOn()) {
+        if (!SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().isWeekendOn()) {
             return false;
         } else {
             HolidayManager m = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
