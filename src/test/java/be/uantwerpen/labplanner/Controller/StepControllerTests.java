@@ -56,6 +56,8 @@ public class StepControllerTests {
     @Mock
     private StepTypeService stepTypeService;
     @Mock
+    private OwnProductService productService;
+    @Mock
     private ExperimentTypeRepository experimentTypeRepository;
 
     @Mock
@@ -590,6 +592,8 @@ public class StepControllerTests {
 
         when(stepService.findAll()).thenReturn(steps);
         when(relationService.findAll()).thenReturn(rels);
+        when(productService.findAll()).thenReturn(new ArrayList<>());
+
         //   when(relationService.findAll()).thenReturn(relations);
         mockMvc.perform(post("/planning/").flashAttr("step",step))
                 .andExpect(status().is(302))
@@ -644,6 +648,7 @@ public class StepControllerTests {
         Role role = new Role("Administrator");
         when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
         when(stepService.findAll()).thenReturn(steps);
+        when(productService.findAll()).thenReturn(new ArrayList<>());
         when(relationService.findAll()).thenReturn(rels);
         role.setId((long) 32);
         //   when(relationService.findAll()).thenReturn(relations);
@@ -703,6 +708,8 @@ public class StepControllerTests {
 
         when(stepService.findAll()).thenReturn(steps);
         when(relationService.findAll()).thenReturn(rels);
+        when(productService.findAll()).thenReturn(new ArrayList<>());
+
         //   when(relationService.findAll()).thenReturn(relations);
         mockMvc.perform(post("/planning/").flashAttr("step",step))
                 .andExpect(status().is(302))

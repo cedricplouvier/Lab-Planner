@@ -33,7 +33,7 @@ public class Step extends AbstractPersistable<Long> {
     @JoinColumn(name = "mixture")
     private Mixture mixture;
     @Column(name = "amount")
-    private int amount;
+    private double amount;
 
     public Step(){
     }
@@ -127,11 +127,11 @@ public class Step extends AbstractPersistable<Long> {
         this.mixture = mixture;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 }
