@@ -72,7 +72,7 @@ public class MixtureService {
         }
     }
 
-    private Boolean exists(Long id) {
+    public Boolean exists(Long id) {
         Mixture mixture = (Mixture)this.mixtureRepository.findById(id).orElse(null);
         return mixture != null;
     }
