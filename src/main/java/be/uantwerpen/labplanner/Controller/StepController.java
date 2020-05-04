@@ -578,6 +578,12 @@ public class StepController {
                 otherSteps.add(step);
             }
         }
+        ArrayList<String> accessRights = new ArrayList<String>();
+
+        for (Role role : currentUser.getRoles()) {
+          accessRights.add(role.getName());
+        }
+
         HolidayManager manager = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
         Set<Holiday> holidays = manager.getHolidays(Calendar.getInstance().get(Calendar.YEAR));
         model.addAttribute("allDevices", deviceService.findAll());
@@ -585,6 +591,7 @@ public class StepController {
         model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("allExperimentTypes", experimentTypeService.findAll());
+        model.addAttribute("userAccessRights",accessRights);
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("experiment", new Experiment());
