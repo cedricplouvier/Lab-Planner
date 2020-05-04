@@ -173,7 +173,7 @@ public class EmailController   {
 
     }
 
-    public void sendLowStockEmail(OwnProduct product, User user){
+    public void sendLowStockEmail(OwnProduct product, User user, String type){
         List<String> adresses = loadAdresses();
         DecimalFormat df = new DecimalFormat("#.##");
 
@@ -182,7 +182,7 @@ public class EmailController   {
             String[] adressArray = adresses.toArray(new String[0]);
             String subject = product.getName() + " has low stock";
             StringBuilder text = new StringBuilder();
-            text.append(user.getFirstName() + " " + user.getLastName() + " added an experiment and now  " + product.getName() + " has low stock.\n");
+            text.append("New " + type + " created by " + user.getFirstName() + " " + user.getLastName() + " and now  " + product.getName() + " has low stock.\n");
             text.append(product.getName() + " has current stock " + df.format(product.getStockLevel())  + " " + product.getUnits() + ".\n");
             text.append(product.getName() + " has low stock level " +df.format(product.getLowStockLevel())  + " " + product.getUnits() + ".\n");
 
@@ -201,7 +201,7 @@ public class EmailController   {
 
         Role admin = roleService.findByName("Administrator").orElse(null);
         for (User temp : userService.findAll()){
-            if (temp.getRoles().contains(admin)){
+            if ((temp.getRoles().contains(admin)) && (temp.getFirstName().equals("Ruben"))){
                 if ((temp.getEmail()!=null)&&(isValidEmailAddress(temp.getEmail()))){
                     adresses.add(temp.getEmail());
                 }

@@ -262,7 +262,7 @@ public class EmailControllerTests {
         p.setName("test");
         p.setLowStockLevel((double) 10);
         p.setStockLevel((double) 5);
-        emailController.sendLowStockEmail(p,user);
+        emailController.sendLowStockEmail(p,user,"test");
 
 
     }
