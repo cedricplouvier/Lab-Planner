@@ -1080,9 +1080,9 @@ public class StepController {
             return true;
         }
 
-        Role adminole = roleService.findByName("Administrator").get();
-        Role promotorRole = roleService.findByName("Researcher").get();
-        Role masterstudentRole = roleService.findByName("Masterstudent").get();
+        Role adminole = roleService.findByName("Administrator").orElse(null);
+        Role promotorRole = roleService.findByName("Researcher").orElse(null);
+        Role masterstudentRole = roleService.findByName("Masterstudent").orElse(null);
 
         //if it isn't admin, researcher or master student, it needs to be inside openning hours
         if (!currentUser.getRoles().contains(adminole) && !currentUser.getRoles().contains(promotorRole) && !currentUser.getRoles().contains(masterstudentRole)) {
