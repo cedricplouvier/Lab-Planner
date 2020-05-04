@@ -45,9 +45,11 @@ public class DatabaseLoader {
     private final RelationRepository relationRepository;
     private final ExperimentRepository experimentRepository;
     private final ReportRepository reportRepository;
+    private final OfficeHoursRepository officeHoursRepository;
+    private final SystemSettingsRepository systemSettingsRepository;
 
     @Autowired
-    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository, DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, OwnProductRepository productRepository, OwnTagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository, PieceOfMixtureRepository pieceOfMixtureRepository, ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository, ExperimentRepository experimentRepository) {
+    public DatabaseLoader(RelationRepository relationRepository, PrivilegeRepository privilegeRepository, RoleRepository roleRepository, UserRepository userRepository, DeviceTypeRepository deviceTypeRepository, DeviceRepository deviceRepository, DeviceInformationRepository deviceInformationRepository, OwnProductRepository productRepository, OwnTagRepository tagRepository, StepRepository stepRepository, CompositionRepository compositionRepository, MixtureRepository mixtureRepository, PieceOfMixtureRepository pieceOfMixtureRepository, ExperimentTypeRepository experimentTypeRepository, StepTypeRepository stepTypeRepository, ContinuityRepository continuityRepository, ReportRepository reportRepository, ExperimentRepository experimentRepository, OfficeHoursRepository officeHoursRepository, SystemSettingsRepository systemSettingsRepository) {
 
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
@@ -77,6 +79,8 @@ public class DatabaseLoader {
         this.reportRepository = reportRepository;
 
 
+        this.officeHoursRepository = officeHoursRepository;
+        this.systemSettingsRepository = systemSettingsRepository;
     }
 
     @PostConstruct
@@ -961,5 +965,11 @@ public class DatabaseLoader {
         experimentRepository.save(ex2);
         experimentRepository.save(ex3);
         experimentRepository.save(ex4);
+
+        OfficeHours oh = new OfficeHours();
+        officeHoursRepository.save(oh);
+        SystemSettings systemSettings = new SystemSettings(oh);
+        systemSettingsRepository.save(systemSettings);
+        SystemSettings.setCurrentSystemSettings(systemSettings);
     }
 }
