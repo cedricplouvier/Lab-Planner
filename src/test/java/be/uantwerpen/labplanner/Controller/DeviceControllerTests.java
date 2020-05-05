@@ -2,9 +2,7 @@ package be.uantwerpen.labplanner.Controller;
 
 
 import be.uantwerpen.labplanner.LabplannerApplication;
-import be.uantwerpen.labplanner.Model.Device;
-import be.uantwerpen.labplanner.Model.DeviceInformation;
-import be.uantwerpen.labplanner.Model.DeviceType;
+import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Service.*;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import be.uantwerpen.labplanner.common.model.users.Role;
@@ -31,6 +29,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,6 +54,10 @@ public class DeviceControllerTests {
     private DeviceInformationService deviceInformationService;
     @Mock
     private StorageService storageService;
+    @Mock
+    private StepService stepService;
+    @Mock
+    private StepTypeService stepTypeService;
     @InjectMocks
     private DeviceController deviceController;
 
@@ -344,22 +347,29 @@ public class DeviceControllerTests {
         device.setDevicename("device");
         //Set variables
         device.setComment("test");
-
+        Device device2 = new Device();
+        device2.setDevicename("devicetest");
+        //Set variables
+        device2.setComment("test");
         DeviceType d1 = new DeviceType("devicetype",false);
         List<DeviceType> deviceTypes = new ArrayList<DeviceType>();
         deviceTypes.add(d1);
         device.setDeviceType(d1);
         device.setId((long) 10);
+        device2.setId((long) 12);
         List<Device> devices = new ArrayList<Device>();
         devices.add(device);
-
-        //Role is in Use
+        devices.add(device2);
+        when(stepService.findAll()).thenReturn(new ArrayList<>());
+        //Device is in Use
         when(deviceService.findAll()).thenReturn(devices);
+        when(deviceService.findById((long) 10)).thenReturn(Optional.of(device));
+        when(deviceService.findById((long) 12)).thenReturn(Optional.of(device2));
+
         mockMvc.perform(get("/devices/{id}/delete",10))
                 .andExpect(status().is(302))
                 .andDo(print())
                 .andExpect(view().name("redirect:/devices"));
-
 
         //wrong url input
         mockMvc.perform(get("/usermanagement/roles/{id}/delete","ff"))
@@ -396,15 +406,15 @@ public class DeviceControllerTests {
         when(deviceService.findAll()).thenReturn(devices);
         when(deviceTypeService.findAll()).thenReturn(deviceTypes);
         when(deviceTypeService.findById((long) 10)).thenReturn(Optional.of(d1));
-
+        when(stepTypeService.findAll()).thenReturn(new ArrayList<StepType>());
         mockMvc.perform(get("/devices/types/{id}/delete",10))
                 .andExpect(status().is(200))
                 .andDo(print())
 
-                .andExpect(view().name("Devices/list-device-types"));
+                .andExpect(view().name("Errors/custom-error"));
 
         //Role is not in Use
-
+        when(deviceTypeService.findById((long) 11)).thenReturn(Optional.of(d2));
         mockMvc.perform(get("/devices/types/{id}/delete",11))
                 .andExpect(status().is(302))
                 .andDo(print())
@@ -512,41 +522,80 @@ public class DeviceControllerTests {
 
     @Test
     public void addFalseDevicesTest() throws Exception{
+
+        DeviceType d1 = new DeviceType("addDeviceType3",false);
+        d1.setId((long) 13);
+        List<DeviceType> deviceTypes = new ArrayList<DeviceType>();
+        deviceTypes.add(d1);
+
+        // Add correct devicetype
+        when(deviceTypeService.findById((long) 13)).thenReturn(Optional.of(d1));
+        when(deviceTypeService.findByDevicetypeName("addDeviceType3")).thenReturn(Optional.of(d1));
+        when(deviceTypeService.findAll()).thenReturn(deviceTypes);
+        mockMvc.perform(post("/devices/types").flashAttr("deviceType",d1))
+                .andExpect(status().is(302))
+                .andExpect(view().name("redirect:/devices/types/13"))
+                .andDo(print());
+    }
+
+    @Test
+    public void addCorrectDeviceTypesTest() throws Exception{
         Device device = new Device();
-        device.setDevicename("addDevice2");
+        device.setDevicename("addDevice1");
         //Set variables
         device.setComment("devicecomment");
 
-        DeviceType d1 = new DeviceType("addDeviceType2",false);
+        DeviceType d1 = new DeviceType("addDeviceType1",false);
         device.setDeviceType(d1);
         d1.setId((long) 13);
         List<DeviceType> deviceTypes = new ArrayList<DeviceType>();
         deviceTypes.add(d1);
 
-        // Add device without devicetype
-        device.setDeviceType(null);
-        when(deviceService.findByDevicename("addDevice2")).thenReturn(Optional.of(device));
+        when(deviceService.findByDevicename("addDevice1")).thenReturn(Optional.empty());
         when(deviceTypeService.findAll()).thenReturn(deviceTypes);
         mockMvc.perform(post("/devices/").flashAttr("device",device))
-                .andExpect(status().is(200))
-                .andExpect(view().name("Devices/device-manage"))
-                .andExpect(model().attribute("allDeviceTypes",deviceTypes))
-                .andExpect(model().attribute("device",device))
-                .andExpect(model().attribute("errormessage","The device has no devicetype object"))
+                .andExpect(status().is(302))
+                .andExpect(view().name("redirect:/devices"))
                 .andDo(print());
 
-        //Add device with bad name
-        device.setDeviceType(d1);
-        device.setDevicename("");
-        when(deviceService.findByDevicename("addDevice2")).thenReturn(Optional.of(device));
+        //When device already exists changes
+        device.setId((long) 10);
+        when(deviceService.findByDevicename("addDevice1")).thenReturn(Optional.of(device));
         when(deviceTypeService.findAll()).thenReturn(deviceTypes);
         mockMvc.perform(post("/devices/").flashAttr("device",device))
-                .andExpect(status().is(200))
-                .andExpect(view().name("Devices/device-manage"))
-                .andExpect(model().attribute("allDeviceTypes",deviceTypes))
-                .andExpect(model().attribute("device",device))
-                .andExpect(model().attribute("errormessage","The name "+device.getDevicename()+" is already used"))
+                .andExpect(status().is(302))
+                .andExpect(view().name("redirect:/devices"))
                 .andDo(print());
+
     }
 
+
+    //add device tests
+    @Test
+    public void addCorrectDeviceInformationTest() throws Exception{
+        DeviceType d1 = new DeviceType("devicetype",false);
+        DeviceType d2 = new DeviceType("devicetype2",false);
+        d2.setId((long) 11);
+
+        List<DeviceType> deviceTypes = new ArrayList<DeviceType>();
+        deviceTypes.add(d1);
+        deviceTypes.add(d2);
+        d1.setId((long) 10);
+        DeviceInformation i1 = new DeviceInformation("info","information");
+        List<DeviceInformation> deviceInformation = new ArrayList<DeviceInformation>();
+        deviceInformation.add(i1);
+        d1.setDeviceInformation(deviceInformation);
+        i1.setId((long) 10);
+
+
+        when(deviceInformationService.findAll()).thenReturn(deviceInformation);
+        when(deviceInformationService.findById((long) 10)).thenReturn(Optional.of(i1));
+        when(deviceTypeService.findById((long) 10)).thenReturn(Optional.of(d1));
+
+        mockMvc.perform(post("/devices/info/{id}/{typeid}",10,10).flashAttr("deviceInformation",i1))
+                .andExpect(status().is(302))
+                .andExpect(view().name("redirect:/devices/info/10/10"))
+                .andDo(print());
+
+    }
 }

@@ -16,24 +16,16 @@
     <form action="#" th:action="@{/tags/{id}(id=${tag})}"
           th:object="${tag}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
-
         <div class="form-group">
             <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>
             <label class="control-label" th:text="#{tag.name}"></label>
             <input class="form-control" type = text th:field="*{name}"/>
-
-
         <p>
             <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
             <a th:href="@{/products}" th:text="#{close}" class="btn btn-secondary">Close</a>
-
         </p>
         </div>
     </form>
-
-
-
-
 </div>
 </body>
 </html>

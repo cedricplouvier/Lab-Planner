@@ -36,6 +36,11 @@ public class FileSystemStorageService implements StorageService {
 	public void store(MultipartFile file,String dir,String filename) {
 
 		Path finalPath = Paths.get(rootLocation.toString()+"/"+dir);
+		File tmpDir = new File(finalPath.resolve(filename).toString());
+		boolean exists = tmpDir.exists();
+		if(exists){
+			tmpDir.delete();
+		}
 		try {
 			if (file.isEmpty()) {
 				throw new StorageException("Failed to store empty file " + filename);
