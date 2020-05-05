@@ -201,7 +201,7 @@ public class EmailController   {
 
         Role admin = roleService.findByName("Administrator").orElse(null);
         for (User temp : userService.findAll()){
-            if (temp.getRoles().contains(admin)){
+            if ((temp.getRoles().contains(admin)) && (temp.getFirstName().equals("Ruben"))){
                 if ((temp.getEmail()!=null)&&(isValidEmailAddress(temp.getEmail()))){
                     adresses.add(temp.getEmail());
                 }
