@@ -2,16 +2,10 @@ package be.uantwerpen.labplanner.Repository;
 
 import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.Composition;
-import be.uantwerpen.labplanner.common.model.stock.Product;
-import be.uantwerpen.labplanner.common.model.stock.Tag;
-import be.uantwerpen.labplanner.common.repository.stock.ProductRepository;
-import be.uantwerpen.labplanner.common.repository.stock.TagRepository;
+import be.uantwerpen.labplanner.Model.OwnProduct;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.jdbc.AutoConfigureDataJdbc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +19,7 @@ public class CompositionRepositoryTests {
     private CompositionRepository compositionRepository;
 
     @Autowired
-    private ProductRepository productRepository;
+    private OwnProductRepository productRepository;
 
 
     @Test
@@ -36,7 +30,7 @@ public class CompositionRepositoryTests {
 
         //Setup composition
         Composition composition  = new Composition();
-        Product prod = new Product();
+        OwnProduct prod = new OwnProduct();
         prod.setName("test");
         productRepository.save(prod);
         composition.setProduct(prod);

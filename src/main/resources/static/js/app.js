@@ -1,10 +1,12 @@
-'use strict';
+ 'use strict';
 
 /* eslint-disable require-jsdoc */
 /* eslint-env jquery */
 /* global moment, tui, chance */
 /* global findCalendar, CalendarList, ScheduleList, generateSchedule */
+ let filledInSteps=[];
 let newSchedule;
+let suggestion;
 (function(window, Calendar) {
     let cal, resizeThrottled;
     let useCreationPopup = false;
@@ -66,10 +68,31 @@ let newSchedule;
                     calendarUpdate.stepIndex = getIndex(e.schedule.id);
                     newSchedule = null;
                     setSchedules();
+                    setUI();
+                }
+                if(e.schedule.id==suggestion.id){
+                    newSchedule = suggestion;
+                    newSchedule.bgColor = '#5cb85c';
+                    newSchedule.dragBgColor = '#5cb85c';
+                    newSchedule.borderColor = '#5cb85c';
+                    newSchedule.body="No problems found";
+                    newSchedule.isReadOnly = false;
+                    suggestion = null;
+                    cal.updateSchedule(newSchedule.id, newSchedule.calendarId, newSchedule);
+                    // checkOverlap();
+                    let possibleDevices =  checkOverlap(newSchedule);
+                    addDevices(possibleDevices);
+                    if(possibleDevices.length==0){
+                        newSchedule.bgColor = '#d9534f';
+                        newSchedule.dragBgColor = '#d9534f';
+                        newSchedule.borderColor = '#d9534f';
+                        newSchedule.body = "No available devices";
+                        cal.updateSchedule(newSchedule.id, newSchedule.calendarId,newSchedule);
+                    }
+                    refreshScheduleVisibility();
                 }
             }
             console.log('clickSchedule', e);
-
         },
         'clickDayname': function(date) {
             console.log('clickDayname', date);
@@ -87,7 +110,7 @@ let newSchedule;
                         newSchedule.end = e.end;
                     }
                     var check = checkContinuity(calendarUpdate.stepIndex, schedule)
-                    if (check.ok) {
+                    if (check.ok||$('#deviceTypeDropdown').children().length!=0) {
                         newSchedule.bgColor = '#5cb85c';
                         newSchedule.dragBgColor = '#5cb85c';
                         newSchedule.borderColor = '#5cb85c';
@@ -106,29 +129,29 @@ let newSchedule;
                         e.borderColor = '#d9534f';
                         e.body = check.message;
                     }
-
                     cal.updateSchedule(schedule.id, schedule.calendarId, e);
-                    refreshScheduleVisibility();
                 } else {
                     if (newSchedule) {
                         var calendar = e.calendar || findCalendar(e.calendarId);
                         cal.deleteSchedule(newSchedule.id, calendar.id);
                     }
                     saveNewSchedule(e);
-
                 }
                 $("#help").text("you can drag and drop the calendar or drag again");
-
-                checkOverlap();
-
-
+                let possibleDevices =  checkOverlap(newSchedule);
+                addDevices(possibleDevices);
+                if(possibleDevices.length==0){
+                    newSchedule.bgColor = '#d9534f';
+                    newSchedule.dragBgColor = '#d9534f';
+                    newSchedule.borderColor = '#d9534f';
+                    newSchedule.body = "No available devices";
+                    cal.updateSchedule(newSchedule.id, newSchedule.calendarId,newSchedule);
+                }
                 refreshScheduleVisibility();
             }
-
         },
         'beforeUpdateSchedule': function(e) {
             if(calendarType==0) {
-
                 var schedule = e.schedule;
                 var changes = e.changes;
                 newSchedule = schedule;
@@ -159,27 +182,29 @@ let newSchedule;
                     changes.borderColor = '#d9534f';
                     changes.body = check.message;
                 }
-                cal.updateSchedule(schedule.id, schedule.calendarId, changes);
-                checkOverlap();
-
+                let possibleDevices =  checkOverlap(newSchedule);
+                addDevices(possibleDevices);
+                if(possibleDevices.length==0){
+                    newSchedule.bgColor = '#d9534f';
+                    newSchedule.dragBgColor = '#d9534f';
+                    newSchedule.borderColor = '#d9534f';
+                    newSchedule.body = "No available devices";
+                }
+                cal.updateSchedule(newSchedule.id, newSchedule.calendarId,newSchedule);
                 refreshScheduleVisibility();
             }
         },
         'beforeDeleteSchedule': function(e) {
             if(calendarType==0) {
-
                 console.log('beforeDeleteSchedule', e);
                 cal.deleteSchedule(e.schedule.id, e.schedule.calendarId);
             }
         },
         'afterRenderSchedule': function(e) {
             var schedule = e.schedule;
-            // var element = cal.getElement(schedule.id, schedule.calendarId);
-            // console.log('afterRenderSchedule', element);
         },
         'clickTimezonesCollapseBtn': function(timezonesCollapsed) {
             console.log('timezonesCollapsed', timezonesCollapsed);
-
             if (timezonesCollapsed) {
                 cal.setTheme({
                     'week.daygridLeft.width': '77px',
@@ -191,11 +216,9 @@ let newSchedule;
                     'week.timegridLeft.width': '60px'
                 });
             }
-
             return true;
         }
     });
-
     /**
      * Get time template for time and all-day
      * @param {Schedule} schedule - schedule
@@ -286,12 +309,11 @@ let newSchedule;
         cal.setOptions(options, true);
         cal.changeView(viewName, true);
 
-        setDropdownCalendarType();
+        // setDropdownCalendarType();
         setRenderRangeText();
         setSchedules();
     }
     function saveScheduleChanges() {
-        newSchedule.start.get
         var str = newSchedule.start.getFullYear().toString()+ "-" + ("0" + (newSchedule.start.getMonth() + 1)).slice(-2) + "-" + ("0" + (newSchedule.start.getDate())).slice(-2) ;
         document.getElementById('startDate' + calendarUpdate.stepIndex + '').value = str;
         var str = newSchedule.end.getFullYear().toString()+ "-" + ("0" + (newSchedule.end.getMonth() + 1)).slice(-2) + "-" + ("0" + (newSchedule.end.getDate())).slice(-2) ;
@@ -302,7 +324,6 @@ let newSchedule;
         var str = ("0" + (newSchedule.end.getHours() )).slice(-2)+ ":" + ("0" + (newSchedule.end.getMinutes() )).slice(-2)  ;
         document.getElementById('endHour' + calendarUpdate.stepIndex + '').value = str;
 
-
         document.getElementById('selectDevice' + calendarUpdate.stepIndex + '').value =  document.getElementById('deviceTypeDropdown').value;
 
         var check = checkContinuity(calendarUpdate.stepIndex,newSchedule);
@@ -310,6 +331,15 @@ let newSchedule;
             document.getElementById('row' + calendarUpdate.stepIndex + '').setAttribute("style", "background-color:#5cb85c;");
         }else{
             document.getElementById('row' + calendarUpdate.stepIndex + '').setAttribute("style", "background-color:#d9534f;");
+        }
+        suggestion=null;
+        if(calendarUpdate.stepIndex<allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length-1){
+            calendarUpdate.stepIndex++;
+            setSchedules();
+            setUI();
+        }else{
+            $('#extraLargeModal').modal('toggle');
+            $('.modal-backdrop').remove();
         }
     }
     function onClickNavi(e) {
@@ -399,6 +429,7 @@ let newSchedule;
             });
         }
     }
+
     function saveNewSchedule(scheduleData) {
         var calendar = scheduleData.calendar || findCalendar(scheduleData.calendarId);
         var schedule = {
@@ -486,10 +517,120 @@ let newSchedule;
 
         cal.render(true);
 
+        if(calendarType==0) {
+            let parent = document.getElementsByClassName('tui-full-calendar-timegrid-schedules-container');
+            var type = cal.getViewName();
+            if (type === 'week') {
+                for (let current = 0; current <= 6; current++) {
+                    var startDate = new Date(cal.getDateRangeStart().getFullYear(), cal.getDateRangeStart().getMonth(), cal.getDateRangeStart().getDate(), 0,0);
+                    startDate.setDate(startDate.getDate() + current);
+                    let currentStartDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startDate.getHours(), startDate.getMinutes());
+                    let currentEndDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startDate.getHours(), startDate.getMinutes());
+                    currentEndDate.setMinutes(currentEndDate.getMinutes()+30);
+                    for(let currentTimeslot=0;currentTimeslot<48;currentTimeslot++){
+                        var schedule =  createSuggestionSchedule(currentStartDate,currentEndDate,CalendarList[0]);
+                        if(!checkContinuity(calendarUpdate.stepIndex,schedule).ok||checkOverlap(schedule).length==0){
+                                var iDiv = document.createElement('div');
+                                iDiv.id = 'greyout';
+                                iDiv.className = 'greyout';
+                                let percentage = 100 / 48 * currentTimeslot;
+                                iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:2.084%;top:" + percentage + "%;width:100%;opacity:0.25; ";
+                                parent[0].children[current].prepend(iDiv);
+                            
+                        }
+                        currentStartDate.setMinutes(currentStartDate.getMinutes()+30);
+                        currentEndDate.setMinutes(currentEndDate.getMinutes()+30);
+
+                    }
+                }
+            }
+        }
         calendarElements.forEach(function(input) {
             var span = input.nextElementSibling;
             span.style.backgroundColor = input.checked ? span.style.borderColor : 'transparent';
         });
+    }
+    function calculateExperimentSuggestion() {
+        let numberOfSteps = allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length;
+        for (let current = 0; current < numberOfSteps; current++){
+            calculateSuggestion(current)
+            newSchedule = suggestion;
+            suggestion = null;
+            addDevices(checkOverlap(newSchedule));
+            saveScheduleChanges();
+        }
+    }
+    function calculateSuggestion(index) {
+        let today = new Date();
+        let currentDate;
+        let endDate
+
+        if(index!=calendarUpdate.stepIndex){
+            let temp = index;
+            temp--;
+            currentDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());
+            endDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());;
+            endDate.setDate(endDate.getDate()+14);
+        }else if(newSchedule.start){
+            currentDate = new Date(newSchedule.start.getFullYear(), newSchedule.start.getMonth(), newSchedule.start.getDate(), newSchedule.start.getHours(), newSchedule.start.getMinutes());
+            endDate = new Date(newSchedule.start.getFullYear(), newSchedule.start.getMonth(), newSchedule.start.getDate(), newSchedule.start.getHours(), newSchedule.start.getMinutes());;
+            endDate.setDate(endDate.getDate()+14);
+        }else if(index>0){
+            let temp = index;
+            temp--;
+
+            currentDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());
+            endDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());;
+            endDate.setDate(endDate.getDate()+14);
+        }
+        else {
+            currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), today.getHours(), 0);
+            currentDate.setHours(currentDate.getHours()+1)
+            endDate = new Date(today.getFullYear(),today.getMonth(),today.getDate(),today.getHours(),0);
+            endDate.setHours(endDate.getHours()+1)
+            endDate.setDate(endDate.getDate()+14);
+        }
+
+
+        let step = 60; //in minutes
+        let length = 60;
+        let found = false;
+        var calendar = selectedCalendar ? selectedCalendar : CalendarList[0];
+        let schedule = null;
+        currentDate.setMinutes(currentDate.getMinutes()-30);
+
+        while(!found && currentDate<endDate){
+            currentDate.setMinutes(currentDate.getMinutes()+30);
+            let end = new Date(currentDate.getFullYear(),currentDate.getMonth(),currentDate.getDate(),currentDate.getHours(),currentDate.getMinutes());
+            end.setMinutes(end.getMinutes()+60);
+            schedule = createSuggestionSchedule(currentDate,end,calendar);
+            if(checkContinuity(index,schedule).ok&&checkOverlap(schedule).length!=0){
+                // check if other steps can still be found
+                if(index<allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length-1){
+                    filledInSteps[index] = schedule;
+                    let temp = index;
+                    temp++;
+                    if(calculateSuggestion(temp)){
+                        found = true;
+                    }
+                }else{
+                    found = true;
+                }
+            }
+        }
+        if(found&&index==calendarUpdate.stepIndex){
+            suggestion = schedule;
+            setSchedules();
+            $('#toastsuggestionsuccess').toast('show')
+            cal.setDate(suggestion.start);
+            refreshScheduleVisibility()
+
+        }
+        if(!found&&index==calendarUpdate.stepIndex){
+            $('#toastsuggestionerror').toast('show')
+
+        }
+        return found;
     }
 
     function setDropdownCalendarType() {
@@ -542,11 +683,6 @@ let newSchedule;
         cal.clear();
         generateSchedule(cal.getViewName(), cal.getDateRangeStart(), cal.getDateRangeEnd());
         cal.createSchedules(ScheduleList);
-        // var schedules = [
-        //     {id: 489273, title: 'Workout for 2019-04-05', isAllDay: false, start: '2018-02-01T11:30:00+09:00', end: '2018-02-01T12:00:00+09:00', goingDuration: 30, comingDuration: 30, color: '#ffffff', isVisible: true, bgColor: '#69BB2D', dragBgColor: '#69BB2D', borderColor: '#69BB2D', calendarId: 'logged-workout', category: 'time', dueDateClass: '', customStyle: 'cursor: default;', isPending: false, isFocused: false, isReadOnly: true, isPrivate: false, location: '', attendees: '', recurrenceRule: '', state: ''},
-        //     // {id: 18073, title: 'completed with blocks', isAllDay: false, start: '2018-11-17T09:00:00+09:00', end: '2018-11-17T10:00:00+09:00', color: '#ffffff', isVisible: true, bgColor: '#54B8CC', dragBgColor: '#54B8CC', borderColor: '#54B8CC', calendarId: 'workout', category: 'time', dueDateClass: '', customStyle: '', isPending: false, isFocused: false, isReadOnly: false, isPrivate: false, location: '', attendees: '', recurrenceRule: '', state: ''}
-        // ];
-        // cal.createSchedules(schedules);
         refreshScheduleVisibility();
     }
 
@@ -559,8 +695,56 @@ let newSchedule;
         $('#btn-new-schedule').on('click', createNewSchedule);
         $('#dropdownMenu-calendars-list').on('click', onChangeNewScheduleCalendar);
         $("#extraLargeModal").on('show.bs.modal', setSchedules);
+        $("#extraLargeModal").on('shown.bs.modal', setSchedules);
         $("#selectStep").on('click',saveScheduleChanges);
+        $("#nextstep").on('click',nextStep);
+        $("#previousstep").on('click',previousStep);
+        $("#suggestStep").on('click',function () {
+            calculateSuggestion(calendarUpdate.stepIndex);
+        });
+        $("#suggestExperiment").on('click',calculateExperimentSuggestion);
+
         window.addEventListener('resize', resizeThrottled);
+    }
+    function nextStep() {
+        if(calendarUpdate.stepIndex<allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length-1) {
+            calendarUpdate.stepIndex++;
+            setSchedules();
+            setUI();
+            var calendar = selectedCalendar ? selectedCalendar : CalendarList[0];
+        }
+        refreshScheduleVisibility();
+    }
+    function setUI(){
+        if(calendarUpdate.stepIndex==allExperiments[calendarUpdate.experimentIndex].length-1){
+            document.getElementById('selectStep').innerHTML = "Finish experiment";
+        }
+        document.getElementById('steptitle').innerText = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['deviceTypeName'];
+        document.getElementById('length').innerText = "Length: unimplemented";
+        if(calendarUpdate.stepIndex>0){
+            document.getElementById('continuity').innerText = "Continuity: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type'];
+            document.getElementById('align').innerText = "Alignment: After";
+            document.getElementById('time').innerText = "Time: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['hours']+"h "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['minutes']+"m";
+        }else{
+            document.getElementById('continuity').innerText = "Continuity: None";
+            document.getElementById('align').innerText = "Alignment: None";
+            document.getElementById('time').innerText = "Time: None";
+        }
+        calendarUpdate.start = document.getElementById('startDate' + calendarUpdate.stepIndex + '').value
+        calendarUpdate.end = document.getElementById('endDate' + calendarUpdate.stepIndex + '').value
+        calendarUpdate.startHour = document.getElementById('startHour' + calendarUpdate.stepIndex + '').value
+        calendarUpdate.endHour = document.getElementById('endHour' + calendarUpdate.stepIndex + '').value
+    }
+
+    function previousStep() {
+        if(calendarUpdate.stepIndex>0) {
+            calendarUpdate.stepIndex--;
+            setSchedules();
+            setUI();
+            var calendar = selectedCalendar ? selectedCalendar : CalendarList[0];
+            // cal.deleteSchedule(newSchedule.id, calendar.id);
+        }
+        refreshScheduleVisibility();
     }
 
     function getDataAction(target) {
@@ -573,7 +757,7 @@ let newSchedule;
 
     window.cal = cal;
 
-    setDropdownCalendarType();
+    // setDropdownCalendarType();
     setRenderRangeText();
     setSchedules();
     setEventListener();

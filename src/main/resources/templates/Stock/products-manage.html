@@ -77,15 +77,35 @@
 
         </div>
 
-        <div> <label th:text="#{product.tag.tagName}"></label>
-            <tr></tr>
-            <select th:field="*{tags}" multiple="multiple" >
-                <option th:each="tag : ${allTags}"
-                        th:value="${{tag}}"
-                        th:text="${tag.name}">Wireframe</option>
-            </select>
+        <div class="form-group">
+            <label class="control-label" th:text="#{info.url}"></label>
+            <input class="form-control" type = url th:field="*{url}"/>
+
         </div>
 
+
+
+
+
+        <div class="form-row">
+            <div class="col">
+                <div class="form-check">
+                    <div>
+                        <h6 th:text="#{product.tag.tagName}">tags</h6>
+                    </div>
+                    <input th:field ="*{tags}" class="form-check-input" type="checkbox"
+                           th:each="tag : ${allTags}"
+                           th:value="${{tag}}"
+                           th:utext="${tag.name} + '<br>'">
+                </div>
+            </div>
+            <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
+
+                <img style="max-height:200px; max-width:200px; overflow: hidden" th:src="@{${(product.getImageName() != null ) ? '/files/images/'+product.getImageName() : '/images/placeholder.jpg'}}" />
+
+            </div>
+
+        </div>
 
 
 
@@ -93,10 +113,35 @@
 
         <p>
             <button type="submit" th:text="#{save}" class="btn btn-outline-primary">Save</button>
-            <a href="/products" th:text="#{close}" class="btn btn-secondary">Close</a>
+            <a th:href="@{/products}" th:text="#{close}" class="btn btn-secondary">Close</a>
 
         </p>
     </form>
+
+
+    <form th:if="${product.id}!=null" method="POST" enctype="multipart/form-data"  th:action="@{/upload/productimage/{productId}(productId=${product.id})}">
+        <div class="input-group mb-3">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" name="file" accept="image/png, image/jpeg, image/jpg" id="inputGroupFile02"/>
+                <label class="custom-file-label" for="inputGroupFile02"th:text="#{device.choosefile}"></label>
+            </div>
+            <div class="input-group-append">
+                <button class="btn btn-primary" id="upload-btn" disabled type="submit"  th:text="#{device.upload}"></button>
+            </div>
+        </div>
+        <script>
+            $('#inputGroupFile02').on('change',function(){
+                //get the file name
+                var fileName = $(this).val();
+                //replace the "Choose a file" label
+                $(this).next('.custom-file-label').html(fileName);
+                $('#upload-btn').prop('disabled', false);
+
+            })
+        </script>
+    </form>
+    <div class="alert alert-info" role="alert" th:if="${product.id}==null" th:text="#{product.savebeforeupload}"></div>
+
 
 
 

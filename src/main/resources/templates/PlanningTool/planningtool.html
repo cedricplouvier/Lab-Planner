@@ -14,6 +14,16 @@
 
         }
     </script>
+    <script>
+        $(document).ready(function(){
+            $("#search").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $(".table tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
     <script th:inline="javascript">
         toastr.options.extendedTimeOut = 5000;
         $(document).ready(function () {
@@ -25,7 +35,8 @@
                 if (status == "Error")
                     toastr.error(messages);
             }
-
+            var mixturesz = /*[[${allMixtures}]]*/ {};
+            console.log(mixturesz);
             $('.js-example-basic-single').select2();
             $('#sel').on('change', function () {
                 var devices =  /*[[${allDevices}]]*/ {};
@@ -68,6 +79,7 @@
                         .append(' <option value="none" selected disabled hidden> Device Type </option>');
                 });
             });
+
             // Search on name column only
             $('#txt_name').keyup(function () {
                 // Search Text
@@ -117,6 +129,10 @@
         .input-device {
             margin-top: 10px;
         }
+        .input-mixture {
+            width: 40%;
+            margin-top: 10px;
+        }
     </style>
     <div class="container">
         <div th:replace="navbar :: navbar"></div>
@@ -126,13 +142,21 @@
                     data-target="#staticBackdrop" th:text="#{book.step}">
                 Book new Step
             </button>
+
+            <p/>
             <a th:href="@{/planning/experiments/book/}">
                 <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal"
                         data-target="#staticBackdropExperiment" th:text="#{book.Experiment}">
                     Book new Experiment
                 </button>
             </a>
+
+            <p/>
+
         </h1>
+
+        <input class="floating" id="search" placeholder="Search" />
+
         <table class="table table-hover">
             <thead>
             <tr>
@@ -266,7 +290,7 @@
 
 
 
-        <a href="/planning/experiments" type="button" class="btn btn-primary" th:text="#{experiment.types}">
+        <a th:href="@{/planning/experiments}" type="button" class="btn btn-primary" th:text="#{experiment.types}">
             Experiment Types
         </a>
     </div>
@@ -283,7 +307,7 @@
                     </button>
                 </div>
                 <form th:action="@{/planning/{id} (id=${Step})}" th:object="${Step}" method="post">
-                    <div class="modal-body" style="height: 260px;">
+                    <div class="modal-body" style="height: 320px;">
                         <input th:field="*{id}" th:type="hidden"/>
                         <select required class=" form-control input-device" id="sel">
                             <option value="none" selected disabled hidden th:text="#{device.type}"> Device Type</option>
@@ -309,7 +333,24 @@
                                    th:field="*{endHour}" placeholder="Hour">
                         </div>
                         <div style="margin-top: 60px">
-                            <input th:field="*{comment}" placeholder="Comment">
+                            <div class="input-group">
+                                <input type="text" class="form-control" th:field="*{comment}" placeholder="Comment" >
+                            </div>
+                        </div>
+                        <div >
+                            <select required id="mixtures" th:field="*{mixture}" class="form-control input-mixture">
+                                <option value="" disabled th:selected="selected">Select Mixture</option>
+                                <option class="dropdown-item" th:each="Amixture : ${allMixtures}" th:value="${Amixture.getId()}" th:text="${Amixture.getName()}">
+                                    Mixture
+                                </option>
+                            </select>
+<!--                            <input style="margin-left: 20px" th:type="number" th:field="*{amount}" placeholder="Amount"> <p style="color:#808080;margin-left: 30px">kg</p>-->
+                            <div class="input-group float-right" style="width: 40%;margin-top: -38px;">
+                                <input th:field="*{amount}" step="0.01" type="number" class="form-control" >
+                                <div class="input-group-append">
+                                    <span class="input-group-text" style="color:#808080">kg</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -322,5 +363,10 @@
     </div>
 </div>
 </body>
+</div>
+
+
+</div>
+<div th:replace="footer :: footer"></div>
 </div>
 </html>

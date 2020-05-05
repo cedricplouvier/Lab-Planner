@@ -2,10 +2,12 @@ package be.uantwerpen.labplanner.Model;
 
 
 import be.uantwerpen.labplanner.LabplannerApplication;
-import be.uantwerpen.labplanner.common.model.stock.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -14,11 +16,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @WebAppConfiguration
 public class TagTests {
 
-    private Tag tag;
+    private OwnTag tag;
 
     @Test
     public void TestTag() throws Exception{
-        tag = new Tag();
+        tag = new OwnTag();
         assertNull(tag.getName());
 
         tag.setName("name");
@@ -28,5 +30,12 @@ public class TagTests {
         tag.setId(id);
         assertEquals(tag.getId(), id);
 
+        List<OwnProduct> products = new ArrayList<>();
+        products.add(new OwnProduct());
+        tag.setProducts(products);
+        assertEquals(tag.getProducts(), products);
+
+
     }
+
 }

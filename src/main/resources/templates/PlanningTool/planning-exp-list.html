@@ -9,8 +9,6 @@
     $(document).ready(function(){
         var status= /*[[${Status}]]*/ null;
         var messages =  /*[[${Message}]]*/ "";
-        console.log(status);
-        console.log(messages);
         if(status != null)
         {
             if (status=="Success")
@@ -38,22 +36,21 @@
             <td>
                 <a  sec:authorize="hasAuthority('Planning - Make new experiment') " th:href="@{/planning/experiments/{id}/(id=${experiment.id})}"><span
                         class="fas fa-edit"></span></a>&nbsp;
-                <a sec:authorize="hasAuthority('Planning - Make new experiment')" th:href="@{/planning/experiments/{id}/delete(id=${experiment.id})}">
+                <a sec:authorize="hasAuthority('Planning - Make new experiment')" th:href="@{/planning/experiments/{id}/delete(id=${experiment.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
                     <span class="fas fa-trash"></span></a>
             </td>
         </tr>
         </tbody>
     </table>
 
-    <a style="margin-right: 10px" href="/planning/" class="btn btn-outline-primary" th:text="#{experiments.return}" >Return to schedules</a>
-    <a style="margin-right: 10px" sec:authorize="hasAuthority('Planning - Make new experiment')" href="/planning/experiments/put" type="button" class="btn btn-primary"th:text="#{experiment.type.create}">
+    <a style="margin-right: 10px" th:href="@{/planning/}" class="btn btn-outline-primary" th:text="#{experiments.return}" >Return to schedules</a>
+    <a style="margin-right: 10px" sec:authorize="hasAuthority('Planning - Make new experiment')" th:href="@{/planning/experiments/put}" type="button" class="btn btn-primary"th:text="#{experiment.type.create}">
         Create new experiment
     </a>
-
-
-
-
-
 </div>
 </body>
+</div>
+<div th:replace="footer :: footer"></div>
+</div>
+
 </html>

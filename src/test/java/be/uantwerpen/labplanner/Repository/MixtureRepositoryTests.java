@@ -3,18 +3,14 @@ package be.uantwerpen.labplanner.Repository;
 import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.Composition;
 import be.uantwerpen.labplanner.Model.Mixture;
-import be.uantwerpen.labplanner.common.model.stock.Product;
-import be.uantwerpen.labplanner.common.model.stock.Tag;
-import be.uantwerpen.labplanner.common.repository.stock.ProductRepository;
-import be.uantwerpen.labplanner.common.repository.stock.TagRepository;
-import org.junit.Before;
+import be.uantwerpen.labplanner.Model.OwnProduct;
+import be.uantwerpen.labplanner.Model.OwnTag;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,11 +28,11 @@ public class MixtureRepositoryTests {
     private CompositionRepository compositionRepository;
 
     @Autowired
-    private ProductRepository productRepository;
+    private OwnProductRepository productRepository;
 
     @Autowired
-    private TagRepository tagRepository;
-
+    private OwnTagRepository tagRepository;
+    @Transactional
     @Test
     public void testSaveMixtures(){
 
@@ -44,11 +40,11 @@ public class MixtureRepositoryTests {
         long precount = mixtureRepository.count();
 
 
-        Product prod1 = new Product();
+        OwnProduct prod1 = new OwnProduct();
         prod1.setName("testproduct1");
         productRepository.save(prod1);
 
-        Product prod2 = new Product();
+        OwnProduct prod2 = new OwnProduct();
         prod2.setName("testproduct2");
         productRepository.save(prod2);
 
@@ -103,9 +99,16 @@ public class MixtureRepositoryTests {
         Mixture fetchedMix4 = mixtureRepository.findById(fetchedMix.getId()).orElse(null);
         assertEquals(fetchedMix.getDescription(), fetchedMix4.getDescription());
 
+        //update image
+        //update description
+        fetchedMix.setImage("testImage");
+        mixtureRepository.save(fetchedMix);
+        Mixture fetchedMix6 = mixtureRepository.findById(fetchedMix.getId()).orElse(null);
+        assertEquals(fetchedMix.getImage(), fetchedMix6.getImage());
+
         //update tag
-        List<Tag> tags  = new ArrayList<>();
-        Tag t1 = new Tag("test");
+        List<OwnTag> tags  = new ArrayList<>();
+        OwnTag t1 = new OwnTag("test");
         tagRepository.save(t1);
         tags.add(t1);
         fetchedMix.setTags(tags);

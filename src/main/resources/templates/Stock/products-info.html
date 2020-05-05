@@ -19,7 +19,7 @@
     <div th:replace="navbar :: navbar"></div>
     <div class="row">
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
-            <a href="/products" th:text="#{close}" class="btn btn-primary">Close</a>
+            <a th:href="@{/products}" th:text="#{close}" class="btn btn-primary">Close</a>
         </div>
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
             <h2 th:text="#{product.info}">Material Info </h2>
@@ -30,7 +30,7 @@
     <div class="row">
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
 
-            <img th:src="${(product.getImageUrl() != null && product.getImageUrl() != 'locatie2') ? '/files/images/'+product.getImageUrl() : '/images/placeholder.jpg'}" />
+            <img style="max-height:450px; max-width:450px; overflow: hidden" th:src="@{${(product.getImageName() != null && product.getImageName() != 'locatie2') ? '/files/images/'+product.getImageName() : '/images/placeholder.jpg'}}" />
 
         </div>
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
@@ -46,6 +46,14 @@
                     <h5 class="card-title"> <a th:text="#{product.properties}">Properties</a> </h5>
 
                     <a th:text="${product.properties}">properties</a>
+                </div>
+            </div>
+
+            <div th:if="${product.url}!=null" class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"> <a th:text="#{product.url}">More information</a> </h5>
+                    <a class="nav-link" th:target="_blank" th:href="${product.url.toString()}" th:text="${product.url.toString()}"> </a>
+
                 </div>
             </div>
             <div class="card bg-light mb-3">

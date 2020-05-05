@@ -3,8 +3,6 @@ package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Model.Report;
 import be.uantwerpen.labplanner.Service.ReportService;
-import be.uantwerpen.labplanner.common.model.stock.Product;
-import be.uantwerpen.labplanner.common.model.stock.Tag;
 import be.uantwerpen.labplanner.common.model.users.User;
 import be.uantwerpen.labplanner.common.service.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

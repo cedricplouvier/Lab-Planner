@@ -10,11 +10,10 @@
 
         <!--&lt;!&ndash; Bootstrap CSS &ndash;&gt;-->
         <link rel="stylesheet" media="screen" href="http://cdn.jsdelivr.net/webjars/bootstrap/4.3.0/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.3.0/css/bootstrap.min.css}"/>
-        <link rel="stylesheet" type="text/css" th:href="@{/css/footer.css}"/>
 
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script type="text/javascript" th:src="@{/js/list.min.js}"></script>
+<!--        <script type="text/javascript" th:src="@{/js/list.min.js}"></script>-->
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
@@ -56,7 +55,7 @@
                     </li>
                     <li class="nav-item">
                         <div sec:authorize="hasAuthority('User Management')">
-                        <a class="nav-link" th:href="@{/usermanagement}" th:text="#{navbar.user}">
+                        <a class="nav-link" th:href="@{/usermanagement/users}" th:text="#{navbar.user}">
                             User Management
                             <span class="sr-only">(user management)</span>
                         </a>
@@ -115,7 +114,7 @@
                 <div sec:authorize="hasAuthority('Statistics Access')">
                     <ul class="navbar-nav my-2 my-lg-0">
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" th:text="#{navbar.statistics}" id="navbarStatistics" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" th:href="@{#}" th:text="#{navbar.statistics}" id="navbarStatistics" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Statistics
                             </a>
 
@@ -129,17 +128,17 @@
 
                 <ul class="navbar-nav my-2 my-lg-0">
                     <li class="nav-item dropdown" left>
-                        <a class="nav-link dropdown-toggle" href="#" th:text="#{navbar.account}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" th:href="@{#}" th:text="#{navbar.account}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Account
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <!--/*@thymesVar id="id" type=""*/-->
                             <!--/*@thymesVar id="user" type=""*/-->
-                            <a class="dropdown-item"
-                               th:text="#{navbar.settings}">Settings</a>
+                            <a class="dropdown-item" th:href="@{/password}" th:text="#{navbar.settings}">Settings</a>
+                            <a class="dropdown-item" th:href="@{/officeHours}" th:text="#{navbar.officeHours}">Change office hours</a>
                             <!-- th:href="@{/users/profile/{id}" (id=${#authentication.principal.user.id})}" -->
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/logout" th:text="#{navbar.logout}">
+                            <a class="dropdown-item" th:href="@{/logout}" th:text="#{navbar.logout}">
                                 Logout
                                 <span class="sr-only">(logout)</span>
                             </a>
@@ -149,7 +148,7 @@
 
                 <ul class="navbar-nav my-2 my-lg-0">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" th:text="#{navbar.language}" id="navbarLanguage" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" th:href="@{#}" th:text="#{navbar.language}" id="navbarLanguage" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Language
                         </a>
 

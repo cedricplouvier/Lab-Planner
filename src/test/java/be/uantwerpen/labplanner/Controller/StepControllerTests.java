@@ -4,6 +4,8 @@ package be.uantwerpen.labplanner.Controller;
 import be.uantwerpen.labplanner.LabplannerApplication;
 import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Repository.ExperimentTypeRepository;
+import be.uantwerpen.labplanner.Repository.OfficeHoursRepository;
+import be.uantwerpen.labplanner.Repository.SystemSettingsRepository;
 import be.uantwerpen.labplanner.Service.*;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
@@ -54,10 +56,20 @@ public class StepControllerTests {
     @Mock
     private StepTypeService stepTypeService;
     @Mock
+    private OwnProductService productService;
+    @Mock
     private ExperimentTypeRepository experimentTypeRepository;
 
     @Mock
     private RelationService relationService;
+    @Mock
+    private SystemSettingsService systemSettingsService;
+    @Mock
+    private OfficeHoursService officeHoursService;
+    @Mock
+    private SystemSettingsRepository systemSettingsRepository;
+    @Mock
+    private OfficeHoursRepository officeHoursRepository;
 
     @Mock
     UserRepository userRepository;
@@ -77,7 +89,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View step list with admin
     public void ViewStepListTest() throws Exception{
         Step step = new Step();
@@ -86,7 +98,7 @@ public class StepControllerTests {
 
         Role role = new Role("Administrator");
         when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
-        role.setId((long) 31);
+        role.setId((long) 32);
         //   when(relationService.findAll()).thenReturn(relations);
         mockMvc.perform(get("/planning/"))
                 .andExpect(status().isOk())
@@ -95,7 +107,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Bachelor")
+    @WithUserDetails(value="bachelor@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View step list with Bachelor and his steps
     public void ViewStepListBachelorTest() throws Exception{
         Step step = new Step();
@@ -118,7 +130,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Master")
+    @WithUserDetails(value="master@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View step list with no steps
     public void ViewStepListEnmptyTest() throws Exception{
         Step step = new Step();
@@ -141,7 +153,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Researcher")
+    @WithUserDetails(value="researcher@uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View step as researcher
     public void ViewStepListResearcherTest() throws Exception{
         Step step = new Step();
@@ -180,7 +192,7 @@ public class StepControllerTests {
 
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step
     public void ViewEditStepAdmin() throws Exception{
         Step step = new Step();
@@ -229,7 +241,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step
     public void ViewEditStepAdminNonValidId() throws Exception{
         Step step = new Step();
@@ -280,7 +292,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Bachelor")
+    @WithUserDetails(value="bachelor@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void ViewEditStepAsOwner() throws Exception{
         Step step = new Step();
@@ -330,7 +342,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Researcher")
+    @WithUserDetails(value="researcher@uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void ViewEditStepAsResearcher() throws Exception{
         Step step = new Step();
@@ -381,7 +393,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Master")
+    @WithUserDetails(value="master@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void ViewEditStepAsNonOwner() throws Exception{
         Step step = new Step();
@@ -433,7 +445,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void AddStepInvalidInput() throws Exception{
         Step step = new Step();
@@ -475,14 +487,14 @@ public class StepControllerTests {
         when(relationService.findAll()).thenReturn(rels);
         role.setId((long) 31);
         //   when(relationService.findAll()).thenReturn(relations);
-        mockMvc.perform(post("/planning/").flashAttr("Step",step))
+        mockMvc.perform(post("/planning/").flashAttr("step",step))
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/planning/"));
 
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void AddStepOverlap() throws Exception{
         User user = new User("tester","tester");
@@ -532,14 +544,14 @@ public class StepControllerTests {
         when(relationService.findAll()).thenReturn(rels);
         role.setId((long) 31);
         //   when(relationService.findAll()).thenReturn(relations);
-        mockMvc.perform(post("/planning/").flashAttr("Step",step))
+        mockMvc.perform(post("/planning/").flashAttr("step",step))
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/planning/"));
 
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void AddStepAdmin() throws Exception{
         User user = new User("tester","tester");
@@ -553,13 +565,13 @@ public class StepControllerTests {
         //roles
         Role role1 = new Role("Administrator");
         when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
-        role1.setId((long) 31);
+        role1.setId((long) 32);
 
         when(stepService.findById((long) 5)).thenReturn(Optional.of(step));
 
         Role researcher = new Role("Researcher");
         when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
-        researcher.setId((long) 30);
+        researcher.setId((long) 31);
 
         Set<User> students = new HashSet<>();
         students.add(user);
@@ -578,13 +590,12 @@ public class StepControllerTests {
         List<Step> steps = new ArrayList<>();
         steps.add(step);
 
-        Role role = new Role("Administrator");
-        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
         when(stepService.findAll()).thenReturn(steps);
         when(relationService.findAll()).thenReturn(rels);
-        role.setId((long) 31);
+        when(productService.findAll()).thenReturn(new ArrayList<>());
+
         //   when(relationService.findAll()).thenReturn(relations);
-        mockMvc.perform(post("/planning/").flashAttr("Step",step))
+        mockMvc.perform(post("/planning/").flashAttr("step",step))
                 .andExpect(status().is(302))
                 .andExpect(MockMvcResultMatchers.flash().attribute("Status", notNullValue()))
                 .andDo(print())
@@ -595,7 +606,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Bachelor")
+    @WithUserDetails(value="bachelor@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void AddStepOwner() throws Exception{
         User user = new User("tester","tester");
@@ -637,6 +648,7 @@ public class StepControllerTests {
         Role role = new Role("Administrator");
         when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
         when(stepService.findAll()).thenReturn(steps);
+        when(productService.findAll()).thenReturn(new ArrayList<>());
         when(relationService.findAll()).thenReturn(rels);
         role.setId((long) 32);
         //   when(relationService.findAll()).thenReturn(relations);
@@ -654,7 +666,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Researcher")
+    @WithUserDetails(value="researcher@uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void AddStepResearcher() throws Exception{
         User user = new User("tester","tester");
@@ -667,20 +679,21 @@ public class StepControllerTests {
 
         //roles
         Role role1 = new Role("Administrator");
+        role1.setId((long) 32);
         when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
-        role1.setId((long) 31);
+
 
         when(stepService.findById((long) 5)).thenReturn(Optional.of(step));
 
         Role researcher = new Role("Researcher");
+        researcher.setId((long) 31);
         when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
-        researcher.setId((long) 30);
 
         Set<User> students = new HashSet<>();
         students.add(user);
         //researcher
         User res = new User("Researcher","tester");
-        res.setId((long) 41);
+        res.setId((long) 42);
         //relation
         Relation rel = new Relation();
         rel.setResearcher(res);
@@ -693,11 +706,10 @@ public class StepControllerTests {
         List<Step> steps = new ArrayList<>();
         steps.add(step);
 
-        Role role = new Role("Administrator");
-        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
         when(stepService.findAll()).thenReturn(steps);
         when(relationService.findAll()).thenReturn(rels);
-        role.setId((long) 31);
+        when(productService.findAll()).thenReturn(new ArrayList<>());
+
         //   when(relationService.findAll()).thenReturn(relations);
         mockMvc.perform(post("/planning/").flashAttr("step",step))
                 .andExpect(status().is(302))
@@ -710,7 +722,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Master")
+    @WithUserDetails(value="master@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void AddStepNonValid() throws Exception{
         User user = new User("tester","tester");
@@ -755,7 +767,7 @@ public class StepControllerTests {
         when(relationService.findAll()).thenReturn(rels);
         role.setId((long) 32);
         //   when(relationService.findAll()).thenReturn(relations);
-        mockMvc.perform(post("/planning/").flashAttr("Step",step))
+        mockMvc.perform(post("/planning/").flashAttr("step",step))
                 .andExpect(status().is(302))
                 .andExpect(MockMvcResultMatchers.flash().attribute("Status", "Error"))
                 .andDo(print())
@@ -766,7 +778,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void DeleteStepAdmin() throws Exception{
         User user = new User("tester","tester");
@@ -818,7 +830,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ruben")
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void DeleteStepAdminNonValid() throws Exception{
         User user = new User("tester","tester");
@@ -870,11 +882,11 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Bachelor")
+    @WithUserDetails(value="bachelor@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void DeleteStepOwner() throws Exception{
         User user = new User("tester","tester");
-        user.setId((long) 39);
+        user.setId((long) 40);
         Device d1 = new Device();
         d1.setId((long) 10);
 
@@ -922,7 +934,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Researcher")
+    @WithUserDetails(value="researcher@uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void DeleteStepResearcher() throws Exception{
         User user = new User("tester","tester");
@@ -936,19 +948,19 @@ public class StepControllerTests {
         //roles
         Role role1 = new Role("Administrator");
         when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
-        role1.setId((long) 31);
+        role1.setId((long) 32);
 
         when(stepService.findById((long) 5)).thenReturn(Optional.of(step));
 
         Role researcher = new Role("Researcher");
         when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
-        researcher.setId((long) 30);
+        researcher.setId((long) 31);
 
         Set<User> students = new HashSet<>();
         students.add(user);
         //researcher
         User res = new User("Researcher","tester");
-        res.setId((long) 41);
+        res.setId((long) 42);
         //relation
         Relation rel = new Relation();
         rel.setResearcher(res);
@@ -961,11 +973,60 @@ public class StepControllerTests {
         List<Step> steps = new ArrayList<>();
         steps.add(step);
 
-        Role role = new Role("Administrator");
-        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
         when(stepService.findAll()).thenReturn(steps);
         when(relationService.findAll()).thenReturn(rels);
-        role.setId((long) 31);
+        //   when(relationService.findAll()).thenReturn(relations);
+        mockMvc.perform(get("/planning/{id}/delete",5))
+                .andExpect(status().is(302))
+                .andDo(print())
+                .andExpect(view().name("redirect:/planning/"));
+    }
+
+    @Test
+    @WithUserDetails(value="researcher@uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
+    //view edit page of step as owner
+    public void DeleteStepResearcherNotOfOwner() throws Exception{
+        User user = new User("tester","tester");
+        user.setId((long) 39);
+        Device d1 = new Device();
+        d1.setId((long) 10);
+
+        Step step = new Step(user,d1,"2020-03-18","2020-03-18","11:00","12:00","");
+        step.setId((long) 5);
+
+        //roles
+        Role role1 = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
+        role1.setId((long) 32);
+
+        when(stepService.findById((long) 5)).thenReturn(Optional.of(step));
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        User user2 = new User("tester","tester");
+        user2.setId((long) 97);
+
+        Set<User> students = new HashSet<>();
+        students.add(user2);
+        //researcher
+        User res = new User("Researcher","tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+
+        when(stepService.findAll()).thenReturn(steps);
+        when(relationService.findAll()).thenReturn(rels);
         //   when(relationService.findAll()).thenReturn(relations);
         mockMvc.perform(get("/planning/{id}/delete",5))
                 .andExpect(status().is(302))
@@ -975,7 +1036,7 @@ public class StepControllerTests {
 
 
     @Test
-    @WithUserDetails("Master")
+    @WithUserDetails(value="master@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //view edit page of step as owner
     public void DeleteStepNonOwner() throws Exception{
         User user = new User("tester","tester");
@@ -1027,7 +1088,7 @@ public class StepControllerTests {
                 .andExpect(view().name("redirect:/planning/"));
     }
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View experiment type list with admin
     public void ViewExperimentTypeListTest() throws Exception{
         DeviceType deviceType = new DeviceType();
@@ -1054,7 +1115,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Bachelor")
+    @WithUserDetails(value="bachelor@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View experiment type list with Bachelor
     public void ViewExperimentTypeListBachelorTest() throws Exception{
         DeviceType deviceType = new DeviceType();
@@ -1081,7 +1142,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //Add experiment type as admin
     public void AddExperimentTypeTest() throws Exception{
         DeviceType deviceType = new DeviceType();
@@ -1108,7 +1169,7 @@ public class StepControllerTests {
                 .andExpect(view().name("redirect:/planning/experiments"));
     }
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //Try adding a new experiment type with an invalid continuity
     public void AddExperimentTypeInvalidContinuityTest() throws Exception{
         DeviceType deviceType = new DeviceType();
@@ -1132,11 +1193,11 @@ public class StepControllerTests {
                 .andExpect(MockMvcResultMatchers.flash().attribute("Message", "There was a problem in adding the Experiment Type:\nInvalid value for minutes."))
                 .andExpect(MockMvcResultMatchers.flash().attribute("Status", "Error"))
                 .andDo(print())
-                .andExpect(view().name("redirect:/planning/experiments"));
+                .andExpect(view().name("redirect:/planning/experiments/put"));
     }
 
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //Try adding a new experiment type with an already used name
     public void AddExperimentTypeInvalidNameTest() throws Exception{
         DeviceType deviceType = new DeviceType();
@@ -1160,11 +1221,11 @@ public class StepControllerTests {
                 .andExpect(MockMvcResultMatchers.flash().attribute("Message", "There was a problem in adding the Experiment Type:\nThis experiment type name is already occupied!"))
                 .andExpect(MockMvcResultMatchers.flash().attribute("Status", "Error"))
                 .andDo(print())
-                .andExpect(view().name("redirect:/planning/experiments"));
+                .andExpect(view().name("redirect:/planning/experiments/put"));
     }
 
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //Delete an experiment type
     public void DeleteExperimentTypeTest() throws Exception{
         User user = new User("tester","tester");
@@ -1218,7 +1279,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //Try to delete an experiment type that has still an experiment in use
     public void DeleteExperimentTypeWhenStillInUseTest() throws Exception{
         User user = new User("tester","tester");
@@ -1307,7 +1368,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View of creating a new experiment type
     public void ViewCreateExperimentTypeTest() throws Exception{
         DeviceType deviceType = new DeviceType();
@@ -1335,7 +1396,7 @@ public class StepControllerTests {
     }
 
     @Test
-    @WithUserDetails("Ali")
+    @WithUserDetails(value="mohammad.amir2@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     //View of editing an exisiting experiment type
     public void ViewEditExperimentTypeTest() throws Exception{
         DeviceType deviceType = new DeviceType();

@@ -14,13 +14,13 @@
 
 <div class = "container">
     <div th:replace="navbar :: navbar"></div>
-    <form action="#" th:action="@{/usermanagement/privileges/{id}(id=${privilege})}"
+    <form action="#" th:action="@{/usermanagement/privileges/{id}(id=${privilege.id})}"
           th:object="${privilege}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
 
         <div class="form-group">
-            <label class="control-label" th:text="#{privileges.name}"></label>
-            <input class="form-control" type = text th:field="*{name}" required/>
+            <h2 class="control-label" th:text="*{name}"></h2>
+            <input hidden class="form-control" type = text th:field="*{name}" required/>
 
         </div>
 
@@ -34,7 +34,7 @@
         </div>
         <p>
             <button type="submit" th:text="#{save}" class="btn btn-outline-primary"></button>
-            <a href="/usermanagement/privileges" th:text="#{close}" class="btn btn-secondary"></a>
+            <a th:href="@{/usermanagement/privileges}" th:text="#{close}" class="btn btn-secondary"></a>
 
         </p>
     </form>

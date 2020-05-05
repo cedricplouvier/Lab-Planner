@@ -41,6 +41,9 @@ public class RelationControllerTests {
     @Mock
     private UserService userService;
 
+    @Mock
+    private RoleService roleService;
+
     @InjectMocks
     private RelationController relationController;
     private MockMvc mockMvc;
@@ -75,6 +78,38 @@ public class RelationControllerTests {
         Relation rel = new Relation("admin");
         long id = 10;
         rel.setId(id);
+        List<Relation> rels = new ArrayList<Relation>();
+        rels.add(rel);
+        Role Researcher = new Role("Researcher");
+        Researcher.setId((long) 753);
+        Role Bach = new Role("Bachelorstudent");
+        Bach.setId((long) 754);
+        Role Master = new Role("Masterstudent");
+        Master.setId((long) 755);
+        Set<Role> roles = new HashSet();
+        roles.add(Bach);
+
+        User student = new User("student","student");
+        student.setRoles(roles);
+
+        roles= new HashSet<>();
+        roles.add(Researcher);
+
+        User res = new User("res","res");
+        res.setRoles(roles);
+
+        List<User> users = new ArrayList<>();
+        users.add(res);
+        users.add(student);
+
+
+
+
+
+        when(userService.findAll()).thenReturn(users);
+        when(roleService.findByName("Researcher")).thenReturn(Optional.of(Researcher));
+        when(roleService.findByName("Bachelorstudent")).thenReturn(Optional.of(Bach));
+        when(roleService.findByName("Masterstudent")).thenReturn(Optional.of(Master));
 
         mockMvc.perform(get("/usermanagement/users/relations/put"))
                 .andExpect(status().isOk())
@@ -92,7 +127,36 @@ public class RelationControllerTests {
         rel.setId(id);
         List<Relation> rels = new ArrayList<Relation>();
         rels.add(rel);
+        Role Researcher = new Role("Researcher");
+        Researcher.setId((long) 750);
+        Role Bach = new Role("Bachelorstudent");
+        Bach.setId((long) 751);
+        Role Master = new Role("Masterstudent");
+        Master.setId((long) 752);
+        Set<Role> roles = new HashSet();
+        roles.add(Bach);
 
+        User student = new User("student","student");
+        student.setRoles(roles);
+
+        roles= new HashSet<>();
+        roles.add(Researcher);
+
+        User res = new User("res","res");
+        res.setRoles(roles);
+
+        List<User> users = new ArrayList<>();
+        users.add(res);
+        users.add(student);
+
+
+
+
+
+        when(userService.findAll()).thenReturn(users);
+        when(roleService.findByName("Researcher")).thenReturn(Optional.of(Researcher));
+        when(roleService.findByName("Bachelorstudent")).thenReturn(Optional.of(Bach));
+        when(roleService.findByName("Masterstudent")).thenReturn(Optional.of(Master));
 
         when(relationService.findById(id)).thenReturn(Optional.of(rel));
 
@@ -107,7 +171,15 @@ public class RelationControllerTests {
                 .andExpect(status().is4xxClientError())
                 .andDo(print());
 
+        //null  relation
+        mockMvc.perform(get("/usermanagement/users/relations/{id}",11))
+                .andExpect(status().isOk())
+                .andExpect(view().name("Users/relation-list"))
+                .andDo(print());
+
     }
+
+
 
 
 
@@ -147,6 +219,57 @@ public class RelationControllerTests {
 
     }
 
+    @Test
+    public void addValidNewRelationWithFalseStudent() throws Exception{
+        Relation relation = new Relation("test");
+        User res = new User("res","res");
+        Set<Role> roles = new HashSet<>();
+        roles.add(new Role("Researcher"));
+        res.setRoles(roles);
+
+        relation.setResearcher(res);
+
+        User falseStudent = new User("false","false");
+        Set<User> falseStuds = new HashSet<>();
+        falseStuds.add(falseStudent);
+
+        relation.setStudents(falseStuds);
+
+        mockMvc.perform(post("/usermanagement/users/relations/").flashAttr("relation",relation))
+                .andExpect(status().is(302))
+                .andExpect(model().attribute("RelationError",nullValue()))
+                .andExpect(view().name("redirect:/usermanagement/users/relations"))
+                .andDo(print());
+
+    }
+    @Test
+    public void addValidNewRelationWithCoorectStudent() throws Exception{
+        Relation relation = new Relation("test");
+        User res = new User("res","res");
+        Set<Role> roles = new HashSet<>();
+        roles.add(new Role("Researcher"));
+        res.setRoles(roles);
+
+        relation.setResearcher(res);
+        Role studRole = new Role("Bachelorstudent");
+        Set<Role> studRoles = new HashSet<>();
+        studRoles.add(studRole);
+
+        User Student = new User("stud","stud");
+        Student.setRoles(studRoles);
+        Set<User> Studs = new HashSet<>();
+        Studs.add(Student);
+
+        relation.setStudents(Studs);
+
+        mockMvc.perform(post("/usermanagement/users/relations/").flashAttr("relation",relation))
+                .andExpect(status().is(302))
+                .andExpect(model().attribute("RelationError",nullValue()))
+                .andExpect(view().name("redirect:/usermanagement/users/relations"))
+                .andDo(print());
+
+    }
+
 
 
 
@@ -155,16 +278,27 @@ public class RelationControllerTests {
 
     @Test
     //test for deleting
-    public void DeleteUserTest() throws Exception{
+    public void DeleteRelationTest() throws Exception{
         Relation rel = new Relation("delete");
         long id = 10;
         rel.setId(id);
         //User is not in Use
-        mockMvc.perform(get("/usermanagement/users/relations/{id}/delete","11"))
+        long idnull = 11;
+
+
+        when(relationService.findById(id)).thenReturn(Optional.of(rel));
+        when(relationService.findById(idnull)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/usermanagement/users/relations/{id}/delete",id))
                 .andExpect(status().is(302))
                 .andDo(print())
                 .andExpect(model().attributeDoesNotExist())
                 .andExpect(view().name("redirect:/usermanagement/users/relations"));
+
+        //null relation
+        mockMvc.perform(get("/usermanagement/users/relations/{id}/delete",idnull))
+                .andExpect(status().isOk())
+                .andDo(print());
 
         //wrong url input
         mockMvc.perform(get("/usermanagement/users/relations/{id}/delete","ff"))

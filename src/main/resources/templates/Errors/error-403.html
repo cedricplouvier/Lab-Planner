@@ -8,7 +8,7 @@
 
     <h1 th:text="#{error403}"> You don't have the privilege to access this page </h1>
 
-    <a href="/" th:text="#{homepage}" class="btn btn-outline-primary">Go home</a>
+    <a th:href="@{/}" th:text="#{homepage}" class="btn btn-outline-primary">Go home</a>
 
     <div th:replace="footer :: footer"></div>
 </div>

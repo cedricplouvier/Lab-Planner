@@ -32,6 +32,12 @@ public class MixtureTests {
 
         String desc = "description";
         mixture.setDescription(desc);
+        assertEquals(mixture.getDescription(), desc);
+
+        String filename = "filename";
+        mixture.setImage(filename);
+        assertEquals(mixture.getImage(), filename);
+
 
         Long id = (long) 5;
         mixture.setId(id);
@@ -42,6 +48,25 @@ public class MixtureTests {
         mixture.setCompositions(compositionList);
         assertEquals(mixture.getCompositions(), compositionList);
 
+
+        List<Composition>  deletecompositionList = new ArrayList<>();
+        Composition comp1 = new Composition();
+        compositionList.add(comp1);
+        mixture.setCompositions(compositionList);
+        mixture.deleteComposition(comp1);
+        deletecompositionList.remove(comp1);
+        assertEquals(mixture.getCompositions(), compositionList);
+
+        List<Composition>  addcompositionList = new ArrayList<>();
+        mixture.setCompositions(addcompositionList);
+        Composition comp2 = new Composition();
+        mixture.addComposition(comp2);
+        addcompositionList.add(comp2);
+        assertEquals(mixture.getCompositions(), addcompositionList);
+
+
+        mixture.setDocument("testdoc");
+        assertEquals(mixture.getDocument(), "testdoc");
 
 
     }

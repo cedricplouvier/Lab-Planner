@@ -8,22 +8,9 @@
             selectableHeader: '<div class="custom-header" th:text="#{selectable.items}"></div>',
             selectionHeader: '<div class="custom-header" th:text="#{selected.items}"></div>'
         });
-        -
 
-        if ($("Researcher").is(':checked')) {
-            $('.tab1_btn').prop('disabled', false);
-        } else {
-            $('.tab1_btn').prop('disabled', true);
-        }
     }
 </script>
-
-<script>
-    $(document).ready(function(){
-        goFurther();
-    });
-</script>
-
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -37,25 +24,15 @@
                 checkboxes[i].checked = source.checked;
 
             }
-
         }
-        goFurther();
-
     }
 </script>
 
-<script type="text/javascript">
-    function goFurther(){
-        if (document.getElementById("Researcher").checked == true)
-            document.getElementById("btnSelectStudents").disabled = false;
-        else
-            document.getElementById("btnSelectStudents").disabled = true;
-    }
-</script>
+
 
 <div class = "container">
 <div th:replace="navbar :: navbar"></div>
-    <form action="#" th:action="@{/usermanagement/users/{id}(id=${user})}"
+    <form action="#" th:action="@{/usermanagement/users/{id}(id=${user.id})}"
           th:object="${user}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
 
@@ -69,6 +46,10 @@
             <input class="form-control" type = text th:field="*{lastName}"/>
 
         </div>
+
+
+
+
         <div class="form-group" th:name="UserName" >
             <label class="control-label" th:text="#{users.username}"></label>
             <input class="form-control" id="txt_username" name="txt_username" type = text th:field="*{username}" required
@@ -77,11 +58,7 @@
         </div>
         <div class="alert alert-danger" role="alert" th:if="${UserInUse}!=null" th:text="${UserInUse}"></div>
 
-        <div class="form-group" th:name="PassWord" >
-            <label class="control-label" th:text="#{users.password}"></label>
-            <input class="form-control" th:name="pword" text th:field="*{password}" required/>
 
-        </div>
 
         <div>
             <label class="control-label" th:text="#{users.roles}"></label>
@@ -95,13 +72,11 @@
                    th:id="${{role.name}}"
                    th:value="${{role}}"
                    th:utext="${role.name} + '<br>'"
-            onclick="goFurther()">
+            >
         </div>
 
         <p></p>
-<!--        <div>-->
-<!--            <input class="btn btn-primary" type="button" data-toggle="modal" data-target="#studentSelectModal" id="btnSelectStudents" th:value="#{users.selectStudents}" disabled  >-->
-<!--        </div>-->
+
         <p></p>
         <div class="form-group">
             <label class="control-label" th:text="#{users.email}"></label>
@@ -125,7 +100,7 @@
         </div>
         <p>
             <button type="submit" name="UserSave" th:text="#{save}" class="btn btn-outline-primary">Save</button>
-            <a href="/usermanagement/users" th:text="#{close}" class="btn btn-secondary">Close</a>
+            <a th:href="@{/usermanagement/users}" th:text="#{close}" class="btn btn-secondary">Close</a>
 
         </p>
     </form>
