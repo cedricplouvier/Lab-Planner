@@ -377,6 +377,7 @@ public class StepController {
 
     //check if specific user is allowed to edit.
     boolean allowedToEdit(User user, long id) {
+
         //also check for Researcher.
         Role adminole = roleService.findByName("Administrator").get();
         Role promotorRole = roleService.findByName("Researcher").get();
@@ -387,28 +388,52 @@ public class StepController {
             allowedToEdit = true;
         }
 
-        //user can edit his own step
-        else if (stepService.findById(id).get().getUser().equals(user)) {
-            allowedToEdit = true;
-        }
+        Step step = stepService.findById(id).orElse(null);
+        if(step!=null){
+            //user can edit his own step
+            if (step.getUser().equals(user)) {
+                allowedToEdit = true;
+            }
+            //researcher can edit step of one of his students.
+            if (user.getRoles().contains(promotorRole)) {
+                //get all the relations of the specific researcher
+                List<Relation> relations = relationService.findAll();
 
-        //researcher can edit step of one of his students.
-        else if (user.getRoles().contains(promotorRole)) {
-            //get all the relations of the specific researcher
-            List<Relation> relations = relationService.findAll();
-
-            for (Relation relation : relations) {
-                //only select relation for specific researcher
-                if (relation.getResearcher().equals(user)) {
-                    //check if the student is part of the student scope
-                    if (relation.getStudents().contains(stepService.findById(id).get().getUser())) {
-                        allowedToEdit = true;
+                for (Relation relation : relations) {
+                    //only select relation for specific researcher
+                    if (relation.getResearcher().equals(user)) {
+                        //check if the student is part of the student scope
+                        if (relation.getStudents().contains(step.getUser())) {
+                            allowedToEdit = true;
+                        }
                     }
                 }
+
             }
-
         }
+        else {
+            Experiment experiment= experimentService.findById(id).orElse(null);
+            if(experiment!=null){
+                if (experiment.getUser().equals(user))
+                    allowedToEdit=true;
+            }
+            //researcher can edit step of one of his students.
+            if (user.getRoles().contains(promotorRole)) {
+                //get all the relations of the specific researcher
+                List<Relation> relations = relationService.findAll();
 
+                for (Relation relation : relations) {
+                    //only select relation for specific researcher
+                    if (relation.getResearcher().equals(user)) {
+                        //check if the student is part of the student scope
+                        if (relation.getStudents().contains(experiment.getUser())) {
+                            allowedToEdit = true;
+                        }
+                    }
+                }
+
+            }
+        }
         return allowedToEdit;
     }
 
@@ -566,7 +591,7 @@ public class StepController {
         Experiment experiment =experimentService.findById(id).orElse(null);
         if(experiment!=null)
         {
-            if (userRoles.contains(adminRol) || experiment.getUser().equals(currentUser)) {
+            if (allowedToEdit(currentUser,id)) {
 
 
                 for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
