@@ -61,6 +61,7 @@
 
 
         console.log(a);
+        toggleSearchlist();
         var rowCount = $('#list tr').length;
         $('#list')
             .append(
@@ -130,7 +131,7 @@
 
     /* When the user clicks on the button,
     toggle between hiding and showing the dropdown content */
-    function myFunction() {
+    function toggleSearchlist() {
         document.getElementById("myDropdown").classList.toggle("show");
     }
 
@@ -203,28 +204,26 @@
           method="post">
         <input type="checkbox" id="checkboxIsFixedType" th:field="*{isFixedType}" hidden/>
 
-        <table class="table table-hover" id="myTable">
-            <div class="dropdown">
-                <div class="">
-                    <input type="text" placeholder="Search.." id="myInput" onclick="myFunction()"
-                           onmouseover="myFunction()" onkeyup="filterFunction()">
-                    <div id="myDropdown" class="dropdown-content">
-                        <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}"
-                           th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
-                    </div>
+    <table class="table table-hover">
+        <div class="dropdown">
+            <div  class="">
+                <input type="text" placeholder="Search.." id="myInput" onclick="toggleSearchlist()" onkeyup="filterFunction()">
+                <div  id="myDropdown" class="dropdown-content">
+                    <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}" th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
                 </div>
             </div>
-            <thead>
-            <tr>
-                <th th:text="#{step.type}">Step Type</th>
-                <th>Continuity type</th>
-                <th>Continuity direction</th>
-                <th>Continuity duration</th>
-                <th th:text="#{stepType.setFixedTime}">Set fixed time of step</th>
-                <th>Fixed time type</th>
-                <th th:text="#{stepType.fixedTime}">Fixed time of step</th>
-            </tr>
-            </thead>
+        </div>
+        <thead>
+        <tr>
+            <th th:text="#{step.type}">Step Type</th>
+            <th>Continuity type</th>
+            <th>Continuity direction</th>
+            <th>Continuity duration</th>
+            <th th:text="#{stepType.setFixedTime}">Set fixed time of step</th>
+            <th>Fixed time type</th>
+            <th th:text="#{stepType.fixedTime}">Fixed time of step</th>
+        </tr>
+        </thead>
 
             <!-- IMPORTANT, class="list" have to be at tbody -->
             <tbody id="list" class="list" style="text-align:center;">
