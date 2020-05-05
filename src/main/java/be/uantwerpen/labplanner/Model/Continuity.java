@@ -4,6 +4,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Continuity extends AbstractPersistable<Long> {
@@ -13,10 +14,11 @@ public class Continuity extends AbstractPersistable<Long> {
     private int hours;
     @Column(name = "minutes")
     private int minutes;
+    
     @Column(name = "type")
     private String type;
     @Column(name = "directionType")
-    private String directionType;
+    private String directionType    ;
 
     public Continuity() {
         type = "No";

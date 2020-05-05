@@ -800,8 +800,7 @@ public class StepController {
                     experiment.getExperimentType().getStepTypes().remove(i);
                     experiment.getSteps().remove(i);
                     i--; //Size of array was changed, so same index needs to be check again
-                }
-                else if (experiment.getExperimentType().getStepTypes().get(i).getContinuity() == null) {
+                } else if (experiment.getExperimentType().getStepTypes().get(i).getContinuity() == null) {
                     experiment.getExperimentType().getStepTypes().get(i).setContinuity(new Continuity());
                 }
             }
@@ -991,7 +990,7 @@ public class StepController {
 
             //check holidays, weekend and opening hours
             if (dateTimeIsUnavailable(step, currentUser)) {
-                errorMessage = getMessageForSelectedStep(step);
+                errorMessage = getMessageForSelectedStep(step, currentUser);
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
@@ -1263,6 +1262,11 @@ public class StepController {
     @PreAuthorize("hasAuthority('Planning - Make new experiment')")
     @RequestMapping(value = "/planning/experiments/{id}", method = RequestMethod.GET)
     public String viewEditExperimentType(@PathVariable Long id, final ModelMap model) {
+        //If experiment with this id is not present, return back to experiment page
+        if (!experimentTypeService.findById(id).isPresent()) {
+            return "redirect:/planning/experiments";
+        }
+
         List<String> typeOptions = new ArrayList<>();
         typeOptions.add("No");
         typeOptions.add("Soft (at least)");
@@ -1280,7 +1284,7 @@ public class StepController {
 
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
-        model.addAttribute("experimentType", experimentTypeService.findById(id).get());
+        model.addAttribute("experimentType", experimentTypeService.findById(id).orElse(null));
         model.addAttribute("allTypeOptions", typeOptions);
         model.addAttribute("allFixedTimeTypeOptions", fixedTimeTypeOptions);
         model.addAttribute("allTypeDirections", directionOptions);

@@ -65,13 +65,12 @@
                 deviceOptions +
                 '   </select>' +
                 '   </th>' +
-                '   <th>' +
-                '       <input type="number" min="0" step="0.01" class=" form-control input-device" placeholder="Amount of mixture" id="piecesOfMixture' + i + '.mixtureAmount" name="piecesOfMixture[' + i + '].mixtureAmount" required>' +
-                '   </th>' +
-                '<th>' +
-                '    <p style="text-align: center " class=" form-control input-device"' +
-                '           th:text="#{kg}" disabled>kg' +
-                '</th>'+
+                '   <th align="center">' +
+                '       <div class="input-group-append">'+
+                '           <input type="number" min="0" step="0.01" class=" form-control input-device" placeholder="Amount of mixture" id="piecesOfMixture' + i + '.mixtureAmount" name="piecesOfMixture[' + i + '].mixtureAmount" required>' +
+                '           <span class="input-group-text" style="color:#808080">kg</span>'+
+                '       </div>' +
+                '   </th>'+
                 '   <th>' +
                 '       <input class=" form-control input-device" placeholder="Mixture comment" id="piecesOfMixture' + i + '.mixtureComment" name="piecesOfMixture[' + i + '].mixtureComment">' +
                 '   </th>' +
@@ -516,7 +515,6 @@
             <tr>
                 <th th:text="#{mixture}">Mixture</th>
                 <th th:text="#{mixtures.amount}">Amount</th>
-                <th th:text="#{units}">Units</th>
                 <th>Comment</th>
             </tr>
             </thead>
@@ -536,14 +534,13 @@
                             </option>
                         </select>
                     </th>
-                    <th>
-                        <input type="number" min="0" step="0.01" class=" form-control input-device"
-                               th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
-                               placeholder="Amount of mixture" required>
-                    </th>
-                    <th>
-                        <p style="text-align: center " class=" form-control input-device"
-                           th:text="#{kg}" disabled>
+                    <th align="center">
+                        <div class="input-group-append">
+                            <input type="number" min="0" step="0.01" class=" form-control input-device"
+                                   th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
+                                   placeholder="Amount of mixture" required>
+                            <span class="input-group-text" style="color:#808080">kg</span>
+                        </div>
                     </th>
                     <th>
                         <input class=" form-control input-device"

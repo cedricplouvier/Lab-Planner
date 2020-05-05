@@ -106,7 +106,6 @@
             <tr>
                 <th th:text="#{mixture}">Mixture</th>
                 <th th:text="#{mixtures.amount}">Amount</th>
-                <th th:text="#{units}">Units</th>
                 <th>Comment</th>
             </tr>
             </thead>
@@ -119,14 +118,13 @@
                                th:value="*{piecesOfMixture[__${itemStat.index}__].mixture.name}"
                                disabled>
                     </th>
-                    <th>
-                        <input style="font-size:80%;" class=" form-control input-device"
-                               th:value="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
-                               disabled>
-                    </th>
-                    <th>
-                        <p style="font-size:80%; text-align: center " class=" form-control input-device"
-                               th:text="#{kg}" disabled>
+                    <th align="center">
+                        <div class="input-group-append">
+                            <input type="number" min="0" step="0.01" class=" form-control input-device"
+                                   th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
+                                   placeholder="Amount of mixture" required>
+                            <span class="input-group-text" style="color:#808080">kg</span>
+                        </div>
                     </th>
                     <th>
                         <input style="font-size:80%;" class=" form-control input-device"
