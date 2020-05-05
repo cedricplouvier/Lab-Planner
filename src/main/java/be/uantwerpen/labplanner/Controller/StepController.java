@@ -563,66 +563,70 @@ public class StepController {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Set<Role> userRoles = currentUser.getRoles();
         Role adminRol = roleService.findByName("Administrator").get();
-        if (experimentService.findById(id).isPresent() && userRoles.contains(adminRol)) {
-            Experiment experiment = experimentService.findById(id).get();
-
-            for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
-                pieceOfMixtureService.delete(pom);
-            }
-
-            for (Step step : experiment.getSteps()) {
-                stepService.delete(step.getId());
-            }
-
-            //add amounts back to the stock.
-            Map<OwnProduct, Double> productMapStock = new HashMap<>();
-            Map<OwnProduct, Double> productMapReserved = new HashMap<>();
+        Experiment experiment =experimentService.findById(id).orElse(null);
+        if(experiment!=null)
+        {
+            if (userRoles.contains(adminRol) || experiment.getUser().equals(currentUser)) {
 
 
-            for (PieceOfMixture piece : experiment.getPiecesOfMixture()) {
-                Mixture mix = piece.getMixture();
-                List<Composition> compositions = mix.getCompositions();
-                for (Composition comp : compositions) {
-                    OwnProduct prod = comp.getProduct();
-                    if (!productMapStock.containsKey(prod)) {
-                        productMapStock.put(prod, prod.getStockLevel());
-                    }
-                    if (!productMapReserved.containsKey(prod)) {
-                        productMapReserved.put(prod, prod.getReservedStockLevel());
-                    }
-                    double stocklevel = productMapStock.get(prod);
-                    double reservedLevel = productMapReserved.get(prod);
-                    stocklevel += comp.getAmount() * piece.getMixtureAmount() / 100;
-                    reservedLevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
-                    productMapStock.put(prod, stocklevel);
-                    productMapReserved.put(prod, reservedLevel);
+                for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
+                    pieceOfMixtureService.delete(pom);
                 }
+
+                for (Step step : experiment.getSteps()) {
+                    stepService.delete(step.getId());
+                }
+
+                //add amounts back to the stock.
+                Map<OwnProduct, Double> productMapStock = new HashMap<>();
+                Map<OwnProduct, Double> productMapReserved = new HashMap<>();
+
+
+                for (PieceOfMixture piece : experiment.getPiecesOfMixture()) {
+                    Mixture mix = piece.getMixture();
+                    List<Composition> compositions = mix.getCompositions();
+                    for (Composition comp : compositions) {
+                        OwnProduct prod = comp.getProduct();
+                        if (!productMapStock.containsKey(prod)) {
+                            productMapStock.put(prod, prod.getStockLevel());
+                        }
+                        if (!productMapReserved.containsKey(prod)) {
+                            productMapReserved.put(prod, prod.getReservedStockLevel());
+                        }
+                        double stocklevel = productMapStock.get(prod);
+                        double reservedLevel = productMapReserved.get(prod);
+                        stocklevel += comp.getAmount() * piece.getMixtureAmount() / 100;
+                        reservedLevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
+                        productMapStock.put(prod, stocklevel);
+                        productMapReserved.put(prod, reservedLevel);
+                    }
+                }
+                Iterator it = productMapStock.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry pair = (Map.Entry) it.next();
+                    OwnProduct prod = (OwnProduct) pair.getKey();
+                    prod.setStockLevel((Double) pair.getValue());
+                    productService.save(prod);
+                }
+                //add amounts to reserved stock
+                Iterator it3 = productMapReserved.entrySet().iterator();
+                while (it3.hasNext()) {
+                    Map.Entry pair = (Map.Entry) it3.next();
+                    OwnProduct prod = (OwnProduct) pair.getKey();
+                    prod.setReservedStockLevel((Double) pair.getValue());
+                    productService.save(prod);
+                }
+
+
+                experimentService.delete(id);
+                ra.addFlashAttribute("Status", new String("Success"));
+                ra.addFlashAttribute("Message", new String("Experiment successfully deleted."));
+
             }
-            Iterator it = productMapStock.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry) it.next();
-                OwnProduct prod = (OwnProduct) pair.getKey();
-                prod.setStockLevel((Double) pair.getValue());
-                productService.save(prod);
-            }
-            //add amounts to reserved stock
-            Iterator it3 = productMapReserved.entrySet().iterator();
-            while (it3.hasNext()) {
-                Map.Entry pair = (Map.Entry) it3.next();
-                OwnProduct prod = (OwnProduct) pair.getKey();
-                prod.setReservedStockLevel((Double) pair.getValue());
-                productService.save(prod);
-            }
-
-
-            experimentService.delete(id);
-            ra.addFlashAttribute("Status", new String("Success"));
-            ra.addFlashAttribute("Message", new String("Experiment successfully deleted."));
-
-        } else {
-
+        }
+         else {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error, Experiment was not deleted."));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.deleteInvalidId")+id+"."));
         }
         model.clear();
         return "redirect:/planning/";
