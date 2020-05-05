@@ -3,20 +3,20 @@ package be.uantwerpen.labplanner.Model;
 
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import java.util.Map;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.PositiveOrZero;
 
 import be.uantwerpen.labplanner.common.model.stock.Unit;
+import be.uantwerpen.labplanner.common.model.users.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.DoubleType;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
@@ -96,10 +96,17 @@ public class OwnProduct extends AbstractPersistable<Long> {
     )
     private List<OwnTag> tags;
 
+    @ElementCollection
+    @CollectionTable(name = "stocklvl")
+    private Map<String, Double> productStockHistory;
+
     public OwnProduct() {
     }
 
-    public OwnProduct(String name, String description, Double unitCost, Double stockLevel, Double lowStockLevel, Double reservedStockLevel, Unit units, String imageUrl, String properties, Long productCreatorId, Long lastUpdatedById, LocalDateTime createDateTime, LocalDateTime updateDateTime, List<OwnTag> tags, URL url) {
+    public OwnProduct(String name, String description, Double unitCost, Double stockLevel, Double lowStockLevel,
+                      Double reservedStockLevel, Unit units, String imageUrl, String properties, Long productCreatorId,
+                      Long lastUpdatedById, LocalDateTime createDateTime, LocalDateTime updateDateTime, List<OwnTag> tags,
+                      URL url, Map<String, Double> productStockHistory) {
         this.name = name;
         this.description = description;
         this.unitCost = unitCost;
@@ -115,6 +122,7 @@ public class OwnProduct extends AbstractPersistable<Long> {
         this.updateDateTime = updateDateTime;
         this.tags = tags;
         this.url = url;
+        this.productStockHistory=productStockHistory;
     }
 
     @Override
@@ -245,6 +253,14 @@ public class OwnProduct extends AbstractPersistable<Long> {
 
     public void setUrl(URL url) {
         this.url = url;
+    }
+
+    public Map<String, Double> getProductStockHistory() {
+        return productStockHistory;
+    }
+
+    public void setProductStockHistory(Map<String, Double> productStockHistory) {
+        this.productStockHistory = productStockHistory;
     }
 }
 

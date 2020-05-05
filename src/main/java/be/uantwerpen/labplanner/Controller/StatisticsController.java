@@ -184,7 +184,6 @@ public class StatisticsController {
         List<Float> occupancyDevicesDays = (List) model.getAttribute("occupancyDevicesDays");
 
         List<Device> devices = deviceService.findAll();
-
         calculateDataGraphs(model);
 
         model.addAttribute("allDevices", devices);
@@ -241,6 +240,41 @@ public class StatisticsController {
         List<OwnProduct> products = productService.findAll();
         List<Double> currentStockLevel = new ArrayList<>();
         List<String> productNames = (List) model.getAttribute("productNames");
+
+        /*for(OwnProduct product:products){
+            Map<String, OwnProduct> a = product.getProductStockHistory();
+            a.put("2020-05-20", product);
+        }
+
+        for(OwnProduct product:products){
+            Map<String, OwnProduct> a = product.getProductStockHistory();
+            OwnProduct p = a.get("2020-05-20");
+            System.out.println("stocklevel: "+p.getStockLevel());
+        }*/
+
+        OwnProduct p1 = products.get(0);
+        OwnProduct p2 = products.get(5);
+        Map<String, Double> a = p1.getProductStockHistory();
+        Map<String, Double> a2 = p2.getProductStockHistory();
+        a.put("2020-05-20", p1.getStockLevel());
+        a2.put("2020-05-20", p2.getStockLevel());
+        p1.setStockLevel((double)1000);
+        p2.setStockLevel((double)900);
+        a.put("2020-05-21",p1.getStockLevel());
+        a2.put("2020-05-21",p2.getStockLevel());
+
+        double d1 = a.get("2020-05-20");
+        System.out.println("stocklevel 20: "+d1);
+
+        double d2 = a.get("2020-05-21");
+        System.out.println("stocklevel 21: "+d2);
+
+        double d3 = a2.get("2020-05-20");
+        System.out.println("stocklevel2 20: "+d3);
+
+        double d4 = a2.get("2020-05-21");
+        System.out.println("stocklevel2 21: "+d4);
+
         //get all the product names
         for(OwnProduct product: products){
             productNames.add(product.getName());
