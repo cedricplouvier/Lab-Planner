@@ -11,10 +11,12 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,7 +31,7 @@ import static java.lang.Math.round;
 @SessionAttributes({"deviceCounter", "selectedYear", "selectedTypeOfGraph", "selectedDevices", "occupancyDevicesHours",
                     "occupancyDevicesHoursPast", "occupancyDevicesHoursFuture", "occupancyDevicesDays", "occupancyDevicesDaysPast",
                     "occupancyDevicesDaysFuture","totalHours", "totalHoursPast", "totalHoursFuture", "highestAbsoluteValueHours",
-                    "productNames", "selectedTimePeriod"})
+                    "productNames", "selectedTimePeriod", "selectedStartMonthStockHistory"})
 public class StatisticsController {
 
     @Autowired
@@ -152,13 +154,18 @@ public class StatisticsController {
     }
 
     @ModelAttribute("selectableGraphTypes")
-    public List<String> selectableGraphs() {
+    private List<String> selectableGraphs() {
         return new ArrayList<>(Arrays.asList("Device hours by month","Device occupancy rate in hours","Device occupancy rate in days"));
     }
 
     @ModelAttribute("selectableTimePeriods")
-    public List<String> selectableTimePeriods() {
+    private List<String> selectableTimePeriods() {
         return new ArrayList<>(Arrays.asList("Started","All","Future"));
+    }
+
+    @ModelAttribute("selectedStartMonthStockHistory")
+    private String selectedStartMonthStockHistory(){
+        return new SimpleDateFormat("yyyy-MM").format(new Date());
     }
 
     float amountOfWorkDaysInYear = 200;
@@ -225,77 +232,6 @@ public class StatisticsController {
 
         return "Statistics/statistics";
     }
-
-    /**
-     *
-     * method that add all correct attributes to the model map for the stock statistics
-     *
-     * @param model MolelMap that holds all the model attributes
-     * @return path to the html page of the stock statistics
-     */
-    @PreAuthorize("hasAnyAuthority('Statistics Access')")
-    @RequestMapping(value = "/statistics/stockStatistics", method = RequestMethod.GET)
-    public String showStatisticsStockPage(final ModelMap model) {
-
-        List<OwnProduct> products = productService.findAll();
-        List<Double> currentStockLevel = new ArrayList<>();
-        List<String> productNames = (List) model.getAttribute("productNames");
-
-        /*for(OwnProduct product:products){
-            Map<String, OwnProduct> a = product.getProductStockHistory();
-            a.put("2020-05-20", product);
-        }
-
-        for(OwnProduct product:products){
-            Map<String, OwnProduct> a = product.getProductStockHistory();
-            OwnProduct p = a.get("2020-05-20");
-            System.out.println("stocklevel: "+p.getStockLevel());
-        }*/
-
-        OwnProduct p1 = products.get(0);
-        OwnProduct p2 = products.get(5);
-        Map<String, Double> a = p1.getProductStockHistory();
-        Map<String, Double> a2 = p2.getProductStockHistory();
-        a.put("2020-05-20", p1.getStockLevel());
-        a2.put("2020-05-20", p2.getStockLevel());
-        p1.setStockLevel((double)1000);
-        p2.setStockLevel((double)900);
-        a.put("2020-05-21",p1.getStockLevel());
-        a2.put("2020-05-21",p2.getStockLevel());
-
-        double d1 = a.get("2020-05-20");
-        System.out.println("stocklevel 20: "+d1);
-
-        double d2 = a.get("2020-05-21");
-        System.out.println("stocklevel 21: "+d2);
-
-        double d3 = a2.get("2020-05-20");
-        System.out.println("stocklevel2 20: "+d3);
-
-        double d4 = a2.get("2020-05-21");
-        System.out.println("stocklevel2 21: "+d4);
-
-        //get all the product names
-        for(OwnProduct product: products){
-            productNames.add(product.getName());
-        }
-
-        for(OwnProduct product: products){
-            currentStockLevel.add(product.getStockLevel());
-        }
-
-        //get all the stock levels
-        model.addAttribute("products",products);
-        model.addAttribute("productNames",productNames);
-        model.addAttribute("currentStockLevel",currentStockLevel);
-
-        for(int j=0; j<products.size();j++) {
-            currentStockLevel.add(products.get(j).getStockLevel());
-        }
-
-        return "Statistics/stockStatistics";
-    }
-
 
     /**
      *
@@ -388,6 +324,7 @@ public class StatisticsController {
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping("/statistics/statistics/getSelectedGraphType")
     public String getSelectedGraphType(final ModelMap model, String selectedTypeOfGraph){
+        System.out.println(selectedTypeOfGraph);
         model.addAttribute("selectedTypeOfGraph", selectedTypeOfGraph);
         return "redirect:/statistics/statistics";
     }
@@ -406,6 +343,85 @@ public class StatisticsController {
     public String getSelectedTimePeriod(final ModelMap model, String selectedTimePeriod){
         model.addAttribute("selectedTimePeriod", selectedTimePeriod);
         return "redirect:/statistics/statistics";
+    }
+
+    /**
+     *
+     * method that add all correct attributes to the model map for the stock statistics
+     *
+     * @param model MolelMap that holds all the model attributes
+     * @return path to the html page of the stock statistics
+     */
+    @PreAuthorize("hasAnyAuthority('Statistics Access')")
+    @RequestMapping(value = "/statistics/stockStatistics", method = RequestMethod.GET)
+    public String showStatisticsStockPage(final ModelMap model) {
+
+        List<OwnProduct> products = productService.findAll();
+        List<Double> currentStockLevel = new ArrayList<>();
+        List<String> productNames = (List) model.getAttribute("productNames");
+
+        /*for(OwnProduct product:products){
+            Map<String, OwnProduct> a = product.getProductStockHistory();
+            a.put("2020-05-20", product);
+        }
+
+        for(OwnProduct product:products){
+            Map<String, OwnProduct> a = product.getProductStockHistory();
+            OwnProduct p = a.get("2020-05-20");
+            System.out.println("stocklevel: "+p.getStockLevel());
+        }*/
+
+        /*OwnProduct p1 = products.get(0);
+        OwnProduct p2 = products.get(5);
+        Map<String, Double> a = p1.getProductStockHistory();
+        Map<String, Double> a2 = p2.getProductStockHistory();
+        a.put("2020-05-20", p1.getStockLevel());
+        a2.put("2020-05-20", p2.getStockLevel());
+        p1.setStockLevel((double)1000);
+        p2.setStockLevel((double)900);
+        a.put("2020-05-21",p1.getStockLevel());
+        a2.put("2020-05-21",p2.getStockLevel());
+
+        double d1 = a.get("2020-05-20");
+        System.out.println("stocklevel 20: "+d1);
+
+        double d2 = a.get("2020-05-21");
+        System.out.println("stocklevel 21: "+d2);
+
+        double d3 = a2.get("2020-05-20");
+        System.out.println("stocklevel2 20: "+d3);
+
+        double d4 = a2.get("2020-05-21");
+        System.out.println("stocklevel2 21: "+d4);*/
+
+        //get all the product names
+        for(OwnProduct product: products){
+            productNames.add(product.getName());
+        }
+
+        for(OwnProduct product: products){
+            currentStockLevel.add(product.getStockLevel());
+        }
+
+        //get all the stock levels
+        model.addAttribute("products",products);
+        model.addAttribute("productNames",productNames);
+        model.addAttribute("currentStockLevel",currentStockLevel);
+
+        for(int j=0; j<products.size();j++) {
+            currentStockLevel.add(products.get(j).getStockLevel());
+        }
+
+        return "Statistics/stockStatistics";
+    }
+
+    @PreAuthorize("hasAnyAuthority('Statistics Access')")
+    @RequestMapping(value = "/statistics/stockStatistics/getSelectedStartStockHistory")
+    public String getSelectedStartStockHistory(final ModelMap model, String selectedStartMonthStockHistory){
+        System.out.println(selectedStartMonthStockHistory);
+        model.addAttribute("selectedStartMonthStockHistory", selectedStartMonthStockHistory);
+        System.out.println("test");
+        return "redirect:/statistics/stockStatistics";
     }
 
     /**
