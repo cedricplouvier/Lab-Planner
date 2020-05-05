@@ -79,8 +79,7 @@ let suggestion;
                     newSchedule.isReadOnly = false;
                     suggestion = null;
                     cal.updateSchedule(newSchedule.id, newSchedule.calendarId, newSchedule);
-                    // checkOverlap();
-                    let possibleDevices =  checkOverlap(newSchedule);
+                    let possibleDevices =  checkOverlap(newSchedule,true);
                     addDevices(possibleDevices);
                     if(possibleDevices.length==0){
                         newSchedule.bgColor = '#d9534f';
@@ -138,7 +137,7 @@ let suggestion;
                     saveNewSchedule(e);
                 }
                 $("#help").text("you can drag and drop the calendar or drag again");
-                let possibleDevices =  checkOverlap(newSchedule);
+                let possibleDevices =  checkOverlap(newSchedule,true);
                 addDevices(possibleDevices);
                 if(possibleDevices.length==0){
                     newSchedule.bgColor = '#d9534f';
@@ -182,7 +181,7 @@ let suggestion;
                     changes.borderColor = '#d9534f';
                     changes.body = check.message;
                 }
-                let possibleDevices =  checkOverlap(newSchedule);
+                let possibleDevices =  checkOverlap(newSchedule,true);
                 addDevices(possibleDevices);
                 if(possibleDevices.length==0){
                     newSchedule.bgColor = '#d9534f';
@@ -337,7 +336,8 @@ let suggestion;
             calendarUpdate.stepIndex++;
             setSchedules();
             setUI();
-        }else{
+        }
+        else{
             $('#extraLargeModal').modal('toggle');
             $('.modal-backdrop').remove();
         }
@@ -529,14 +529,14 @@ let suggestion;
                     currentEndDate.setMinutes(currentEndDate.getMinutes()+30);
                     for(let currentTimeslot=0;currentTimeslot<48;currentTimeslot++){
                         var schedule =  createSuggestionSchedule(currentStartDate,currentEndDate,CalendarList[0]);
-                        if(!checkContinuity(calendarUpdate.stepIndex,schedule).ok||checkOverlap(schedule).length==0){
+                        if(!checkContinuity(calendarUpdate.stepIndex,schedule).ok||checkOverlap(schedule,true).length==0){
                                 var iDiv = document.createElement('div');
                                 iDiv.id = 'greyout';
                                 iDiv.className = 'greyout';
                                 let percentage = 100 / 48 * currentTimeslot;
                                 iDiv.style.cssText = "position:absolute;background-color: #d9534f;height:2.084%;top:" + percentage + "%;width:100%;opacity:0.25; ";
                                 parent[0].children[current].prepend(iDiv);
-                            
+
                         }
                         currentStartDate.setMinutes(currentStartDate.getMinutes()+30);
                         currentEndDate.setMinutes(currentEndDate.getMinutes()+30);
@@ -551,16 +551,31 @@ let suggestion;
         });
     }
     function calculateExperimentSuggestion() {
+
         let numberOfSteps = allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length;
+        let date = document.getElementById("datePicker").value;
+        if(date!=""){
+            let startDate = new Date(date);
+            let endDate = new Date(date);
+            endDate.setMinutes(endDate.getMinutes()+30);
+            if(startDate.getTime()>new Date().getTime()) {
+                newSchedule = createSuggestionSchedule(startDate, endDate, CalendarList[0])
+            }
+
+        }
+        calendarUpdate.stepIndex=0;
         for (let current = 0; current < numberOfSteps; current++){
-            calculateSuggestion(current)
+            calculateSuggestion(current,document.getElementById("defaultUnchecked").checked)
             newSchedule = suggestion;
             suggestion = null;
             addDevices(checkOverlap(newSchedule));
             saveScheduleChanges();
+            newSchedule=null;
         }
+        $('#extraLargeModal').modal('toggle');
+
     }
-    function calculateSuggestion(index) {
+    function calculateSuggestion(index,personalAllowed) {
         let today = new Date();
         let currentDate;
         let endDate
@@ -571,14 +586,13 @@ let suggestion;
             currentDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());
             endDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());;
             endDate.setDate(endDate.getDate()+14);
-        }else if(newSchedule.start){
+        }else if(newSchedule!=null&&newSchedule.start){
             currentDate = new Date(newSchedule.start.getFullYear(), newSchedule.start.getMonth(), newSchedule.start.getDate(), newSchedule.start.getHours(), newSchedule.start.getMinutes());
             endDate = new Date(newSchedule.start.getFullYear(), newSchedule.start.getMonth(), newSchedule.start.getDate(), newSchedule.start.getHours(), newSchedule.start.getMinutes());;
             endDate.setDate(endDate.getDate()+14);
         }else if(index>0){
             let temp = index;
             temp--;
-
             currentDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());
             endDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());;
             endDate.setDate(endDate.getDate()+14);
@@ -604,13 +618,13 @@ let suggestion;
             let end = new Date(currentDate.getFullYear(),currentDate.getMonth(),currentDate.getDate(),currentDate.getHours(),currentDate.getMinutes());
             end.setMinutes(end.getMinutes()+60);
             schedule = createSuggestionSchedule(currentDate,end,calendar);
-            if(checkContinuity(index,schedule).ok&&checkOverlap(schedule).length!=0){
+            if(checkContinuity(index,schedule).ok&&checkOverlap(schedule,personalAllowed).length!=0){
                 // check if other steps can still be found
                 if(index<allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length-1){
                     filledInSteps[index] = schedule;
                     let temp = index;
                     temp++;
-                    if(calculateSuggestion(temp)){
+                    if(calculateSuggestion(temp,personalAllowed)){
                         found = true;
                     }
                 }else{
@@ -700,7 +714,7 @@ let suggestion;
         $("#nextstep").on('click',nextStep);
         $("#previousstep").on('click',previousStep);
         $("#suggestStep").on('click',function () {
-            calculateSuggestion(calendarUpdate.stepIndex);
+            calculateSuggestion(calendarUpdate.stepIndex,true);
         });
         $("#suggestExperiment").on('click',calculateExperimentSuggestion);
 
