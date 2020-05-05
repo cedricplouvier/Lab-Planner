@@ -65,7 +65,6 @@ public class DeviceInformationService {
     public void saveNewDeviceInformation(DeviceInformation deviceInformation, Long deviceTypeId) {
         DeviceInformation tempDeviceInformation = deviceInformation.getId() == null?null: deviceInformationRepository.findById( deviceInformation.getId()).orElse(null);
         if (tempDeviceInformation != null){
-            System.out.println(deviceInformation.getFiles().size());
             tempDeviceInformation.setInformationName(deviceInformation.getInformationName());
             tempDeviceInformation.setInformation(deviceInformation.getInformation());
             tempDeviceInformation.setFiles(deviceInformation.getFiles());

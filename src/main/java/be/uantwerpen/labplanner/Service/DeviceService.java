@@ -56,7 +56,6 @@ public class DeviceService {
             this.deviceRepository.deleteById(id);
 
         }
-        System.out.println("ok");
         };
     public Boolean deleteById(Long id) {
         if (this.exists(id)) {
