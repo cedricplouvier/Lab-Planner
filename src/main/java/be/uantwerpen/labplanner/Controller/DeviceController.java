@@ -1,12 +1,7 @@
 package be.uantwerpen.labplanner.Controller;
 
-import be.uantwerpen.labplanner.Model.Device;
-import be.uantwerpen.labplanner.Model.DeviceInformation;
-import be.uantwerpen.labplanner.Model.DeviceType;
-import be.uantwerpen.labplanner.Service.DeviceInformationService;
-import be.uantwerpen.labplanner.Service.DeviceService;
-import be.uantwerpen.labplanner.Service.DeviceTypeService;
-import be.uantwerpen.labplanner.Service.StorageService;
+import be.uantwerpen.labplanner.Model.*;
+import be.uantwerpen.labplanner.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -30,6 +25,10 @@ public class DeviceController {
     private DeviceTypeService deviceTypeService;
     @Autowired
     private DeviceInformationService deviceInformationService;
+    @Autowired
+    private StepService stepService;
+    @Autowired
+    private StepTypeService stepTypeService;
     @Autowired
     private StorageService storageService;
 
@@ -64,6 +63,12 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Read only - Basic') or hasAuthority('Device - Modify - All')")
     @RequestMapping(value ="/device/info/{id}", method= RequestMethod.GET)
     public String viewDeviceInfo(@PathVariable Long id, final ModelMap model) throws IOException {
+        Device device = deviceService.findById(id).orElse(null);
+        if(device==null){
+            model.addAttribute("errorTitle", "Unknown device ID");
+            model.addAttribute("errorMessage","A device with id "+id+" could not be found.");
+            return "Errors/custom-error";
+        }
         model.addAttribute("device",deviceService.findById(id).orElse(null));
         model.addAttribute("files", storageService.loadDir(deviceService.findById(id).orElse(null).getDeviceType().getDeviceTypeName()).map(
                 path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
@@ -76,15 +81,27 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices/{id}", method= RequestMethod.GET)
     public String viewEdiDevice(@PathVariable Long id, final ModelMap model){
+        Device device = deviceService.findById(id).orElse(null);
+        if(device==null){
+            model.addAttribute("errorTitle", "Unknown device ID");
+            model.addAttribute("errorMessage","A device with id "+id+" could not be found.");
+            return "Errors/custom-error";
+        }
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
-        model.addAttribute("device",deviceService.findById(id).orElse(null));
+        model.addAttribute("device",device);
         return "Devices/device-manage";
     }
 
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices/types/{id}", method= RequestMethod.GET)
     public String viewEdiDeviceType(@PathVariable Long id, final ModelMap model){
-        model.addAttribute("deviceTypeObject",deviceTypeService.findById(id).orElse(null));
+        DeviceType deviceType = deviceTypeService.findById(id).orElse(null);
+        if(deviceType==null){
+            model.addAttribute("errorTitle", "Unknown deviceType ID");
+            model.addAttribute("errorMessage","A deviceType with id "+id+" could not be found.");
+            return "Errors/custom-error";
+        }
+        model.addAttribute("deviceTypeObject",deviceType);
         model.addAttribute("files", storageService.loadDir(Objects.requireNonNull(deviceTypeService.findById(id).orElse(null)).getDeviceTypeName()).map(
                 path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
                         "serveFile", new String[]{ path.getFileName().toString(),path.getParent().toString()}).build().toUri().toString())
@@ -96,7 +113,19 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices/info/{id}/{typeid}", method= RequestMethod.GET)
     public String viewEdiDeviceInfo(@PathVariable Long id, @PathVariable Long typeid, final ModelMap model){
-        model.addAttribute("deviceInfoObject",deviceInformationService.findById(id).orElse(null));
+        DeviceInformation deviceInformation =deviceInformationService.findById(id).orElse(null);
+        if(deviceInformation==null){
+            model.addAttribute("errorTitle", "Unknown deviceInformation ID");
+            model.addAttribute("errorMessage","A deviceInformation with id "+id+" could not be found.");
+            return "Errors/custom-error";
+        }
+        DeviceType deviceType = deviceTypeService.findById(id).orElse(null);
+        if(deviceType==null){
+            model.addAttribute("errorTitle", "Unknown deviceType ID");
+            model.addAttribute("errorMessage","A deviceType with id "+id+" could not be found.");
+            return "Errors/custom-error";
+        }
+        model.addAttribute("deviceInfoObject",deviceInformation);
         model.addAttribute("deviceTypeObject",deviceTypeService.findById(typeid).orElse(null));
         model.addAttribute("files", storageService.loadDir(Objects.requireNonNull(deviceTypeService.findById(typeid).orElse(null)).getDeviceTypeName()).map(
                 path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
@@ -136,7 +165,6 @@ public class DeviceController {
     }
 
     //Save
-
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value={"/devices/", "/devices/{id}"}, method= RequestMethod.POST)
     public String addDevice(@Valid Device device, BindingResult result, final ModelMap model){
@@ -144,6 +172,14 @@ public class DeviceController {
             model.addAttribute("deviceType", deviceTypeService.findAll());
             return "Devices/device-manage";
         }
+
+        if(device.getDevicename().length()==0||Device.getDefaultDevicename().equals(device.getDevicename())){
+            model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+            model.addAttribute("device",device);
+            model.addAttribute("errormessage","Give a valid name");
+            return "Devices/device-manage";
+        }
+
         Device tempDevice = deviceService.findByDevicename(device.getDevicename()).orElse(null);
         if(tempDevice!=null&&!device.getId().equals(tempDevice.getId())){
             model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
@@ -163,7 +199,7 @@ public class DeviceController {
             return "Devices/device-info-manage";
         }
         deviceInformationService.saveNewDeviceInformation(deviceInformation,typeid);
-        return "redirect:/devices/info/"+deviceInformationService.findByInforationName(deviceInformation.getInformationName()).get().getId()+"/"+typeid;
+        return "redirect:/devices/info/"+deviceInformationService.findById(deviceInformation.getId()).get().getId()+"/"+typeid;
     }
 
     @PreAuthorize("hasAuthority('Device - Modify - All')")
@@ -173,6 +209,14 @@ public class DeviceController {
             model.addAttribute("devicetypes", deviceTypeService.findAll());
             return "Devices/device-type-manage";
         }
+
+        if(deviceType.getDeviceTypeName().length()==0||DeviceType.getDefaultDevicetypename().equals(deviceType.getDeviceTypeName())){
+            model.addAttribute("NameIsUsed","Give a valid name");
+            model.addAttribute("devicetypes", deviceTypeService.findAll());
+            model.addAttribute("deviceTypeObject",deviceType);
+            return "Devices/device-type-manage";
+        }
+
         if(deviceType.getId()==null){
             if(deviceTypeService.findByDevicetypeName( deviceType.getDeviceTypeName()).orElse(null)!=null){
                 model.addAttribute("NameIsUsed","The name "+deviceType.getDeviceTypeName()+" is already used");
@@ -203,7 +247,29 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices/{id}/delete")
     public String deleteDevice(@PathVariable Long id, final ModelMap
-            model){ deviceService.delete(id);
+            model){
+        Device device = deviceService.findById(id).orElse(null);
+        if(device==null){
+            model.addAttribute("errorTitle", "Unknown device ID");
+            model.addAttribute("errorMessage","A device with id "+id+" could not be found.");
+            return "Errors/custom-error";
+        }
+
+        List<Step> allSteps = stepService.findAll();
+        Boolean isUsed = false;
+        for(Step currentStep : allSteps){
+            if(currentStep.getDevice().getId()==id){
+                isUsed = true;
+            }
+        }
+        if(isUsed){
+            model.addAttribute("errorTitle", "Device in use");
+            model.addAttribute("errorMessage", "The device that you are trying to delete is still in use by one or more Steps.");
+            return "Errors/custom-error";
+        }
+
+
+        deviceService.delete(id);
         model.clear();
         return "redirect:/devices";
     }
@@ -211,12 +277,31 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices/types/{id}/delete")
     public String deleteDeviceType(@PathVariable Long id, final ModelMap model){
+        DeviceType deviceType = deviceTypeService.findById(id).orElse(null);
+        if(deviceType==null){
+            model.addAttribute("errorTitle", "Unknown deviceType ID");
+            model.addAttribute("errorMessage","A deviceType with id "+id+" could not be found.");
+            return "Errors/custom-error";
+        }
         List<Device> allDevices = deviceService.findAll();
         Boolean isUsed = false;
         for(Device currentDevice : allDevices){
             if(currentDevice.getDeviceType().getId()==id){
                 isUsed = true;
             }
+        }
+        if(!isUsed) {
+            List<StepType> allStepTypes = stepTypeService.findAll();
+            for (StepType currentStepType : allStepTypes) {
+                if (currentStepType.getDeviceType().getId() == id) {
+                    isUsed = true;
+                }
+            }
+        }
+        if(isUsed){
+            model.addAttribute("errorTitle", "DeviceType in use");
+            model.addAttribute("errorMessage", "The deviceType that you are trying to delete is still in use a stepType or a device.");
+            return "Errors/custom-error";
         }
         if(isUsed){
             model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
