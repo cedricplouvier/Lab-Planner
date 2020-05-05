@@ -9,6 +9,7 @@ import be.uantwerpen.labplanner.Service.DeviceTypeService;
 import be.uantwerpen.labplanner.Service.StepService;
 import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
+import be.uantwerpen.labplanner.common.service.users.RoleService;
 import de.jollyday.Holiday;
 import de.jollyday.HolidayCalendar;
 import de.jollyday.HolidayManager;
@@ -33,6 +34,8 @@ public class CalendarController {
     DeviceTypeService deviceTypeService;
     @Autowired
     DeviceService deviceService;
+    @Autowired
+    RoleService roleService;
     //Populate
     @ModelAttribute("allDevices")
     public Iterable<Device> populateDevices() {
@@ -55,7 +58,10 @@ public class CalendarController {
                 otherSteps.add(step);
             }
         }
-        model.addAttribute("otherSteps", otherSteps);
+        Role admin = roleService.findByName("Administrator").get();
+        if(user.getRoles().contains(admin)) {
+            model.addAttribute("otherSteps", otherSteps);
+        }
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
