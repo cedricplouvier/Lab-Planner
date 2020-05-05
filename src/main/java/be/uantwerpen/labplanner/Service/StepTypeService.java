@@ -15,14 +15,14 @@ public class StepTypeService {
     @Autowired
     private StepTypeRepository stepTypeRepository;
     @Autowired
-    private ContinuityRepository continuityRepository;
+    private ContinuityService continuityService;
 
     public List<StepType> findAll() {
         return this.stepTypeRepository.findAll();
     }
 
     public void save(StepType stepType) {
-        continuityRepository.save(stepType.getContinuity());
+        continuityService.save(stepType.getContinuity());
         this.stepTypeRepository.save(stepType);
     }
 
@@ -40,20 +40,20 @@ public class StepTypeService {
             tempStep.setDeviceType(stepType.getDeviceType());
             tempStep.setStepTypeName(stepType.getStepTypeName());
             tempStep.setFixedTimeType(stepType.getFixedTimeType());
-            Continuity tmpContinuity = stepType.getContinuity().getId() == null ? null : continuityRepository.findById(stepType.getContinuity().getId()).orElse(null);
+            Continuity tmpContinuity = stepType.getContinuity().getId() == null ? null : continuityService.findById(stepType.getContinuity().getId()).orElse(null);
             if (tmpContinuity != null) {
                 tmpContinuity.setType(stepType.getContinuity().getType());
                 tmpContinuity.setDirectionType(stepType.getContinuity().getDirectionType());
                 tmpContinuity.setMinutes(stepType.getContinuity().getMinutes());
                 tmpContinuity.setHours(stepType.getContinuity().getHours());
-                continuityRepository.save(tmpContinuity);
+                continuityService.save(tmpContinuity);
             } else {
-                continuityRepository.save(stepType.getContinuity());
+                continuityService.save(stepType.getContinuity());
                 tempStep.setContinuity(stepType.getContinuity());
             }
             stepTypeRepository.save(tempStep);
         } else {
-            continuityRepository.save(stepType.getContinuity());
+            continuityService.save(stepType.getContinuity());
             stepTypeRepository.save(stepType);
         }
     }
