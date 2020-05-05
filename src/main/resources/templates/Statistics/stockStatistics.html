@@ -25,16 +25,22 @@
         <hr style="color:rgb(0,115,250); background-color:rgb(0,115,250); height:1px">
     <div class='wrap'>
         <div class='code-html' id='code-html'>
+            <form th:action="@{/statistics/stockStatistics/getSelectedMonthStock}">
+                <label class="control-label" th:text="#{stockStatistics.setStartMonth}"></label>
+                <input type="month" th:name="selectedMonthStock"
+                       th:value="${selectedMonthStock}"
+                       min="2019-01" th:max="${maxDateSelect}">
+                <button type="submit" name="history-start" class="btn btn-primary">Set</button>
+            </form> <br>
             <div id="chart-area2"></div>
             <hr style="color:rgb(0,115,250); background-color:rgb(0,115,250); height:1px">
             <form th:action="@{/statistics/stockStatistics/getSelectedStartStockHistory}">
                 <label class="control-label" th:text="#{stockStatistics.setStartMonth}"></label>
                 <input type="month" id="start" th:name="selectedStartMonthStockHistory"
                        th:value="${selectedStartMonthStockHistory}"
-                       min="2019-01" max="2022-12">
+                       min="2019-01" th:max="${maxDateSelect}">
                 <button type="submit" name="history-start" class="btn btn-primary">Set</button>
-            </form>
-                        <br> <br>
+            </form> <br>
             <div id="chart-area"></div>
         </div>
         <div class='custom-area'>
@@ -53,26 +59,17 @@
 
 <script classe='code-js' id="'code-js" th:inline="javascript">
 
-    var allProductNames = [];
+    var allProductNames = /*[[${productNames}]]*/ [];
 
-    var stockLevels = [];
-
-    /*[# th:each="n : ${products}"]*/
-    allProductNames.push("[(${n.getName()})]");
-    /*[/]*/
-
-    /*[# th:each="n : ${products}"]*/
-    stockLevels.push("[(${n.getStockLevel()})]");
-    /*[/]*/
-
+    var stockLevelSelectedMonth = /*[[${stockLevelMonth}]]*/ [];
 
     var container = document.getElementById('chart-area2');
     var data = {
-        categories: [allProductNames[0],allProductNames[1],allProductNames[2],allProductNames[3],allProductNames[4],allProductNames[5],allProductNames[6],allProductNames[7]],
+        categories: allProductNames,
         series: [
             {
                 name: 'Stock Levels',
-                data: [stockLevels[0], stockLevels[1], stockLevels[2], stockLevels[3], stockLevels[4], stockLevels[5], stockLevels[6], stockLevels[7]]
+                data: stockLevelSelectedMonth
             }
         ]
     };
@@ -111,23 +108,16 @@
 
 <script class='code-js' id='code-js' th:inline="javascript">
     var container = document.getElementById('chart-area');
-    var allProductNames2 = [];
+    var allProductNames2 = /*[[${productNames}]]*/ [];
 
-    var stockLevels2 = [];
+    var stockLevels2 = /*[[${stockLevelStartMonthHistory}]]*/ [];
 
-    /*[# th:each="n : ${products}"]*/
-    allProductNames2.push("[(${n.getName()})]");
-    /*[/]*/
-
-    /*[# th:each="n : ${products}"]*/
-    stockLevels2.push("[(${n.getStockLevel()})]");
-    /*[/]*/
     var data = {
         categories: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
         series: [
             {
                 name: allProductNames2[0],
-                data: [-3.5, -1.1, 4.0, 11.3, 17.5, 21.5, 24.9, 25.2, 20.4, 13.9, 6.6, -0.6]
+                data: stockLevels2[0]
             },
             {
                 name: allProductNames2[1],
@@ -166,6 +156,7 @@
         },
         yAxis: {
             title: 'Amount (kg/liter/unit)',
+            max: 2100
         },
         xAxis: {
             title: 'Month',
