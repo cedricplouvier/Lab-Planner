@@ -15,6 +15,7 @@
         }
     })
     function addrow(a) {
+        toggleSearchlist();
         var rowCount = $('#list tr').length;
         $('#list')
             .append('<tr class="row'+rowCount+'" id="row'+rowCount+'"> <td><input hidden class="steptype" value="'+a.id+'" id="stepTypes'+rowCount+'.deviceType" name="stepTypes['+rowCount+'].deviceType">'+a.deviceTypeName+'<input hidden class="steptypename" value="'+a.deviceTypeName+'" id="stepTypes'+rowCount+'.stepTypeName" name="stepTypes['+rowCount+'].stepTypeName"> </td><td><select required value="" id="stepTypes'+rowCount+'.continuity.type" name="stepTypes['+rowCount+'].continuity.type"><option class="dropdown-item" value="No">No</option><option class="dropdown-item" value="Soft (at least)">Soft (at least)</option><option class="dropdown-item" value="Soft (at most)">Soft (at most)</option><option class="dropdown-item" value="Hard">Hard</option> </select></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.hour" name="stepTypes['+rowCount+'].continuity.hours" placeholder="Hours"></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.minutes" name="stepTypes['+rowCount+'].continuity.minutes" placeholder="Minutes"></td><td><a onclick="removeRow(this)"> <span class="fas fa-trash" style="color: red" ></span> </a></td> </tr>')
@@ -38,7 +39,7 @@
 
     /* When the user clicks on the button,
     toggle between hiding and showing the dropdown content */
-    function myFunction() {
+    function toggleSearchlist() {
         document.getElementById("myDropdown").classList.toggle("show");
     }
     function removeRow(r) {
@@ -105,7 +106,7 @@
     <table class="table table-hover">
         <div class="dropdown">
             <div  class="">
-                <input type="text" placeholder="Search.." id="myInput" onclick="myFunction()" onmouseover="myFunction()"  onkeyup="filterFunction()">
+                <input type="text" placeholder="Search.." id="myInput" onclick="toggleSearchlist()" onkeyup="filterFunction()">
                 <div  id="myDropdown" class="dropdown-content">
                     <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}" th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
                 </div>
