@@ -103,7 +103,7 @@ public class DeviceControllerTests {
         when(deviceTypeService.findAll()).thenReturn(devicetypes);
         mockMvc.perform(get("/devices/types"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/Devices/list-device-types"))
+                .andExpect(view().name("Devices/list-device-types"))
                 .andExpect(model().attribute("allDeviceTypes", hasSize(1)));
     }
 
