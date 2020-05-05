@@ -477,4 +477,76 @@ public class DeviceControllerTests {
 
 
     }
+
+    //add device tests
+    @Test
+    public void addCorrectDevicesTest() throws Exception{
+        Device device = new Device();
+        device.setDevicename("addDevice1");
+        //Set variables
+        device.setComment("devicecomment");
+
+        DeviceType d1 = new DeviceType("addDeviceType1",false);
+        device.setDeviceType(d1);
+        d1.setId((long) 13);
+        List<DeviceType> deviceTypes = new ArrayList<DeviceType>();
+        deviceTypes.add(d1);
+
+        when(deviceService.findByDevicename("addDevice1")).thenReturn(Optional.empty());
+        when(deviceTypeService.findAll()).thenReturn(deviceTypes);
+        mockMvc.perform(post("/devices/").flashAttr("device",device))
+                .andExpect(status().is(302))
+                .andExpect(view().name("redirect:/devices"))
+                .andDo(print());
+
+        //When device already exists changes
+        device.setId((long) 10);
+        when(deviceService.findByDevicename("addDevice1")).thenReturn(Optional.of(device));
+        when(deviceTypeService.findAll()).thenReturn(deviceTypes);
+        mockMvc.perform(post("/devices/").flashAttr("device",device))
+                .andExpect(status().is(302))
+                .andExpect(view().name("redirect:/devices"))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void addFalseDevicesTest() throws Exception{
+        Device device = new Device();
+        device.setDevicename("addDevice2");
+        //Set variables
+        device.setComment("devicecomment");
+
+        DeviceType d1 = new DeviceType("addDeviceType2",false);
+        device.setDeviceType(d1);
+        d1.setId((long) 13);
+        List<DeviceType> deviceTypes = new ArrayList<DeviceType>();
+        deviceTypes.add(d1);
+
+        // Add device without devicetype
+        device.setDeviceType(null);
+        when(deviceService.findByDevicename("addDevice2")).thenReturn(Optional.of(device));
+        when(deviceTypeService.findAll()).thenReturn(deviceTypes);
+        mockMvc.perform(post("/devices/").flashAttr("device",device))
+                .andExpect(status().is(200))
+                .andExpect(view().name("Devices/device-manage"))
+                .andExpect(model().attribute("allDeviceTypes",deviceTypes))
+                .andExpect(model().attribute("device",device))
+                .andExpect(model().attribute("errormessage","The device has no devicetype object"))
+                .andDo(print());
+
+        //Add device with bad name
+        device.setDeviceType(d1);
+        device.setDevicename("");
+        when(deviceService.findByDevicename("addDevice2")).thenReturn(Optional.of(device));
+        when(deviceTypeService.findAll()).thenReturn(deviceTypes);
+        mockMvc.perform(post("/devices/").flashAttr("device",device))
+                .andExpect(status().is(200))
+                .andExpect(view().name("Devices/device-manage"))
+                .andExpect(model().attribute("allDeviceTypes",deviceTypes))
+                .andExpect(model().attribute("device",device))
+                .andExpect(model().attribute("errormessage","The name "+device.getDevicename()+" is already used"))
+                .andDo(print());
+    }
+
 }

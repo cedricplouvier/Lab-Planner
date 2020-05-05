@@ -144,6 +144,12 @@ public class DeviceController {
             model.addAttribute("deviceType", deviceTypeService.findAll());
             return "Devices/device-manage";
         }
+        if(device.getDeviceType()==null){
+            model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+            model.addAttribute("device",device);
+            model.addAttribute("errormessage","The device has no devicetype object");
+            return "Devices/device-manage";
+        }
         Device tempDevice = deviceService.findByDevicename(device.getDevicename()).orElse(null);
         if(tempDevice!=null&&!device.getId().equals(tempDevice.getId())){
             model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
