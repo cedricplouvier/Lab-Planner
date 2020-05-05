@@ -201,8 +201,21 @@ public class DeviceController {
     @RequestMapping(value={"/devices/info","/devices/info/{id}/{typeid}"}, method= RequestMethod.POST)
     public String addDeviceInfo(@Valid DeviceInformation deviceInformation, @PathVariable Long typeid, BindingResult result, final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
+
+        if(deviceInformation.getInformationName().length()==0||DeviceInformation.getDefaultInformationName().equals(deviceInformation.getInformationName())){
+
+            model.addAttribute("deviceInfoObject",deviceInformation);
+            model.addAttribute("deviceTypeObject",deviceTypeService.findById(typeid).orElse(null));
+            model.addAttribute("errormessage",ResourceBundle.getBundle("messages",current).getString("error.invalid.name"));
+            model.addAttribute("files", storageService.loadDir(Objects.requireNonNull(deviceTypeService.findById(typeid).orElse(null)).getDeviceTypeName()).map(
+                    path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
+                            "serveFile", new String[]{ path.getFileName().toString(),path.getParent().toString()}).build().toUri().toString())
+                    .collect(Collectors.toList()));
+            return "Devices/device-info-manage";
+        }
+
         if(result.hasErrors()){
-            model.addAttribute("deviceInfoObject", deviceInformationService.findAll());
+            model.addAttribute("deviceInfoObject", deviceInformation);
             return "Devices/device-info-manage";
         }
         deviceInformationService.saveNewDeviceInformation(deviceInformation,typeid);

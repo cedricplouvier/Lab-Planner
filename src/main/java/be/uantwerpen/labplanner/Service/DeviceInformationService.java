@@ -67,7 +67,9 @@ public class DeviceInformationService {
         if (tempDeviceInformation != null){
             tempDeviceInformation.setInformationName(deviceInformation.getInformationName());
             tempDeviceInformation.setInformation(deviceInformation.getInformation());
-            tempDeviceInformation.setFiles(deviceInformation.getFiles());
+            for(String file : deviceInformation.getFiles()){
+                tempDeviceInformation.addFile(file);
+            }
             deviceInformationRepository.save(tempDeviceInformation);
         }
         else{
