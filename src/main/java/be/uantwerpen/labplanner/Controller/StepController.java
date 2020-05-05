@@ -620,8 +620,12 @@ public class StepController {
 
                 experimentService.delete(id);
                 ra.addFlashAttribute("Status", new String("Success"));
-                ra.addFlashAttribute("Message", new String("Experiment successfully deleted."));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.deleteSuccess")));
 
+            }
+            else {
+                ra.addFlashAttribute("Status", new String("Error"));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.deleteUnauthorized")));
             }
         }
          else {
