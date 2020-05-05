@@ -116,7 +116,7 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
     @Override
     public void addViewControllers(ViewControllerRegistry registry)
     { registry.addViewController("/login").setViewName("login");
-        registry.addViewController("/access").setViewName("access");
+        registry.addViewController("/register").setViewName("access");
     }
 //
 //

@@ -25,7 +25,10 @@
             <p th:if="${param.logout}" class="alert alert-success">You have been logged out</p>
             <p th:if="${param.error}" class="alert alert-danger">No correct credentials, please try again.</p>
                 <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+
+            <p>Or resgister <a th:href="@{/register}">here</a>. </p>
         </form>
+    <p>Or resgister <a th:href="@{/register}">here</a>. </p>
 </div>
 </body></html>
 
