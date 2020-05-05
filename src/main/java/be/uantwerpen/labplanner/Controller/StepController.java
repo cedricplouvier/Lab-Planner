@@ -445,7 +445,7 @@ public class StepController {
         //If Step is part of experiment, it can't be deleted
         if (foundStepById != null && isStepPartOfExperiment(foundStepById)) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleteExperimentError")));
+            ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.deleteExperimentError")));
             logger.error(user.getUsername() + " tried to delete step that is part of experiment!");
         } else if (userRoles.contains(adminRol)) {
             ra.addFlashAttribute("Status", new String("Success"));
@@ -574,6 +574,14 @@ public class StepController {
                 stepService.delete(step.getId());
             }
 
+            //if it is custom experiment, delete experimentType as well
+            if (!experiment.getExperimentType().getIsFixedType()) {
+                for (StepType stepType : experiment.getExperimentType().getStepTypes()) {
+                    stepTypeService.delete(stepType.getId());
+                }
+                experimentTypeService.delete(experiment.getExperimentType().getId());
+            }
+
             //add amounts back to the stock.
             Map<OwnProduct, Double> productMapStock = new HashMap<>();
             Map<OwnProduct, Double> productMapReserved = new HashMap<>();
@@ -644,6 +652,12 @@ public class StepController {
                 otherSteps.add(step);
             }
         }
+
+        ArrayList<String> accessRights = new ArrayList<String>();
+
+        for (Role role : currentUser.getRoles()) {
+            accessRights.add(role.getName());
+        }
         HolidayManager manager = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
         Set<Holiday> holidays = manager.getHolidays(Calendar.getInstance().get(Calendar.YEAR));
         model.addAttribute("allDevices", deviceService.findAll());
@@ -651,6 +665,7 @@ public class StepController {
         model.addAttribute("allMixtures", mixtureService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("allExperimentTypes", allFixedExperimentTypes());
+        model.addAttribute("userAccessRights", accessRights);
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("experiment", new Experiment());
@@ -712,6 +727,13 @@ public class StepController {
             return "redirect:/planning/";
         }
 
+        //when editting experiment that is not in database
+        if (experiment.getId() != null && !experimentService.findById(experiment.getId()).isPresent()) {
+            ra.addFlashAttribute("Status", new String("Error"));
+            ra.addFlashAttribute("Message", new String("Error while trying edit Experiment."));
+            return "redirect:/planning/";
+        }
+
 
         //Error message that is used as a feedback to user when there is a problem with his input
         String errorMessage = "";
@@ -736,9 +758,16 @@ public class StepController {
             }
         }
 
+        //get roles of currentUser
+        ArrayList<String> accessRights = new ArrayList<String>();
+
+        for (Role role : currentUser.getRoles()) {
+            accessRights.add(role.getName());
+        }
+
         if (experiment == null || experiment.getExperimentType() == null) {
             errorMessage = "Error while trying to save Experiment.";
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
             if (experiment.getExperimentType().getIsFixedType()) {
                 return "PlanningTool/planning-exp-book-fixed";
             } else {
@@ -747,25 +776,27 @@ public class StepController {
         }
 
 
-        //load experimentType by selected id
-        if (experiment.getExperimentType().getIsFixedType())
+        //load experimentType by selected id (more secure than use the one from frontend)
+        if (experiment.getExperimentType().getIsFixedType()) {
             for (ExperimentType expType : experimentTypeService.findAll()) {
                 if (expType.getId().equals(experiment.getExperimentType().getId())) {
                     experiment.setExperimentType(expType);
                 }
             }
-
+        }
 
         //check, if there are some steps in experiment
         if (experiment.getSteps() == null || experiment.getExperimentType().getStepTypes() == null) {
             errorMessage = "Error while trying to save Experiment. Experiment without steps can not be booked";
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
+
             if (experiment.getExperimentType().getIsFixedType()) {
                 return "PlanningTool/planning-exp-book-fixed";
             } else {
                 return "PlanningTool/planning-exp-book-custom";
             }
         }
+
 
         //If this is custom experiment, some modifications needs to be performed
         if (!experiment.getExperimentType().getIsFixedType()) {
@@ -793,15 +824,39 @@ public class StepController {
                 experiment.getExperimentType().setExpname(expTypeName);
             }
 
-            //2. set stepTypes regarding to received experiment model
+            //2. adjust stepTypes according to received experiment model
             for (int i = 0; i < experiment.getExperimentType().getStepTypes().size(); i++) {
-                //if stepType is not null delete it from list (happens when row was deleted during booking custom exp.)
-                if (experiment.getExperimentType().getStepTypes().get(i) == null) {
+                //if stepType is null delete it from list (happens when row was deleted during booking custom exp.)
+                if (experiment.getExperimentType().getStepTypes().get(i) == null || experiment.getSteps().get(i) == null) {
                     experiment.getExperimentType().getStepTypes().remove(i);
                     experiment.getSteps().remove(i);
                     i--; //Size of array was changed, so same index needs to be check again
-                } else if (experiment.getExperimentType().getStepTypes().get(i).getContinuity() == null) {
+                }
+                //if continuity is null, create default continuity
+                else if (experiment.getExperimentType().getStepTypes().get(i).getContinuity() == null) {
                     experiment.getExperimentType().getStepTypes().get(i).setContinuity(new Continuity());
+                }
+            }
+
+        }
+
+        //If experiment was already booked remove steps from previous booking that are now not used anymore
+        if (experiment.getId() != null) {
+            Experiment expFromPreviousBooking = experimentService.findById(experiment.getId()).orElse(null);
+            if (expFromPreviousBooking != null) {
+                for (Step previousStep : expFromPreviousBooking.getSteps()) {
+                    boolean stepStillInUse = false;
+                    for (Step currentStep : experiment.getSteps()) {
+                        //if previous step is still present, keep it
+                        if (currentStep.getId() != null && currentStep.getId().equals(previousStep.getId())) {
+                            stepStillInUse = true;
+                        }
+                    }
+                    //if previous step is not in use, delete it
+                    if (!stepStillInUse) {
+                        System.out.println("Step with id " + previousStep.getId() + " was deleted");
+                        stepService.delete(previousStep.getId());
+                    }
                 }
             }
         }
@@ -812,7 +867,8 @@ public class StepController {
             //If there is experiment with different ID and same name, it's not unique
             if (experiment.getExperimentname().equals(exp.getExperimentname()) && !Objects.equals(experiment.getId(), exp.getId())) {
                 errorMessage = "Experiment with this name already exists";
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
+
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
                 } else {
@@ -821,10 +877,13 @@ public class StepController {
             }
         }
 
-        //set current experimentType by experimentType id
-        for (ExperimentType expType : experimentTypeService.findAll()) {
-            if (expType.getId().equals(experiment.getExperimentType().getId())) {
-                experiment.setExperimentType(expType);
+        //set current experimentType by experimentType id,
+        //if it's fixed type (custom can be adjusted in frontend, no need to load it in backend)
+        if (experiment.getExperimentType().getIsFixedType()) {
+            for (ExperimentType expType : experimentTypeService.findAll()) {
+                if (expType.getId().equals(experiment.getExperimentType().getId())) {
+                    experiment.setExperimentType(expType);
+                }
             }
         }
 
@@ -833,7 +892,8 @@ public class StepController {
             for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
                 if (pom.getMixtureAmount() < 0) {
                     errorMessage = "Ammount of mixture can't be negative";
-                    prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+                    prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
+
                     if (experiment.getExperimentType().getIsFixedType()) {
                         return "PlanningTool/planning-exp-book-fixed";
                     } else {
@@ -847,7 +907,8 @@ public class StepController {
             for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
                 if (pom.getMixtureAmount() < 0) {
                     errorMessage = "Ammount of mixture can't be negative";
-                    prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+                    prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
+
                     if (experiment.getExperimentType().getIsFixedType()) {
                         return "PlanningTool/planning-exp-book-fixed";
                     } else {
@@ -891,7 +952,8 @@ public class StepController {
         //Both, step size and stepType size has to be same
         if (experiment.getSteps().size() != experiment.getExperimentType().getStepTypes().size()) {
             errorMessage = "Error while trying to save Experiment. Problem with length of steps";
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
+
             if (experiment.getExperimentType().getIsFixedType()) {
                 return "PlanningTool/planning-exp-book-fixed";
             } else {
@@ -940,7 +1002,8 @@ public class StepController {
         if (!allowedToEdit) {
             //no rights, so error message & save nothing
             errorMessage = "Student has no right to edit experiment";
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
+
             if (experiment.getExperimentType().getIsFixedType()) {
                 return "PlanningTool/planning-exp-book-fixed";
             } else {
@@ -959,7 +1022,8 @@ public class StepController {
                     step.getStartHour().trim().equals("") || step.getEndHour().trim().equals(""))) {
 
                 errorMessage = "Error while trying to save Experiment. Wrong input";
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
+
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
                 } else {
@@ -969,7 +1033,8 @@ public class StepController {
 
             if (isPorblemWithFixedLength(experiment.getExperimentType().getStepTypes().get(index), step)) {
                 errorMessage = "Error while trying to save Experiment. Step" + experiment.getExperimentType().getStepTypes().get(index).getStepTypeName() + " has fixed time";
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
+
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
                 } else {
@@ -980,7 +1045,8 @@ public class StepController {
             //check, double booking
             if (overlapCheck(step)) {
                 errorMessage = "Error while trying to save Experiment. Problem with double booking of device " + step.getDevice().getDevicename();
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
+
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
                 } else {
@@ -991,7 +1057,8 @@ public class StepController {
             //check holidays, weekend and opening hours
             if (dateTimeIsUnavailable(step, currentUser)) {
                 errorMessage = getMessageForSelectedStep(step, currentUser);
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
+
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
                 } else {
@@ -1012,7 +1079,8 @@ public class StepController {
         //check if steps inside this experiment fulfills continuity
         if (isProblemWithContinuity(experiment.getSteps())) {
             errorMessage = "Error while trying to save Experiment. Problem with continuity";
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
+
             if (experiment.getExperimentType().getIsFixedType()) {
                 return "PlanningTool/planning-exp-book-fixed";
             } else {
@@ -1057,7 +1125,8 @@ public class StepController {
         //if not enough stock, change stock levels back to previous edit
         if (!enoughStock) {
             errorMessage = ResourceBundle.getBundle("messages", current).getString("enough.stock");
-            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps);
+            prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
+
             if (experiment.getExperimentType().getIsFixedType()) {
                 return "PlanningTool/planning-exp-book-fixed";
             } else {
@@ -1091,12 +1160,26 @@ public class StepController {
             }
         }
 
-
         //If it's custom experiment, save stepTypes and experimentType
         if (!experiment.getExperimentType().getIsFixedType()) {
-            for (StepType stepType : experiment.getExperimentType().getStepTypes()) {
-                stepTypeService.saveNewStepType(stepType);
+            //remove connection between step and stepType
+            for (Step step : experiment.getSteps()) {
+                step.setStepType(null);
             }
+            //prepare list of steptypes to save it in database
+            List<StepType> tmpStepTypeList = experiment.getExperimentType().getStepTypes();
+            //remove connection between experimentType and stepType
+            experiment.getExperimentType().setStepTypes(null);
+
+            for (StepType stepType : tmpStepTypeList) {
+                //if stepType contains default continuity, use special continuity entity for it
+                if (stepType.getContinuity().getType().equals("No") && stepType.getContinuity().getHours() == 0 && stepType.getContinuity().getMinutes() == 0 && stepType.getContinuity().getDirectionType().equals("After")) {
+                    stepTypeService.saveStepTypeInCustomExperiment(stepType);
+                } else {
+                    stepTypeService.saveNewStepType(stepType);
+                }
+            }
+            experiment.getExperimentType().setStepTypes(tmpStepTypeList);
         }
 
 
@@ -1133,7 +1216,7 @@ public class StepController {
 
 
     //Method to prepare model atributes when user entered wrong input
-    private void prepareModelAtributesToRebookExperiment(final ModelMap model, Experiment experiment, String errorMessage, List<Step> userSteps, List<Step> otherSteps) {
+    private void prepareModelAtributesToRebookExperiment(final ModelMap model, Experiment experiment, String errorMessage, List<Step> userSteps, List<Step> otherSteps, ArrayList<String> accessRights) {
 
         HolidayManager manager = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
         Set<Holiday> holidays = manager.getHolidays(Calendar.getInstance().get(Calendar.YEAR));
@@ -1148,6 +1231,7 @@ public class StepController {
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("allExperimentTypes", allFixedExperimentTypes());
+        model.addAttribute("userAccessRights", accessRights);
     }
 
     @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")
@@ -1204,7 +1288,14 @@ public class StepController {
                         otherSteps.add(step);
                     }
                 }
-                prepareModelAtributesToRebookExperiment(model, experiment, "", userSteps, otherSteps);
+
+                ArrayList<String> accessRights = new ArrayList<String>();
+
+                for (Role role : user.getRoles()) {
+                    accessRights.add(role.getName());
+                }
+
+                prepareModelAtributesToRebookExperiment(model, experiment, "", userSteps, otherSteps, accessRights);
 
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";

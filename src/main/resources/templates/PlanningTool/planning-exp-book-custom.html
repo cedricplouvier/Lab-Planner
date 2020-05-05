@@ -66,11 +66,11 @@
                 '   </select>' +
                 '   </th>' +
                 '   <th align="center">' +
-                '       <div class="input-group-append">'+
+                '       <div class="input-group-append">' +
                 '           <input type="number" min="0" step="0.01" class=" form-control input-device" placeholder="Amount of mixture" id="piecesOfMixture' + i + '.mixtureAmount" name="piecesOfMixture[' + i + '].mixtureAmount" required>' +
-                '           <span class="input-group-text" style="color:#808080">kg</span>'+
+                '           <span class="input-group-text" style="color:#808080">kg</span>' +
                 '       </div>' +
-                '   </th>'+
+                '   </th>' +
                 '   <th>' +
                 '       <input class=" form-control input-device" placeholder="Mixture comment" id="piecesOfMixture' + i + '.mixtureComment" name="piecesOfMixture[' + i + '].mixtureComment">' +
                 '   </th>' +
@@ -86,8 +86,11 @@
     }
 
     function refreshDevices(a) {
-        i = a.parentNode.parentNode.rowIndex - 1;
+        i =  $(a).closest("tr").index();
+        alert(i)
         let devices = [[${allDevices}]];
+
+
         var selectDeviceType = document.getElementsByName('experimentType.stepTypes[' + i + '].deviceType')[0];
         var selectDevices = document.getElementsByName('steps[' + i + '].device')[0];
 
@@ -190,7 +193,7 @@
                 '       <input required="" style="width: 100%; font-size:80%;" type="time" id="startHour' + i + '" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + i + '].startHour">' +
                 '        <input required="" style="width: 100%; font-size:80%; " type="time" id="endHour' + i + '" class="form-control float-right input-hour" placeholder="End hour" name="steps[' + i + '].endHour">' +
                 '   </td> ' +
-                '   <td> '+
+                '   <td> ' +
                 '   </td> ' +
                 '   <td style="width: 10%; font-size:80%; text-align:center" id="fixedStepLength' + i + '" name="fixedStepLength" value=""> No ' +
                 '   </td> ' +
@@ -199,6 +202,11 @@
                 '   </td> ' +
                 '   <td>' +
                 '       <button style="width: 100%; font-size:80%; "type="button" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + i + ')" >Choose in calendar</button>' +
+                '   </td>' +
+                '   <td style="vertical-align: bottom">' +
+                '       <a onclick="removeRow(this)">' +
+                '           <span class="fas fa-trash" style="color: red"></span>' +
+                '       </a>' +
                 '   </td>' +
                 '</tr>' +
                 '<tr>' +
@@ -330,6 +338,11 @@
                         '   <td>' +
                         '       <button style="width: 100%; font-size:80%;" type="button" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + index + ')" >Choose in calendar</button>' +
                         '   </td>' +
+                        '   <td style="vertical-align: bottom">' +
+                        '       <a onclick="removeRow(this)">' +
+                        '           <span class="fas fa-trash" style="color: red"></span>' +
+                        '       </a>' +
+                        '   </td>' +
                         '</tr>' +
                         '<tr>' +
                         '    <td></td>' +
@@ -374,6 +387,7 @@
     }
 
     function removeRow(r) {
+        $(r).closest('tr').next().remove();
         $(r).closest('tr').remove();
     }
 
@@ -483,7 +497,7 @@
           th:object="${experiment}" method="post">
         <input th:field="*{id}" th:type="hidden"/>
         <input th:type="hidden" th:field="*{user}"/>
-        <input th:type="hidden" th:field="*{experimentType}"/>
+        <input th:type="hidden" th:field="*{experimentType.id}"/>
         <input type="checkbox" id="checkboxIsFixedType" th:field="*{experimentType.isFixedType}" hidden/>
 
 
@@ -558,12 +572,6 @@
                 th:onclick="addMixtureRow([[${allMixtures}]])">
         </button>
 
-        <button style="margin-right: 10px;font-size: 90%" class="btn btn-outline-primary"
-                type="button"
-                th:text="#{mixture.remove}"
-                th:onclick="removeMixtureRow()">
-        </button>
-
         <h3><span th:text="#{step.info}"></span></h3>
 
         <table class="table table-hover" style=" font-size:100%; text-align:center;">
@@ -589,8 +597,6 @@
 
             <div th:if="(*{experimentType}!=null)">
                 <div th:each="stepType, itemStat : *{experimentType.stepTypes}">
-                    <input id="expType" th:type="hidden"
-                           th:field="*{{experimentType}}">
                     <tr>
                         <input id="step" th:type="hidden"
                                th:field="*{steps[__${itemStat.index}__].id}">
@@ -690,7 +696,16 @@
                                    th:field="*{steps[__${itemStat.index}__].comment}">
                         </td>
                         <td>
-                            <button  style="width: 100%; font-size:80%;" class="btn btn-primary" type="button" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex, tempStepIndex)" >Choose in calendar</button>
+                            <button style="width: 100%; font-size:80%;" class="btn btn-primary" type="button"
+                                    id="choose" data-toggle="modal" data-target="#extraLargeModal"
+                                    onclick="openCalendar(tempExpIndex, tempStepIndex)">Choose in calendar
+                            </button>
+                        </td>
+
+                        <td style="vertical-align: bottom">
+                            <a onclick="removeRow(this)">
+                                <span class="fas fa-trash" style="color: red"></span>
+                            </a>
                         </td>
                     </tr>
 
