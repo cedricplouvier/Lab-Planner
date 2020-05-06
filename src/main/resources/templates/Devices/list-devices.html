@@ -61,13 +61,17 @@
     <div class="content">
         <div id="device-list">
             <input type='text' id='txt_name' th:placeholder="#{device.search}">
+            <div class="alert alert-danger" role="alert" th:if="${deviceError}!=''" th:text="${deviceError}"></div>
+            <div class="alert alert-success" role="alert" th:if="${MailSuccess}!=''" th:text="${MailSuccess}"></div>
+
+
             <table class="table table-hover">
                 <thead>
                 <tr>
                     <th th:text="#{device}"></th>
                     <th th:text="#{device.type}"></th>
                     <th th:text="#{device.info}"></th> <th></th>
-                    <th sec:authorize="hasAuthority('Device - Modify - All')" th:text="#{device.manage}"></th> <th></th>
+                    <th th:text="#{device.manage}"></th> <th></th>
                 </tr>
                 </thead>
                 <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -84,6 +88,8 @@
                     </a>
                     <a sec:authorize="hasAuthority('Device - Modify - All')" th:href="@{/devices/{id}/delete(id=${device.id})}"  class="fa fa-trash" style="color: red" data-toggle="modal" data-target="#modal-warning"  th:attr="data-target='#modal-warning'+${device.id }">
                               </a>
+                    <a th:href="@{/mail/maintanance/{id}(id=${device.id})}"  class="fa fa-envelope" style="color: yellowgreen" th:attr="onclick='return confirm(\'' + #{device.maintanance} + '\')'">
+                    </a>
                     </td>
                     <div class="modal modal-warning fade" th:id="modal-warning+${device.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
