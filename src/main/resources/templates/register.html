@@ -1,0 +1,308 @@
+
+<html lang="en" class=" FB_FW_ext eidReader" xmlns:th="http://www.thymeleaf.org"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Please sign in</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link href="https://getbootstrap.com/docs/4.0/examples/signin/signin.css" rel="stylesheet" crossorigin="anonymous">
+    <meta id="ConnectiveDocSignExtentionInstalled" name="ConnectiveDocSignExtentionInstalled" data-extension-version="1.0.6"></head>
+<body>
+
+<script type="text/javascript">
+
+    // polyfill for RegExp.escape
+    if(!RegExp.escape) {
+        RegExp.escape = function(s) {
+            return String(s).replace(/[\\^$*+?.()|[\]{}]/g, '\\$&');
+        };
+    }
+
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script>
+    function myFunction() {
+        var x = document.getElementById("pwd2");
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    }
+</script>
+
+
+<script type="text/javascript">
+
+    function checkPassword(str)
+    {
+        var re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])\w{6,}$/;
+        return re.test(str);
+    }
+
+    function checkForm(form)
+    {
+        if(form.username.value == "") {
+            alert("Error: Username cannot be blank!");
+            form.username.focus();
+            return false;
+        }
+        re = /^\w+$/;
+        if(!re.test(form.username.value)) {
+            alert("Error: Username must contain only letters, numbers and underscores!");
+            form.username.focus();
+            return false;
+        }
+        if(form.pwd1.value != "" && form.pwd1.value == form.pwd2.value) {
+            if(!checkPassword(form.pwd1.value)) {
+                alert("The password you have entered is not valid!");
+                form.pwd1.focus();
+                return false;
+            }
+        } else {
+            alert("Error: Please check that you've entered and confirmed your password!");
+            form.pwd1.focus();
+            return false;
+        }
+        return true;
+    }
+
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    function toggle(source) {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source) {
+                checkboxes[i].checked = source.checked;
+
+            }
+        }
+    }
+</script>
+<div class="container">
+
+    <form action="#" th:action="@{/register}" onsubmit="return checkForm(this);"
+          th:object="${user}" method="post">
+        <input th:type="hidden" th:field="*{id}"/>
+
+        <div class="alert alert-danger" role="alert" th:if="${UserInUse}!=null" th:text="${UserInUse}"></div>
+
+        <div class="form-group">
+            <label class="control-label" th:text="#{users.firstName}"></label>
+            <input class="form-control" type = text th:field="*{firstName}"/>
+
+        </div>
+        <div class="form-group">
+            <label class="control-label" th:text="#{users.lastName}"></label>
+            <input class="form-control" type = text th:field="*{lastName}"/>
+
+        </div>
+
+        <div class="alert alert-danger" role="alert" th:if="${UserInUse}!=null" th:text="${UserInUse}"></div>
+
+
+
+        <div>
+            <label class="control-label" th:text="#{users.roles}"></label>
+        </div>
+        <div>
+            <input type="checkbox" onclick="toggle(this);" /> <b>Check all?</b><br />
+        </div>
+        <div class="form-check">
+            <input th:field ="*{roles}" class="form-check-input" type="checkbox"
+                   th:each="role : ${allRoles}"
+                   th:id="${{role.name}}"
+                   th:value="${{role}}"
+                   th:utext="${role.name} + '<br>'"
+            >
+        </div>
+
+        <p></p>
+
+        <p></p>
+        <div class="form-group">
+            <label class="control-label" th:text="#{users.email}"></label>
+            <input class="form-control" type = text th:field="*{email}"/>
+
+        </div>
+        <div class="form-group">
+            <label class="control-label" th:text="#{users.uaNumber}"></label>
+            <input class="form-control" type = text th:field="*{uaNumber}"/>
+
+        </div>
+        <div class="form-group">
+            <label class="control-label" th:text="#{users.telephone}"></label>
+            <input class="form-control" type = text th:field="*{telephone}"/>
+
+        </div>
+        <div class="form-group">
+            <label class="control-label" th:text="#{users.location}"></label>
+            <input class="form-control" type = text th:field="*{location}"/>
+
+        </div>
+        <div class="form-group" th:name="PassWord" >
+
+            <div class="alert alert-danger" role="alert" th:if="${PWError}!=null" th:text="${PWError}"></div>
+
+
+            <label class="control-label" th:text="#{users.password}"></label>
+
+            <input class="form-control"  th:title="#{users.passwordCorrect}" type="password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" id="pwd1" onchange="
+  this.setCustomValidity(this.validity.patternMismatch ? this.title : '');
+  if(this.checkValidity()) form.pwd2.pattern = RegExp.escape(this.value);
+" th:name="pword" text th:field="*{password}">
+
+            <p/>
+
+            <label class="control-label" th:text="#{users.passwordConfirm}"></label>
+
+            <input class="form-control" title="Please enter the same Password as above" type="password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" id="pwd2" onchange="
+  this.setCustomValidity(this.validity.patternMismatch ? this.title : '');
+">
+
+            <p/>
+
+
+            <input type="checkbox" th:text="#{users.passwordBox}" onclick="myFunction()">
+
+
+        </div>
+
+
+        <p>
+            <button type="submit" name="UserSave" th:text="#{save}" class="btn btn-outline-primary">Save</button>
+            <a th:href="@{/login}" th:text="#{close}" class="btn btn-secondary">Close</a>
+
+        </p>
+    </form>
+</div>
+</body></html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">-->
+<!--<head th:replace="navbar :: head (title='#{User Management}')"></head>-->
+<!--<body onload = "initPage()">-->
+<!--<script type="text/javascript">-->
+<!--    function initPage(){-->
+<!--        $('#roles').multiSelect({-->
+<!--            selectableHeader: '<div class="custom-header" th:text="#{selectable.items}"></div>',-->
+<!--            selectionHeader: '<div class="custom-header" th:text="#{selected.items}"></div>'-->
+<!--        });-->
+
+<!--    }-->
+<!--</script>-->
+
+
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>-->
+
+<!--<script type="text/javascript">-->
+
+<!--    function toggle(source) {-->
+<!--        var checkboxes = document.querySelectorAll('input[type="checkbox"]');-->
+<!--        for (var i = 0; i < checkboxes.length; i++) {-->
+<!--            if (checkboxes[i] != source) {-->
+<!--                checkboxes[i].checked = source.checked;-->
+
+<!--            }-->
+<!--        }-->
+<!--    }-->
+<!--</script>-->
+
+
+
+<!--<div class = "container">-->
+<!--    <div th:replace="navbar :: navbar"></div>-->
+<!--    <form action="#" th:action="@{/usermanagement/users/{id}(id=${user.id})}"-->
+<!--          th:object="${user}" method="post">-->
+<!--        <input th:type="hidden" th:field="*{id}"/>-->
+
+<!--        <div class="form-group">-->
+<!--            <label class="control-label" th:text="#{users.firstName}"></label>-->
+<!--            <input class="form-control" type = text th:field="*{firstName}"/>-->
+
+<!--        </div>-->
+<!--        <div class="form-group">-->
+<!--            <label class="control-label" th:text="#{users.lastName}"></label>-->
+<!--            <input class="form-control" type = text th:field="*{lastName}"/>-->
+
+<!--        </div>-->
+
+
+
+
+<!--        <div class="form-group" th:name="UserName" >-->
+<!--            <label class="control-label" th:text="#{users.username}"></label>-->
+<!--            <input class="form-control" id="txt_username" name="txt_username" type = text th:field="*{username}" required-->
+<!--            />-->
+
+<!--        </div>-->
+<!--        <div class="alert alert-danger" role="alert" th:if="${UserInUse}!=null" th:text="${UserInUse}"></div>-->
+
+
+
+<!--        <div>-->
+<!--            <label class="control-label" th:text="#{users.roles}"></label>-->
+<!--        </div>-->
+<!--        <div>-->
+<!--            <input type="checkbox" onclick="toggle(this);" /> <b>Check all?</b><br />-->
+<!--        </div>-->
+<!--        <div class="form-check">-->
+<!--            <input th:field ="*{roles}" class="form-check-input" type="checkbox"-->
+<!--                   th:each="role : ${allRoles}"-->
+<!--                   th:id="${{role.name}}"-->
+<!--                   th:value="${{role}}"-->
+<!--                   th:utext="${role.name} + '<br>'"-->
+<!--            >-->
+<!--        </div>-->
+
+<!--        <p></p>-->
+
+<!--        <p></p>-->
+<!--        <div class="form-group">-->
+<!--            <label class="control-label" th:text="#{users.email}"></label>-->
+<!--            <input class="form-control" type = text th:field="*{email}"/>-->
+
+<!--        </div>-->
+<!--        <div class="form-group">-->
+<!--            <label class="control-label" th:text="#{users.uaNumber}"></label>-->
+<!--            <input class="form-control" type = text th:field="*{uaNumber}"/>-->
+
+<!--        </div>-->
+<!--        <div class="form-group">-->
+<!--            <label class="control-label" th:text="#{users.telephone}"></label>-->
+<!--            <input class="form-control" type = text th:field="*{telephone}"/>-->
+
+<!--        </div>-->
+<!--        <div class="form-group">-->
+<!--            <label class="control-label" th:text="#{users.location}"></label>-->
+<!--            <input class="form-control" type = text th:field="*{location}"/>-->
+
+<!--        </div>-->
+<!--        <p>-->
+<!--            <button type="submit" name="UserSave" th:text="#{save}" class="btn btn-outline-primary">Save</button>-->
+<!--            <a th:href="@{/usermanagement/users}" th:text="#{close}" class="btn btn-secondary">Close</a>-->
+
+<!--        </p>-->
+<!--    </form>-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->

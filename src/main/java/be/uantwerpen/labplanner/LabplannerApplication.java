@@ -104,19 +104,22 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
         @Override
 
         protected void configure(HttpSecurity http) throws Exception {
-            http.authorizeRequests().antMatchers("/login").permitAll().anyRequest()
+            http.authorizeRequests()
+                    .antMatchers("/register").permitAll().anyRequest()
                     .fullyAuthenticated()
-                    .and().formLogin().loginPage("/login")
+                    .and().
+                    formLogin().loginPage("/login").permitAll()
                     .failureUrl("/login?error")
-                    .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
-                    //.and().exceptionHandling().accessDeniedPage("/access?error");
+             //       .and().authorizeRequests().antMatchers("/regsiter*").permitAll().anyRequest().fullyAuthenticated()
+                    .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                    .and().exceptionHandling().accessDeniedPage("/access?error");
         }
     }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry)
     { registry.addViewController("/login").setViewName("login");
-        registry.addViewController("/register").setViewName("access");
+      //  registry.addViewController("/register").setViewName("Users/user-manage");
     }
 //
 //
