@@ -77,11 +77,23 @@ public class StepTypeService {
 
     public void delete(Long id) {
         StepType tmpStepType = this.stepTypeRepository.findById(id).orElse(null);
+
         //remove continuity if it's possible and it's not default continuity for custom experiment
         if (tmpStepType != null && tmpStepType.getContinuity() != null && tmpStepType.getContinuity().getId() != null && tmpStepType.getContinuity().getId() != 191) {
-            Continuity tmpContinuity =tmpStepType.getContinuity();
+            Continuity tmpContinuity = tmpStepType.getContinuity();
             tmpStepType.setContinuity(null);
-            continuityService.delete(tmpContinuity.getId());
+
+            // if continuity is used in a different stepType, don't delete it
+            boolean continuityIsUsed = false;
+            for (StepType stepType : stepTypeRepository.findAll()) {
+                if (stepType.getContinuity() != null && stepType.getContinuity().getId().equals(tmpContinuity.getId())) {
+                    //continuity is present in different stepType
+                    continuityIsUsed = true;
+                }
+            }
+            if (!continuityIsUsed) {
+                continuityService.delete(tmpContinuity.getId());
+            }
         }
         this.stepTypeRepository.deleteById(id);
     }
