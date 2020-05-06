@@ -103,11 +103,6 @@
             <input class="form-control" type = text th:field="*{lastName}"/>
 
         </div>
-
-        <div class="alert alert-danger" role="alert" th:if="${UserInUse}!=null" th:text="${UserInUse}"></div>
-
-
-
         <div>
             <label class="control-label" th:text="#{users.roles}"></label>
         </div>

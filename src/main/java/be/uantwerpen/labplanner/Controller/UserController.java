@@ -156,11 +156,6 @@ public class UserController {
             return "Users/password-manage";
         }
 
-        else if (!user.getPassword().matches(".*\\d.*")){
-            model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwnumber") );
-            model.addAttribute(user);
-            return "Users/password-manage";
-        }
 
         else if (!user.getPassword().equals(user.getPassword().trim())){
             model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwspace") );
