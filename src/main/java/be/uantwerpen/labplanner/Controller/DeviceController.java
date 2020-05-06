@@ -47,7 +47,13 @@ public class DeviceController {
     //List of devices
     @PreAuthorize("hasAuthority('Device - Read only - Basic') or hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices", method= RequestMethod.GET)
-    public String showDevices(final ModelMap model){
+    public String showDevices(@ModelAttribute("deviceError") String deviceError, @ModelAttribute("MailSuccess") String MailSuccess, ModelMap model){
+        if (!deviceError.trim().equals("")) {
+            model.addAttribute(deviceError);
+        }
+        if (!MailSuccess.trim().equals("")){
+            model.addAttribute(MailSuccess);
+        }
         model.addAttribute("allDevices", deviceService.findAll());
         return "Devices/list-devices";
     }
