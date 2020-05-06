@@ -109,11 +109,12 @@
 <script class='code-js' id='code-js' th:inline="javascript">
     var container = document.getElementById('chart-area');
     var allProductNames2 = /*[[${productNames}]]*/ [];
-
+    var shownMonthsHistory = /*[[${shownMonthsHistory}]]*/ [];
     var stockLevels2 = /*[[${stockLevelStartMonthHistory}]]*/ [];
+    var highestDataPointStockHistory = "[(${highestDataPointStockHistory})]";
 
     var data = {
-        categories: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        categories: shownMonthsHistory,
         series: [
             {
                 name: allProductNames2[0],
@@ -142,7 +143,8 @@
             {
                 name: allProductNames2[6],
                 data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-            },{
+            },
+            {
                 name: allProductNames2[7],
                 data: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
             }
@@ -156,7 +158,7 @@
         },
         yAxis: {
             title: 'Amount (kg/liter/unit)',
-            max: 2100
+            max: highestDataPointStockHistory + 100
         },
         xAxis: {
             title: 'Month',
@@ -169,7 +171,7 @@
             zoomable: true
         },
         tooltip: {
-            suffix: '°C'
+            suffix: 'kg/liter/unit'
         },
         plot: {
             bands: [

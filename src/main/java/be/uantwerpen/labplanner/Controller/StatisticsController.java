@@ -358,6 +358,7 @@ public class StatisticsController {
         List<OwnProduct> products = productService.findAll();
         List<Double> stockLevelMonth = new ArrayList<>();
         List<Double[]> stockLevelStartMonthHistory = new ArrayList<>();
+        List<String> shownMonthsHistory = new ArrayList<>();
         Double[] init = new Double[]{0.0,0.0,0.0,0.0,0.0,0.0};
         List<String> productNames = new ArrayList<>();
 
@@ -378,32 +379,50 @@ public class StatisticsController {
 
         String selectedStartMonth = (String) model.getAttribute("selectedStartMonthStockHistory");
         cal.setTime(sdf.parse(selectedStartMonth));
+        //Get selected months strings for x-axis
+        String shownMonth = sdf.format(cal.getTime());
+        shownMonthsHistory.add(shownMonth);
+        for(int j=0; j<5;j++){
+            cal.add(Calendar.MONTH, 1);
+            shownMonth = sdf.format(cal.getTime());
+            shownMonthsHistory.add(shownMonth);
+        }
+        //Calculate data points for graph
         for(OwnProduct product: products){
-            System.out.println("______________________New Product___________________________");
             cal.setTime(sdf.parse(selectedStartMonth));
             String month = sdf.format(cal.getTime());
             Double[] data = stockLevelStartMonthHistory.get(0);
-            System.out.println(selectedStartMonth);
 
             Map<String, Double> stockHistoryMap = product.getProductStockHistory();
-            //stockLevelStartMonthHistory.add(stockHistoryMap.get(selectedStartMonth));
             data[0] = stockHistoryMap.get(selectedStartMonth);
-            System.out.println(stockHistoryMap.get(selectedStartMonth));
 
             for(int i =1; i<6;i++) {
                 cal.setTime(sdf.parse(month));
                 cal.add(Calendar.MONTH, 1);
                 month = sdf.format(cal.getTime());
-                //stockLevelStartMonthHistory.add(stockHistoryMap.get(month));
                 data[i] = stockHistoryMap.get(month);
-                //System.out.println(stockHistoryMap.get(month));
-                System.out.println(data[i]);
+            }
+        }
+
+        //calculate highest stock level for y-axis
+        //model.addAttribute("highestDataPointStockHistory",100.0);
+        double highestDataPointStockHistory = 100.0;
+        for(int j=0; j<stockLevelStartMonthHistory.size();j++){
+            Double[] data = stockLevelStartMonthHistory.get(j);
+            for(int i=0; i< data.length; i++){
+                if(!(data[i] == null )){
+                    if (data[i] >= highestDataPointStockHistory) {
+                        highestDataPointStockHistory = data[i];
+                    }
+                }
             }
         }
 
         //get all the stock levels
         model.addAttribute("products",products);
         model.addAttribute("productNames",productNames);
+        model.addAttribute("shownMonthsHistory",shownMonthsHistory);
+        model.addAttribute("highestDataPointStockHistory", highestDataPointStockHistory);
         model.addAttribute("stockLevelMonth",stockLevelMonth);
         model.addAttribute("stockLevelStartMonthHistory", stockLevelStartMonthHistory);
         model.addAttribute("maxDateSelect",new SimpleDateFormat("yyyy-MM").format(new Date()));
@@ -414,7 +433,6 @@ public class StatisticsController {
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/stockStatistics/getSelectedStartStockHistory")
     public String getSelectedStartStockHistory(final ModelMap model, String selectedStartMonthStockHistory){
-        System.out.println(selectedStartMonthStockHistory);
         model.addAttribute("selectedStartMonthStockHistory", selectedStartMonthStockHistory);
         return "redirect:/statistics/stockStatistics";
     }
@@ -422,7 +440,6 @@ public class StatisticsController {
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/stockStatistics/getSelectedMonthStock")
     public String getSelectedMonthStock(final ModelMap model, String selectedMonthStock){
-        System.out.println(selectedMonthStock);
         model.addAttribute("selectedMonthStock", selectedMonthStock);
         return "redirect:/statistics/stockStatistics";
     }
