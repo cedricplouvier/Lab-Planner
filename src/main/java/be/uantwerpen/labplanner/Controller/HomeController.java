@@ -121,7 +121,7 @@ public class HomeController {
             model.addAttribute("reportAmount", reportService.findAll().size());
             model.addAttribute("userSteps", userSteps);
             model.addAttribute("Step", new Step());
-            model.addAttribute("currentUser",user.getUsername());
+            model.addAttribute("currentUser",user.getFirstName());
             model.addAttribute("studentSteps",studentSteps);
 
         model.addAttribute("userExperiments", userExperiments);

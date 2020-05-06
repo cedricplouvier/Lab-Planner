@@ -13,8 +13,11 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 @Controller
@@ -26,6 +29,9 @@ public class RegisterController {
     private UserService userService;
 
 
+    private List<User> registredUsers = new ArrayList<>();
+
+
 
 
     @RequestMapping(value = "/register",method = RequestMethod.GET)
@@ -35,57 +41,9 @@ public class RegisterController {
         return "register";
     }
 
-//    @RequestMapping(value = "/password",method = RequestMethod.POST)
-//    public String savePassword(@Valid User user, BindingResult result, @org.jetbrains.annotations.NotNull final ModelMap model){
-//        //get current user
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        User curruser = (User) authentication.getPrincipal();
-//
-//        if (curruser.getId() != user.getId()){
-//            model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("users.pwfalse") );
-//            model.addAttribute(user);
-//            return "Users/password-manage";
-//        }
-//
-//        else if(user.getPassword().length()<6){
-//            model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwshort") );
-//            model.addAttribute(user);
-//            return "Users/password-manage";
-//
-//        }
-//
-//        else if (user.getPassword().equals(user.getPassword().toLowerCase()) || user.getPassword().equals(user.getPassword().toUpperCase())){
-//
-//            model.addAttribute(user);
-//            model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwcapital") );
-//            return "Users/password-manage";
-//        }
-//
-//        else if (!user.getPassword().matches(".*\\d.*")){
-//            model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwnumber") );
-//            model.addAttribute(user);
-//            return "Users/password-manage";
-//        }
-//
-//        else if (!user.getPassword().equals(user.getPassword().trim())){
-//            model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwspace") );
-//            model.addAttribute(user);
-//            return "Users/password-manage";
-//        }
-//
-//        //if it passes all tests
-//        curruser.setPassword(user.getPassword());
-//        userService.save(curruser);
-//
-//
-//
-//
-//
-//        return "redirect:/home";
-//    }
 
     @RequestMapping(value = {"/register"}, method = RequestMethod.POST)
-    public String addUser(@Valid User user,  BindingResult result, final ModelMap model) {
+    public String addUser(@Valid User user,  BindingResult result, final ModelMap model, RedirectAttributes ra) {
         //check for standard errors
         if ((result.hasErrors())|| (user.getPassword() == null) || (user.getUsername() ==null) || (user.getUsername().trim().equals("")) || (user.getPassword().trim().equals(""))){
             model.addAttribute("allRoles", roleService.findAll());
@@ -150,7 +108,7 @@ public class RegisterController {
 
             //may not save it to userService, but in seperate folder where admin can validate.
             userService.save(user);
-            return "login";
+            return "registerSuccess";
         }
 
 
