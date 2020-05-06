@@ -478,16 +478,20 @@ public class DatabaseLoader {
         tagRepository.save(tag4);
 
         Map<String,Double> stockHis1 = new HashMap<>();
+        stockHis1.put("2019-11",(double)500);
+        stockHis1.put("2019-12",(double)220);
         stockHis1.put("2020-01",(double)100);
         stockHis1.put("2020-02",(double)200);
-        stockHis1.put("2020-03",(double)300);
-        stockHis1.put("2020-04",(double)400);
-        stockHis1.put("2020-05",(double)500);
-        stockHis1.put("2020-06",(double)600);
+        stockHis1.put("2020-03",(double)100);
+        stockHis1.put("2020-04",(double)250);
+        stockHis1.put("2020-05",(double)260);
+        stockHis1.put("2020-06",(double)110);
         OwnProduct pr1 = new OwnProduct("Gebroken Porfier 6,3/10", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3, new URL("https://nl.wikipedia.org/wiki/Porfier"), new HashMap<>());
         pr1.setProductStockHistory(stockHis1);
         productRepository.save(pr1);
         Map<String,Double> stockHis2 = new HashMap<>();
+        stockHis1.put("2019-11",(double)350);
+        stockHis1.put("2019-12",(double)200);
         stockHis2.put("2020-01",(double)600);
         stockHis2.put("2020-02",(double)500);
         stockHis2.put("2020-03",(double)550);

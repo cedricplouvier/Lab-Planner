@@ -154,7 +154,12 @@ public class StatisticsController {
 
     @ModelAttribute("selectedStartMonthStockHistory")
     private String selectedStartMonthStockHistory(){
-        return new SimpleDateFormat("yyyy-MM").format(new Date());
+        //the calendarshould always start 6 month behind us as standard
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        cal.add(Calendar.MONTH, -6);
+        sdf.format(cal.getTime());
+        return sdf.format(cal.getTime());
     }
 
     @ModelAttribute("selectedMonthStock")
