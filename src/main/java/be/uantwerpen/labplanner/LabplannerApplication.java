@@ -38,6 +38,7 @@ import java.util.Locale;
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
 @EnableWebSecurity
+@EnableScheduling
 public class LabplannerApplication extends WebMvcConfigurerAdapter {
 
     public static void main(String[] args) {
