@@ -41,15 +41,7 @@
                        min="2019-01" th:max="${maxDateSelect}">
                 <button type="submit" name="history-start" class="btn btn-∂primary">Set</button>
             </form> <br>
-            <form th:action="@{/statistics/stockStatistics/getSelectedProducts}" type="checkbox">
-                <select multiple="multiple" th:name="selected">
-                    <option type="checkbox"
-                           th:each="product : ${products}"
-                           th:value="${product.getName()}"
-                           th:utext="${product.getName()}+'<br>'">
-                </select>
-                <input type="submit" value="submit"/>
-            </form>
+
             <div id="chart-area"></div>
         </div>
         <div class='custom-area'>

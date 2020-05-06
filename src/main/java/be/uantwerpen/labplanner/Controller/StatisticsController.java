@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.Math.round;
 
 @Controller
-@SessionAttributes({"deviceCounter", "selectedYear", "selectedTypeOfGraph", "selectedDevices", "occupancyDevicesHours",
+@SessionAttributes({"deviceCounter","productCounter", "selectedYear", "selectedTypeOfGraph", "selectedDevices", "occupancyDevicesHours",
                     "occupancyDevicesHoursPast", "occupancyDevicesHoursFuture", "occupancyDevicesDays", "occupancyDevicesDaysPast",
                     "occupancyDevicesDaysFuture","totalHours", "totalHoursPast", "totalHoursFuture", "highestAbsoluteValueHours",
                     "selectedTimePeriod", "selectedStartMonthStockHistory","selectedMonthStock", "selectedProducts"})
@@ -45,6 +45,11 @@ public class StatisticsController {
 
     @ModelAttribute("deviceCounter")
     private int getdeviceCounter(){
+        return 0;
+    }
+
+    @ModelAttribute("productCounter")
+    private int getProductCounterCounter(){
         return 0;
     }
     
