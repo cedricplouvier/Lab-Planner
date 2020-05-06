@@ -39,7 +39,8 @@
                   onmouseenter="this.style.backgroundColor='rgb(39,107,210)'" onmouseleave="this.style.backgroundColor='rgb(47,126,247'">
                 <br>
                 <ul>
-                    <p><span th:text="#{statistics.selectedText}"></span><span th:text="${selectedTypeOfGraph}"></span></p>
+                    <p><span th:text="#{statistics.selectedText}"></span>
+                    <span th:text="${selectedTypeOfGraph}"></span></p>
                     <ul th:each="graphType : ${selectableGraphTypes}">
                         <div>
                             <input type="radio" th:name="selectedTypeOfGraph" th:value="${graphType}" onclick="this.form.submit();">
