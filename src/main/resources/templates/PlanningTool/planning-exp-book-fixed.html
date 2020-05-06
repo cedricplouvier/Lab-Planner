@@ -69,11 +69,11 @@
                 '   </select>' +
                 '   </th>' +
                 '   <th align="center">' +
-                '       <div class="input-group-append">'+
+                '       <div class="input-group-append">' +
                 '           <input type="number" min="0" step="0.01" class=" form-control input-device" placeholder="Amount of mixture" id="piecesOfMixture' + i + '.mixtureAmount" name="piecesOfMixture[' + i + '].mixtureAmount" required>' +
-                '           <span class="input-group-text" style="color:#808080">kg</span>'+
+                '           <span class="input-group-text" style="color:#808080">kg</span>' +
                 '       </div>' +
-                '   </th>'+
+                '   </th>' +
                 '   <th>' +
                 '       <input class=" form-control input-device" placeholder="Mixture comment" id="piecesOfMixture' + i + '.mixtureComment" name="piecesOfMixture[' + i + '].mixtureComment">' +
                 '   </th>' +
@@ -449,7 +449,7 @@
             <tbody id="list" class="list" style=" font-size:100%;">
             <div th:if="(*{experimentType}!=null)">
                 <div th:each="stepType, itemStat : *{experimentType.stepTypes}">
-                    <tr>
+                    <tr th:id="'row' + ${itemStat.index}">
                         <input id="step" th:type="hidden"
                                th:field="*{steps[__${itemStat.index}__].id}">
                         <input th:type="hidden" th:field="*{steps[__${itemStat.index}__].user}"/>
@@ -459,7 +459,7 @@
                         </td>
                         <td style="vertical-align:center; text-align:center;">
                             <select style="width: 110%;font-size:90%;" class=" form-control input-device"
-                                    id="selectDevice"
+                                    th:id="'selectDevice' + ${itemStat.index}"
                                     th:field="*{steps[__${itemStat.index}__].device}">
                                 <option hidden selected th:text="#{device.select}" value=""> Select device
                                 </option>
@@ -477,13 +477,13 @@
                         </td>
                         <td style="vertical-align:center; text-align:center;">
                             <div class="input-group">
-                                <input required style="width: 90%; font-size:80%;" id="startDate" type="date"
+                                <input required style="width: 90%; font-size:80%;" th:id="'startDate' + ${itemStat.index}" type="date"
                                        th:value="*{steps[__${itemStat.index}__].start}"
                                        th:field="*{steps[__${itemStat.index}__].start}"
                                        class="form-control input-date"
                                        placeholder="Start date"/>
 
-                                <input required style="width: 90%; font-size:80%; " id="endDate" type="date"
+                                <input required style="width: 90%; font-size:80%; " th:id="'endDate'+ ${itemStat.index}" type="date"
                                        th:value="*{steps[__${itemStat.index}__].end}"
                                        th:field="*{steps[__${itemStat.index}__].end}"
                                        class="form-control input-date"
@@ -497,11 +497,11 @@
                         </td>
                         <td style="vertical-align:center; text-align:center;">
 
-                            <input required style="width: 100%; font-size:80%;" type="time" id="startHour"
+                            <input required style="width: 100%; font-size:80%;" type="time" th:id="'startHour'+ ${itemStat.index}"
                                    class="form-control float-right input-hour"
                                    th:value="*{steps[__${itemStat.index}__].startHour}"
                                    th:field="*{steps[__${itemStat.index}__].startHour}" placeholder="Start hour">
-                            <input required style="width: 100%; font-size:80%; " type="time" id="endHour"
+                            <input required style="width: 100%; font-size:80%; " type="time" th:id="'endHour'+ ${itemStat.index}"
                                    class="form-control float-right input-hour"
                                    th:value="*{steps[__${itemStat.index}__].endHour}"
                                    th:field="*{steps[__${itemStat.index}__].endHour}" placeholder="End hour">
@@ -510,7 +510,7 @@
                         <td>
                         </td>
                         <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center"
-                            id="fixedtimeLength"
+                            th:id="'fixedtimeLength'+ ${itemStat.index}"
                             name="fixedtimeLength"
                             th:utext="*{experimentType.stepTypes[__${itemStat.index}__].hasFixedLength} ?
                          *{experimentType.stepTypes[__${itemStat.index}__].fixedTimeHours}  +':' +*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeMinutes}+
@@ -518,7 +518,7 @@
                          : 'No'">
                         </td>
                         <td style="vertical-align:center; text-align:center;">
-                            <input style="width: 100%; font-size:80%; " type="text" id="comment"
+                            <input style="width: 100%; font-size:80%; " type="text" th:id="'comment'+ ${itemStat.index}"
                                    class="form-control float-right" placeholder="comment"
                                    th:field="*{steps[__${itemStat.index}__].comment}">
                         </td>
@@ -536,7 +536,7 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center" id="continuity"
+                        <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center" th:id="'continuity'+ ${itemStat.index}"
                             name="continuity"
                             th:utext="(*{experimentType.stepTypes[__${itemStat.index}__].continuity.type} != 'No') ?
                         *{experimentType.stepTypes[__${itemStat.index}__].continuity.hours} + ':' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}+

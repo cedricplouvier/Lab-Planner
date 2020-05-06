@@ -669,7 +669,6 @@ public class StepController {
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("experiment", new Experiment());
-        model.addAttribute("allExperiments", allFixedExperimentTypes());
         model.addAttribute("holidays", holidays);
 
 
@@ -1407,6 +1406,16 @@ public class StepController {
 
             }
         }
+
+        //remove deleted rows (null)
+        //if name is null, than this row was removed
+        for (int i = 0; i < experimentType.getStepTypes().size(); i++) {
+            if (experimentType.getStepTypes().get(i).getStepTypeName() == null) {
+                experimentType.getStepTypes().remove(i);
+                i--; //Size of array was changed, so same index needs to be checked again
+            }
+        }
+
 
         ExperimentType tempExperimentType = experimentType.getId() == null ? null : experimentTypeService.findById(experimentType.getId()).orElse(null);
         if (tempExperimentType == null) {

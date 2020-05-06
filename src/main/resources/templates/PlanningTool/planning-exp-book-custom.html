@@ -23,14 +23,16 @@
 
 <script th:inline="javascript">
     let errorMsg = [[${errorMsg}]]
+    let stepTypeRowIndexWithRemovedItems = 0;
     $(document).ready(function () {
         if (errorMsg) {
             $("#myToast").toast('show');
         }
         //check checkBox to make isfixedType variable false
         document.getElementById("checkboxIsFixedType").checked = false;
-
+        stepTypeRowIndexWithRemovedItems = $('#list tr').length / 2;
     });
+
     let devices = [[${allDevices}]];
     let deviceTypes = [[${allDeviceTypes}]];
     let steps = [[${allSteps}]];
@@ -86,13 +88,9 @@
     }
 
     function refreshDevices(a) {
-        i =  $(a).closest("tr").index();
-        alert(i)
         let devices = [[${allDevices}]];
-
-
-        var selectDeviceType = document.getElementsByName('experimentType.stepTypes[' + i + '].deviceType')[0];
-        var selectDevices = document.getElementsByName('steps[' + i + '].device')[0];
+        var selectDeviceType = $(a).closest("tr").find("td:eq(2)").find("select")[0];
+        var selectDevices = $(a).closest("tr").find("td:eq(2)").find("select")[1];
 
         //remove previous options
         for (var i = selectDevices.options.length - 1; i >= 0; i--) {
@@ -122,8 +120,8 @@
 
     function addStepRow() {
         //reference table
-        var i = $('#list tr').length;
-        var tableRef = document.getElementById('list');
+        var i = stepTypeRowIndexWithRemovedItems;
+        stepTypeRowIndexWithRemovedItems++;
         let devices = [[${allDevices}]];
         let deviceTypes = [[${allDeviceTypes}]];
 
@@ -243,10 +241,9 @@
         //reference table
         var experimentTypeId = $('#selectExperimentType :selected').val();
 
-        var tableLength = $('#list tr').length;
+        var tableLength = stepTypeRowIndexWithRemovedItems;
         //a = experimentType
         var a;
-        var tableRef = document.getElementById('list');
         let devices = [[${allDevices}]];
         let deviceTypes = [[${allDeviceTypes}]];
         let experimentTypes = [[${allExperimentTypes}]];
@@ -260,7 +257,7 @@
         if (a) {
             for (let i = 0; i < a.stepTypes.length; i++) {
                 //tempStepIndex = i;
-
+                stepTypeRowIndexWithRemovedItems += i;
                 var deviceOprions = '';
                 for (let j = 0; j < devices.length; j++) {
                     if (devices[j].deviceType.id == a.stepTypes[i].deviceType.id) {

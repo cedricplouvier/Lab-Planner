@@ -7,12 +7,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 <script th:inline="javascript">
     var url = /*[[@{/planning/experiments/{id} (id=${experimentType})}]]*/ "";
+    var indexWithRemovedItems = 0;
 
-    function showFixedTimeInput(i) {
-        var checkBox = document.getElementById("myTable").rows[i + 1].cells[4].getElementsByTagName("input")[0];
-        var cell0 = document.getElementById("stepTypes" + i + ".fixedTimeType");
-        var cell1 = document.getElementById("myTable").rows[i + 1].cells[6].getElementsByTagName("input")[0];
-        var cell2 = document.getElementById("myTable").rows[i + 1].cells[6].getElementsByTagName("input")[1];
+    function showFixedTimeInput(a) {
+        var checkBox = $(a).closest("tr").find("td:eq(4)").find("input")[0];
+        var cell0 = $(a).closest("tr").find("td:eq(5)").find("select")[0];
+        var cell1 = $(a).closest("tr").find("td:eq(6)").find("input")[0];
+        var cell2 = $(a).closest("tr").find("td:eq(6)").find("input")[1];
+        alert(checkBox + " " + cell0 + " " + cell1 + " " + cell2 + " ");
         if (checkBox.checked == true) {
             cell0.disabled = false;
             cell1.disabled = false;
@@ -32,6 +34,7 @@
         if (messages != null) {
             toastr.error(messages);
         }
+        indexWithRemovedItems = $('#list tr').length;
 
         //check checkBox to make isfixedType variable true
         document.getElementById("checkboxIsFixedType").checked = true;
@@ -62,7 +65,8 @@
 
         console.log(a);
         toggleSearchlist();
-        var rowCount = $('#list tr').length;
+        var rowCount = indexWithRemovedItems;
+        indexWithRemovedItems++;
         $('#list')
             .append(
                 '<tr class="row' + rowCount + '" id="row' + rowCount + '"> ' +
@@ -89,7 +93,7 @@
                 '   </td>' +
                 '   <td>' +
                 '       <label class="switch">' +
-                '           <input type="checkbox" onclick="showFixedTimeInput(' + rowCount + ')" value="false" id="stepTypes' + rowCount + '.hasFixedLength" name="stepTypes[' + rowCount + '].hasFixedLength">' +
+                '           <input type="checkbox" onclick="showFixedTimeInput(this)" value="false" id="stepTypes' + rowCount + '.hasFixedLength" name="stepTypes[' + rowCount + '].hasFixedLength">' +
                 '           <input type="hidden" name="_stepTypes[' + rowCount + '].hasFixedLength" value="on">' +
                 '       </label>' +
                 '   </td>' +
@@ -204,26 +208,28 @@
           method="post">
         <input type="checkbox" id="checkboxIsFixedType" th:field="*{isFixedType}" hidden/>
 
-    <table id="myTable" class="table table-hover">
-        <div class="dropdown">
-            <div  class="">
-                <input type="text" placeholder="Search.." id="myInput" onclick="toggleSearchlist()" onkeyup="filterFunction()">
-                <div  id="myDropdown" class="dropdown-content">
-                    <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}" th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
+        <table id="myTable" class="table table-hover">
+            <div class="dropdown">
+                <div class="">
+                    <input type="text" placeholder="Search.." id="myInput" onclick="toggleSearchlist()"
+                           onkeyup="filterFunction()">
+                    <div id="myDropdown" class="dropdown-content">
+                        <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}"
+                           th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <thead>
-        <tr>
-            <th th:text="#{step.type}">Step Type</th>
-            <th>Continuity type</th>
-            <th>Continuity direction</th>
-            <th>Continuity duration</th>
-            <th th:text="#{stepType.setFixedTime}">Set fixed time of step</th>
-            <th>Fixed time type</th>
-            <th th:text="#{stepType.fixedTime}">Fixed time of step</th>
-        </tr>
-        </thead>
+            <thead>
+            <tr>
+                <th th:text="#{step.type}">Step Type</th>
+                <th>Continuity type</th>
+                <th>Continuity direction</th>
+                <th>Continuity duration</th>
+                <th th:text="#{stepType.setFixedTime}">Set fixed time of step</th>
+                <th>Fixed time type</th>
+                <th th:text="#{stepType.fixedTime}">Fixed time of step</th>
+            </tr>
+            </thead>
 
             <!-- IMPORTANT, class="list" have to be at tbody -->
             <tbody id="list" class="list" style="text-align:center;">
@@ -263,7 +269,7 @@
                     <label class="switch">
                         <input type="checkbox"
                                th:checked="${stepType.hasFixedLength}"
-                               th:onclick="showFixedTimeInput([[${itemStat.index}]])"
+                               th:onclick="showFixedTimeInput(this)"
                                th:field="*{stepTypes[__${itemStat.index}__].hasFixedLength}"
                                th:value="${stepType.hasFixedLength}">
                     </label>
@@ -303,7 +309,7 @@
         </div>
 
         <div style="margin-top: 10px">
-            <a style="margin-right: 10px" href="/planning/experiments" class="btn btn-outline-primary"
+            <a style="margin-right: 10px" th:href="@{/planning/experiments}" class="btn btn-outline-primary"
                th:text="#{experimentstype.return}">Return</a>
             <button style="margin-right: 10px" type="submit" class="btn btn-primary"
                     th:text="#{experiment.type.submit}">
