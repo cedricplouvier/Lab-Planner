@@ -21,6 +21,8 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
 public class OwnProduct extends AbstractPersistable<Long> {
+    private static String DEFAULT_PRODUCTNAME = "default_productname";
+
 
     @Column
     @NotBlank(
@@ -100,8 +102,7 @@ public class OwnProduct extends AbstractPersistable<Long> {
     @CollectionTable(name = "stocklvl")
     private Map<String, Double> productStockHistory;
 
-    public OwnProduct() {
-    }
+    public OwnProduct() {this(DEFAULT_PRODUCTNAME,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null);}
 
     public OwnProduct(String name, String description, Double unitCost, Double stockLevel, Double lowStockLevel,
                       Double reservedStockLevel, Unit units, String imageUrl, String properties, Long productCreatorId,

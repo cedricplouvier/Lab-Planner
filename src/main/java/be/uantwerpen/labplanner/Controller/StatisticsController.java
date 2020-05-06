@@ -28,35 +28,29 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.Math.round;
 
 @Controller
-@SessionAttributes({"deviceCounter", "selectedYear", "selectedTypeOfGraph", "selectedDevices", "occupancyDevicesHours",
+@SessionAttributes({"deviceCounter","productCounter", "selectedYear", "selectedTypeOfGraph", "selectedDevices", "occupancyDevicesHours",
                     "occupancyDevicesHoursPast", "occupancyDevicesHoursFuture", "occupancyDevicesDays", "occupancyDevicesDaysPast",
                     "occupancyDevicesDaysFuture","totalHours", "totalHoursPast", "totalHoursFuture", "highestAbsoluteValueHours",
-                    "selectedTimePeriod", "selectedStartMonthStockHistory","selectedMonthStock"})
+                    "selectedTimePeriod", "selectedStartMonthStockHistory","selectedMonthStock", "selectedProducts",
+                    "stockLevelStartMonthHistory"})
 public class StatisticsController {
 
     @Autowired
     private DeviceService deviceService;
 
     @Autowired
-    private DeviceTypeService deviceTypeService;
-
-    @Autowired
     private StepService stepService;
-
-    @Autowired
-    private CompositionService compositionService;
-
-    @Autowired
-    private PieceOfMixtureService pieceOfMixtureService;
-
-    @Autowired
-    private ExperimentService experimentService;
 
     @Autowired
     private OwnProductService productService;
 
     @ModelAttribute("deviceCounter")
     private int getdeviceCounter(){
+        return 0;
+    }
+
+    @ModelAttribute("productCounter")
+    private int getProductCounterCounter(){
         return 0;
     }
     
@@ -166,6 +160,21 @@ public class StatisticsController {
     @ModelAttribute("selectedMonthStock")
     private String selectedMonthStock(){
         return new SimpleDateFormat("yyyy-MM").format(new Date());
+    }
+
+    @ModelAttribute("selectedProducts")
+    private List<OwnProduct> selectProd(){
+        return new ArrayList<>(Arrays.asList(new OwnProduct(),new OwnProduct(),new OwnProduct(),new OwnProduct(),new OwnProduct()));
+    }
+
+    @ModelAttribute("stockLevelStartMonthHistory")
+    private List<Double[]> stockLevelStartMonthHis(){
+        return new ArrayList<Double[]>(Arrays.asList(
+                new Double[]{0.0,0.0,0.0,0.0,0.0,0.0},
+                new Double[]{0.0,0.0,0.0,0.0,0.0,0.0},
+                new Double[]{0.0,0.0,0.0,0.0,0.0,0.0},
+                new Double[]{0.0,0.0,0.0,0.0,0.0,0.0},
+                new Double[]{0.0,0.0,0.0,0.0,0.0,0.0}));
     }
 
     float amountOfWorkDaysInYear = 200;
@@ -355,11 +364,15 @@ public class StatisticsController {
     @RequestMapping(value = "/statistics/stockStatistics", method = RequestMethod.GET)
     public String showStatisticsStockPage(final ModelMap model) throws ParseException{
 
+        List<OwnProduct> listSelectedProducts = (List) model.getAttribute("selectedProducts");
+        List<Double[]> stockLevelStartMonthHis = (List) model.getAttribute("stockLevelStartMonthHistory");
         List<OwnProduct> products = productService.findAll();
         List<Double> stockLevelMonth = new ArrayList<>();
-        List<Double[]> stockLevelStartMonthHistory = new ArrayList<>();
-        Double[] init = new Double[]{0.0,0.0,0.0,0.0,0.0,0.0};
+        List<String> shownMonthsHistory = new ArrayList<>();
         List<String> productNames = new ArrayList<>();
+        List<String> selectedProductNames = new ArrayList<>();
+        model.addAttribute("selectedProd",new OwnProduct());
+
 
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
@@ -367,7 +380,6 @@ public class StatisticsController {
         //get all the product names
         for(OwnProduct product: products){
             productNames.add(product.getName());
-            stockLevelStartMonthHistory.add(init);
         }
 
         for(OwnProduct product: products){
@@ -378,43 +390,70 @@ public class StatisticsController {
 
         String selectedStartMonth = (String) model.getAttribute("selectedStartMonthStockHistory");
         cal.setTime(sdf.parse(selectedStartMonth));
-        for(OwnProduct product: products){
-            System.out.println("______________________New Product___________________________");
-            cal.setTime(sdf.parse(selectedStartMonth));
-            String month = sdf.format(cal.getTime());
-            Double[] data = stockLevelStartMonthHistory.get(0);
-            System.out.println(selectedStartMonth);
+        //Get selected months strings for x-axis
+        String shownMonth = sdf.format(cal.getTime());
+        shownMonthsHistory.add(shownMonth);
+        for(int j=0; j<5;j++){
+            cal.add(Calendar.MONTH, 1);
+            shownMonth = sdf.format(cal.getTime());
+            shownMonthsHistory.add(shownMonth);
+        }
+        //Calculate data points for graph
+        if((int)model.getAttribute("productCounter")>0) {
+            //for (OwnProduct product : listSelectedProducts) {
+            for(int z=0;z<(int)model.getAttribute("productCounter");z++){
+                OwnProduct product = listSelectedProducts.get(z);
+                selectedProductNames.add(product.getName());
+                cal.setTime(sdf.parse(selectedStartMonth));
+                String month = sdf.format(cal.getTime());
+                Double[] data = stockLevelStartMonthHis.get(z);
 
-            Map<String, Double> stockHistoryMap = product.getProductStockHistory();
-            //stockLevelStartMonthHistory.add(stockHistoryMap.get(selectedStartMonth));
-            data[0] = stockHistoryMap.get(selectedStartMonth);
-            System.out.println(stockHistoryMap.get(selectedStartMonth));
+                Map<String, Double> stockHistoryMap = product.getProductStockHistory();
+                data[0] = stockHistoryMap.get(selectedStartMonth);
 
-            for(int i =1; i<6;i++) {
-                cal.setTime(sdf.parse(month));
-                cal.add(Calendar.MONTH, 1);
-                month = sdf.format(cal.getTime());
-                //stockLevelStartMonthHistory.add(stockHistoryMap.get(month));
-                data[i] = stockHistoryMap.get(month);
-                //System.out.println(stockHistoryMap.get(month));
-                System.out.println(data[i]);
+                for (int i = 1; i < 6; i++) {
+                    cal.setTime(sdf.parse(month));
+                    cal.add(Calendar.MONTH, 1);
+                    month = sdf.format(cal.getTime());
+                    data[i] = stockHistoryMap.get(month);
+                }
+            }
+        }
+
+        //calculate highest stock level for y-axis of current stock graph
+        double highestDataPointStock = 100.0;
+        for(int j=0; j<stockLevelMonth.size();j++){
+            Double data = stockLevelMonth.get(j);
+            if (data >= highestDataPointStock) {
+                highestDataPointStock = data;
             }
         }
 
         //get all the stock levels
         model.addAttribute("products",products);
+        model.addAttribute("selectedProducts",listSelectedProducts);
         model.addAttribute("productNames",productNames);
+        model.addAttribute("selectedProductNames", selectedProductNames);
+        model.addAttribute("productCounter");
+        model.addAttribute("highestDataPointStock",highestDataPointStock);
+        model.addAttribute("shownMonthsHistory",shownMonthsHistory);
         model.addAttribute("stockLevelMonth",stockLevelMonth);
-        model.addAttribute("stockLevelStartMonthHistory", stockLevelStartMonthHistory);
         model.addAttribute("maxDateSelect",new SimpleDateFormat("yyyy-MM").format(new Date()));
 
         return "Statistics/stockStatistics";
     }
 
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
+    @RequestMapping(value = "/statistics/stockStatistics/resetGraphStockHistory")
+    public String resetGraphStockHistory(final ModelMap model){
+        model.addAttribute("productCounter",0);
+        model.addAttribute("selectedProducts", new ArrayList<>(Arrays.asList(new OwnProduct(),new OwnProduct(),new OwnProduct(),new OwnProduct(),new OwnProduct())));
+        return "redirect:/statistics/stockStatistics";
+    }
+
+    @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/stockStatistics/getSelectedStartStockHistory")
     public String getSelectedStartStockHistory(final ModelMap model, String selectedStartMonthStockHistory){
-        System.out.println(selectedStartMonthStockHistory);
         model.addAttribute("selectedStartMonthStockHistory", selectedStartMonthStockHistory);
         return "redirect:/statistics/stockStatistics";
     }
@@ -422,8 +461,42 @@ public class StatisticsController {
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/stockStatistics/getSelectedMonthStock")
     public String getSelectedMonthStock(final ModelMap model, String selectedMonthStock){
-        System.out.println(selectedMonthStock);
         model.addAttribute("selectedMonthStock", selectedMonthStock);
+        return "redirect:/statistics/stockStatistics";
+    }
+
+    @PreAuthorize("hasAnyAuthority('Statistics Access')")
+    @RequestMapping(value = "/statistics/stockStatistics/getSelectedProduct")
+    public String getSelectedProduct(final ModelMap model, OwnProduct selectedProd, RedirectAttributes redAttr){
+
+        List<OwnProduct> listSelectedProducts = (List) model.getAttribute("selectedProducts");
+        List<OwnProduct> allProducts = productService.findAll();
+
+        boolean duplicate = false;
+        for (int i = 0; i < listSelectedProducts.size(); i++) {
+            OwnProduct prod = listSelectedProducts.get(i);
+            if(prod.getName().matches(selectedProd.getName())){
+                duplicate = true;
+            }
+        }
+        if(!duplicate) {
+            if ((int) model.getAttribute("productCounter") < 5) {
+                for(OwnProduct prod : allProducts){
+                    if(selectedProd.getName().equals(prod.getName())){
+                        listSelectedProducts.set((int) model.getAttribute("productCounter"), prod);
+                    }
+                }
+
+                int dc = (int) model.get("productCounter") + 1;
+                model.addAttribute("productCounter", dc);
+            } else {
+                redAttr.addFlashAttribute("ProdStatus", "productLimit");
+            }
+        }
+        else{
+            redAttr.addFlashAttribute("ProdStatus", "productDuplicate");
+        }
+        model.addAttribute("selectedProducts",listSelectedProducts);
         return "redirect:/statistics/stockStatistics";
     }
 
