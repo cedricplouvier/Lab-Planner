@@ -31,26 +31,14 @@ import static java.lang.Math.round;
 @SessionAttributes({"deviceCounter", "selectedYear", "selectedTypeOfGraph", "selectedDevices", "occupancyDevicesHours",
                     "occupancyDevicesHoursPast", "occupancyDevicesHoursFuture", "occupancyDevicesDays", "occupancyDevicesDaysPast",
                     "occupancyDevicesDaysFuture","totalHours", "totalHoursPast", "totalHoursFuture", "highestAbsoluteValueHours",
-                    "selectedTimePeriod", "selectedStartMonthStockHistory","selectedMonthStock"})
+                    "selectedTimePeriod", "selectedStartMonthStockHistory","selectedMonthStock", "selectedProducts"})
 public class StatisticsController {
 
     @Autowired
     private DeviceService deviceService;
 
     @Autowired
-    private DeviceTypeService deviceTypeService;
-
-    @Autowired
     private StepService stepService;
-
-    @Autowired
-    private CompositionService compositionService;
-
-    @Autowired
-    private PieceOfMixtureService pieceOfMixtureService;
-
-    @Autowired
-    private ExperimentService experimentService;
 
     @Autowired
     private OwnProductService productService;
@@ -166,6 +154,11 @@ public class StatisticsController {
     @ModelAttribute("selectedMonthStock")
     private String selectedMonthStock(){
         return new SimpleDateFormat("yyyy-MM").format(new Date());
+    }
+
+    @ModelAttribute("selectedProducts")
+    private List<OwnProduct> selectProd(){
+        return new ArrayList<>(Arrays.asList(new OwnProduct(),new OwnProduct(),new OwnProduct(),new OwnProduct(),new OwnProduct()));
     }
 
     float amountOfWorkDaysInYear = 200;
@@ -441,6 +434,14 @@ public class StatisticsController {
     @RequestMapping(value = "/statistics/stockStatistics/getSelectedMonthStock")
     public String getSelectedMonthStock(final ModelMap model, String selectedMonthStock){
         model.addAttribute("selectedMonthStock", selectedMonthStock);
+        return "redirect:/statistics/stockStatistics";
+    }
+
+    @PreAuthorize("hasAnyAuthority('Statistics Access')")
+    @RequestMapping(value = "/statistics/stockStatistics/getSelectedProducts")
+    public String getSelectedProducts(final ModelMap model, String selected){
+        System.out.println(selected);
+
         return "redirect:/statistics/stockStatistics";
     }
 
