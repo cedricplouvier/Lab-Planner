@@ -79,7 +79,9 @@ public class StepTypeService {
         StepType tmpStepType = this.stepTypeRepository.findById(id).orElse(null);
         //remove continuity if it's possible and it's not default continuity for custom experiment
         if (tmpStepType != null && tmpStepType.getContinuity() != null && tmpStepType.getContinuity().getId() != null && tmpStepType.getContinuity().getId() != 191) {
-            continuityService.delete(tmpStepType.getContinuity().getId());
+            Continuity tmpContinuity =tmpStepType.getContinuity();
+            tmpStepType.setContinuity(null);
+            continuityService.delete(tmpContinuity.getId());
         }
         this.stepTypeRepository.deleteById(id);
     }

@@ -169,7 +169,7 @@
                         '    <td></td>' +
                         '    <td></td>' +
                         '    <td style="width: 10%; font-size:80%; text-align:center" id="continuity' + i + '" name="continuity" value=""> ' + continuityText +
-                        '    </td> ' +
+                        ' </td> ' +
                         '    <td></td>' +
                         '    <td></td>' +
                         '</tr>');
@@ -542,7 +542,7 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center" th:id="'continuity'+ ${itemStat.index}"
+                        <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center" th:id="continuityText"
                             name="continuity"
                             th:utext="(*{experimentType.stepTypes[__${itemStat.index}__].continuity.type} != 'No') ?
                         *{experimentType.stepTypes[__${itemStat.index}__].continuity.hours} + ':' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}+
@@ -686,9 +686,6 @@
                                 </select>
                             </div>
                             <div style="flex: 1;">
-                                <button type="button" id="suggestStep" class="btn btn-warning"
-                                        style="width: 90%;  margin:auto;display:block;">Suggest a step
-                                </button>
                                 <button type="button" id="suggestStep" class="btn btn-warning"
                                         style="width: 90%;  margin:auto;display:block;" data-placement="top"
                                         data-toggle="popover" title="Success"

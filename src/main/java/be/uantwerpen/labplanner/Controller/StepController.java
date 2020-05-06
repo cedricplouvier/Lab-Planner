@@ -76,14 +76,13 @@ public class StepController {
     @Autowired
     ExperimentRepository experimentservice;
 
-    private Map<Step,User> addedSteps = new HashMap<>();
-    private Map<Step,User> editedSteps = new HashMap<>();
-    private Map<Step,User> deletedSteps = new HashMap<>();
+    private Map<Step, User> addedSteps = new HashMap<>();
+    private Map<Step, User> editedSteps = new HashMap<>();
+    private Map<Step, User> deletedSteps = new HashMap<>();
 
-    private Map<Experiment,User> addedExperiments = new HashMap<>();
-    private Map<Experiment,User> editedExperiments = new HashMap<>();
-    private Map<Experiment,User> deletedExperiments = new HashMap<>();
-
+    private Map<Experiment, User> addedExperiments = new HashMap<>();
+    private Map<Experiment, User> editedExperiments = new HashMap<>();
+    private Map<Experiment, User> deletedExperiments = new HashMap<>();
 
 
     public Map<Step, User> getAddedSteps() {
@@ -134,7 +133,7 @@ public class StepController {
         this.deletedExperiments = deletedExperiments;
     }
 
-    public void clearLists(){
+    public void clearLists() {
         addedSteps.clear();
         editedSteps.clear();
         deletedSteps.clear();
@@ -401,19 +400,18 @@ public class StepController {
         }
 
         List<OwnProduct> products = productService.findAll();
-        for(OwnProduct tempProd: products){
-            if (tempProd.getStockLevel()<tempProd.getLowStockLevel()){
-                emailController.sendLowStockEmail(tempProd, step.getUser(),"step" );
+        for (OwnProduct tempProd : products) {
+            if (tempProd.getStockLevel() < tempProd.getLowStockLevel()) {
+                emailController.sendLowStockEmail(tempProd, step.getUser(), "step");
             }
         }
 
         boolean newStep = step.isNew();
 
         stepService.save(step);
-        if (newStep){
-            addedSteps.put(step,currentUser);
-        }
-        else {
+        if (newStep) {
+            addedSteps.put(step, currentUser);
+        } else {
 
             if (editedSteps.containsKey(step)) {
                 editedSteps.replace(step, currentUser);
@@ -502,7 +500,7 @@ public class StepController {
         User user = (User) authentication.getPrincipal();
 
         Step foundStepById = stepService.findById(id).orElse(null);
-        if (foundStepById == null){
+        if (foundStepById == null) {
             ra.addFlashAttribute("Status", new String("Error"));
             ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.foundError")));
             return "redirect:/planning/";
@@ -518,23 +516,21 @@ public class StepController {
         boolean ownStep = false;
 
 
-
         //If Step is part of experiment, it can't be deleted
         if (foundStepById != null && isStepPartOfExperiment(foundStepById)) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleteExperimentError")));
+            ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.deleteExperimentError")));
             logger.error(user.getUsername() + " tried to delete step that is part of experiment!");
         } else if (userRoles.contains(adminRol)) {
-            if (deletedSteps.containsKey(foundStepById)){
-                deletedSteps.replace(foundStepById,user);
-            }
-            else {
+            if (deletedSteps.containsKey(foundStepById)) {
+                deletedSteps.replace(foundStepById, user);
+            } else {
                 deletedSteps.put(foundStepById, user);
             }
 
 
             ra.addFlashAttribute("Status", new String("Success"));
-            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.deleted")));
             resetStockLevels(foundStepById);
             stepService.delete(id);
         } else if (userRoles.contains(promotorRole)) {
@@ -554,14 +550,13 @@ public class StepController {
                 }
             }
             if (ownStep) {
-                if (deletedSteps.containsKey(foundStepById)){
-                    deletedSteps.replace(foundStepById,user);
-                }
-                else {
+                if (deletedSteps.containsKey(foundStepById)) {
+                    deletedSteps.replace(foundStepById, user);
+                } else {
                     deletedSteps.put(foundStepById, user);
                 }
                 ra.addFlashAttribute("Status", new String("Success"));
-                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.deleted")));
                 resetStockLevels(foundStepById);
                 stepService.delete(id);
             } else {
@@ -580,14 +575,13 @@ public class StepController {
                 }
             }
             if (ownStep) {
-                if (deletedSteps.containsKey(foundStepById)){
-                    deletedSteps.replace(foundStepById,user);
-                }
-                else {
+                if (deletedSteps.containsKey(foundStepById)) {
+                    deletedSteps.replace(foundStepById, user);
+                } else {
                     deletedSteps.put(foundStepById, user);
                 }
                 ra.addFlashAttribute("Status", new String("Success"));
-                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.deleted")));
                 resetStockLevels(foundStepById);
                 stepService.delete(id);
             } else {
@@ -681,7 +675,10 @@ public class StepController {
                 for (StepType stepType : experiment.getExperimentType().getStepTypes()) {
                     stepTypeService.delete(stepType.getId());
                 }
-                experimentTypeService.delete(experiment.getExperimentType().getId());
+
+                ExperimentType expTypeToDelete = experiment.getExperimentType();
+                experiment.setExperimentType(null);
+                experimentTypeService.delete(expTypeToDelete.getId());
             }
 
             //add amounts back to the stock.
@@ -725,12 +722,10 @@ public class StepController {
             }
 
 
-
             // add deleted experiment to list
-            if (deletedExperiments.containsKey(experiment)){
-                deletedExperiments.replace(experiment,currentUser);
-            }
-            else {
+            if (deletedExperiments.containsKey(experiment)) {
+                deletedExperiments.replace(experiment, currentUser);
+            } else {
                 deletedExperiments.put(experiment, currentUser);
             }
             addedExperiments.remove(experiment);
@@ -913,8 +908,8 @@ public class StepController {
         //If this is custom experiment, some modifications needs to be performed
         if (!experiment.getExperimentType().getIsFixedType()) {
 
-            //1. set name of experimentType if it's null
-            if (experiment.getExperimentType().getExpname() == null) {
+            //1. set name of experimentType if it's null or empty
+            if (experiment.getExperimentType().getExpname() == null || experiment.getExperimentType().getExpname()  == "") {
                 int nameIndex = 0;
                 String expTypeName = "";
                 // check, if name already exists
@@ -939,7 +934,7 @@ public class StepController {
             //2. adjust stepTypes according to received experiment model
             for (int i = 0; i < experiment.getExperimentType().getStepTypes().size(); i++) {
                 //if stepType is null delete it from list (happens when row was deleted during booking custom exp.)
-                if (experiment.getExperimentType().getStepTypes().get(i) == null || experiment.getSteps().get(i) == null) {
+                if (experiment.getExperimentType().getStepTypes().get(i) == null || experiment.getSteps().get(i) == null|| experiment.getExperimentType().getStepTypes().get(i).getStepTypeName() == null) {
                     experiment.getExperimentType().getStepTypes().remove(i);
                     experiment.getSteps().remove(i);
                     i--; //Size of array was changed, so same index needs to be check again
@@ -947,6 +942,17 @@ public class StepController {
                 //if continuity is null, create default continuity
                 else if (experiment.getExperimentType().getStepTypes().get(i).getContinuity() == null) {
                     experiment.getExperimentType().getStepTypes().get(i).setContinuity(new Continuity());
+                }
+                //if continuity is not null, create new ID for it, because this continuity can be deleted wit custom exp.
+                else if (experiment.getExperimentType().getStepTypes().get(i).getContinuity() != null) {
+                    Continuity tmpCont = new Continuity();
+
+                    tmpCont.setMinutes(experiment.getExperimentType().getStepTypes().get(i).getContinuity().getMinutes());
+                    tmpCont.setHours(experiment.getExperimentType().getStepTypes().get(i).getContinuity().getHours());
+                    tmpCont.setType(experiment.getExperimentType().getStepTypes().get(i).getContinuity().getType());
+                    tmpCont.setDirectionType(experiment.getExperimentType().getStepTypes().get(i).getContinuity().getDirectionType());
+
+                    experiment.getExperimentType().getStepTypes().get(i).setContinuity(tmpCont);
                 }
             }
 
@@ -1266,12 +1272,11 @@ public class StepController {
         }
 
         List<OwnProduct> products = productService.findAll();
-        for(OwnProduct tempProd: products){
-            if (tempProd.getStockLevel()<tempProd.getLowStockLevel()){
-                emailController.sendLowStockEmail(tempProd, experiment.getUser(),"experiment" );
+        for (OwnProduct tempProd : products) {
+            if (tempProd.getStockLevel() < tempProd.getLowStockLevel()) {
+                emailController.sendLowStockEmail(tempProd, experiment.getUser(), "experiment");
             }
         }
-
 
 
         //If it's custom experiment, save stepTypes and experimentType
@@ -1326,10 +1331,9 @@ public class StepController {
         //save experiment into database
         experimentService.saveExperiment(experiment);
 
-        if (newExperiment){
-            addedExperiments.put(experiment,currentUser);
-        }
-        else {
+        if (newExperiment) {
+            addedExperiments.put(experiment, currentUser);
+        } else {
 
             if (editedExperiments.containsKey(experiment)) {
                 editedExperiments.replace(experiment, currentUser);
@@ -1777,7 +1781,7 @@ public class StepController {
 
             switch (steps.get(i).getStepType().getContinuity().getType()) {
                 case "Soft (at least)":
-                    if ((steps.get(i).getStepType().getContinuity().getDirectionType() == "After")) {
+                    if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("After"))) {
                         //next step should be after end of previous
                         //nextStartDate - currentEndTime >= currentStartTime
                         if (!((nextStartDate.getMillis() - currentEndDate.getMillis()) >= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
@@ -1788,7 +1792,7 @@ public class StepController {
                         if (currentStartDate.isAfter(nextStartDate) || currentEndDate.isAfter(nextEndDate)) {
                             return true;
                         }
-                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType() == "Before")) {
+                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("Before"))) {
                         //next step should be before end of previous
                         //currentEndTime - nextStartDate >= currentStartTime
                         if (!((currentEndDate.getMillis() - nextStartDate.getMillis()) >= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
@@ -1800,7 +1804,7 @@ public class StepController {
                     }
                     break;
                 case "Soft (at most)":
-                    if ((steps.get(i).getStepType().getContinuity().getDirectionType() == "After")) {
+                    if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("After"))) {
                         //next step should be after end of previous
                         //nextStartDate - currentEndTime <= currentStartTime
                         if (!((nextStartDate.getMillis() - currentEndDate.getMillis()) <= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
@@ -1811,7 +1815,7 @@ public class StepController {
                         if (currentStartDate.isAfter(nextStartDate) || currentEndDate.isAfter(nextEndDate)) {
                             return true;
                         }
-                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType() == "Before")) {
+                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("Before"))) {
                         //next step should be before end of previous
                         //currentEndTime - nextStartDate <= currentStartTime
                         if (!((currentEndDate.getMillis() - nextStartDate.getMillis()) <= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
@@ -1823,9 +1827,9 @@ public class StepController {
                     }
                     break;
                 case "Hard":
-                    if ((steps.get(i).getStepType().getContinuity().getDirectionType() == "After")) {
+                    if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("After"))) {
                         //next step should be after end of previous
-                        //nextStartDate - currentEndTime >= currentStartTime
+                        //nextStartDate - currentEndTime == currentStartTime
                         if (!((nextStartDate.getMillis() - currentEndDate.getMillis()) == 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
                             return true;
                         }
@@ -1834,9 +1838,9 @@ public class StepController {
                         if (currentStartDate.isAfter(nextStartDate) || currentEndDate.isAfter(nextEndDate)) {
                             return true;
                         }
-                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType() == "Before")) {
+                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("Before"))) {
                         //next step should be before end of previous
-                        //currentEndTime - nextStartDate >= currentStartTime
+                        //currentEndTime - nextStartDate == currentStartTime
                         if (!((currentEndDate.getMillis() - nextStartDate.getMillis()) == 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
                             return true;
                         }

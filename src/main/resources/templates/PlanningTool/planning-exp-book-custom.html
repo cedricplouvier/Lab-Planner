@@ -239,6 +239,7 @@
 
     function addStepsRows() {
         //reference table
+
         var experimentTypeId = $('#selectExperimentType :selected').val();
 
         var tableLength = stepTypeRowIndexWithRemovedItems;
@@ -283,13 +284,17 @@
                 // set continuity text if time steptype has fixed time, otherwise set to 'No'
                 var continuityText = a.stepTypes[i].continuity.type != "No" ? a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '<br />' + a.stepTypes[i].continuity.type + '<br />' + a.stepTypes[i].continuity.directionType + '' : 'No';
                 // set fixed length text if time steptype has fixed time, otherwise set to 'No'
-                var fixedLengthText = a.stepTypes[i].hasFixedLength ? a.stepTypes[i].fixedTimeHours + ':' + a.stepTypes[i].fixedTimeMinutes : 'No'
+                var fixedLengthText = a.stepTypes[i].hasFixedLength ? a.stepTypes[i].fixedTimeHours + ':' + a.stepTypes[i].fixedTimeMinutes + '<br />' + a.stepTypes[i].fixedTimeType : 'No'
                 var index = i + tableLength
                 $('#list')
                     .append(
                         '<tr class="row' + index + '" id="row' + index + '">' +
                         '   <input id="step" type="hidden" name="steps[' + index + ']">' +
                         '   <input id="stepType" type="hidden" name="experimentType.stepTypes[' + index + ']">' +
+                        '   <input id="stepType.hasFixedLength' + index + '" type="hidden" name="experimentType.stepTypes[' + index + '].hasFixedLength"  value="' + a.stepTypes[i].hasFixedLength + '">' +
+                        '   <input id="stepType.fixedTimeType' + index + '" type="hidden" name="experimentType.stepTypes[' + index + '].fixedTimeType" value="' + a.stepTypes[i].fixedTimeType + '">' +
+                        '   <input id="stepType.fixedTimeHours' + index + '" type="hidden" name="experimentType.stepTypes[' + index + '].fixedTimeHours" value="' + a.stepTypes[i].fixedTimeHours + '">' +
+                        '   <input id="stepType.fixedTimeMinutes' + index + '" type="hidden" name="experimentType.stepTypes[' + index + '].fixedTimeMinutes" value="' + a.stepTypes[i].fixedTimeMinutes + '">' +
                         '<td style="vertical-align:center;">' +
                         '    <input required="" style="font-size:80%;" class=" form-control input-device" placeholder="Name" id="experimentType.stepTypes' + index + '.stepTypeName" name="experimentType.stepTypes[' + index + '].stepTypeName" value="' + a.stepTypes[i].stepTypeName + '">' +
                         '</td>' +
@@ -327,7 +332,7 @@
                         '   </td> ' +
                         '   <td>' +
                         '   </td> ' +
-                        '   <td style="width: 10%; font-size:80%; text-align:center" id="fixedStepLength' + index + '" name="fixedStepLength" value=""> ' + fixedLengthText + '<br />' + a.stepTypes[i].fixedTimeType +
+                        '   <td style="width: 10%; font-size:80%; text-align:center" id="fixedStepLength' + index + '" name="fixedStepLength" value=""> ' + fixedLengthText +
                         '   </td> ' +
                         '   <td>' +
                         '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + index + '].comment" value="" >' +
@@ -350,6 +355,12 @@
                         '    <td></td>' +
                         '    <td></td>' +
                         '    <td style="width: 10%; font-size:80%; text-align:center" id="continuity' + i + '" name="continuity" value=""> ' + continuityText +
+                        //Add continuity
+                        '   <input id="continuityHours' + i + '" type="hidden"  name="experimentType.stepTypes[' + index + '].continuity.hours" value = "' + a.stepTypes[i].continuity.hours + '">' +
+                        '   <input id="continuityMinutes' + i + '" type="hidden"  name="experimentType.stepTypes[' + index + '].continuity.minutes" value = "' + a.stepTypes[i].continuity.minutes + '">' +
+                        '   <input id="continuityType' + i + '" type="hidden"  name="experimentType.stepTypes[' + index + '].continuity.type" value = "' + a.stepTypes[i].continuity.type + '">' +
+                        '   <input id="continuityDirectionType' + i + '" type="hidden"  name="experimentType.stepTypes[' + index + '].continuity.directionType" value = "' + a.stepTypes[i].continuity.directionType + '">' +
+
                         '    </td> ' +
                         '    <td></td>' +
                         '    <td></td>' +
@@ -495,8 +506,8 @@
         <input th:field="*{id}" th:type="hidden"/>
         <input th:type="hidden" th:field="*{user}"/>
         <input th:type="hidden" th:field="*{experimentType.id}"/>
+        <input th:type="hidden" th:field="*{experimentType.expname}"/>
         <input type="checkbox" id="checkboxIsFixedType" th:field="*{experimentType.isFixedType}" hidden/>
-
 
         <h3><span th:text="#{experiment.info}"></span></h3>
         <table class="table table-hover" style="text-align:center; font-size:90%;">
@@ -600,6 +611,37 @@
                         <input th:type="hidden" th:field="*{steps[__${itemStat.index}__].user}"/>
                         <input id="stepType" th:type="hidden"
                                th:field="*{experimentType.stepTypes[__${itemStat.index}__].id}">
+                        <input th:id="'continuity' + ${itemStat.index}" th:type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].continuity}"
+                               th:value="${stepType.continuity}">
+
+                        <input th:id="'hasFixedLength'+ ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].hasFixedLength}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].hasFixedLength}">
+                        <input th:id="'fixedTimeType' + ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeType}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeType}">
+                        <input th:id="'fixedTimeHours' + ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeHours}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeHours}">
+                        <input th:id="'fixedTimeMinutes' + ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeMinutes}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeMinutes}">
+
+
+                        <input th:id="'continuityHours'+ ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}">
+                        <input th:id="'continuityMinutes' + ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].continuity.hours}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].continuity.hours}">
+                        <input th:id="'continuityType' + ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].continuity.type}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].continuity.type}">
+                        <input th:id="'continuityDirectionType' + ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].continuity.directionType}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].continuity.directionType}">
+
                         <td style="vertical-align:center;">
 
                             <input required style="font-size:80%;" class=" form-control input-device"
@@ -683,8 +725,9 @@
                         <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center"
                             id="fixedtimeLength"
                             name="fixedtimeLength"
-                            th:text="*{experimentType.stepTypes[__${itemStat.index}__].hasFixedLength} ?
-                         *{experimentType.stepTypes[__${itemStat.index}__].fixedTimeHours}  +':' +*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeMinutes}
+                            th:utext="*{experimentType.stepTypes[__${itemStat.index}__].hasFixedLength} ?
+                         *{experimentType.stepTypes[__${itemStat.index}__].fixedTimeHours}  +':' +*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeMinutes}+
+                         '<br />'+ *{experimentType.stepTypes[__${itemStat.index}__].fixedTimeType}
                          : 'No'">
                         </td>
                         <td style="vertical-align:center;">
@@ -721,6 +764,8 @@
                         '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.type}+
                         '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.directionType}
                         : 'No'">
+
+
                         </td>
                         <td></td>
                         <td></td>
@@ -859,13 +904,6 @@
                             type="button"
                             th:text="#{add.experiment.steps}"
                             th:onclick="addStepsRows()">
-                    </button>
-                </th>
-                <th>
-                    <button style="margin-right: 10px;font-size: 90%" class="btn btn-outline-primary"
-                            type="button"
-                            th:text="#{step.remove}"
-                            th:onclick="removeStepsRows()">
                     </button>
                 </th>
             </tr>
