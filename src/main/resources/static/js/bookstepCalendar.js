@@ -166,7 +166,7 @@ function addDevices(possibleDevices) {
         document.getElementById('selectStep').disabled = true;
     }
 }
-function checkOverlap(schedule) {
+function checkOverlap(schedule,personalAllowed) {
     let possibleDevices=[];
     var deviceTypeId = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['id'];
     for (let current = 0; current < devices.length; current++) {
@@ -191,18 +191,34 @@ function checkOverlap(schedule) {
                 }
             }
             //now check own steps
-            for(var currentStep=0;currentStep<userSteps.length;currentStep++){
-                if(userSteps[currentStep]['device']['id']==deviceId){ //found step booked of same device
-                    stepStart = new Date(userSteps[currentStep]['start']+ 'T'+userSteps[currentStep]['startHour']);
-                    stepEnd = new Date(userSteps[currentStep]['end']+ 'T'+userSteps[currentStep]['endHour']);
-                    //check if date overlaps with schedule
-                    if(scheduleStart.getTime()<=stepStart.getTime()&&scheduleEnd.getTime()>stepStart.getTime()&&scheduleEnd.getTime()<=stepEnd.getTime()){
-                        overlap = true;
-                    }else if(scheduleEnd.getTime()>=stepEnd.getTime()&&scheduleStart.getTime()<stepEnd.getTime()&&scheduleStart.getTime()>=stepStart.getTime()){
-                        overlap = true;
-                    }else if(scheduleStart.getTime()<=stepStart.getTime()&&scheduleEnd.getTime()>=stepEnd.getTime()){
-                        overlap=true;
+            if(personalAllowed){
+                for (var currentStep = 0; currentStep < userSteps.length; currentStep++) {
+                    if (userSteps[currentStep]['device']['id'] == deviceId) { //found step booked of same device
+                        stepStart = new Date(userSteps[currentStep]['start'] + 'T' + userSteps[currentStep]['startHour']);
+                        stepEnd = new Date(userSteps[currentStep]['end'] + 'T' + userSteps[currentStep]['endHour']);
+                        //check if date overlaps with schedule
+                        if (scheduleStart.getTime() <= stepStart.getTime() && scheduleEnd.getTime() > stepStart.getTime() && scheduleEnd.getTime() <= stepEnd.getTime()) {
+                            overlap = true;
+                        } else if (scheduleEnd.getTime() >= stepEnd.getTime() && scheduleStart.getTime() < stepEnd.getTime() && scheduleStart.getTime() >= stepStart.getTime()) {
+                            overlap = true;
+                        } else if (scheduleStart.getTime() <= stepStart.getTime() && scheduleEnd.getTime() >= stepEnd.getTime()) {
+                            overlap = true;
+                        }
                     }
+                }
+            }else{
+                for (var currentStep = 0; currentStep < userSteps.length; currentStep++) {
+                        stepStart = new Date(userSteps[currentStep]['start'] + 'T' + userSteps[currentStep]['startHour']);
+                        stepEnd = new Date(userSteps[currentStep]['end'] + 'T' + userSteps[currentStep]['endHour']);
+                        //check if date overlaps with schedule
+                        if (scheduleStart.getTime() <= stepStart.getTime() && scheduleEnd.getTime() > stepStart.getTime() && scheduleEnd.getTime() <= stepEnd.getTime()) {
+                            overlap = true;
+                        } else if (scheduleEnd.getTime() >= stepEnd.getTime() && scheduleStart.getTime() < stepEnd.getTime() && scheduleStart.getTime() >= stepStart.getTime()) {
+                            overlap = true;
+                        } else if (scheduleStart.getTime() <= stepStart.getTime() && scheduleEnd.getTime() >= stepEnd.getTime()) {
+                            overlap = true;
+                        }
+
                 }
             }
             if(!overlap){
@@ -368,7 +384,6 @@ function generateSchedule(viewName, renderStart, renderEnd) {
     ScheduleList = [];
     //Add all users steps
     userSteps.forEach(function (step) {
-        // if(step['device']['deviceType']['id'] === allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['id']) {
             let schedule = new ScheduleInfo();
             let calendar = findCalendar(String(step['device']['deviceType']['id']));
             schedule.id = chance.guid();
@@ -477,9 +492,6 @@ function generateSchedule(viewName, renderStart, renderEnd) {
         }
         if(calendarUpdate.stepIndex==current){
             newSchedule =schedule;
-            // if(newSchedule.start&&newSchedule.end) {
-            //     checkOverlap(current,schedule);
-            // }
         }
         if(ok){
             filledInSteps[current] = schedule;
