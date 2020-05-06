@@ -1,7 +1,10 @@
 package be.uantwerpen.labplanner.Controller;
 
+import be.uantwerpen.labplanner.Model.OfficeHours;
 import be.uantwerpen.labplanner.Model.Relation;
 import be.uantwerpen.labplanner.Model.Step;
+import be.uantwerpen.labplanner.Model.SystemSettings;
+import be.uantwerpen.labplanner.Service.OfficeHoursService;
 import be.uantwerpen.labplanner.Service.StepService;
 import be.uantwerpen.labplanner.Service.RelationService;
 import be.uantwerpen.labplanner.common.model.users.Role;
@@ -43,6 +46,9 @@ public class UserController {
     @Autowired
     private RelationService relationService;
 
+    @Autowired
+    private OfficeHoursService officeHoursService;
+
 
     //Populate
     @ModelAttribute("allUsers")
@@ -74,6 +80,43 @@ public class UserController {
         model.addAttribute("allUsers",userService.findAll());
         model.addAttribute(new User("","DEFAULT","","","","","","",null,null,null));
         return "Users/user-manage";
+    }
+
+
+    @RequestMapping(value = "/officeHours", method = RequestMethod.GET)
+    public String viewEditOfficeHours(@org.jetbrains.annotations.NotNull final ModelMap model) {
+        //get current user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+
+        Role adminole = roleService.findByName("Administrator").get();
+        model.addAttribute(user);
+        //Only one entity of system settings should be in database
+        model.addAttribute("officeHours", SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours());
+        model.addAttribute("allowedToChangeOfficeHours", user.getRoles().contains(adminole));
+        return "Users/officeHours-manage";
+    }
+
+    @RequestMapping(value = "/officeHours", method = RequestMethod.POST)
+    public String saveOfficeHours(@Valid OfficeHours officeHours, BindingResult result, @org.jetbrains.annotations.NotNull final ModelMap model) {
+        //get current user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
+
+        //Only admin can change
+        Role adminole = roleService.findByName("Administrator").get();
+        if (currentUser.getRoles().contains(adminole)) {
+            //Set global openning hours if numbers are correct
+            if ((officeHours.getStartMinute() >= 0 && officeHours.getStartMinute() <= 59) ||
+                    (officeHours.getStartHour() >= 0 && officeHours.getStartHour() <= 23) ||
+                    (officeHours.getEndMinute() >= 0 && officeHours.getEndMinute() <= 59) ||
+                    (officeHours.getEndHour() >= 0 && officeHours.getEndHour() <= 23)) {
+                officeHoursService.save(officeHours);
+                SystemSettings.getCurrentSystemSettings().setCurrentOfficeHours(officeHours);
+            }
+        }
+
+        return "redirect:/home";
     }
 
     @RequestMapping(value = "/password",method = RequestMethod.GET)

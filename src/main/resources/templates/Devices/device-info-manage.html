@@ -2,19 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <!-- Import header -->
 <head th:replace="navbar :: head (title='#{device.management}')"></head>
-<body onload="initPage()">
-<script type="text/javascript">
-    function initPage(){
-        $('#roles').multiSelect({
-            selectableHeader: '<div class="custom-header"th:text="#{selectable.items}">Selectable items</div>',
-        selectionHeader: '<div class="custom-header"th:text="#{selected.items}">Selected items</div>'
-    });
-    }
-</script>
+<body>
 
+<script th:inline="javascript">
+    console.log( [[${files}]][0].replace("%20", " "));
+    console.log([[${deviceInfoObject}]])
+</script>
 <div class="container">
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
+    <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>
+
     <form action="#" th:action="@{/devices/info/{id}/{typeid}(id=${deviceInfoObject},typeid=${deviceTypeObject.id})}" th:object="${deviceInfoObject}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
         <div class="form-group"
@@ -32,7 +30,9 @@
             <textarea rows="5" class="form-control" type="text" th:field="*{information}"/>
         </div>
         <p>
-            <a th:href="'/devices/types/'+${deviceTypeObject.id}"  class="btn btn-primary" th:text="#{close}"></a>
+            <a type="button" th:href="@{'/devices/types/'+${deviceTypeObject.id}}" class="btn btn-primary"  id="btn-new-schedule"th:text="#{close}" >
+            </a>
+
             <button type="submit"  class="btn btn-primary" th:text="#{save}"></button>
         </p>
     </form>
@@ -50,12 +50,16 @@
         </div>
         <script>
             $('#inputGroupFile02').on('change',function(){
-                //get the file name
-                var fileName = $(this).val();
-                //replace the "Choose a file" label
-                $(this).next('.custom-file-label').html(fileName);
-                $('#upload-btn').prop('disabled', false);
-
+                if(this.files[0].size > 2097152*10){
+                    alert("File exceeds 20MB size limit!");
+                    this.value = "";
+                }else{
+                    //get the file name
+                    var fileName = $(this).val();
+                    //replace the "Choose a file" label
+                    $(this).next('.custom-file-label').html(fileName);
+                    $('#upload-btn').prop('disabled', false);
+                }
             })
         </script>
     </form>
@@ -63,8 +67,8 @@
     </form>
 
     <h5 th:text="#{device.uploaded}"></h5>
-        <div style="display: flex;margin-bottom: 5px"  th:if="(${files}!= null  or ${deviceInfoObject.getFiles().size()==0}) and ${deviceInfoObject.id}!=null"th:each="file : ${files}">
-            <div style="flex: 1;display: flex" th:if="${#strings.contains(file, filename)}" th:each="filename : ${deviceInfoObject.getFiles()}" >
+        <div style="display: flex;margin-bottom: 5px"  th:if="(${files}!= null  or ${deviceInfoObject.files.size()==0}) and ${deviceInfoObject.id}!=null"th:each="file : ${files}">
+            <div style="flex: 1;display: flex" th:if="${#strings.contains(file, filename.replaceAll(' ','%20'))}" th:each="filename : ${deviceInfoObject.getFiles()}" >
                 <form style="flex: 1;display: flex" method="Get" enctype="text/plain"  th:action="@{/file/delete/{typeid}/{infoid}/{file}(typeid=${deviceTypeObject.id},infoid=${deviceInfoObject.id},file=${filename})}">
                     <div style="display: flex;flex: 1" class="btn-group" >
                 <a style="flex: 5"  role="button" class="btn btn-outline-primary btn-xs" id="label-btn" th:href="${file}" th:text="${filename}"  aria-disabled="true">T</a>
@@ -72,11 +76,8 @@
                 </button></div></form>
     </div>
         </div>
-
-
     <div class="alert alert-info" role="alert" th:if="${deviceInfoObject.id}==null" th:text="#{device.savebeforeupload}"></div>
     <div class="alert alert-info" role="alert" th:if="${deviceInfoObject.id}!=null and ${deviceInfoObject.getFiles().size()}==0" th:text="#{device.noupload}"></div>
-
 </div>
 </body>
 </html>
