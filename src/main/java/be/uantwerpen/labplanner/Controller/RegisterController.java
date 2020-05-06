@@ -41,7 +41,12 @@ public class RegisterController {
 
     @RequestMapping(value = {"/register"}, method = RequestMethod.POST)
     public String addUser(@Valid User user,  BindingResult result, final ModelMap model, RedirectAttributes ra) {
+
+
+
         //check for standard errors & empty fields
+
+
         if ((result.hasErrors()) || (user.getPassword() == null) || (user.getFirstName() == null) || (user.getLastName() == null) || (user.getEmail() == null) || (user.getUaNumber() == null) || (user.getFirstName().trim().equals("")) || (user.getLastName().trim().equals("")) || (user.getPassword().trim().equals("")) || (user.getUaNumber().trim().equals("")) || (user.getEmail().trim().equals(""))) {
             model.addAttribute("allRoles", roleService.findAll());
             model.addAttribute("allUsers", userService.findAll());
@@ -49,6 +54,8 @@ public class RegisterController {
 
             return "register-manage";
         }
+
+        //trim everything
 
 
         //test for duplicate UA number or email adress.

@@ -69,6 +69,16 @@ public class EmailControllerTests {
     }
 
     @Test
+    public void ViewMailTest() throws Exception{
+        mockMvc.perform(get("/mail/maintanance/{id}","10"))
+
+                .andExpect(status().is(200))
+                .andExpect(view().name("Mail"))
+                .andExpect(model().attribute("id", notNullValue()))
+                .andDo(print());
+    }
+
+    @Test
     @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     public void MaintananceMailValidTest() throws Exception{
         Device dev = new Device();
@@ -94,7 +104,9 @@ public class EmailControllerTests {
 
         when(userService.findAll()).thenReturn(users);
 
-        mockMvc.perform(get("/mail/maintanance/{id}",id))
+        mockMvc.perform(post("/mail/maintanance/{id}",id)
+                .param("sourceText","test"))
+
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/devices"))
                 .andExpect(model().attribute("MailSuccess", notNullValue()))
@@ -127,7 +139,10 @@ public class EmailControllerTests {
 
         when(userService.findAll()).thenReturn(users);
 
-        mockMvc.perform(get("/mail/maintanance/{id}",id))
+        mockMvc.perform(post("/mail/maintanance/{id}",id)
+                .param("sourceText","test"))
+
+
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/devices"))
                 .andExpect(model().attribute("deviceError", notNullValue()))
@@ -160,7 +175,8 @@ public class EmailControllerTests {
 
         when(userService.findAll()).thenReturn(users);
 
-        mockMvc.perform(get("/mail/maintanance/{id}",id))
+        mockMvc.perform(post("/mail/maintanance/{id}",id)
+                .param("sourceText","test"))
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/devices"))
                 .andExpect(model().attribute("deviceError", notNullValue()))
