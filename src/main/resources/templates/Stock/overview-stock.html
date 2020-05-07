@@ -93,7 +93,7 @@
                             <tr>
                                 <th></th>
                                 <th th:text="#{product}">Product Name</th>
-                                <th th:text="#{product.left}">Amount left</th>
+                                <th th:text="#{product.virtual}">Amount left</th>
                                 <th th:text="#{product.tag}">Tag Name</th>
 
                             </tr>
@@ -209,7 +209,7 @@
                                     <td class='mixtureName' th:value="${mixture.getName()}"
                                         th:text="${mixture.getName()}" >Mixture Name</td>
 
-                                    <td class='descr' th:value="${mixture.getDescription()}"
+                                    <td class='descr'  th:value="${mixture.getDescription()}"
                                         th:text="${mixture.description}" >Mixture description</td>
                                     <td class="Tags">
                                         <a
