@@ -30,11 +30,11 @@
             $('table tbody tr').hide();
 
             // Count total search result
-            var len = $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').length;
+            var len = $('table tbody tr:not(.notfound) td:contains("'+search+'")').length;
 
             if(len > 0){
                 // Searching text in columns and show match row
-                $('table tbody tr:not(.notfound) td:nth-child(1):contains("'+search+'")').each(function(){
+                $('table tbody tr:not(.notfound) td:contains("'+search+'")').each(function(){
                     $(this).closest('tr').show();
                 });
             }else{
