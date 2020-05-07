@@ -8,6 +8,7 @@ import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -156,6 +157,7 @@ public class StatisticsController {
     private String selectedStartMonthStockHistory(){
         //the calendarshould always start 6 month behind us as standard
         Calendar cal = Calendar.getInstance();
+        cal.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         cal.add(Calendar.MONTH, -5);
         sdf.format(cal.getTime());
@@ -360,10 +362,13 @@ public class StatisticsController {
 
     /**
      *
-     * method that add all correct attributes to the model map for the stock statistics
+     * Method that fetches all data needed to show on the stock statistics webpage.
+     * It fetches the data of the stock history, the months to be shown on the x-axis and
+     * the data to be shown in the current stock. It also calculates the y axis scale for the current stock levels graph
      *
-     * @param model MolelMap that holds all the model attributes
+     * @param model ModelMap that holds the model attribute
      * @return path to the html page of the stock statistics
+     * @throws ParseException when date gets wronlgy parse
      */
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/stockStatistics", method = RequestMethod.GET)
@@ -429,8 +434,10 @@ public class StatisticsController {
         double highestDataPointStock = 100.0;
         for(int j=0; j<stockLevelMonth.size();j++){
             Double data = stockLevelMonth.get(j);
-            if (data >= highestDataPointStock) {
-                highestDataPointStock = data;
+            if(!(data == null)){
+                if (data >= highestDataPointStock) {
+                    highestDataPointStock = data;
+                }
             }
         }
 
@@ -448,6 +455,11 @@ public class StatisticsController {
         return "Statistics/stockStatistics";
     }
 
+    /**
+     * Method gets called when the user clear the graph. Attributes of the graph get reset in the model
+     * @param model ModelMap that holds the model attributes
+     * @return path to the redirected method, showStatisticsStockPage().
+     */
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/stockStatistics/resetGraphStockHistory")
     public String resetGraphStockHistory(final ModelMap model){
@@ -456,6 +468,14 @@ public class StatisticsController {
         return "redirect:/statistics/stockStatistics";
     }
 
+    /**
+     *
+     * Method gets called when the user selects a different start date for the stock month history graph.
+     * The selected date string gets added to the model attribute
+     *
+     * @param model ModelMap that holds the model attributes
+     * @return path to the redirected method, showStatisticsStockPage().
+     */
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/stockStatistics/getSelectedStartStockHistory")
     public String getSelectedStartStockHistory(final ModelMap model, String selectedStartMonthStockHistory){
@@ -463,6 +483,14 @@ public class StatisticsController {
         return "redirect:/statistics/stockStatistics";
     }
 
+    /**
+     *
+     * Method gets called when the user selects a different start date for the current stock graph.
+     * The selected date string gets added to the model attribute
+     *
+     * @param model ModelMap that holds the model attributes
+     * @return path to the redirected method, showStatisticsStockPage().
+     */
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/stockStatistics/getSelectedMonthStock")
     public String getSelectedMonthStock(final ModelMap model, String selectedMonthStock){
@@ -470,6 +498,16 @@ public class StatisticsController {
         return "redirect:/statistics/stockStatistics";
     }
 
+    /**
+     *
+     * Method gets called when the user selects a product to be added to the stock history graph.
+     * The selected product gets added to the list of selected products.
+     * It checks if the product has already been added to the graph and that there are not more than 5 products
+     * already in the graph.
+     *
+     * @param model ModelMap that holds the model attributes
+     * @return path to the redirected method, showStatisticsStockPage().
+     */
     @PreAuthorize("hasAnyAuthority('Statistics Access')")
     @RequestMapping(value = "/statistics/stockStatistics/getSelectedProduct")
     public String getSelectedProduct(final ModelMap model, OwnProduct selectedProd, RedirectAttributes redAttr){
@@ -503,6 +541,25 @@ public class StatisticsController {
         }
         model.addAttribute("selectedProducts",listSelectedProducts);
         return "redirect:/statistics/stockStatistics";
+    }
+
+    /**
+     * Periodic method that gets called every minute to update the stock levels of every product.
+     * If we are still in the same month we keep overwriting the value of current month in the map that holds
+     * the date and level for every product.
+     */
+    //Schedule for testing
+    @Scheduled(cron =  "0 */1 * * * ?")
+    public void upDateStockMap(){
+        System.out.println("UPDATED STOCK");
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        List<OwnProduct> products = productService.findAll();
+        for(OwnProduct product : products){
+            Map<String, Double> stockHis = product.getProductStockHistory();
+            stockHis.put(sdf.format(cal.getTime()),product.getStockLevel());
+            productService.save(product);
+        }
     }
 
     /**

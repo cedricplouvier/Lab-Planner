@@ -74,7 +74,7 @@ public class StatisticsControllerTests {
     public void setup(){
         MockitoAnnotations.initMocks(this);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(this.statisticsController)
+        mockMvc = MockMvcBuilders.standaloneSetup(statisticsController)
                 .apply(springSecurity(springSecurityFilterChain)).build();
 
         /*mockMvc = MockMvcBuilders
