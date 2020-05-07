@@ -107,8 +107,6 @@ public class RegisterController {
 
 
         if ((result.hasErrors()) || (user.getPassword() == null) || (user.getFirstName() == null) || (user.getLastName() == null) || (user.getEmail() == null) || (user.getUaNumber() == null) || (user.getFirstName().trim().equals("")) || (user.getLastName().trim().equals("")) || (user.getPassword().trim().equals("")) || (user.getUaNumber().trim().equals("")) || (user.getEmail().trim().equals(""))) {
-            model.addAttribute("allRoles", roleService.findAll());
-            model.addAttribute("allUsers", userService.findAll());
             model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.addError"));
 
             return "register-manage";
@@ -116,22 +114,31 @@ public class RegisterController {
 
 
         //trim everything
+        user.setFirstName(user.getFirstName().trim());
+        user.setLastName(user.getLastName().trim());
+        user.setUaNumber(user.getUaNumber().trim());
+        user.setEmail(user.getEmail().trim());
+        user.setLocation(user.getLocation().trim());
+        user.setTelephone(user.getTelephone().trim());
+
+        //check for valid UA number
+        if ((user.getUaNumber().length()!=8) || (user.getUaNumber().charAt(0)!='2') && (user.getUaNumber().toLowerCase().charAt(0)!='s')){
+            model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.UAWrong"));
+
+            return "register-manage";
+        }
 
 
         //test for duplicate UA number or email adress.
         for (User temp : userService.findAll()) {
 
             if ((temp.getUaNumber() != null) && ((temp.getUaNumber().equals(user.getUaNumber())))) {
-                model.addAttribute("allRoles", roleService.findAll());
-                model.addAttribute("allUsers", userService.findAll());
                 model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.UAError"));
 
                 return "register-manage";
             }
 
             if ((temp.getEmail() != null) && (temp.getEmail().toLowerCase().equals(user.getEmail().toLowerCase()))) {
-                model.addAttribute("allRoles", roleService.findAll());
-                model.addAttribute("allUsers", userService.findAll());
                 model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.MailError"));
 
                 return "register-manage";
