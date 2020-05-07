@@ -580,8 +580,46 @@
                 th:onclick="addMixtureRow([[${allMixtures}]])">
         </button>
 
+        <button style="margin-right: 10px;font-size: 90%" class="btn btn-outline-primary"
+                type="button"
+                th:text="#{mixture.remove}"
+                th:onclick="removeMixtureRow()">
+        </button>
+
+
         <h3><span th:text="#{step.info}"></span></h3>
 
+        <table>
+            <tr>
+                <th>
+                    <button style="margin-right: 10px;font-size: 90%" class="btn btn-primary "
+                            type="button"
+                            th:text="#{add.step}"
+                            th:onclick="addStepRow()">
+                    </button>
+                </th>
+                <th>
+                    <select class=" form-control input-device" id="selectExperimentType">
+                        <option selected hidden th:text="#{experiment.type.select}" value=""> Select
+                            experiment type
+                        </option>
+                        <option class="dropdown-item"
+                                th:each="experimentTypep : ${allExperimentTypes}"
+                                th:value="${{experimentTypep}}"
+                                th:text="${experimentTypep.getExperimentTypeName()}">
+                        </option>
+                    </select>
+                </th>
+                <th>
+                    <button style="margin-right: 10px;font-size: 90%" class="btn btn-primary "
+                            type="button"
+                            th:text="#{add.experiment.steps}"
+                            th:onclick="addStepsRows()">
+                    </button>
+                </th>
+            </tr>
+            <tr></tr>
+        </table>
         <table class="table table-hover" style=" font-size:100%; text-align:center;">
 
             <thead>
@@ -877,37 +915,6 @@
                 </div>
             </div>
             </tbody>
-        </table>
-        <table>
-            <tr>
-                <th>
-                    <button style="margin-right: 10px;font-size: 90%" class="btn btn-primary "
-                            type="button"
-                            th:text="#{add.step}"
-                            th:onclick="addStepRow()">
-                    </button>
-                </th>
-                <th>
-                    <select class=" form-control input-device" id="selectExperimentType">
-                        <option selected hidden th:text="#{experiment.type.select}" value=""> Select
-                            experiment type
-                        </option>
-                        <option class="dropdown-item"
-                                th:each="experimentTypep : ${allExperimentTypes}"
-                                th:value="${{experimentTypep}}"
-                                th:text="${experimentTypep.getExperimentTypeName()}">
-                        </option>
-                    </select>
-                </th>
-                <th>
-                    <button style="margin-right: 10px;font-size: 90%" class="btn btn-primary "
-                            type="button"
-                            th:text="#{add.experiment.steps}"
-                            th:onclick="addStepsRows()">
-                    </button>
-                </th>
-            </tr>
-            <tr></tr>
         </table>
         <div>
             <a style="margin-right: 10px" th:href="@{/planning/}" class="btn btn-outline-primary"
