@@ -157,7 +157,7 @@ public class StatisticsController {
         //the calendarshould always start 6 month behind us as standard
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-        cal.add(Calendar.MONTH, -6);
+        cal.add(Calendar.MONTH, -5);
         sdf.format(cal.getTime());
         return sdf.format(cal.getTime());
     }
