@@ -65,6 +65,28 @@ public class EmailController   {
         return "Mail";
     }
 
+    public void SendAcceptMail(String emailadress){
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(emailadress);
+        message.setSubject("Registration UA Labplanner approved");
+        message.setText("Your registration is approved by the admins.\nYou can now login in to the application.");
+        emailSender.send(message);
+
+
+    }
+
+    public void SendDeclineMail(String emailadress){
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(emailadress);
+        message.setSubject("Registration UA Labplanner declined");
+        message.setText("Your registration is declined by the admins.\nTry again or make contact with admins.");
+        emailSender.send(message);
+
+
+    }
+
     @RequestMapping(value= "/mail/maintanance/{id}", method = RequestMethod.POST)
     public String sendMaintanceMail(@PathVariable long id, @RequestParam String sourceText, final ModelMap model, RedirectAttributes ra){
         //get current user.

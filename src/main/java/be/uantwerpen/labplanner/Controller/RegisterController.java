@@ -27,6 +27,9 @@ public class RegisterController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private EmailController emailController;
+
 
     private List<User> registredUsers = new ArrayList<>();
 
@@ -56,11 +59,10 @@ public class RegisterController {
         for (User user: registredUsers){
             if (user.getUaNumber().equals(UA)){
                 found = user;
-                //send mail to user.
             }
         }
         if (found != null) {
-            //mail
+            emailController.SendDeclineMail(found.getEmail());
             registredUsers.remove(found);
         }
         return "redirect:/registrations";
@@ -73,10 +75,12 @@ public class RegisterController {
         for (User user: registredUsers){
             if (user.getUaNumber().equals(UA)){
                 //send mail to user.
+
                 found = user;
             }
         }
         if (found!=null){
+            emailController.SendAcceptMail(found.getEmail());
             userService.save(found);
             registredUsers.remove(found);
 
