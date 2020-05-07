@@ -249,7 +249,7 @@ public class UserController {
         //test for duplicate UA number
         for(User temp : userService.findAll()){
 
-            if ( (temp.getUaNumber()!= null) && (user.getUaNumber()!=null)   && ((temp.getUaNumber().equals(user.getUaNumber()))&&(temp.getId()!=user.getId()))){
+            if ( (temp.getUaNumber()!= null) && (user.getUaNumber()!=null)   && ((temp.getUaNumber().equals(user.getUaNumber()))&&(!temp.getId().equals(user.getId())))){
                 model.addAttribute("allRoles", roleService.findAll());
                 model.addAttribute("allUsers",userService.findAll());
                 model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.UAError") );

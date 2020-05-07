@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 
+import javax.security.auth.message.config.AuthConfigFactory;
 import java.util.*;
 
 @Controller
@@ -42,6 +43,9 @@ public class HomeController {
 
     @Autowired
     private RelationService relationService;
+
+    @Autowired
+    private RegisterController registerController;
 
     //@PreAuthorize("hasAuthority('User Management')")
     @RequestMapping("/usermanagement")
@@ -124,6 +128,7 @@ public class HomeController {
             model.addAttribute("currentUser",user.getFirstName());
             model.addAttribute("studentSteps",studentSteps);
             model.addAttribute("currentUserId",user.getId());
+            model.addAttribute("registrationAmount",registerController.getRegistredUsers().size());
 
         model.addAttribute("userExperiments", userExperiments);
         model.addAttribute("studentExperiments", studentExperiments);

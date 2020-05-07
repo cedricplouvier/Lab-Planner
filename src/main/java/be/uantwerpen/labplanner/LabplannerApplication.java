@@ -106,7 +106,7 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
 
         protected void configure(HttpSecurity http) throws Exception {
             http.authorizeRequests()
-                    .antMatchers("/register/**").permitAll()
+                    .antMatchers("/register").permitAll()
                     .antMatchers("/login").permitAll().anyRequest()
                     .fullyAuthenticated()
                     .and().

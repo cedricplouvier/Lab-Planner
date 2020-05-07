@@ -5,9 +5,11 @@ import be.uantwerpen.labplanner.common.service.users.RoleService;
 import be.uantwerpen.labplanner.common.service.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -27,6 +29,63 @@ public class RegisterController {
 
 
     private List<User> registredUsers = new ArrayList<>();
+
+    public List<User> getRegistredUsers() {
+        return registredUsers;
+    }
+
+    public void setRegistredUsers(List<User> registredUsers) {
+        this.registredUsers = registredUsers;
+    }
+
+    public void deleteUser(User user){
+        registredUsers.remove(user);
+    }
+
+    @PreAuthorize("hasAuthority('Console Access')")
+    @RequestMapping(value = "/registrations",method = RequestMethod.GET)
+    public String viewRegistrations(final ModelMap model){
+        model.addAttribute("allRegistrations", registredUsers);
+        return "registrations-list";
+    }
+
+    @PreAuthorize("hasAuthority('Console Access')")
+    @RequestMapping(value = "/registrations/decline/{UA}",method = RequestMethod.GET)
+    public String declineUser(final ModelMap model, @PathVariable String UA){
+        User found = null;
+        for (User user: registredUsers){
+            if (user.getUaNumber().equals(UA)){
+                found = user;
+                //send mail to user.
+            }
+        }
+        if (found != null) {
+            //mail
+            registredUsers.remove(found);
+        }
+        return "redirect:/registrations";
+    }
+
+    @PreAuthorize("hasAuthority('Console Access')")
+    @RequestMapping(value = "/registrations/add/{UA}",method = RequestMethod.GET)
+    public String acceptUser(final ModelMap model, @PathVariable String UA){
+        User found = null;
+        for (User user: registredUsers){
+            if (user.getUaNumber().equals(UA)){
+                //send mail to user.
+                found = user;
+            }
+        }
+        if (found!=null){
+            userService.save(found);
+            registredUsers.remove(found);
+
+        }
+
+        return "redirect:/registrations";
+    }
+
+
 
 
 
@@ -54,6 +113,7 @@ public class RegisterController {
 
             return "register-manage";
         }
+
 
         //trim everything
 
@@ -103,7 +163,8 @@ public class RegisterController {
 
         //if it passes all tests
         //may not save it to userService, but in seperate folder where admin can validate.
-        userService.save(user);
+
+        registredUsers.add(user);
         return "redirect:/login?registered";
     }
 
