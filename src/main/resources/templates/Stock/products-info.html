@@ -49,13 +49,17 @@
                 </div>
             </div>
 
-            <div th:if="${product.url}!=null" class="card bg-light mb-3">
+            <div th:if="${product.url}!=null or ${product.getDocument()!=null}" class="card bg-light mb-3">
                 <div class="card-body">
                     <h5 class="card-title"> <a th:text="#{product.url}">More information</a> </h5>
-                    <a class="nav-link" th:target="_blank" th:href="${product.url.toString()}" th:text="${product.url.toString()}"> </a>
+                    <a th:if="${product.url}!=null" class="nav-link" th:target="_blank" th:href="${product.url.toString()}" th:text="${product.url.toString()}"> </a>
+                    <a th:if="${product.getDocument()!=null}" class="nav-link" th:href="@{/files/pdfs/{name}(name=${product.getDocument()})}" th:text="${product.getDocument()}"></a>
 
                 </div>
             </div>
+
+
+
             <div class="card bg-light mb-3">
                 <div class="card-body">
                     <h5 class="card-title"> Tags </h5>
