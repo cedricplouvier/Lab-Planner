@@ -4,6 +4,7 @@
 let calendarType = 1; // user
 
 
+
 var ScheduleList = [];
 
 
@@ -86,7 +87,15 @@ function calculateGradient(colorHex,gradientNumber,gradientPercentage) {
 }
 function generateSchedule(viewName, renderStart, renderEnd) {
     ScheduleList = [];
-    steps.forEach(function (step) {
+    if (showOwnItems) {
+        showItems(userSteps);
+    }
+    if (showOtherItems) {
+        showItems(otherSteps);
+    }
+}
+function showItems(array){
+    array.forEach(function (step) {
         let schedule = new ScheduleInfo();
         let calendar = findCalendar(String(step['device']['deviceType']['id']));
         schedule.id = chance.guid();
@@ -99,32 +108,29 @@ function generateSchedule(viewName, renderStart, renderEnd) {
         schedule.isReadOnly = false;
         schedule.start = new Date(step['start'] + 'T' + step['startHour']);
         schedule.end = new Date(step['end'] + 'T' + step['endHour']);
-        let gradientNumber=-1;
+        let gradientNumber = -1;
         let numberOfDevicesOfType = 0;
         devices.forEach(function (device) {
-            if(device['deviceType']['id'] ==calendar.id){
+            if (device['deviceType']['id'] == calendar.id) {
                 numberOfDevicesOfType++;
-                if(step['device']['id']==device['id']){
-                    if(gradientNumber==-1){
-                        gradientNumber=numberOfDevicesOfType;
+                if (step['device']['id'] == device['id']) {
+                    if (gradientNumber == -1) {
+                        gradientNumber = numberOfDevicesOfType;
                     }
                 }
             }
         });
         gradientNumber--;
-        if(gradientNumber<0){
+        if (gradientNumber < 0) {
             gradientNumber++;
         }
-        console.log(gradientNumber+" : "+numberOfDevicesOfType);
         schedule.color = calendar.color;
-        schedule.bgColor = calculateGradient(calendar.bgColor,gradientNumber,1/numberOfDevicesOfType);
-        schedule.dragBgColor = calculateGradient(calendar.dragBgColor,gradientNumber,1/numberOfDevicesOfType);
-        schedule.borderColor = calculateGradient(calendar.borderColor,gradientNumber,1/numberOfDevicesOfType);
+        schedule.bgColor = calculateGradient(calendar.bgColor, gradientNumber, 1 / numberOfDevicesOfType);
+        schedule.dragBgColor = calculateGradient(calendar.dragBgColor, gradientNumber, 1 / numberOfDevicesOfType);
+        schedule.borderColor = calculateGradient(calendar.borderColor, gradientNumber, 1 / numberOfDevicesOfType);
         schedule.category = 'time';
-
         ScheduleList.push(schedule);
-
     })
-
 }
+
 

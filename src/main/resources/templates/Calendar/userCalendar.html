@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <!-- Import header -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
@@ -29,6 +29,11 @@
                 Go to booking
             </a>
     </div>
+    <select sec:authorize="hasAuthority('Console Access')" id="steps-items">
+        <option value="1">Show personal steps</option>
+        <option value="2">Show other steps</option>
+        <option value="3">Show both</option>
+    </select>
     <div id="lnb-calendars" class="lnb-calendars">
         <div>
             <div class="lnb-calendars-item">
@@ -123,8 +128,10 @@
 <script th:inline="javascript">
     let devices = [[${allDevices}]];
     let deviceTypes = [[${allDeviceTypes}]];
-    let steps = [[${allSteps}]]
+    let userSteps = [[${userSteps}]]
+    let otherSteps = [[${otherSteps}]]
 </script>
+
 <!-- Add all extra library script-->
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
         crossorigin="anonymous"></script>

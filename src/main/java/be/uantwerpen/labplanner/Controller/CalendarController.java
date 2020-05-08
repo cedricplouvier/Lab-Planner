@@ -7,7 +7,9 @@ import be.uantwerpen.labplanner.Model.Step;
 import be.uantwerpen.labplanner.Service.DeviceService;
 import be.uantwerpen.labplanner.Service.DeviceTypeService;
 import be.uantwerpen.labplanner.Service.StepService;
+import be.uantwerpen.labplanner.common.model.users.Role;
 import be.uantwerpen.labplanner.common.model.users.User;
+import be.uantwerpen.labplanner.common.service.users.RoleService;
 import de.jollyday.Holiday;
 import de.jollyday.HolidayCalendar;
 import de.jollyday.HolidayManager;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +34,8 @@ public class CalendarController {
     DeviceTypeService deviceTypeService;
     @Autowired
     DeviceService deviceService;
+    @Autowired
+    RoleService roleService;
     //Populate
     @ModelAttribute("allDevices")
     public Iterable<Device> populateDevices() {
@@ -45,12 +50,19 @@ public class CalendarController {
     public String showUserCalendar(final ModelMap model) {
         User user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         List<Step> userSteps = new ArrayList<Step>();
-        for (Step step: stepService.findAll()) {
-            if (step.getUser().getId() ==user.getId()){
+        List<Step> otherSteps = new ArrayList<Step>();
+        for (Step step : stepService.findAll()) {
+            if (step.getUser().getId() == user.getId()) {
                 userSteps.add(step);
+            } else {
+                otherSteps.add(step);
             }
         }
-        model.addAttribute("allSteps", userSteps);
+        Role admin = roleService.findByName("Administrator").get();
+        if(user.getRoles().contains(admin)) {
+            model.addAttribute("otherSteps", otherSteps);
+        }
+        model.addAttribute("userSteps", userSteps);
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes",deviceTypeService.findAll());
         model.addAttribute("Step", new Step());
