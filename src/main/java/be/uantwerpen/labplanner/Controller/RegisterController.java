@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 @Controller
 public class RegisterController {
@@ -31,13 +29,13 @@ public class RegisterController {
     private EmailController emailController;
 
 
-    private List<User> registredUsers = new ArrayList<>();
+    private Set<User> registredUsers = new HashSet<>();
 
-    public List<User> getRegistredUsers() {
+    public Set<User> getRegistredUsers() {
         return registredUsers;
     }
 
-    public void setRegistredUsers(List<User> registredUsers) {
+    public void setRegistredUsers(Set<User> registredUsers) {
         this.registredUsers = registredUsers;
     }
 

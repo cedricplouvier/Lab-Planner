@@ -52,6 +52,9 @@ public class RegisterControllerTests {
     @Mock
     private RelationService relationService;
 
+    @Mock
+    private EmailController emailController;
+
 
     @InjectMocks
     private RegisterController registerController;
@@ -62,6 +65,42 @@ public class RegisterControllerTests {
     public void setup(){
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(registerController).build();
+    }
+
+    @Test
+    public void ShowRegistredUsersTest() throws Exception{
+        User u = new User("test","test");
+        Set<User> users = new HashSet<>();
+        users.add(u);
+        registerController.setRegistredUsers(users);
+
+        mockMvc.perform(get("/registrations"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("allRegistrations",hasSize(1)));
+    }
+
+    @Test
+    public void acceptRegistredUSerTests() throws Exception{
+        User u = new User("test","test");
+        u.setUaNumber("1");
+        u.setEmail("test@test.test");
+        Set<User> users = new HashSet<>();
+        users.add(u);
+        registerController.setRegistredUsers(users);
+        mockMvc.perform(get("/registrations/add/{ua}","1"))
+                .andExpect(status().is(302));
+    }
+
+    @Test
+    public void DeclineRegistredUSerTests() throws Exception{
+        User u = new User("test","test");
+        u.setUaNumber("1");
+        u.setEmail("test@test.test");
+        Set<User> users = new HashSet<>();
+        users.add(u);
+        registerController.setRegistredUsers(users);
+        mockMvc.perform(get("/registrations/decline/{ua}","1"))
+                .andExpect(status().is(302));
     }
 
     @Test
@@ -133,6 +172,33 @@ public class RegisterControllerTests {
 
     @Test
     //Add user with non valid name
+    public void AddNonValidUANumberTest() throws Exception {
+        Role r = new Role("test");
+        r.setId((long) 15);
+        List<Role> roles = new ArrayList<Role>();
+        roles.add(r);
+
+        Set<Role> rolSet = new HashSet<>();
+        rolSet.add(r);
+
+        User user = new User("admin", "Ruben1","ruben.joosen@gmail.com","Ruben","Joosen","45","","",rolSet,null,null);
+
+        List<User> users = new ArrayList<>();
+        users.add(user);
+        //empty password string
+        //  when(userService.findAll()).thenReturn(users);
+
+        when(roleService.findAll()).thenReturn(roles);
+        mockMvc.perform(post("/register").flashAttr("user", user))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("UserInUse", notNullValue()))
+                .andExpect(view().name("register-manage"))
+                .andDo(print());
+
+    }
+
+    @Test
+    //Add user with non valid name
     public void AddDoubleUANumberTest() throws Exception {
         Role r = new Role("test");
         r.setId((long) 15);
@@ -170,12 +236,11 @@ public class RegisterControllerTests {
         rolSet.add(r);
 
         User user = new User("admin", "Ruben1","ruben.joosen@gmail.com","Ruben","Joosen","20164473","","",rolSet,null,null);
-        User user2 = new User("admin", "Ruben1","ruben.joosen@gmail.com","Ruben","Joosen","2014473","","",rolSet,null,null);
+        User user2 = new User("admin", "Ruben1","ruben.joosen@gmail.com","Ruben","Joosen","20714473","","",rolSet,null,null);
 
         List<User> users = new ArrayList<>();
         users.add(user2);
 
-        user.setUaNumber("123");
         //empty password string
         when(userService.findAll()).thenReturn(users);
 
