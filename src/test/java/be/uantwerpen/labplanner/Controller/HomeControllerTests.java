@@ -53,6 +53,9 @@ public class HomeControllerTests {
     @Mock
     private ReportService reportService;
 
+    @Mock
+    private RegisterController registerController;
+
     @InjectMocks
     private HomeController mockHomeController;
     private MockMvc mockMvc;
