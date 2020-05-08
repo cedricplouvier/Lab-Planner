@@ -123,6 +123,7 @@ public class HomeController {
             model.addAttribute("Step", new Step());
             model.addAttribute("currentUser",user.getUsername());
             model.addAttribute("studentSteps",studentSteps);
+            model.addAttribute("currentUserId",user.getId());
 
         model.addAttribute("userExperiments", userExperiments);
         model.addAttribute("studentExperiments", studentExperiments);
