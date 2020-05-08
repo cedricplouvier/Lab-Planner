@@ -79,8 +79,9 @@ public class RegisterController {
         }
         if (found!=null){
             emailController.SendAcceptMail(found.getEmail());
-            userService.save(found);
             registredUsers.remove(found);
+            userService.save(found);
+
 
         }
 
