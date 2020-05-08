@@ -62,6 +62,9 @@ public class StepController {
     @Autowired
     private OwnProductService productService;
     @Autowired
+    private EmailController emailController;
+
+    @Autowired
     private RelationService relationService;
     @Autowired
     private SystemSettingsService systemSettingsService;
@@ -72,6 +75,73 @@ public class StepController {
     UserRepository userRepository;
     @Autowired
     ExperimentRepository experimentservice;
+
+    private Map<Step,User> addedSteps = new HashMap<>();
+    private Map<Step,User> editedSteps = new HashMap<>();
+    private Map<Step,User> deletedSteps = new HashMap<>();
+
+    private Map<Experiment,User> addedExperiments = new HashMap<>();
+    private Map<Experiment,User> editedExperiments = new HashMap<>();
+    private Map<Experiment,User> deletedExperiments = new HashMap<>();
+
+
+
+    public Map<Step, User> getAddedSteps() {
+        return addedSteps;
+    }
+
+    public void setAddedSteps(Map<Step, User> addedSteps) {
+        this.addedSteps = addedSteps;
+    }
+
+    public Map<Step, User> getEditedSteps() {
+        return editedSteps;
+    }
+
+    public void setEditedSteps(Map<Step, User> editedSteps) {
+        this.editedSteps = editedSteps;
+    }
+
+    public Map<Step, User> getDeletedSteps() {
+        return deletedSteps;
+    }
+
+    public void setDeletedSteps(Map<Step, User> deletedSteps) {
+        this.deletedSteps = deletedSteps;
+    }
+
+    public Map<Experiment, User> getAddedExperiments() {
+        return addedExperiments;
+    }
+
+    public void setAddedExperiments(Map<Experiment, User> addedExperiments) {
+        this.addedExperiments = addedExperiments;
+    }
+
+    public Map<Experiment, User> getEditedExperiments() {
+        return editedExperiments;
+    }
+
+    public void setEditedExperiments(Map<Experiment, User> editedExperiments) {
+        this.editedExperiments = editedExperiments;
+    }
+
+    public Map<Experiment, User> getDeletedExperiments() {
+        return deletedExperiments;
+    }
+
+    public void setDeletedExperiments(Map<Experiment, User> deletedExperiments) {
+        this.deletedExperiments = deletedExperiments;
+    }
+
+    public void clearLists(){
+        addedSteps.clear();
+        editedSteps.clear();
+        deletedSteps.clear();
+        addedExperiments.clear();
+        editedExperiments.clear();
+        deletedExperiments.clear();
+    }
 
     private Logger logger = LoggerFactory.getLogger(StepController.class);
 
@@ -331,14 +401,27 @@ public class StepController {
         }
 
         List<OwnProduct> products = productService.findAll();
-        for (OwnProduct tempProd : products) {
-            if (tempProd.getStockLevel() < tempProd.getLowStockLevel()) {
-                ///CODE FOR LOWSTOCK ALERT HERE.
+        for(OwnProduct tempProd: products){
+            if (tempProd.getStockLevel()<tempProd.getLowStockLevel()){
+                emailController.sendLowStockEmail(tempProd, step.getUser(),"step" );
             }
         }
 
+        boolean newStep = step.isNew();
 
         stepService.save(step);
+        if (newStep){
+            addedSteps.put(step,currentUser);
+        }
+        else {
+
+            if (editedSteps.containsKey(step)) {
+                editedSteps.replace(step, currentUser);
+            } else {
+                editedSteps.put(step, currentUser);
+            }
+        }
+
         ra.addFlashAttribute("Status", "Success");
         ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.success")));
         return "redirect:/planning/";
@@ -443,14 +526,12 @@ public class StepController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
-        //if incorrect id
-        if (!stepService.findById(id).isPresent()) {
+        Step foundStepById = stepService.findById(id).orElse(null);
+        if (foundStepById == null){
             ra.addFlashAttribute("Status", new String("Error"));
             ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.foundError")));
             return "redirect:/planning/";
         }
-
-        Step step = stepService.findById(id).orElse(null);
 
 
         List<Step> allsteps = stepService.findAll();
@@ -461,21 +542,25 @@ public class StepController {
 
         boolean ownStep = false;
 
-        Step foundStepById = null;
-        for (Step tmpStep : allsteps) {
-            if (tmpStep.getId() == id)
-                foundStepById = tmpStep;
-        }
+
 
         //If Step is part of experiment, it can't be deleted
         if (foundStepById != null && isStepPartOfExperiment(foundStepById)) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + " tried to delete step that is part of experiment!"));
+            ra.addFlashAttribute("Message", new String(user.getFirstName() + " " + user.getLastName() + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleteExperimentError")));
             logger.error(user.getUsername() + " tried to delete step that is part of experiment!");
         } else if (userRoles.contains(adminRol)) {
+            if (deletedSteps.containsKey(foundStepById)){
+                deletedSteps.replace(foundStepById,user);
+            }
+            else {
+                deletedSteps.put(foundStepById, user);
+            }
+
+
             ra.addFlashAttribute("Status", new String("Success"));
-            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.deleted")));
-            resetStockLevels(step);
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
+            resetStockLevels(foundStepById);
             stepService.delete(id);
         } else if (userRoles.contains(promotorRole)) {
             List<Relation> relations = relationService.findAll();
@@ -494,9 +579,15 @@ public class StepController {
                 }
             }
             if (ownStep) {
+                if (deletedSteps.containsKey(foundStepById)){
+                    deletedSteps.replace(foundStepById,user);
+                }
+                else {
+                    deletedSteps.put(foundStepById, user);
+                }
                 ra.addFlashAttribute("Status", new String("Success"));
-                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.deleted")));
-                resetStockLevels(step);
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
+                resetStockLevels(foundStepById);
                 stepService.delete(id);
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
@@ -514,9 +605,15 @@ public class StepController {
                 }
             }
             if (ownStep) {
+                if (deletedSteps.containsKey(foundStepById)){
+                    deletedSteps.replace(foundStepById,user);
+                }
+                else {
+                    deletedSteps.put(foundStepById, user);
+                }
                 ra.addFlashAttribute("Status", new String("Success"));
-                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("steps.deleted")));
-                resetStockLevels(step);
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.deleted")));
+                resetStockLevels(foundStepById);
                 stepService.delete(id);
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
@@ -524,6 +621,11 @@ public class StepController {
                 logger.error(user.getUsername() + " tried to delete someone elses step or step id doesn't exist");
             }
         }
+
+        //check if deleted step also in added or editedstep map & delete
+        addedSteps.remove(foundStepById);
+        editedSteps.remove(foundStepById);
+
         model.clear();
         return "redirect:/planning/";
     }
@@ -643,6 +745,15 @@ public class StepController {
                 }
 
 
+                // add deleted experiment to list
+                if (deletedExperiments.containsKey(experiment)){
+                    deletedExperiments.replace(experiment,currentUser);
+                }
+                else {
+                    deletedExperiments.put(experiment, currentUser);
+                }
+                addedExperiments.remove(experiment);
+                editedExperiments.remove(experiment);
                 experimentService.delete(id);
                 ra.addFlashAttribute("Status", new String("Success"));
                 ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.deleteSuccess")));
@@ -1118,9 +1229,9 @@ public class StepController {
         }
 
         List<OwnProduct> products = productService.findAll();
-        for (OwnProduct tempProd : products) {
-            if (tempProd.getStockLevel() < tempProd.getLowStockLevel()) {
-                ///CODE FOR LOWSTOCK ALERT HERE.
+        for(OwnProduct tempProd: products){
+            if (tempProd.getStockLevel()<tempProd.getLowStockLevel()){
+                emailController.sendLowStockEmail(tempProd, experiment.getUser(),"experiment" );
             }
         }
 
@@ -1156,8 +1267,24 @@ public class StepController {
         experiment.setStartDate(tmpListSteps.get(0).getStart());
         experiment.setEndDate(tmpListSteps.get(tmpListSteps.size() - 1).getEnd());
 
+        //add edited experiment to logger
+        boolean newExperiment = experiment.isNew();
+
         //save experiment into database
         experimentService.saveExperiment(experiment);
+
+        if (newExperiment){
+            addedExperiments.put(experiment,currentUser);
+        }
+        else {
+
+            if (editedExperiments.containsKey(experiment)) {
+                editedExperiments.replace(experiment, currentUser);
+            } else {
+                editedExperiments.put(experiment, currentUser);
+            }
+        }
+
         ra.addFlashAttribute("Status", "Success");
         String message = new String("Experiment has been added/edited.");
         ra.addFlashAttribute("Message", message);
