@@ -113,6 +113,37 @@ body {
   font-weight: bold;
 }
 
+#steps-items {
+
+  font-size: 14px;
+  background-color: #ff6618;
+  color: #ffffff;
+  border: 0;
+  width: 100%;
+  border-radius: 25px;
+  padding: 10px 20px;
+  font-weight: bold;
+}
+#steps-items:hover {
+  font-size: 14px;
+  background-color: #e55b15;
+  color: #ffffff;
+  border: 0;
+  border-radius: 25px;
+  padding: 10px 20px;
+  font-weight: bold;
+}
+
+#steps-items:active {
+  font-size: 14px;
+  background-color: #d95614;
+  color: #ffffff;
+  border: 0;
+  border-radius: 25px;
+  padding: 10px 20px;
+  font-weight: bold;
+}
+
 .lnb-new-schedule-btn:hover {
   height: 100%;
   font-size: 14px;
