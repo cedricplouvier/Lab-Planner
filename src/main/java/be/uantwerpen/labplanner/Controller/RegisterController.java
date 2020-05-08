@@ -181,13 +181,14 @@ public class RegisterController {
 
     boolean validatePassWord(String pw) {
         //check password
-        if (pw.length() < 6) {
+        if(pw.length()<6){
             return false;
-
-        } else if (pw.equals(pw.toLowerCase()) || pw.equals(pw.toUpperCase())) {
-
+        }
+        //check for capital & lower letter and number
+        else if (!pw.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$")){
             return false;
-        } else if (!pw.equals(pw.trim())) {
+        }
+        else if (!pw.equals(pw.trim())){
             return false;
         }
         return true;
