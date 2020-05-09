@@ -64,12 +64,8 @@
 
         console.log(a);
         toggleSearchlist();
-<<<<<<< HEAD
-        var rowCount = $('#list tr').length;
-=======
         var rowCount = indexWithRemovedItems;
         indexWithRemovedItems++;
->>>>>>> release/sprint3
         $('#list')
             .append(
                 '<tr class="row' + rowCount + '" id="row' + rowCount + '"> ' +
@@ -208,7 +204,6 @@
 <body>
 <div class="container">
     <div th:replace="navbar :: navbar"></div>
-<<<<<<< HEAD
     <form action="#" th:action="@{/planning/experiments/{id} (id=${experimentType.id})}" th:object="${experimentType}" method="post">
         <input type="checkbox" id="checkboxIsFixedType" th:field="*{isFixedType}" hidden/>
     <table class="table table-hover">
@@ -217,21 +212,6 @@
                 <input type="text" placeholder="Search.." id="myInput" onclick="toggleSearchlist()" onkeyup="filterFunction()">
                 <div  id="myDropdown" class="dropdown-content">
                     <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}" th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
-=======
-    <form action="#" th:action="@{/planning/experiments/{id} (id=${experimentType.id})}" th:object="${experimentType}"
-          method="post">
-        <input type="checkbox" id="checkboxIsFixedType" th:field="*{isFixedType}" hidden/>
-
-        <table id="myTable" class="table table-hover">
-            <div class="dropdown">
-                <div class="">
-                    <input type="text" placeholder="Search.." id="myInput" onclick="toggleSearchlist()"
-                           onkeyup="filterFunction()">
-                    <div id="myDropdown" class="dropdown-content">
-                        <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}"
-                           th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
-                    </div>
->>>>>>> release/sprint3
                 </div>
             </div>
             <thead>

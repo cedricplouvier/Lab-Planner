@@ -694,11 +694,9 @@ public class StepController {
                     pieceOfMixtureService.delete(pom);
                 }
 
-<<<<<<< HEAD
                 for (Step step : experiment.getSteps()) {
                     stepService.delete(step.getId());
                 }
-=======
             //if it is custom experiment, delete experimentType as well
             if (!experiment.getExperimentType().getIsFixedType()) {
                 for (StepType stepType : experiment.getExperimentType().getStepTypes()) {
@@ -710,10 +708,6 @@ public class StepController {
                 experimentTypeService.delete(expTypeToDelete.getId());
             }
 
-            //add amounts back to the stock.
-            Map<OwnProduct, Double> productMapStock = new HashMap<>();
-            Map<OwnProduct, Double> productMapReserved = new HashMap<>();
->>>>>>> release/sprint3
 
                 //add amounts back to the stock.
                 Map<OwnProduct, Double> productMapStock = new HashMap<>();
@@ -756,7 +750,6 @@ public class StepController {
                 }
 
 
-<<<<<<< HEAD
                 // add deleted experiment to list
                 if (deletedExperiments.containsKey(experiment)){
                     deletedExperiments.replace(experiment,currentUser);
@@ -774,13 +767,6 @@ public class StepController {
             else {
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.deleteUnauthorized")));
-=======
-            // add deleted experiment to list
-            if (deletedExperiments.containsKey(experiment)) {
-                deletedExperiments.replace(experiment, currentUser);
-            } else {
-                deletedExperiments.put(experiment, currentUser);
->>>>>>> release/sprint3
             }
         }
          else {
