@@ -2,6 +2,7 @@ package be.uantwerpen.labplanner.Repository;
 
 
 import be.uantwerpen.labplanner.LabplannerApplication;
+import be.uantwerpen.labplanner.Model.Mixture;
 import be.uantwerpen.labplanner.Model.OwnProduct;
 import be.uantwerpen.labplanner.Model.OwnTag;
 import be.uantwerpen.labplanner.common.model.stock.Unit;
@@ -108,6 +109,12 @@ public class ProductRepositoryTests {
         productRepository.save(fetchedproduct);
         OwnProduct fetchUpdatedProduct9 = productRepository.findById(fetchedproduct.getId()).orElse(null);
         assertEquals(fetchedproduct.getLastUpdatedById(), fetchUpdatedProduct9.getLastUpdatedById());
+
+        //update document
+        fetchedproduct.setDocument("testdoc");
+        productRepository.save(fetchedproduct);
+        OwnProduct fetchedUpdatedProduct10 = productRepository.findById(fetchedproduct.getId()).orElse(null);
+        assertEquals(fetchedproduct.getDocument(), fetchedUpdatedProduct10.getDocument());
 
 
 

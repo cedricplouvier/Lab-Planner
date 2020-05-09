@@ -123,7 +123,7 @@
         <div class="input-group mb-3">
             <div class="custom-file">
                 <input type="file" class="custom-file-input" name="file" accept="image/png, image/jpeg, image/jpg" id="inputGroupFile02"/>
-                <label class="custom-file-label" for="inputGroupFile02"th:text="#{device.choosefile}"></label>
+                <label class="custom-file-label" for="inputGroupFile02"th:text="#{mixture.image}"></label>
             </div>
             <div class="input-group-append">
                 <button class="btn btn-primary" id="upload-btn" disabled type="submit"  th:text="#{device.upload}"></button>
@@ -140,7 +140,31 @@
             })
         </script>
     </form>
+
+    <form th:if="${product.id}!=null" method="POST" enctype="multipart/form-data"  th:action="@{/upload/productPdf/{productId}(productId=${product.id})}">
+        <div class="input-group mb-3">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" name="file" accept=".pdf" id="inputGroupFile03"/>
+                <label class="custom-file-label" for="inputGroupFile03" th:value="${{product.getDocument()}}"  th:text="#{mixture.pdf}"></label>
+            </div>
+            <div class="input-group-append">
+                <button class="btn btn-primary" id="upload-btn2" disabled type="submit"  th:text="#{device.upload}"></button>
+            </div>
+        </div>
+        <script>
+            $('#inputGroupFile03').on('change',function(){
+                //get the file name
+                var fileName2 = $(this).val();
+                //replace the "Choose a file" label
+                $(this).next('.custom-file-label').html(fileName2);
+                $('#upload-btn2').prop('disabled', false);
+
+            })
+        </script>
+    </form>
+
     <div class="alert alert-info" role="alert" th:if="${product.id}==null" th:text="#{product.savebeforeupload}"></div>
+    <div class="alert alert-info" role="alert" th:if="${product.id}==null" th:text="#{product.savebeforeinfo}"></div>
 
 
 
