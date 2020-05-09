@@ -49,13 +49,17 @@
                 </div>
             </div>
 
-            <div th:if="${product.url}!=null" class="card bg-light mb-3">
+            <div th:if="${product.url}!=null or ${product.getDocument()!=null}" class="card bg-light mb-3">
                 <div class="card-body">
                     <h5 class="card-title"> <a th:text="#{product.url}">More information</a> </h5>
-                    <a class="nav-link" th:target="_blank" th:href="${product.url.toString()}" th:text="${product.url.toString()}"> </a>
+                    <a th:if="${product.url}!=null" class="nav-link" th:target="_blank" th:href="${product.url.toString()}" th:text="${product.url.toString()}"> </a>
+                    <a th:if="${product.getDocument()!=null}" class="nav-link" th:href="@{/files/pdfs/{name}(name=${product.getDocument()})}" th:text="${product.getDocument()}"></a>
 
                 </div>
             </div>
+
+
+
             <div class="card bg-light mb-3">
                 <div class="card-body">
                     <h5 class="card-title"> Tags </h5>
@@ -85,14 +89,15 @@
 
     <div sec:authorize="hasAuthority('Stock - Aggregates + Bitumen Read only - Advanced') or hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')">
         <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
-            <div class="card" style="width: 18rem;">
+            <div class="card" style="width: 25rem;">
                     <div class="card-header">
                         <h5 th:text="#{stock.info}">Stock Info</h5>
                     </div>
                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a th:text="#{product.total}+ ': '+${product.stockLevel+product.reservedStockLevel} + ' '+${product.units.getSIString()}">description</a></li>
                         <li class="list-group-item"><a th:text="#{product.left}+ ': '+${product.stockLevel} + ' '+${product.units.getSIString()}">description</a></li>
-                        <li class="list-group-item"><a th:text="#{product.lowStockLevel}+': '+${product.lowStockLevel}+ ' '+${product.units.getSIString()}">description</a></li>
                         <li class="list-group-item"><a th:text="#{product.reservedStockLevel}+ ': '+${product.reservedStockLevel} + ' '+${product.units.getSIString()}">description</a></li>
+                        <li class="list-group-item"><a th:text="#{product.lowStockLevel}+': '+${product.lowStockLevel}+ ' '+${product.units.getSIString()}">description</a></li>
                     </ul>
                 </div>
         </div>

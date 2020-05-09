@@ -71,6 +71,9 @@ public class ProductTests {
         product.setUpdateDateTime(dateTime2);
         assertEquals(product.getUpdateDateTime(), dateTime2);
 
+        product.setDocument("testdoc");
+        assertEquals(product.getDocument(), "testdoc");
+
 
     }
 }
