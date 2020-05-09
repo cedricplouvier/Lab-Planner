@@ -144,10 +144,16 @@
             </button>
 
             <p/>
-            <a th:href="@{/planning/experiments/book/}">
+            <a th:href="@{/planning/experiments/book/fixed}">
                 <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal"
-                        data-target="#staticBackdropExperiment" th:text="#{book.Experiment}">
-                    Book new Experiment
+                        data-target="#staticBackdropExperiment" th:text="#{book.Experiment.fixed}">
+                    Book fixed experiment
+                </button>
+            </a>
+            <a th:href="@{/planning/experiments/book/custom}">
+                <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal"
+                        data-target="#staticBackdropExperiment" th:text="#{book.Experiment.custom}">
+                    Book custom experiment
                 </button>
             </a>
 

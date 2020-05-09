@@ -7,18 +7,114 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 <script th:inline="javascript">
     var url = /*[[@{/planning/experiments/{id} (id=${experimentType})}]]*/ "";
+    var indexWithRemovedItems = 0;
+
+    function showFixedTimeInput(a) {
+        var checkBox = $(a).closest("tr").find("td:eq(4)").find("input")[0];
+        var cell0 = $(a).closest("tr").find("td:eq(5)").find("select")[0];
+        var cell1 = $(a).closest("tr").find("td:eq(6)").find("input")[0];
+        var cell2 = $(a).closest("tr").find("td:eq(6)").find("input")[1];
+        if (checkBox.checked == true) {
+            cell0.disabled = false;
+            cell1.disabled = false;
+            cell2.disabled = false;
+            checkBox.value = true;
+        } else {
+            cell0.disabled = true;
+            cell1.disabled = true;
+            cell2.disabled = true;
+            checkBox.value = false;
+        }
+    }
+
     toastr.options.extendedTimeOut = 5000;
     $(document).ready(function () {
         var messages =  /*[[${Message}]]*/ null;
         if (messages != null) {
             toastr.error(messages);
         }
+        indexWithRemovedItems = $('#list tr').length;
+
+        //check checkBox to make isfixedType variable true
+        document.getElementById("checkboxIsFixedType").checked = true;
     })
+
     function addrow(a) {
+        let allTypeOptions = [[${allTypeOptions}]];
+        var typeOptions = '';
+        for (let j = 0; j < allTypeOptions.length; j++) {
+            typeOptions += '<option class="dropdown-item"' + allTypeOptions[j] + '">' + allTypeOptions[j] + '</option>'
+
+        }
+        let allTypeDirections = [[${allTypeDirections}]];
+        var directionOptions = '';
+        for (let j = 0; j < allTypeDirections.length; j++) {
+            directionOptions += '<option class="dropdown-item"' + allTypeDirections[j] + '">' + allTypeDirections[j] + '</option>'
+
+        }
+
+
+        let allFixedTimeTypeOptions = [[${allFixedTimeTypeOptions}]];
+        var fixedTypesOptions = '';
+        for (let j = 0; j < allTypeDirections.length; j++) {
+            fixedTypesOptions += '<option class="dropdown-item"' + allFixedTimeTypeOptions[j] + '">' + allFixedTimeTypeOptions[j] + '</option>'
+
+        }
+
+
+        console.log(a);
         toggleSearchlist();
-        var rowCount = $('#list tr').length;
+        var rowCount = indexWithRemovedItems;
+        indexWithRemovedItems++;
         $('#list')
-            .append('<tr class="row'+rowCount+'" id="row'+rowCount+'"> <td><input hidden class="steptype" value="'+a.id+'" id="stepTypes'+rowCount+'.deviceType" name="stepTypes['+rowCount+'].deviceType">'+a.deviceTypeName+'<input hidden class="steptypename" value="'+a.deviceTypeName+'" id="stepTypes'+rowCount+'.stepTypeName" name="stepTypes['+rowCount+'].stepTypeName"> </td><td><select required value="" id="stepTypes'+rowCount+'.continuity.type" name="stepTypes['+rowCount+'].continuity.type"><option class="dropdown-item" value="No">No</option><option class="dropdown-item" value="Soft (at least)">Soft (at least)</option><option class="dropdown-item" value="Soft (at most)">Soft (at most)</option><option class="dropdown-item" value="Hard">Hard</option> </select></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.hour" name="stepTypes['+rowCount+'].continuity.hours" placeholder="Hours"></td> <td><input required value="" id="stepTypes'+rowCount+'.continuity.minutes" name="stepTypes['+rowCount+'].continuity.minutes" placeholder="Minutes"></td><td><a onclick="removeRow(this)"> <span class="fas fa-trash" style="color: red" ></span> </a></td> </tr>')
+            .append(
+                '<tr class="row' + rowCount + '" id="row' + rowCount + '"> ' +
+                '   <td>' +
+                '   <input hidden class="steptype" value="' + a.id + '" id="stepTypes' + rowCount + '.deviceType" name="stepTypes[' + rowCount + '].deviceType">' + a.deviceTypeName +
+                '   <input hidden class="steptypename" value="' + a.deviceTypeName + '" id="stepTypes' + rowCount + '.stepTypeName" name="stepTypes[' + rowCount + '].stepTypeName">' +
+                '   </td>' +
+                '   <td>' +
+                '       <select required value="" id="stepTypes' + rowCount + '.continuity.type" name="stepTypes[' + rowCount + '].continuity.type">' +
+                typeOptions +
+                '       </select>' +
+                '   </td>' +
+                '   <td>' +
+                '       <select required id="stepTypes' + rowCount + '.continuity.directionType" name="stepTypes[' + rowCount + '].continuity.directionType">' +
+                directionOptions +
+                '       </select>' +
+                '   </td>' +
+                '   <td>' +
+                '      <div class="input-group">' +
+                '           <input type="number" min="0" max="23" step="1" class=" form-control input-device" style="width: 20%;" value="0" id="stepTypes' + rowCount + '.continuity.hours" name="stepTypes[' + rowCount + '].continuity.hours">' +
+                '           <span class="input-group-btn" style="width:0px;"></span>' +
+                '           <input type="number" min="0" max="59" step="1" class="form-control input-device" style="width: 20%; " value="0" id="stepTypes' + rowCount + '.continuity.minutes" name="stepTypes[' + rowCount + '].continuity.minutes">' +
+                '       </div>' +
+                '   </td>' +
+                '   <td>' +
+                '       <label class="switch">' +
+                '           <input type="checkbox" onclick="showFixedTimeInput(this)" value="false" id="stepTypes' + rowCount + '.hasFixedLength" name="stepTypes[' + rowCount + '].hasFixedLength">' +
+                '           <input type="hidden" name="_stepTypes[' + rowCount + '].hasFixedLength" value="on">' +
+                '       </label>' +
+                '   </td>' +
+                '   <td>' +
+                '       <select required id="stepTypes' + rowCount + '.fixedTimeType"' + rowCount + ' name="stepTypes[' + rowCount + '].fixedTimeType" disabled>' +
+                fixedTypesOptions +
+                '       </select>' +
+                '   </td>' +
+                '   <td>' +
+                '       <div class="input-group">' +
+                '           <input type="number" min="0" step="1" class=" form-control input-device" style="width: 20%; " value="0" id="stepTypes' + rowCount + '.fixedTimeHours" name="stepTypes[' + rowCount + '].fixedTimeHours" disabled>' +
+                '           <span class="input-group-btn" max="23" style="width:0px;"></span>' +
+                '           <input type="number" min="0" max="59" step="1" class=" form-control input-device" style="width: 20%;" value="0" id="stepTypes' + rowCount + '.fixedTimeMinutes" name="stepTypes[' + rowCount + '].fixedTimeMinutes" disabled>' +
+                '       </div>' +
+                '   </td>' +
+                '   <td></td>'+
+                '   <td>' +
+                '       <a onclick="removeRow(this)"> <span class="fas fa-trash" style="color: red" >' +
+                '       </span></a>' +
+                '   </td>' +
+                '</tr>'
+            )
     }
 
     function filterFunction() {
@@ -42,6 +138,7 @@
     function toggleSearchlist() {
         document.getElementById("myDropdown").classList.toggle("show");
     }
+
     function removeRow(r) {
         $(r).closest('tr').remove();
     }
@@ -70,7 +167,9 @@
         border-bottom: 1px solid #ddd;
     }
 
-    #myInput:focus {outline: 3px solid #ddd;}
+    #myInput:focus {
+        outline: 3px solid #ddd;
+    }
 
     .dropdown {
         position: relative;
@@ -94,59 +193,129 @@
         display: block;
     }
 
-    .dropdown a:hover {background-color: #ddd;}
+    .dropdown a:hover {
+        background-color: #ddd;
+    }
 
-    .show {display: block;}
+    .show {
+        display: block;
+    }
 </style>
 <body>
-<div class = "container">
+<div class="container">
     <div th:replace="navbar :: navbar"></div>
-    <form action="#" th:action="@{/planning/experiments/{id} (id=${experimentType.id})}" th:object="${experimentType}" method="post">
+    <form action="#" th:action="@{/planning/experiments/{id} (id=${experimentType.id})}" th:object="${experimentType}"
+          method="post">
+        <input type="checkbox" id="checkboxIsFixedType" th:field="*{isFixedType}" hidden/>
 
-    <table class="table table-hover">
-        <div class="dropdown">
-            <div  class="">
-                <input type="text" placeholder="Search.." id="myInput" onclick="toggleSearchlist()" onkeyup="filterFunction()">
-                <div  id="myDropdown" class="dropdown-content">
-                    <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}" th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
+        <table id="myTable" class="table table-hover">
+            <div class="dropdown">
+                <div class="">
+                    <input type="text" placeholder="Search.." id="myInput" onclick="toggleSearchlist()"
+                           onkeyup="filterFunction()">
+                    <div id="myDropdown" class="dropdown-content">
+                        <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}"
+                           th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <thead>
-        <tr>
-            <th th:text="#{step.type}">Step Type</th>
-            <th>Continuity</th>
-            <th th:text="#{step.duration}">Duration</th>
-        </tr>
-        </thead>
+            <thead>
+            <tr>
+                <th th:text="#{step.type}">Step Type</th>
+                <th>Continuity type</th>
+                <th>Continuity direction</th>
+                <th>Continuity duration</th>
+                <th th:text="#{stepType.setFixedTime}">Set fixed time of step</th>
+                <th>Fixed time type</th>
+                <th th:text="#{stepType.fixedTime}">Fixed time of step</th>
+            </tr>
+            </thead>
 
-        <!-- IMPORTANT, class="list" have to be at tbody -->
-        <tbody id="list" class="list"  >
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody id="list" class="list" style="text-align:center;">
             <tr th:each="stepType, itemStat : *{stepTypes}">
-                <td ><input class="steptype" th:type="hidden" th:field="*{stepTypes[__${itemStat.index}__].deviceType}" th:value="${stepType.deviceType.deviceTypeName}" th:text="${stepType.deviceType.deviceTypeName}" >
-                    <input class="steptypename" th:type="hidden" th:field="*{stepTypes[__${itemStat.index}__].stepTypeName}" th:value="${stepType.stepTypeName}">
+                <td><input class="steptype" th:type="hidden" th:field="*{stepTypes[__${itemStat.index}__].deviceType}"
+                           th:value="${stepType.deviceType.deviceTypeName}"
+                           th:text="${stepType.deviceType.deviceTypeName}">
+                    <input class="steptypename" th:type="hidden"
+                           th:field="*{stepTypes[__${itemStat.index}__].stepTypeName}"
+                           th:value="${stepType.stepTypeName}">
                 </td>
-                <td >
+                <td>
                     <select th:field="*{stepTypes[__${itemStat.index}__].continuity.type}">
-                        <option class="dropdown-item" th:each="option : ${allOptions}" th:value="${option}" th:text="${option}"></option>
+                        <option class="dropdown-item" th:each="option : ${allTypeOptions}" th:value="${option}"
+                                th:text="${option}"></option>
                     </select>
                 </td>
-                <td ><input th:field="*{stepTypes[__${itemStat.index}__].continuity.hours}" th:value="${stepType.continuity.hours}"></td>
-                <td ><input th:field="*{stepTypes[__${itemStat.index}__].continuity.minutes}" th:value="${stepType.continuity.minutes}"></td>
+                <td>
+                    <select th:field="*{stepTypes[__${itemStat.index}__].continuity.directionType}">
+                        <option class="dropdown-item" th:each="option : ${allTypeDirections}" th:value="${option}"
+                                th:text="${option}"></option>
+                    </select>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <input type="number" min="0"  max="23" step="1" class=" form-control input-device"
+                               style="width: 20%;"
+                               th:field="*{stepTypes[__${itemStat.index}__].continuity.hours}"
+                               th:value="${stepType.continuity.hours}"/>
+                        <span class="input-group-btn" style="width:0px;"></span>
+                        <input type="number" min="0" max="59" step="1" class=" form-control input-device"
+                               style="width: 20%; "
+                               th:field="*{stepTypes[__${itemStat.index}__].continuity.minutes}"
+                               th:value="${stepType.continuity.minutes}"/>
+                    </div>
+                <td>
+                    <label class="switch">
+                        <input type="checkbox"
+                               th:checked="${stepType.hasFixedLength}"
+                               th:onclick="showFixedTimeInput(this)"
+                               th:field="*{stepTypes[__${itemStat.index}__].hasFixedLength}"
+                               th:value="${stepType.hasFixedLength}">
+                    </label>
+                </td>
+                <td>
+                    <select th:field="*{stepTypes[__${itemStat.index}__].fixedTimeType}"
+                            th:disabled="!${stepType.hasFixedLength}">
+                        <option class="dropdown-item" th:each="option : ${allFixedTimeTypeOptions}"
+                                th:value="${option}"
+                                th:text="${option}"></option>
+                    </select>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <input type="number" min="0" max="23" step="1" class=" form-control input-device"
+                               style="width: 20%;"
+                               th:field="*{stepTypes[__${itemStat.index}__].fixedTimeHours}"
+                               th:value="${stepType.fixedTimeHours}"
+                               th:disabled="!${stepType.hasFixedLength}"/>
+                        <span class="input-group-btn" style="width:0px;"></span>
+                        <input type="number" min="0" max="59" step="1" class=" form-control input-device"
+                               style="width: 20%;"
+                               th:field="*{stepTypes[__${itemStat.index}__].fixedTimeMinutes}"
+                               th:value="${stepType.fixedTimeMinutes}"
+                               th:disabled="!${stepType.hasFixedLength}"/>
+                    </div>
+                <td>
+                <td>
+                    <a onclick="removeRow(this)"> <span class="fas fa-trash" style="color: red">                </span>
+                    </a></td>
             </tr>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
         <div>
-            <input th:field="*{expname}" placeholder="Expirement Type Name">
+            <input th:field="*{expname}" placeholder="Expirement Type Name" required>
             <input th:field="*{id}" th:type="hidden" th:value="experimentType.id">
         </div>
 
-    <div style="margin-top: 10px">
-        <a style="margin-right: 10px" th:href="@{/planning/experiments}" class="btn btn-outline-primary" th:text="#{experimentstype.return}" >Return</a>
-        <button style="margin-right: 10px" type="submit"  class="btn btn-primary"th:text="#{experiment.type.submit}">
-            Submit
-        </button>
-    </div>
+        <div style="margin-top: 10px">
+            <a style="margin-right: 10px" th:href="@{/planning/experiments}" class="btn btn-outline-primary"
+               th:text="#{experimentstype.return}">Return</a>
+            <button style="margin-right: 10px" type="submit" class="btn btn-primary"
+                    th:text="#{experiment.type.submit}">
+                Submit
+            </button>
+        </div>
     </form>
 </div>
 </body>

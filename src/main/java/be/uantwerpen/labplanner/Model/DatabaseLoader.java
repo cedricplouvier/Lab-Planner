@@ -373,7 +373,7 @@ public class DatabaseLoader {
         DeviceType t12 = new DeviceType("Vacuum Setup", true);
         t12.setColor("#0000FF");
         deviceTypes.add(t12);
-        DeviceType t13 = new DeviceType("Water Bath", false);
+        DeviceType t13 = new DeviceType("Water Bath", true);
         t13.setColor("#222222");
         deviceTypes.add(t13);
         DeviceType t14 = new DeviceType("Wheel Tracking Test", true);
@@ -458,6 +458,13 @@ public class DatabaseLoader {
         deviceRepository.save(d11);
         Device d12 = new Device("SVM Setup 1", t10);
         deviceRepository.save(d12);
+
+        Device d13 = new Device("Big mixer 1", t3);
+        deviceRepository.save(d13);
+        Device d14 = new Device("Cooling chamber 1", t5);
+        deviceRepository.save(d14);
+        Device d15 = new Device("Balance 1", t2);
+        deviceRepository.save(d15);
 
 
         //create some products
@@ -640,19 +647,23 @@ public class DatabaseLoader {
         Mixture m3 = new Mixture("SMA", mix3, lorem.getWords(20), tags4, null, null);
         mixtureRepository.save(m3);
 
+        //default continuity for custom experiment
+        Continuity defaultContForCustomExp = new Continuity(0, 0, "No", "After");
+        continuityRepository.save(defaultContForCustomExp);
+       long id =  defaultContForCustomExp.getId();
 
         //Continuities
-        Continuity cont1 = new Continuity(0, 0, "No");
+        Continuity cont1 = new Continuity(0, 0, "No", "After");
         continuityRepository.save(cont1);
-        Continuity cont2 = new Continuity(8, 0, "Soft (at least)");
+        Continuity cont2 = new Continuity(8, 0, "Soft (at least)", "After");
         continuityRepository.save(cont2);
-        Continuity cont3 = new Continuity(24, 0, "Hard");
+        Continuity cont3 = new Continuity(24, 0, "Hard", "After");
         continuityRepository.save(cont3);
-        Continuity cont4 = new Continuity(12, 0, "Soft (at least)");
+        Continuity cont4 = new Continuity(4, 0, "Soft (at least)", "After");
         continuityRepository.save(cont4);
-        Continuity cont5 = new Continuity(0, 0, "Hard");
+        Continuity cont5 = new Continuity(0, 0, "Hard", "After");
         continuityRepository.save(cont5);
-        Continuity cont6 = new Continuity(24, 0, "Soft (at most)");
+        Continuity cont6 = new Continuity(24, 0, "Soft (at most)", "After");
         continuityRepository.save(cont6);
 
         //Steptypes
@@ -696,10 +707,104 @@ public class DatabaseLoader {
         WhlTrkTest.add(styp3);
         WhlTrkTest.add(styp11);
         WhlTrkTest.add(styp10);
-        ExperimentType experimentType1 = new ExperimentType("ITSR", ITSRStyps);
+        ExperimentType experimentType1 = new ExperimentType("ITSR", ITSRStyps, true);
         experimentTypeRepository.save(experimentType1);
-        ExperimentType experimentType2 = new ExperimentType("Wheel Tracking Test", WhlTrkTest);
+        ExperimentType experimentType2 = new ExperimentType("Wheel Tracking Test", WhlTrkTest, true);
         experimentTypeRepository.save(experimentType2);
+
+
+        //
+        //Step1 - No continuity, Device: Balance
+        Continuity continuity1 = new Continuity(0, 0, "No", "After");
+        StepType stepType1 = new StepType(t2, continuity1, "Step" + t2.getDeviceTypeName());
+
+        //Step2 - Continuity 4h before end, Device: Oven, Fixed time At least 12h
+        Continuity continuity2 = new Continuity(4, 0, "Hard", "Before");
+        StepType stepType2 = new StepType(t7, continuity2, "Step" + t7.getDeviceTypeName(), true, "At least", 12, 0);
+
+        //Step3,4,5 should be 4 hours before end of oven
+        //Step 3 - Continuity: Hard 4h before, DeviceType: Mixer, FixedTime: 4h
+        Continuity continuity3 = new Continuity(4, 0, "Hard", "Before");
+        StepType stepType3 = new StepType(t3, continuity3, "Step" + t3.getDeviceTypeName(), true, "Equal", 4, 0);
+
+        //Step 4 - Continuity: Hard 4h before, DeviceType: Balance, FixedTime: 4h
+        Continuity continuity4 = new Continuity(4, 0, "Hard", "Before");
+        StepType stepType4 = new StepType(t2, continuity4, "Step" + t2.getDeviceTypeName(), true, "Equal", 4, 0);
+
+        //Step 5 - Continuity: Hard 24h after, DeviceType: Gyrator, FixedTime: 4h
+        Continuity continuity5 = new Continuity(24, 0, "Hard", "After");
+        StepType stepType5 = new StepType(t6, continuity5, "Step" + t6.getDeviceTypeName(), true, "Equal", 4, 0);
+
+        //Step 6 - Continuity: At least 12h after, DeviceType: Autosaw, FixedTime: 2h
+        Continuity continuity6 = new Continuity(12, 0, "Soft (at least)", "After");
+        StepType stepType6 = new StepType(t1, continuity6, "Step" + t1.getDeviceTypeName(), true, "Equal", 2, 0);
+
+        //Step 7 - Continuity: At least 12h after, DeviceType: Caliper, FixedTime: 1h
+        Continuity continuity7 = new Continuity(0, 0, "No", "After");
+        StepType stepType7 = new StepType(t4, continuity7, "Step" + t4.getDeviceTypeName(), true, "Equal", 1, 0);
+
+        //Step 8 - Continuity: No, DeviceType: SVM, FixedTime: 1h
+        Continuity continuity8 = new Continuity(0, 0, "No", "After");
+        StepType stepType8 = new StepType(t10, continuity8, "Step" + t10.getDeviceTypeName(), true, "Equal", 1, 0);
+
+        //Step 9 - Continuity: No, DeviceType: Vacuum setup, FixedTime: 1h
+        Continuity continuity9 = new Continuity(0, 0, "No", "After");
+        StepType stepType9 = new StepType(t12, continuity9, "Step" + t12.getDeviceTypeName(), true, "Equal", 1, 0);
+
+        //Step 10 - Continuity: Hard, 0h, DeviceType: Water bath, FixedTime: 70h
+        Continuity continuity10 = new Continuity(0, 0, "Hard", "After");
+        StepType stepType10 = new StepType(t13, continuity10, "Step" + t13.getDeviceTypeName(), true, "Equal", 70, 0);
+
+        //Step 11 - Continuity: Hard, 0h, DeviceType: Cooling chamber, FixedTime: 4h
+        Continuity continuity11 = new Continuity(0, 0, "Hard", "After");
+        StepType stepType11 = new StepType(t5, continuity11, "Step" + t5.getDeviceTypeName(), true, "Equal", 4, 0);
+
+        //Step 12 - Continuity: Hard, 0h, DeviceType: Uniframe, FixedTime: 1h
+        Continuity continuity12 = new Continuity(0, 0, "Hard", "After");
+        StepType stepType12 = new StepType(t11, continuity12, "Step" + t11.getDeviceTypeName(), true, "Equal", 1, 0);
+
+        //save into database
+        continuityRepository.save(continuity1);
+        stepTypeRepository.save(stepType1);
+        continuityRepository.save(continuity2);
+        stepTypeRepository.save(stepType2);
+        continuityRepository.save(continuity3);
+        stepTypeRepository.save(stepType3);
+        continuityRepository.save(continuity4);
+        stepTypeRepository.save(stepType4);
+        continuityRepository.save(continuity5);
+        stepTypeRepository.save(stepType5);
+        continuityRepository.save(continuity6);
+        stepTypeRepository.save(stepType6);
+        continuityRepository.save(continuity7);
+        stepTypeRepository.save(stepType7);
+        continuityRepository.save(continuity8);
+        stepTypeRepository.save(stepType8);
+        continuityRepository.save(continuity9);
+        stepTypeRepository.save(stepType9);
+        continuityRepository.save(continuity10);
+        stepTypeRepository.save(stepType10);
+        continuityRepository.save(continuity11);
+        stepTypeRepository.save(stepType11);
+        continuityRepository.save(continuity12);
+        stepTypeRepository.save(stepType12);
+
+        List<StepType> ITSRSDifficultList = new ArrayList<StepType>();
+        ITSRSDifficultList.add(stepType1);
+        ITSRSDifficultList.add(stepType2);
+        ITSRSDifficultList.add(stepType3);
+        ITSRSDifficultList.add(stepType4);
+        ITSRSDifficultList.add(stepType5);
+        ITSRSDifficultList.add(stepType6);
+        ITSRSDifficultList.add(stepType7);
+        ITSRSDifficultList.add(stepType8);
+        ITSRSDifficultList.add(stepType9);
+        ITSRSDifficultList.add(stepType10);
+        ITSRSDifficultList.add(stepType11);
+        ITSRSDifficultList.add(stepType12);
+
+        ExperimentType experimentType3 = new ExperimentType("ITSR (Difficult)", ITSRSDifficultList, true);
+        experimentTypeRepository.save(experimentType3);
 
         Report r1 = new Report("Autosaw is broken", lorem.getWords(25), userRepository.findByUsername("Timo").orElse(null));
         Report r2 = new Report("Fancy Title", lorem.getWords(10), userRepository.findByUsername("Ali").orElse(null));
@@ -738,6 +843,19 @@ public class DatabaseLoader {
         Step step6c = new Step(u7, d5, "2020-05-08", "2020-05-08", "15:00", "16:00", "");
 
 
+        Step step1d = new Step(u7, d15, "2020-05-11", "2020-05-11", "10:00", "11:00", "");
+        Step step2d = new Step(u7, d7, "2020-05-11", "2020-05-12", "11:00", "13:00", "");
+        Step step3d = new Step(u7, d13, "2020-05-12", "2020-05-12", "09:00", "13:00", "");
+        Step step4d = new Step(u7, d15, "2020-05-12", "2020-05-12", "09:00", "13:00", "");
+        Step step5d = new Step(u7, d10, "2020-05-12", "2020-05-12", "09:00", "13:00", "");
+        Step step6d = new Step(u7, d1, "2020-05-13", "2020-05-13", "13:00", "15:00", "");
+        Step step7d = new Step(u7, d11, "2020-05-14", "2020-05-14", "10:00", "11:00", "");
+        Step step8d = new Step(u7, d12, "2020-05-14", "2020-05-14", "11:00", "12:00", "");
+        Step step9d = new Step(u7, d4, "2020-05-15", "2020-05-15", "12:00", "13:00", "");
+        Step step10d = new Step(u7, d5, "2020-05-15", "2020-05-18", "13:00", "11:00", "");
+        Step step11d = new Step(u7, d14, "2020-05-18", "2020-05-18", "11:00", "15:00", "");
+        Step step12d = new Step(u7, d3, "2020-05-18", "2020-05-18", "15:00", "16:00", "");
+
         stepRepository.save(step1a);
         stepRepository.save(step2a);
         stepRepository.save(step3a);
@@ -758,6 +876,19 @@ public class DatabaseLoader {
         stepRepository.save(step4c);
         stepRepository.save(step5c);
         stepRepository.save(step6c);
+
+        stepRepository.save(step1d);
+        stepRepository.save(step2d);
+        stepRepository.save(step3d);
+        stepRepository.save(step4d);
+        stepRepository.save(step5d);
+        stepRepository.save(step6d);
+        stepRepository.save(step7d);
+        stepRepository.save(step8d);
+        stepRepository.save(step9d);
+        stepRepository.save(step10d);
+        stepRepository.save(step11d);
+        stepRepository.save(step12d);
 
         List<Step> stepList1 = new ArrayList<Step>();
         stepList1.add(step1a);
@@ -783,6 +914,20 @@ public class DatabaseLoader {
         stepList3.add(step5c);
         stepList3.add(step6c);
 
+        List<Step> stepList4 = new ArrayList<Step>();
+        stepList4.add(step1d);
+        stepList4.add(step2d);
+        stepList4.add(step3d);
+        stepList4.add(step4d);
+        stepList4.add(step5d);
+        stepList4.add(step6d);
+        stepList4.add(step7d);
+        stepList4.add(step8d);
+        stepList4.add(step9d);
+        stepList4.add(step10d);
+        stepList4.add(step11d);
+        stepList4.add(step12d);
+
         for (int i = 0; i < stepList1.size(); i++) {
             stepList1.get(i).setStepType(experimentType1.getStepTypes().get(i));
         }
@@ -791,6 +936,10 @@ public class DatabaseLoader {
         }
         for (int i = 0; i < stepList3.size(); i++) {
             stepList3.get(i).setStepType(experimentType1.getStepTypes().get(i));
+        }
+
+        for (int i = 0; i < stepList4.size(); i++) {
+            stepList4.get(i).setStepType(experimentType3.getStepTypes().get(i));
         }
 
         PieceOfMixture pom1 = new PieceOfMixture(m1, "comment 1", 6.6);
@@ -815,9 +964,11 @@ public class DatabaseLoader {
         Experiment ex1 = new Experiment(experimentType1, stepList1, u7, "experiment1", pomList1, step1a.getStart(), step6a.getEnd());
         Experiment ex2 = new Experiment(experimentType1, stepList2, u7, "experiment2", pomList2, step1b.getStart(), step6b.getEnd());
         Experiment ex3 = new Experiment(experimentType1, stepList3, u7, "experiment3", pomList3, step1c.getStart(), step6c.getEnd());
+        Experiment ex4 = new Experiment(experimentType3, stepList4, u7, "experiment4", null, step1d.getStart(), step12d.getEnd());
         experimentRepository.save(ex1);
         experimentRepository.save(ex2);
         experimentRepository.save(ex3);
+        experimentRepository.save(ex4);
 
         OfficeHours oh = new OfficeHours();
         officeHoursRepository.save(oh);
