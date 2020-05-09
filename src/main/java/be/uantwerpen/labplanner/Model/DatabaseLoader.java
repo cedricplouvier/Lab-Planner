@@ -647,6 +647,10 @@ public class DatabaseLoader {
         Mixture m3 = new Mixture("SMA", mix3, lorem.getWords(20), tags4, null, null);
         mixtureRepository.save(m3);
 
+        //default continuity for custom experiment
+        Continuity defaultContForCustomExp = new Continuity(0, 0, "No", "After");
+        continuityRepository.save(defaultContForCustomExp);
+       long id =  defaultContForCustomExp.getId();
 
         //Continuities
         Continuity cont1 = new Continuity(0, 0, "No", "After");
@@ -712,52 +716,52 @@ public class DatabaseLoader {
         //
         //Step1 - No continuity, Device: Balance
         Continuity continuity1 = new Continuity(0, 0, "No", "After");
-        StepType stepType1 = new StepType(t2, continuity1,"Step"+ t2.getDeviceTypeName());
+        StepType stepType1 = new StepType(t2, continuity1, "Step" + t2.getDeviceTypeName());
 
         //Step2 - Continuity 4h before end, Device: Oven, Fixed time At least 12h
         Continuity continuity2 = new Continuity(4, 0, "Hard", "Before");
-        StepType stepType2 = new StepType(t7, continuity2, "Step"+t7.getDeviceTypeName(), true, "At least", 12, 0);
+        StepType stepType2 = new StepType(t7, continuity2, "Step" + t7.getDeviceTypeName(), true, "At least", 12, 0);
 
         //Step3,4,5 should be 4 hours before end of oven
         //Step 3 - Continuity: Hard 4h before, DeviceType: Mixer, FixedTime: 4h
         Continuity continuity3 = new Continuity(4, 0, "Hard", "Before");
-        StepType stepType3 = new StepType(t3, continuity3, "Step"+t3.getDeviceTypeName(), true, "Equal", 4, 0);
+        StepType stepType3 = new StepType(t3, continuity3, "Step" + t3.getDeviceTypeName(), true, "Equal", 4, 0);
 
         //Step 4 - Continuity: Hard 4h before, DeviceType: Balance, FixedTime: 4h
         Continuity continuity4 = new Continuity(4, 0, "Hard", "Before");
-        StepType stepType4 = new StepType(t2, continuity4,"Step"+ t2.getDeviceTypeName(), true, "Equal", 4, 0);
+        StepType stepType4 = new StepType(t2, continuity4, "Step" + t2.getDeviceTypeName(), true, "Equal", 4, 0);
 
         //Step 5 - Continuity: Hard 24h after, DeviceType: Gyrator, FixedTime: 4h
         Continuity continuity5 = new Continuity(24, 0, "Hard", "After");
-        StepType stepType5 = new StepType(t6, continuity5, "Step"+t6.getDeviceTypeName(), true, "Equal", 4, 0);
+        StepType stepType5 = new StepType(t6, continuity5, "Step" + t6.getDeviceTypeName(), true, "Equal", 4, 0);
 
         //Step 6 - Continuity: At least 12h after, DeviceType: Autosaw, FixedTime: 2h
         Continuity continuity6 = new Continuity(12, 0, "Soft (at least)", "After");
-        StepType stepType6 = new StepType(t1, continuity6, "Step"+t1.getDeviceTypeName(), true, "Equal", 2, 0);
+        StepType stepType6 = new StepType(t1, continuity6, "Step" + t1.getDeviceTypeName(), true, "Equal", 2, 0);
 
         //Step 7 - Continuity: At least 12h after, DeviceType: Caliper, FixedTime: 1h
         Continuity continuity7 = new Continuity(0, 0, "No", "After");
-        StepType stepType7 = new StepType(t4, continuity7, "Step"+t4.getDeviceTypeName(), true, "Equal", 1, 0);
+        StepType stepType7 = new StepType(t4, continuity7, "Step" + t4.getDeviceTypeName(), true, "Equal", 1, 0);
 
         //Step 8 - Continuity: No, DeviceType: SVM, FixedTime: 1h
         Continuity continuity8 = new Continuity(0, 0, "No", "After");
-        StepType stepType8 = new StepType(t10, continuity8, "Step"+t10.getDeviceTypeName(), true, "Equal", 1, 0);
+        StepType stepType8 = new StepType(t10, continuity8, "Step" + t10.getDeviceTypeName(), true, "Equal", 1, 0);
 
         //Step 9 - Continuity: No, DeviceType: Vacuum setup, FixedTime: 1h
         Continuity continuity9 = new Continuity(0, 0, "No", "After");
-        StepType stepType9 = new StepType(t12, continuity9, "Step"+t12.getDeviceTypeName(), true, "Equal", 1, 0);
+        StepType stepType9 = new StepType(t12, continuity9, "Step" + t12.getDeviceTypeName(), true, "Equal", 1, 0);
 
         //Step 10 - Continuity: Hard, 0h, DeviceType: Water bath, FixedTime: 70h
         Continuity continuity10 = new Continuity(0, 0, "Hard", "After");
-        StepType stepType10 = new StepType(t13, continuity10, "Step"+t13.getDeviceTypeName(), true, "Equal", 70, 0);
+        StepType stepType10 = new StepType(t13, continuity10, "Step" + t13.getDeviceTypeName(), true, "Equal", 70, 0);
 
         //Step 11 - Continuity: Hard, 0h, DeviceType: Cooling chamber, FixedTime: 4h
         Continuity continuity11 = new Continuity(0, 0, "Hard", "After");
-        StepType stepType11 = new StepType(t5, continuity11, "Step"+t5.getDeviceTypeName(), true, "Equal", 4, 0);
+        StepType stepType11 = new StepType(t5, continuity11, "Step" + t5.getDeviceTypeName(), true, "Equal", 4, 0);
 
         //Step 12 - Continuity: Hard, 0h, DeviceType: Uniframe, FixedTime: 1h
         Continuity continuity12 = new Continuity(0, 0, "Hard", "After");
-        StepType stepType12 = new StepType(t11, continuity12, "Step"+t11.getDeviceTypeName(), true, "Equal", 1, 0);
+        StepType stepType12 = new StepType(t11, continuity12, "Step" + t11.getDeviceTypeName(), true, "Equal", 1, 0);
 
         //save into database
         continuityRepository.save(continuity1);
@@ -839,18 +843,18 @@ public class DatabaseLoader {
         Step step6c = new Step(u7, d5, "2020-05-08", "2020-05-08", "15:00", "16:00", "");
 
 
-        Step step1d = new Step(u7, d15 , "2020-05-11", "2020-05-11", "10:00", "11:00", "");
-        Step step2d = new Step(u7, d7  , "2020-05-11", "2020-05-12", "11:00", "13:00", "");
-        Step step3d = new Step(u7, d13 , "2020-05-12", "2020-05-12", "09:00", "13:00", "");
-        Step step4d = new Step(u7, d15 , "2020-05-12", "2020-05-12", "09:00", "13:00", "");
-        Step step5d = new Step(u7, d10 , "2020-05-12", "2020-05-12", "09:00", "13:00", "");
-        Step step6d = new Step(u7, d1  , "2020-05-13", "2020-05-13", "13:00", "15:00", "");
-        Step step7d = new Step(u7, d11 , "2020-05-14", "2020-05-14", "10:00", "11:00", "");
-        Step step8d = new Step(u7, d12 , "2020-05-14", "2020-05-14", "11:00", "12:00", "");
-        Step step9d = new Step(u7,  d4 , "2020-05-15", "2020-05-15", "12:00", "13:00", "");
-        Step step10d = new Step(u7, d5 , "2020-05-15", "2020-05-18", "13:00", "11:00", "");
+        Step step1d = new Step(u7, d15, "2020-05-11", "2020-05-11", "10:00", "11:00", "");
+        Step step2d = new Step(u7, d7, "2020-05-11", "2020-05-12", "11:00", "13:00", "");
+        Step step3d = new Step(u7, d13, "2020-05-12", "2020-05-12", "09:00", "13:00", "");
+        Step step4d = new Step(u7, d15, "2020-05-12", "2020-05-12", "09:00", "13:00", "");
+        Step step5d = new Step(u7, d10, "2020-05-12", "2020-05-12", "09:00", "13:00", "");
+        Step step6d = new Step(u7, d1, "2020-05-13", "2020-05-13", "13:00", "15:00", "");
+        Step step7d = new Step(u7, d11, "2020-05-14", "2020-05-14", "10:00", "11:00", "");
+        Step step8d = new Step(u7, d12, "2020-05-14", "2020-05-14", "11:00", "12:00", "");
+        Step step9d = new Step(u7, d4, "2020-05-15", "2020-05-15", "12:00", "13:00", "");
+        Step step10d = new Step(u7, d5, "2020-05-15", "2020-05-18", "13:00", "11:00", "");
         Step step11d = new Step(u7, d14, "2020-05-18", "2020-05-18", "11:00", "15:00", "");
-        Step step12d = new Step(u7, d3 , "2020-05-18", "2020-05-18", "15:00", "16:00", "");
+        Step step12d = new Step(u7, d3, "2020-05-18", "2020-05-18", "15:00", "16:00", "");
 
         stepRepository.save(step1a);
         stepRepository.save(step2a);
