@@ -14,7 +14,7 @@ public class Mixture extends AbstractPersistable<Long> {
     @Column
     private String name;
 
-    @Column
+    @Column( length = 10000 )
     private String description;
 
     @Column
