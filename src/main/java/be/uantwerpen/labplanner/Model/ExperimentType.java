@@ -12,8 +12,12 @@ import java.util.List;
 public class ExperimentType extends AbstractPersistable<Long> {
 
 
-    @Column(name = "expname",nullable = false)
+    @Column(name = "expname",nullable = false, unique = true)
     private String expname;
+
+    @Column(name = "isFixedType")
+    private boolean isFixedType;
+
 
     @OneToMany
     @JoinColumn(name = "stepTypes")
@@ -22,9 +26,10 @@ public class ExperimentType extends AbstractPersistable<Long> {
     public ExperimentType() {
     }
 
-    public ExperimentType(String expname, List<StepType> stepTypes) {
+    public ExperimentType(String expname, List<StepType> stepTypes, boolean isFixedType) {
         this.expname = expname;
         this.stepTypes = stepTypes;
+        this.isFixedType = isFixedType;
     }
 
     public void addStepType(StepType stepType) {
@@ -65,4 +70,11 @@ public class ExperimentType extends AbstractPersistable<Long> {
         this.expname = expname;
     }
 
+    public boolean getIsFixedType() {
+        return isFixedType;
+    }
+
+    public void setIsFixedType(boolean isFixedType) {
+        this.isFixedType = isFixedType;
+    }
 }

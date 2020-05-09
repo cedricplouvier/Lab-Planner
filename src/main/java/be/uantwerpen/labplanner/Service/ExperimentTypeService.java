@@ -26,6 +26,7 @@ public class ExperimentTypeService {
         if(tempExperimentType!=null){
             tempExperimentType.setStepTypes(experimentType.getStepTypes());
             tempExperimentType.setExpname(experimentType.getExpname());
+            tempExperimentType.setIsFixedType(experimentType.getIsFixedType());
             experimentTypeRepository.save(tempExperimentType);
         }
         else experimentTypeRepository.save(experimentType);

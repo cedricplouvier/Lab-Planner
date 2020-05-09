@@ -18,6 +18,15 @@ public class StepType extends AbstractPersistable<Long> {
     @JoinColumn(name = "continuity")
     private Continuity continuity;
 
+    @Column(name = "hasFixedLength")
+    private boolean hasFixedLength;
+    @Column(name = "fixedTimeType")
+    private String fixedTimeType = "No";
+    @Column(name = "fixedTimeHours")
+    private int fixedTimeHours;
+    @Column(name = "fixedTimeMinutes")
+    private int fixedTimeMinutes;
+
     public StepType() {
     }
 
@@ -25,6 +34,17 @@ public class StepType extends AbstractPersistable<Long> {
         this.deviceType = deviceType;
         this.name = stepTypeName;
         this.continuity = continuity;
+    }
+
+    public StepType(DeviceType deviceType, Continuity continuity, String stepTypeName, boolean hasFixedLength, String fixedTimeType, int fixedTimeHours, int fixedTimeMinutes) {
+        this.deviceType = deviceType;
+        this.name = stepTypeName;
+        this.continuity = continuity;
+        this.hasFixedLength = hasFixedLength;
+        this.fixedTimeType = fixedTimeType;
+        this.fixedTimeHours = fixedTimeHours;
+        this.fixedTimeMinutes = fixedTimeMinutes;
+
     }
 
     public DeviceType getDeviceType() {
@@ -49,6 +69,38 @@ public class StepType extends AbstractPersistable<Long> {
 
     public void setContinuity(Continuity continuity) {
         this.continuity = continuity;
+    }
+
+    public boolean getHasFixedLength() {
+        return hasFixedLength;
+    }
+
+    public void setHasFixedLength(boolean hasFixedLength) {
+        this.hasFixedLength = hasFixedLength;
+    }
+
+    public int getFixedTimeHours() {
+        return fixedTimeHours;
+    }
+
+    public void setFixedTimeHours(int fixedTimeHours) {
+        this.fixedTimeHours = fixedTimeHours;
+    }
+
+    public int getFixedTimeMinutes() {
+        return fixedTimeMinutes;
+    }
+
+    public void setFixedTimeMinutes(int fixedTimeMinutes) {
+        this.fixedTimeMinutes = fixedTimeMinutes;
+    }
+
+    public String getFixedTimeType() {
+        return fixedTimeType;
+    }
+
+    public void setFixedTimeType(String fixedTimeType) {
+        this.fixedTimeType = fixedTimeType;
     }
 
     @Override
