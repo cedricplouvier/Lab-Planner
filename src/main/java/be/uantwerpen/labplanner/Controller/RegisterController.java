@@ -103,12 +103,7 @@ public class RegisterController {
 
     @RequestMapping(value = {"/register"}, method = RequestMethod.POST)
     public String addUser(@Valid User user,  BindingResult result, final ModelMap model, RedirectAttributes ra) {
-
-
-
         //check for standard errors & empty fields
-
-
         if ((result.hasErrors()) || (user.getPassword() == null) || (user.getFirstName() == null) || (user.getLastName() == null) || (user.getEmail() == null) || (user.getUaNumber() == null) || (user.getFirstName().trim().equals("")) || (user.getLastName().trim().equals("")) || (user.getPassword().trim().equals("")) || (user.getUaNumber().trim().equals("")) || (user.getEmail().trim().equals(""))) {
             model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.addError"));
 
@@ -135,7 +130,7 @@ public class RegisterController {
         //test for duplicate UA number or email adress.
         for (User temp : userService.findAll()) {
 
-            if ((temp.getUaNumber() != null) && ((temp.getUaNumber().equals(user.getUaNumber())))) {
+            if ((temp.getUaNumber() != null) && ((temp.getUaNumber().substring(1).equals(user.getUaNumber().substring(1))))) {
                 model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.UAError"));
 
                 return "register-manage";
