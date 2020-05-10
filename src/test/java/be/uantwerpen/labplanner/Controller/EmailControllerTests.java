@@ -57,6 +57,9 @@ public class EmailControllerTests {
     @Mock
     private UserService userService;
 
+    @Mock
+    private RegisterController registerController;
+
     @InjectMocks
     private EmailController emailController;
 
@@ -252,7 +255,11 @@ public class EmailControllerTests {
 
         List<User> users = new ArrayList<>();
         users.add(user);
+
+        Set<User> userSet = new HashSet<>();
+        userSet.add(user);
         when(userService.findAll()).thenReturn(users);
+        when(registerController.getRegistredUsers()).thenReturn(userSet);
 
 
         emailController.sendPeriodicMail();
