@@ -7,6 +7,11 @@
     <div th:replace="navbar :: navbar"></div>
 
     <h1> Welcome <span th:text="${currentUser}"></span></h1>
+    <a  sec:authorize="hasAuthority('Console Access')" th:href="@{/reports/list}" th:text="#{report.list} + ' ('+${reportAmount}+')'" class="btn btn-primary"></a>
+    <a  th:href="@{/reports/put}" th:text="#{report.problem}" class="btn btn-primary"></a>
+    <a  sec:authorize="hasAuthority('Console Access')" th:href="@{/registrations}" th:text="#{registrations} + ' ('+${registrationAmount}+')'" class="btn btn-primary"></a>
+
+
     <table class="table table-hover">
         <thead>
         <h2> <span th:text="#{steps}"></span></h2>
@@ -163,9 +168,6 @@
         </tr>
         </tbody>
     </table>
-
-    <a  sec:authorize="hasAuthority('Console Access')" th:href="@{/reports/list}" th:text="#{report.list} + ' ('+${reportAmount}+')'" class="btn btn-primary"></a>
-    <a  th:href="@{/reports/put}" th:text="#{report.problem}" class="btn btn-primary"></a>
 
 </div>
     <div th:replace="footer :: footer"></div>

@@ -23,6 +23,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.text.DecimalFormat;
@@ -51,6 +52,9 @@ public class EmailController   {
     @Autowired
     private StepController stepController;
 
+    @Autowired
+    private RegisterController registerController;
+
     private boolean isValidEmailAddress(String email) {
         String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
@@ -59,7 +63,35 @@ public class EmailController   {
     }
 
     @RequestMapping(value= "/mail/maintanance/{id}", method = RequestMethod.GET)
-    public String sendMaintanceMail(@PathVariable long id, final ModelMap model, RedirectAttributes ra){
+    public String viewSendMaintanaceMail(@PathVariable long id, final ModelMap model){
+        model.addAttribute("id",id);
+        return "Mail";
+    }
+
+    public void SendAcceptMail(String emailadress){
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(emailadress);
+        message.setSubject("Registration UA Labplanner approved");
+        message.setText("Your registration is approved by the admins.\nYou can now login in to the application.");
+        emailSender.send(message);
+
+
+    }
+
+    public void SendDeclineMail(String emailadress){
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(emailadress);
+        message.setSubject("Registration UA Labplanner declined");
+        message.setText("Your registration is declined by the admins.\nTry again or make contact with admins.");
+        emailSender.send(message);
+
+
+    }
+
+    @RequestMapping(value= "/mail/maintanance/{id}", method = RequestMethod.POST)
+    public String sendMaintanceMail(@PathVariable long id, @RequestParam String sourceText, final ModelMap model, RedirectAttributes ra){
         //get current user.
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
@@ -82,7 +114,8 @@ public class EmailController   {
         //convert to string array
         String[] adressArray = adresses.toArray(new String[0]);
         String subject = device.getDevicename() + " needs maintanance.";
-        String text = user.getFirstName() + " " + user.getLastName() + " says " + device.getDevicename() + " needs maintanance.";
+        String text = user.getFirstName() + " " + user.getLastName() + " says " + device.getDevicename() + " needs maintanance.\n";
+        text += sourceText;
 
 
         SimpleMailMessage message = new SimpleMailMessage();
@@ -95,20 +128,29 @@ public class EmailController   {
         return "redirect:/devices";
     }
 
-    @Scheduled(cron =  "0 0 20 * * ?")
+    @Scheduled(cron =  "0 3 19 * * ?")
     public void sendPeriodicMail(){
         List<String> adresses = loadAdresses();
 
         if (adresses.size()>0){
             //convert to string array
             String[] adressArray = adresses.toArray(new String[0]);
-            String subject = "Daily update of steps & experiments";
+            String subject = "Labplanner Daily update";
             StringBuilder text = new StringBuilder("");
 
+            if (registerController.getRegistredUsers().size()>0){
+                text.append("You have " + registerController.getRegistredUsers().size() + " new registrations.\n\n");
+
+
+
+            }
+
             if (stepController.getAddedSteps().size()>0) {
+
                 text.append("Added steps:\n");
                 for (Map.Entry<Step, User> pair : stepController.getAddedSteps().entrySet()) {
                     text.append("Step with id " + pair.getKey().getId() + " is added by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() + ".\n");
+                    text.append("Step duration: " + pair.getKey().getStart() + " " + pair.getKey().getStartHour() + " until " + pair.getKey().getEnd() + " " + pair.getKey().getEndHour() + ".\n\n");
                 }
                 text.append("\n");
             }
@@ -118,6 +160,8 @@ public class EmailController   {
                 text.append("Edited steps:\n");
                 for (Map.Entry<Step, User> pair : stepController.getEditedSteps().entrySet()) {
                     text.append("Step with id " + pair.getKey().getId() + " is edited by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() + ".\n");
+                    text.append("Step duration: " + pair.getKey().getStart() + " " + pair.getKey().getStartHour() + " until " + pair.getKey().getEnd() + " " + pair.getKey().getEndHour() + ".\n\n");
+
                 }
                 text.append("\n");
             }
@@ -136,6 +180,8 @@ public class EmailController   {
                 text.append("Added experiments:\n");
                 for (Map.Entry<Experiment, User> pair : stepController.getAddedExperiments().entrySet()) {
                     text.append("Experiment " + pair.getKey().getExperimentname() + " with id " + pair.getKey().getId() + " is added by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() + ".\n");
+                    text.append("Experiment duration: " + pair.getKey().getStartDate()  + " until " + pair.getKey().getEndDate() +  ".\n\n");
+
                 }
                 text.append("\n");
             }
@@ -145,6 +191,8 @@ public class EmailController   {
                 text.append("Edited experiments:\n");
                 for (Map.Entry<Experiment, User> pair : stepController.getEditedExperiments().entrySet()) {
                     text.append("Experiment " + pair.getKey().getExperimentname() + " with id " + pair.getKey().getId() + " is edited by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() + ".\n");
+                    text.append("Experiment duration: " + pair.getKey().getStartDate()  + " until " + pair.getKey().getEndDate() +  ".\n\n");
+
                 }
                 text.append("\n");
             }
@@ -157,6 +205,8 @@ public class EmailController   {
                 }
                 text.append("\n");
             }
+
+
 
             stepController.clearLists();
 
