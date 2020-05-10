@@ -104,17 +104,17 @@
             </tr>
             <tr>
                 <td>
-                    <input th:type="number" required id="endTime"type="date" th:field="*{end}" class="form-control"  th:placeholder="#{step.end}">
+                    <input required id="endTime"type="date" th:field="*{end}" class="form-control"  th:placeholder="#{step.end}">
                 </td>
                 <td>
-                    <input th:type="number" required id="endHour" type="time" class="form-control" th:field="*{endHour}" th:placeholder="#{step.endHour}">
+                    <input required id="endHour" type="time" class="form-control" th:field="*{endHour}" th:placeholder="#{step.endHour}">
                 </td>
             </tr>
             <tr>
-                <td><label  class="control-label" th:text="#{step.comment}">Comment</label></td>
+                <td><label  class="control-label"  th:text="#{step.comment}">Comment</label></td><td> </td>
             </tr>
             <tr>
-                <td><input class="form-control" th:placeholder="#{step.comment}"></td>
+                <td><input type="text" th:field="*{comment}" class="form-control" th:placeholder="#{step.comment}"></td><td> </td>
             </tr>
             <tr>
                 <td><label class="control-label" th:text="#{step.mixture}">Mixture</label></td>
@@ -124,7 +124,7 @@
                 <td>
                     <select required id="mixtures" th:field="*{mixture}" class="form-control input-mixture">
                         <option value="" disabled th:selected="selected">Select Mixture</option>
-                        <option class="dropdown-item" th:each="Amixture : ${allMixtures}" th:value="${Amixture.getId()}" th:text="${Amixture.getName()}">
+                        <option class="dropdown-item" th:each="Amixture : ${allMixtures}" th:field="*{mixture}" th:value="${Amixture.getId()}" th:text="${Amixture.getName()}">
                             Mixture
                         </option>
                     </select>
