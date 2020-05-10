@@ -458,6 +458,7 @@ public class StepController {
 
     //check if specific user is allowed to edit.
     boolean allowedToEdit(User user, long id) {
+
         //also check for Researcher.
         Role adminole = roleService.findByName("Administrator").get();
         Role promotorRole = roleService.findByName("Researcher").get();
@@ -468,28 +469,52 @@ public class StepController {
             allowedToEdit = true;
         }
 
-        //user can edit his own step
-        else if (stepService.findById(id).get().getUser().equals(user)) {
-            allowedToEdit = true;
-        }
+        Step step = stepService.findById(id).orElse(null);
+        if(step!=null){
+            //user can edit his own step
+            if (step.getUser().equals(user)) {
+                allowedToEdit = true;
+            }
+            //researcher can edit step of one of his students.
+            if (user.getRoles().contains(promotorRole)) {
+                //get all the relations of the specific researcher
+                List<Relation> relations = relationService.findAll();
 
-        //researcher can edit step of one of his students.
-        else if (user.getRoles().contains(promotorRole)) {
-            //get all the relations of the specific researcher
-            List<Relation> relations = relationService.findAll();
-
-            for (Relation relation : relations) {
-                //only select relation for specific researcher
-                if (relation.getResearcher().equals(user)) {
-                    //check if the student is part of the student scope
-                    if (relation.getStudents().contains(stepService.findById(id).get().getUser())) {
-                        allowedToEdit = true;
+                for (Relation relation : relations) {
+                    //only select relation for specific researcher
+                    if (relation.getResearcher().equals(user)) {
+                        //check if the student is part of the student scope
+                        if (relation.getStudents().contains(step.getUser())) {
+                            allowedToEdit = true;
+                        }
                     }
                 }
+
             }
-
         }
+        else {
+            Experiment experiment= experimentService.findById(id).orElse(null);
+            if(experiment!=null){
+                if (experiment.getUser().equals(user))
+                    allowedToEdit=true;
+            }
+            //researcher can edit step of one of his students.
+            if (user.getRoles().contains(promotorRole)) {
+                //get all the relations of the specific researcher
+                List<Relation> relations = relationService.findAll();
 
+                for (Relation relation : relations) {
+                    //only select relation for specific researcher
+                    if (relation.getResearcher().equals(user)) {
+                        //check if the student is part of the student scope
+                        if (relation.getStudents().contains(experiment.getUser())) {
+                            allowedToEdit = true;
+                        }
+                    }
+                }
+
+            }
+        }
         return allowedToEdit;
     }
 
@@ -659,17 +684,19 @@ public class StepController {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Set<Role> userRoles = currentUser.getRoles();
         Role adminRol = roleService.findByName("Administrator").get();
-        if (experimentService.findById(id).isPresent() && userRoles.contains(adminRol)) {
-            Experiment experiment = experimentService.findById(id).get();
+        Experiment experiment =experimentService.findById(id).orElse(null);
+        if(experiment!=null)
+        {
+            if (allowedToEdit(currentUser,id)) {
 
-            for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
-                pieceOfMixtureService.delete(pom);
-            }
 
-            for (Step step : experiment.getSteps()) {
-                stepService.delete(step.getId());
-            }
+                for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
+                    pieceOfMixtureService.delete(pom);
+                }
 
+                for (Step step : experiment.getSteps()) {
+                    stepService.delete(step.getId());
+                }
             //if it is custom experiment, delete experimentType as well
             if (!experiment.getExperimentType().getIsFixedType()) {
                 for (StepType stepType : experiment.getExperimentType().getStepTypes()) {
@@ -681,64 +708,70 @@ public class StepController {
                 experimentTypeService.delete(expTypeToDelete.getId());
             }
 
-            //add amounts back to the stock.
-            Map<OwnProduct, Double> productMapStock = new HashMap<>();
-            Map<OwnProduct, Double> productMapReserved = new HashMap<>();
+
+                //add amounts back to the stock.
+                Map<OwnProduct, Double> productMapStock = new HashMap<>();
+                Map<OwnProduct, Double> productMapReserved = new HashMap<>();
 
 
-            for (PieceOfMixture piece : experiment.getPiecesOfMixture()) {
-                Mixture mix = piece.getMixture();
-                List<Composition> compositions = mix.getCompositions();
-                for (Composition comp : compositions) {
-                    OwnProduct prod = comp.getProduct();
-                    if (!productMapStock.containsKey(prod)) {
-                        productMapStock.put(prod, prod.getStockLevel());
+                for (PieceOfMixture piece : experiment.getPiecesOfMixture()) {
+                    Mixture mix = piece.getMixture();
+                    List<Composition> compositions = mix.getCompositions();
+                    for (Composition comp : compositions) {
+                        OwnProduct prod = comp.getProduct();
+                        if (!productMapStock.containsKey(prod)) {
+                            productMapStock.put(prod, prod.getStockLevel());
+                        }
+                        if (!productMapReserved.containsKey(prod)) {
+                            productMapReserved.put(prod, prod.getReservedStockLevel());
+                        }
+                        double stocklevel = productMapStock.get(prod);
+                        double reservedLevel = productMapReserved.get(prod);
+                        stocklevel += comp.getAmount() * piece.getMixtureAmount() / 100;
+                        reservedLevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
+                        productMapStock.put(prod, stocklevel);
+                        productMapReserved.put(prod, reservedLevel);
                     }
-                    if (!productMapReserved.containsKey(prod)) {
-                        productMapReserved.put(prod, prod.getReservedStockLevel());
-                    }
-                    double stocklevel = productMapStock.get(prod);
-                    double reservedLevel = productMapReserved.get(prod);
-                    stocklevel += comp.getAmount() * piece.getMixtureAmount() / 100;
-                    reservedLevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
-                    productMapStock.put(prod, stocklevel);
-                    productMapReserved.put(prod, reservedLevel);
                 }
+                Iterator it = productMapStock.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry pair = (Map.Entry) it.next();
+                    OwnProduct prod = (OwnProduct) pair.getKey();
+                    prod.setStockLevel((Double) pair.getValue());
+                    productService.save(prod);
+                }
+                //add amounts to reserved stock
+                Iterator it3 = productMapReserved.entrySet().iterator();
+                while (it3.hasNext()) {
+                    Map.Entry pair = (Map.Entry) it3.next();
+                    OwnProduct prod = (OwnProduct) pair.getKey();
+                    prod.setReservedStockLevel((Double) pair.getValue());
+                    productService.save(prod);
+                }
+
+
+                // add deleted experiment to list
+                if (deletedExperiments.containsKey(experiment)){
+                    deletedExperiments.replace(experiment,currentUser);
+                }
+                else {
+                    deletedExperiments.put(experiment, currentUser);
+                }
+                addedExperiments.remove(experiment);
+                editedExperiments.remove(experiment);
+                experimentService.delete(id);
+                ra.addFlashAttribute("Status", new String("Success"));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.deleteSuccess")));
+
             }
-            Iterator it = productMapStock.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry) it.next();
-                OwnProduct prod = (OwnProduct) pair.getKey();
-                prod.setStockLevel((Double) pair.getValue());
-                productService.save(prod);
+            else {
+                ra.addFlashAttribute("Status", new String("Error"));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.deleteUnauthorized")));
             }
-            //add amounts to reserved stock
-            Iterator it3 = productMapReserved.entrySet().iterator();
-            while (it3.hasNext()) {
-                Map.Entry pair = (Map.Entry) it3.next();
-                OwnProduct prod = (OwnProduct) pair.getKey();
-                prod.setReservedStockLevel((Double) pair.getValue());
-                productService.save(prod);
-            }
-
-
-            // add deleted experiment to list
-            if (deletedExperiments.containsKey(experiment)) {
-                deletedExperiments.replace(experiment, currentUser);
-            } else {
-                deletedExperiments.put(experiment, currentUser);
-            }
-            addedExperiments.remove(experiment);
-            editedExperiments.remove(experiment);
-
-            experimentService.delete(id);
-            ra.addFlashAttribute("Status", new String("Success"));
-            ra.addFlashAttribute("Message", new String("Experiment successfully deleted."));
-
-        } else {
-
+        }
+         else {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error, Experiment was not deleted."));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.deleteInvalidId")+id+"."));
         }
         model.clear();
         return "redirect:/planning/";

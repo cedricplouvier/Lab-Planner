@@ -204,19 +204,14 @@
 <body>
 <div class="container">
     <div th:replace="navbar :: navbar"></div>
-    <form action="#" th:action="@{/planning/experiments/{id} (id=${experimentType.id})}" th:object="${experimentType}"
-          method="post">
+    <form action="#" th:action="@{/planning/experiments/{id} (id=${experimentType.id})}" th:object="${experimentType}" method="post">
         <input type="checkbox" id="checkboxIsFixedType" th:field="*{isFixedType}" hidden/>
-
-        <table id="myTable" class="table table-hover">
-            <div class="dropdown">
-                <div class="">
-                    <input type="text" placeholder="Search.." id="myInput" onclick="toggleSearchlist()"
-                           onkeyup="filterFunction()">
-                    <div id="myDropdown" class="dropdown-content">
-                        <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}"
-                           th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
-                    </div>
+    <table class="table table-hover">
+        <div class="dropdown">
+            <div  class="">
+                <input type="text" placeholder="Search.." id="myInput" onclick="toggleSearchlist()" onkeyup="filterFunction()">
+                <div  id="myDropdown" class="dropdown-content">
+                    <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}" th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
                 </div>
             </div>
             <thead>
@@ -304,7 +299,7 @@
             </tbody>
         </table>
         <div>
-            <input th:field="*{expname}" placeholder="Expirement Type Name" required>
+            <input th:field="*{expname}" th:placeholder="#{experiment.type.name}" required>
             <input th:field="*{id}" th:type="hidden" th:value="experimentType.id">
         </div>
 
