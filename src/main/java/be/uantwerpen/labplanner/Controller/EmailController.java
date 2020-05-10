@@ -52,6 +52,9 @@ public class EmailController   {
     @Autowired
     private StepController stepController;
 
+    @Autowired
+    private RegisterController registerController;
+
     private boolean isValidEmailAddress(String email) {
         String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
@@ -132,10 +135,18 @@ public class EmailController   {
         if (adresses.size()>0){
             //convert to string array
             String[] adressArray = adresses.toArray(new String[0]);
-            String subject = "Daily update of steps & experiments";
+            String subject = "Labplanner Daily update";
             StringBuilder text = new StringBuilder("");
 
+            if (registerController.getRegistredUsers().size()>0){
+                text.append("You have " + registerController.getRegistredUsers().size() + " new registrations.\n\n");
+
+
+
+            }
+
             if (stepController.getAddedSteps().size()>0) {
+
                 text.append("Added steps:\n");
                 for (Map.Entry<Step, User> pair : stepController.getAddedSteps().entrySet()) {
                     text.append("Step with id " + pair.getKey().getId() + " is added by user " + pair.getValue().getFirstName() + " " + pair.getValue().getLastName() + ".\n");
@@ -194,6 +205,8 @@ public class EmailController   {
                 }
                 text.append("\n");
             }
+
+
 
             stepController.clearLists();
 
