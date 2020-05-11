@@ -492,7 +492,7 @@ public class DatabaseLoader {
         stockHis1.put("2020-03",(double)100);
         stockHis1.put("2020-04",(double)250);
         stockHis1.put("2020-05",(double)260);
-        OwnProduct pr1 = new OwnProduct("Gebroken Porfier 6,3/10", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3, new URL("https://nl.wikipedia.org/wiki/Porfier"), new HashMap<>());
+        OwnProduct pr1 = new OwnProduct("Gebroken Porfier 6,3/10", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3, new URL("https://nl.wikipedia.org/wiki/Porfier"),null, new HashMap<>());
         pr1.setProductStockHistory(stockHis1);
         productRepository.save(pr1);
         Map<String,Double> stockHis2 = new HashMap<>();
@@ -503,25 +503,25 @@ public class DatabaseLoader {
         stockHis2.put("2020-03",(double)550);
         stockHis2.put("2020-04",(double)200);
         stockHis2.put("2020-05",(double)350);
-        OwnProduct pr2 = new OwnProduct("Gebroken Porfier 4/6,3", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1, new URL("https://nl.wikipedia.org/wiki/Porfier"), new HashMap<>());
+        OwnProduct pr2 = new OwnProduct("Gebroken Porfier 4/6,3", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1, new URL("https://nl.wikipedia.org/wiki/Porfier"),null, new HashMap<>());
         pr2.setProductStockHistory(stockHis2);
         productRepository.save(pr2);
-        OwnProduct pr3 = new OwnProduct("Gebroken Profier 2/4", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1, new URL("https://nl.wikipedia.org/wiki/Porfier"), new HashMap<>());
+        OwnProduct pr3 = new OwnProduct("Gebroken Profier 2/4", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags1, new URL("https://nl.wikipedia.org/wiki/Porfier"),null, new HashMap<>());
         pr3.setProductStockHistory(stockHis1);
         productRepository.save(pr3);
-        OwnProduct pr4 = new OwnProduct("Gewassen Kalksteen 0/2", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3, new URL("https://nl.wikipedia.org/wiki/Kalksteen"), new HashMap<>());
+        OwnProduct pr4 = new OwnProduct("Gewassen Kalksteen 0/2", lorem.getWords(20), 1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags3, new URL("https://nl.wikipedia.org/wiki/Kalksteen"),null, new HashMap<>());
         pr4.setProductStockHistory(stockHis1);
         productRepository.save(pr4);
-        OwnProduct pr5 = new OwnProduct("Alzagri Rond Zand 0/1", lorem.getWords(20), 1.0, 1000.0, 100.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags2, new URL("https://nl.wikipedia.org/wiki/Zand"), new HashMap<>());
+        OwnProduct pr5 = new OwnProduct("Alzagri Rond Zand 0/1", lorem.getWords(20), 1.0, 1000.0, 100.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags2, new URL("https://nl.wikipedia.org/wiki/Zand"),null, new HashMap<>());
         pr5.setProductStockHistory(stockHis1);
         productRepository.save(pr5);
-        OwnProduct pr6 = new OwnProduct("Vulstof duras 2a", lorem.getWords(20), 1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, new URL("https://nl.wikipedia.org/wiki/Duras"), new HashMap<>());
+        OwnProduct pr6 = new OwnProduct("Vulstof duras 2a", lorem.getWords(20), 1.0, 500.0, 100.0, 1.0, Unit.KILOGRAM, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, new URL("https://nl.wikipedia.org/wiki/Duras"),null, new HashMap<>());
         pr6.setProductStockHistory(stockHis1);
         productRepository.save(pr6);
-        OwnProduct pr7 = new OwnProduct("Bitumen op aggregaten", lorem.getWords(20), 1.0, 200.0, 25.0, 1.0, Unit.LITRE, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, new URL("https://nl.wikipedia.org/wiki/Bitumen"), new HashMap<>());
+        OwnProduct pr7 = new OwnProduct("Bitumen op aggregaten", lorem.getWords(20), 1.0, 200.0, 25.0, 1.0, Unit.LITRE, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, new URL("https://nl.wikipedia.org/wiki/Bitumen"),null, new HashMap<>());
         pr7.setProductStockHistory(stockHis1);
         productRepository.save(pr7);
-        OwnProduct pr8 = new OwnProduct("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, null, new HashMap<>());
+        OwnProduct pr8 = new OwnProduct("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, null,null, new HashMap<>());
         pr8.setProductStockHistory(stockHis1);
         productRepository.save(pr8);
 
@@ -731,9 +731,9 @@ public class DatabaseLoader {
         WhlTrkTest.add(styp3);
         WhlTrkTest.add(styp11);
         WhlTrkTest.add(styp10);
-        ExperimentType experimentType1 = new ExperimentType("ITSR", ITSRStyps);
+        ExperimentType experimentType1 = new ExperimentType("ITSR", ITSRStyps,true);
         experimentTypeRepository.save(experimentType1);
-        ExperimentType experimentType2 = new ExperimentType("Wheel Tracking Test", WhlTrkTest);
+        ExperimentType experimentType2 = new ExperimentType("Wheel Tracking Test", WhlTrkTest,true);
         experimentTypeRepository.save(experimentType2);
 
 

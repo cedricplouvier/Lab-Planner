@@ -105,12 +105,12 @@ public class OwnProduct extends AbstractPersistable<Long> {
     @CollectionTable(name = "stocklvl")
     private Map<String, Double> productStockHistory;
 
-    public OwnProduct() {this(DEFAULT_PRODUCTNAME,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null);}
+    public OwnProduct() {this(DEFAULT_PRODUCTNAME,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null);}
 
     public OwnProduct(String name, String description, Double unitCost, Double stockLevel, Double lowStockLevel,
                       Double reservedStockLevel, Unit units, String imageUrl, String properties, Long productCreatorId,
                       Long lastUpdatedById, LocalDateTime createDateTime, LocalDateTime updateDateTime, List<OwnTag> tags,
-                      URL url, Map<String,String document, Double> productStockHistory) {
+                      URL url, String document, Map<String, Double> productStockHistory) {
         this.name = name;
         this.description = description;
         this.unitCost = unitCost;

@@ -142,7 +142,7 @@ public class StockController {
     public String viewCreateProducts(final ModelMap model){
         model.addAttribute("allProducts", productService.findAll());
         model.addAttribute("allTags", tagService.findAll());
-        model.addAttribute("product",new OwnProduct("","",0.0, 0.0, 0.0, 0.0, null, "URL", "", null,null, LocalDateTime.now(), LocalDateTime.now(), null,null,new HashMap<>()));
+        model.addAttribute("product",new OwnProduct("","",0.0, 0.0, 0.0, 0.0, null, "URL", "", null,null, LocalDateTime.now(), LocalDateTime.now(), null,null,null,new HashMap<>()));
         model.addAttribute("units",Unit.values());
         return "Stock/products-manage";
     }

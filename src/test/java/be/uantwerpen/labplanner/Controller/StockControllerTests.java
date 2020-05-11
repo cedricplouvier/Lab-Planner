@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -172,7 +173,7 @@ public class StockControllerTests {
         OwnTag t1 = new OwnTag("test");
         List<OwnTag> tags = new ArrayList<>();
         tags.add(t1);
-        OwnProduct prod = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags , null,null);
+        OwnProduct prod = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags , null,null,new HashMap<>());
         prod.setId(5L);
         List<OwnProduct> products = new ArrayList<>();
         products.add(prod);
@@ -187,8 +188,8 @@ public class StockControllerTests {
         OwnTag t1 = new OwnTag("test");
         List<OwnTag> tags = new ArrayList<>();
         tags.add(t1);
-        OwnProduct prod = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags , null, null);
-        OwnProduct prod2 = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags , null, null);
+        OwnProduct prod = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags , null, null,new HashMap<>());
+        OwnProduct prod2 = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags , null, null,new HashMap<>());
         prod.setId(5L);
         prod2.setId(6L);
         List<OwnProduct> products = new ArrayList<>();
@@ -205,7 +206,7 @@ public class StockControllerTests {
         OwnTag t1 = new OwnTag("test");
         List<OwnTag> tags = new ArrayList<>();
         tags.add(t1);
-        OwnProduct prod = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags,null, null);
+        OwnProduct prod = new OwnProduct("placeholder1","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags,null, null,new HashMap<>());
         long id = 10;
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
@@ -220,7 +221,7 @@ public class StockControllerTests {
         OwnTag t1 = new OwnTag("test");
         List<OwnTag> tags = new ArrayList<>();
         tags.add(t1);
-        OwnProduct prod = new OwnProduct("","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags,null, null);
+        OwnProduct prod = new OwnProduct("","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags,null, null,new HashMap<>());
         long id = 10;
         prod.setId(id);
 
@@ -237,7 +238,7 @@ public class StockControllerTests {
         OwnTag t1 = new OwnTag("test");
         List<OwnTag> tags = new ArrayList<>();
         tags.add(t1);
-        OwnProduct prod = new OwnProduct("test","",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags, null, null);
+        OwnProduct prod = new OwnProduct("test","",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags, null, null,new HashMap<>());
         long id = 10;
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
@@ -253,7 +254,7 @@ public class StockControllerTests {
         //Taglist is empty
         OwnTag t1 = new OwnTag("test");
         List<OwnTag> tags = new ArrayList<>();
-        OwnProduct prod = new OwnProduct("test","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags, null,null);
+        OwnProduct prod = new OwnProduct("test","description",1.0, 2000.0, 200.0, 1.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags, null,null,new HashMap<>());
         long id = 10;
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
@@ -271,7 +272,7 @@ public class StockControllerTests {
         OwnTag t1 = new OwnTag("test");
         List<OwnTag> tags = new ArrayList<>();
         tags.add(t1);
-        OwnProduct prod = new OwnProduct("test","description",1.0, -5.0, 0.0, 0.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags, null,null);
+        OwnProduct prod = new OwnProduct("test","description",1.0, -5.0, 0.0, 0.0, Unit.KILOGRAM, "locatie2", "props", 5L,5L, LocalDateTime.now(), LocalDateTime.now(), tags, null,null,new HashMap<>());
         long id = 10;
 
         when(productService.findById(id)).thenReturn(Optional.of(prod));
