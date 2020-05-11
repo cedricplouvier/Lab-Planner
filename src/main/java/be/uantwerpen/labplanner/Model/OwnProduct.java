@@ -34,6 +34,9 @@ public class OwnProduct extends AbstractPersistable<Long> {
     private URL url;
 
     @Column
+    private String document;
+
+    @Column
     private String description;
     @Column(
             name = "unit_cost"
@@ -107,7 +110,7 @@ public class OwnProduct extends AbstractPersistable<Long> {
     public OwnProduct(String name, String description, Double unitCost, Double stockLevel, Double lowStockLevel,
                       Double reservedStockLevel, Unit units, String imageUrl, String properties, Long productCreatorId,
                       Long lastUpdatedById, LocalDateTime createDateTime, LocalDateTime updateDateTime, List<OwnTag> tags,
-                      URL url, Map<String, Double> productStockHistory) {
+                      URL url, Map<String,String document, Double> productStockHistory) {
         this.name = name;
         this.description = description;
         this.unitCost = unitCost;
@@ -123,7 +126,7 @@ public class OwnProduct extends AbstractPersistable<Long> {
         this.updateDateTime = updateDateTime;
         this.tags = tags;
         this.url = url;
-        this.productStockHistory=productStockHistory;
+        this.document = document;
     }
 
     @Override
@@ -262,6 +265,14 @@ public class OwnProduct extends AbstractPersistable<Long> {
 
     public void setProductStockHistory(Map<String, Double> productStockHistory) {
         this.productStockHistory = productStockHistory;
+    }
+
+    public String getDocument() {
+        return document;
+    }
+
+    public void setDocument(String document) {
+        this.document = document;
     }
 }
 

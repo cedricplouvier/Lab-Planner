@@ -190,9 +190,6 @@ public class UserControllerTests {
         mockMvc.perform(get("/usermanagement/users/{id}","fff"))
                 .andExpect(status().is4xxClientError())
                 .andDo(print());
-
-
-
     }
 
 
@@ -258,10 +255,6 @@ public class UserControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("Users/user-list"))
                 .andDo(print());
-
-
-
-
     }
 
 
@@ -284,8 +277,6 @@ public class UserControllerTests {
                 .andExpect(model().attribute("UserInUse",notNullValue()))
                 .andExpect(view().name("Users/user-manage"))
                 .andDo(print());
-
-
 
         //empty username string
         user.setUsername("");
@@ -334,6 +325,29 @@ public class UserControllerTests {
         mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/usermanagement/users"))
+                .andDo(print());
+
+    }
+
+    @Test
+    //add new user with unique name
+    public void addNewUserWrongMailTest() throws Exception{
+        User user = new User("admin","admin");
+        user.setEmail("test@");
+
+        user.setUaNumber("2");
+
+        User user2 = new User("Ua","Ua");
+        user2.setUaNumber("1");
+        user2.setId((long) 789);
+        List<User> users = new ArrayList<>();
+        users.add(user2);
+
+        when(userService.findAll()).thenReturn(users);
+        when(userService.findByUsername("admin")).thenReturn(Optional.empty());
+        mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
+                .andExpect(status().is(200))
+                .andExpect(model().attribute("UserInUse",notNullValue()))
                 .andDo(print());
 
     }

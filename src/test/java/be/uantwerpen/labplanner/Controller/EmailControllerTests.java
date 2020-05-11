@@ -57,6 +57,9 @@ public class EmailControllerTests {
     @Mock
     private UserService userService;
 
+    @Mock
+    private RegisterController registerController;
+
     @InjectMocks
     private EmailController emailController;
 
@@ -66,6 +69,16 @@ public class EmailControllerTests {
     public void setup(){
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(emailController).build();
+    }
+
+    @Test
+    public void ViewMailTest() throws Exception{
+        mockMvc.perform(get("/mail/maintanance/{id}","10"))
+
+                .andExpect(status().is(200))
+                .andExpect(view().name("Mail"))
+                .andExpect(model().attribute("id", notNullValue()))
+                .andDo(print());
     }
 
     @Test
@@ -94,7 +107,9 @@ public class EmailControllerTests {
 
         when(userService.findAll()).thenReturn(users);
 
-        mockMvc.perform(get("/mail/maintanance/{id}",id))
+        mockMvc.perform(post("/mail/maintanance/{id}",id)
+                .param("sourceText","test"))
+
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/devices"))
                 .andExpect(model().attribute("MailSuccess", notNullValue()))
@@ -127,7 +142,10 @@ public class EmailControllerTests {
 
         when(userService.findAll()).thenReturn(users);
 
-        mockMvc.perform(get("/mail/maintanance/{id}",id))
+        mockMvc.perform(post("/mail/maintanance/{id}",id)
+                .param("sourceText","test"))
+
+
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/devices"))
                 .andExpect(model().attribute("deviceError", notNullValue()))
@@ -160,7 +178,8 @@ public class EmailControllerTests {
 
         when(userService.findAll()).thenReturn(users);
 
-        mockMvc.perform(get("/mail/maintanance/{id}",id))
+        mockMvc.perform(post("/mail/maintanance/{id}",id)
+                .param("sourceText","test"))
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/devices"))
                 .andExpect(model().attribute("deviceError", notNullValue()))
@@ -236,7 +255,11 @@ public class EmailControllerTests {
 
         List<User> users = new ArrayList<>();
         users.add(user);
+
+        Set<User> userSet = new HashSet<>();
+        userSet.add(user);
         when(userService.findAll()).thenReturn(users);
+        when(registerController.getRegistredUsers()).thenReturn(userSet);
 
 
         emailController.sendPeriodicMail();

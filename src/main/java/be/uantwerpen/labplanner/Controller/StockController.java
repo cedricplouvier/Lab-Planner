@@ -142,7 +142,7 @@ public class StockController {
     public String viewCreateProducts(final ModelMap model){
         model.addAttribute("allProducts", productService.findAll());
         model.addAttribute("allTags", tagService.findAll());
-        model.addAttribute("product",new OwnProduct("","",0.0, 0.0, 0.0, 0.0, null, "URL", "", null,null, LocalDateTime.now(), LocalDateTime.now(), null,null, new HashMap<>()));
+        model.addAttribute("product",new OwnProduct("","",0.0, 0.0, 0.0, 0.0, null, "URL", "", null,null, LocalDateTime.now(), LocalDateTime.now(), null,null,new HashMap<>()));
         model.addAttribute("units",Unit.values());
         return "Stock/products-manage";
     }
@@ -203,11 +203,7 @@ public class StockController {
     public String addProduct(@Valid OwnProduct ownProduct, BindingResult result,
                              final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
-        Map<String,Double> stockHis1 = new HashMap<>();
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-        stockHis1.put(sdf.format(cal.getTime()),ownProduct.getStockLevel());
-        ownProduct.setProductStockHistory(stockHis1);
+
         List<OwnProduct> products = productService.findAll();
         Iterator<OwnProduct> it = products.iterator();
         String NameIsUsed = null;

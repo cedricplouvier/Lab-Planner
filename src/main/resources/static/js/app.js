@@ -4,9 +4,11 @@
 /* eslint-env jquery */
 /* global moment, tui, chance */
 /* global findCalendar, CalendarList, ScheduleList, generateSchedule */
- let filledInSteps=[];
+let filledInSteps=[];
 let newSchedule;
 let suggestion;
+let showOwnItems = true;
+let showOtherItems = false;
 (function(window, Calendar) {
     let cal, resizeThrottled;
     let useCreationPopup = false;
@@ -707,6 +709,7 @@ let suggestion;
         $('.dropdown-menu a[role="menuitem"]').on('click', onClickMenu);
         $('#btn-save-schedule').on('click', onNewSchedule);
         $('#btn-new-schedule').on('click', createNewSchedule);
+        $('#steps-items').on('click', changeviewmode);
         $('#dropdownMenu-calendars-list').on('click', onChangeNewScheduleCalendar);
         $("#extraLargeModal").on('show.bs.modal', setSchedules);
         $("#extraLargeModal").on('shown.bs.modal', setSchedules);
@@ -719,6 +722,21 @@ let suggestion;
         $("#suggestExperiment").on('click',calculateExperimentSuggestion);
 
         window.addEventListener('resize', resizeThrottled);
+    }
+    function changeviewmode() {
+        let viewmode = document.getElementById("steps-items").value;
+        if(viewmode==="1"){
+            showOwnItems=true;
+            showOtherItems=false;
+        }else if(viewmode==="2"){
+            showOwnItems=false;
+            showOtherItems=true;
+        }else if(viewmode==="3"){
+            showOwnItems=true;
+            showOtherItems=true;
+        }
+        setSchedules();
+        refreshScheduleVisibility()
     }
     function nextStep() {
         if(calendarUpdate.stepIndex<allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length-1) {
@@ -771,7 +789,6 @@ let suggestion;
 
     window.cal = cal;
 
-    // setDropdownCalendarType();
     setRenderRangeText();
     setSchedules();
     setEventListener();
