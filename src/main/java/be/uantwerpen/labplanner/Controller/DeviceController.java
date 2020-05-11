@@ -78,7 +78,7 @@ public class DeviceController {
             return "Errors/custom-error";
         }
         model.addAttribute("device",deviceService.findById(id).orElse(null));
-        model.addAttribute("files", storageService.loadDir(deviceService.findById(id).orElse(null).getDeviceType().getDeviceTypeName()).map(
+        model.addAttribute("files", storageService.loadDir(deviceService.findById(id).orElse(null).getDevicename()).map(
                 path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
                         "serveFile", new String[]{ path.getFileName().toString(),path.getParent().toString()}).build().toUri().toString())
                 .collect(Collectors.toList()));
@@ -98,6 +98,10 @@ public class DeviceController {
         }
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("device",device);
+        model.addAttribute("files", storageService.loadDir(Objects.requireNonNull(deviceService.findById(id).orElse(null)).getDevicename()).map(
+                path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
+                        "serveFile", new String[]{ path.getFileName().toString(),path.getParent().toString()}).build().toUri().toString())
+                .collect(Collectors.toList()));
         return "Devices/device-manage";
     }
 
@@ -112,17 +116,12 @@ public class DeviceController {
             return "Errors/custom-error";
         }
         model.addAttribute("deviceTypeObject",deviceType);
-        model.addAttribute("files", storageService.loadDir(Objects.requireNonNull(deviceTypeService.findById(id).orElse(null)).getDeviceTypeName()).map(
-                path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
-                        "serveFile", new String[]{ path.getFileName().toString(),path.getParent().toString()}).build().toUri().toString())
-                .collect(Collectors.toList()));
-
         return "Devices/device-type-manage";
     }
 
     @PreAuthorize("hasAuthority('Device - Modify - All')")
-    @RequestMapping(value="/devices/info/{id}/{typeid}", method= RequestMethod.GET)
-    public String viewEdiDeviceInfo(@PathVariable Long id, @PathVariable Long typeid, final ModelMap model){
+    @RequestMapping(value="/devices/info/{id}/{deviceid}", method= RequestMethod.GET)
+    public String viewEdiDeviceInfo(@PathVariable Long id, @PathVariable Long deviceid, final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
         DeviceInformation deviceInformation =deviceInformationService.findById(id).orElse(null);
         if(deviceInformation==null){
@@ -130,15 +129,15 @@ public class DeviceController {
             model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.information.unknown.id"));
             return "Errors/custom-error";
         }
-        DeviceType deviceType = deviceTypeService.findById(typeid).orElse(null);
-        if(deviceType==null){
+        Device device = deviceService.findById(deviceid).orElse(null);
+        if(device==null){
             model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
-            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.type.unknown.id"));
+            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.unknown.id"));
             return "Errors/custom-error";
         }
         model.addAttribute("deviceInfoObject",deviceInformation);
-        model.addAttribute("deviceTypeObject",deviceTypeService.findById(typeid).orElse(null));
-        model.addAttribute("files", storageService.loadDir(Objects.requireNonNull(deviceTypeService.findById(typeid).orElse(null)).getDeviceTypeName()).map(
+        model.addAttribute("deviceObject",deviceService.findById(deviceid).orElse(null));
+        model.addAttribute("files", storageService.loadDir(Objects.requireNonNull(deviceService.findById(deviceid).orElse(null)).getDevicename()).map(
                 path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
                         "serveFile", new String[]{ path.getFileName().toString(),path.getParent().toString()}).build().toUri().toString())
                 .collect(Collectors.toList()));
@@ -152,6 +151,8 @@ public class DeviceController {
     public String viewCreateDevice(final ModelMap model){
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("device",new Device(Device.getDefaultDevicename(),deviceTypeService.findAll().get(0)));
+        model.addAttribute("files", null);
+
         return "Devices/device-manage";
     }
 
@@ -159,7 +160,6 @@ public class DeviceController {
     @RequestMapping(value="/devices/types/put", method= RequestMethod.GET)
     public String viewCreateDeviceType(final ModelMap model){
         model.addAttribute("deviceTypeObject",new DeviceType(DeviceType.getDefaultDevicetypename(),false));
-        model.addAttribute("files", null);
         return "Devices/device-type-manage";
     }
 
@@ -167,8 +167,8 @@ public class DeviceController {
     @RequestMapping(value="/devices/info/put/{typeid}", method= RequestMethod.GET)
     public String viewCreateDeviceInfo(@Valid DeviceType deviceType, @PathVariable Long typeid, final ModelMap model){
         model.addAttribute("deviceInfoObject",new DeviceInformation(DeviceInformation.getDefaultInformationName(),""));
-        model.addAttribute("deviceTypeObject",deviceTypeService.findById(typeid).orElse(null));
-        model.addAttribute("files", storageService.loadDir(Objects.requireNonNull(deviceTypeService.findById(typeid).orElse(null)).getDeviceTypeName()).map(
+        model.addAttribute("deviceObject",deviceService.findById(typeid).orElse(null));
+        model.addAttribute("files", storageService.loadDir(Objects.requireNonNull(deviceService.findById(typeid).orElse(null)).getDevicename()).map(
                 path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
                         "serveFile", new String[]{ path.getFileName().toString(),path.getParent().toString()}).build().toUri().toString())
                 .collect(Collectors.toList()));
@@ -200,28 +200,26 @@ public class DeviceController {
             return "Devices/device-manage";
         }
         deviceService.saveNewDevice(device);
-        return "redirect:/devices";
+        return "redirect:/devices/"+device.getId();
     }
 
     @PreAuthorize("hasAuthority('Device - Modify - All')")
-    @RequestMapping(value={"/devices/info","/devices/info/{id}/{typeid}"}, method= RequestMethod.POST)
+    @RequestMapping(value={"/devices/info/{typeid}","/devices/info/{typeid}/{id}"}, method= RequestMethod.POST)
     public String addDeviceInfo(@Valid DeviceInformation deviceInformation, @PathVariable Long typeid, BindingResult result, final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
 
         if(deviceInformation.getInformationName().length()==0||DeviceInformation.getDefaultInformationName().equals(deviceInformation.getInformationName())){
 
             model.addAttribute("deviceInfoObject",deviceInformation);
-            model.addAttribute("deviceTypeObject",deviceTypeService.findById(typeid).orElse(null));
+            model.addAttribute("deviceObject",deviceService.findById(typeid).orElse(null));
             model.addAttribute("errormessage",ResourceBundle.getBundle("messages",current).getString("error.invalid.name"));
-            model.addAttribute("files", storageService.loadDir(Objects.requireNonNull(deviceTypeService.findById(typeid).orElse(null)).getDeviceTypeName()).map(
-                    path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
-                            "serveFile", new String[]{ path.getFileName().toString(),path.getParent().toString()}).build().toUri().toString())
-                    .collect(Collectors.toList()));
             return "Devices/device-info-manage";
         }
 
         if(result.hasErrors()){
             model.addAttribute("deviceInfoObject", deviceInformation);
+            model.addAttribute("deviceObject",deviceService.findById(typeid).orElse(null));
+            model.addAttribute("errormessage",ResourceBundle.getBundle("messages",current).getString("error.invalid.name"));
             return "Devices/device-info-manage";
         }
         deviceInformationService.saveNewDeviceInformation(deviceInformation,typeid);
@@ -295,8 +293,14 @@ public class DeviceController {
             model.addAttribute("errorMessage", ResourceBundle.getBundle("messages",current).getString("error.device.inuse"));
             return "Errors/custom-error";
         }
+        List<DeviceInformation> informations = this.deviceService.findById(id).get().getDeviceInformation();
+        device.setDeviceInformation(new ArrayList<DeviceInformation>());
+        deviceService.saveNewDevice(device);
 
-
+        for(DeviceInformation information : informations){
+            deviceInformationService.deleteById(Objects.requireNonNull(information.getId()));
+        }
+        System.out.println(device.getDeviceInformation().size());
         deviceService.delete(id);
         model.clear();
         return "redirect:/devices";
@@ -343,16 +347,16 @@ public class DeviceController {
     }
 
     @PreAuthorize("hasAuthority('Device - Modify - All')")
-    @RequestMapping(value="/devices/info/{id}/{typeid}/delete")
-    public String deleteDeviceInfo(@PathVariable Long id, final ModelMap model, @PathVariable Long typeid){
-        DeviceType deviceType = deviceTypeService.findById(typeid).get();
-        List<DeviceInformation> informations = deviceType.getDeviceInformations();
+    @RequestMapping(value="/devices/info/{id}/{deviceid}/delete")
+    public String deleteDeviceInfo(@PathVariable Long id, final ModelMap model, @PathVariable Long deviceid){
+        Device device = deviceService.findById(deviceid).get();
+        List<DeviceInformation> informations = device.getDeviceInformations();
         informations.remove(deviceInformationService.findById(id).get());
-        deviceType.setDeviceInformations(informations);
-        deviceTypeService.saveNewDeviceType(deviceType);
+        device.setDeviceInformations(informations);
+        deviceService.saveNewDevice(device);
         deviceInformationService.deleteById(id);
         model.clear();
 
-        return "redirect:/devices/types/"+typeid;
+        return "redirect:/devices/"+deviceid;
     }
 }

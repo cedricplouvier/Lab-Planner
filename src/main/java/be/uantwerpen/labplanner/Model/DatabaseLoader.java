@@ -380,43 +380,6 @@ public class DatabaseLoader {
         t14.setColor("#C0C0C0");
         deviceTypes.add(t14);
 
-        //Add random information for default information types
-        //Lorem ipsum generator for random information blocks
-        Lorem lorem = LoremIpsum.getInstance();
-
-        for (DeviceType devicetype : deviceTypes) {
-            List<DeviceInformation> deviceinformations = new ArrayList<DeviceInformation>();
-
-            //Add a new block for each default information type (Maintenance , Calibration ...)
-            for (int current = 0; current < DeviceType.getDefaultInformationtypes().size(); current++) {
-                //Add new device information block
-                DeviceInformation i = new DeviceInformation(DeviceType.getDefaultInformationtypes().get(current), lorem.getWords(20));
-
-                //Adding some files for Oven type , files were already loaded into the correct directory
-                if (devicetype.getDeviceTypeName().equals("Oven")) {
-                    if (current == 0) {
-                        i.addFile("placeholder.pdf");
-                    } else if (current == 2) {
-                        i.addFile("placeholder.xlsx");
-                        i.addFile("placeholder.jpg");
-                    }
-                }
-                deviceinformations.add(i);
-                deviceInformationRepository.save(i);
-            }
-
-            //Add an extra block of info for oven to show full possibilities
-            if (devicetype.getDeviceTypeName().equals("Oven")) {
-                DeviceInformation i = new DeviceInformation("Other", lorem.getWords(10));
-                deviceinformations.add(i);
-                deviceInformationRepository.save(i);
-            }
-            devicetype.setDeviceInformation(deviceinformations);
-        }
-
-        //Set the oven profile pic , the picture is already placed in the root directory /upload-dir/images where all device pictures are kept
-        t7.setDevicePictureName("Oven.jpg");
-
         //Save all devicetypes
         deviceTypeRepository.save(t1);
         deviceTypeRepository.save(t2);
@@ -432,41 +395,92 @@ public class DatabaseLoader {
         deviceTypeRepository.save(t12);
         deviceTypeRepository.save(t13);
         deviceTypeRepository.save(t14);
+
+
+        List<Device> devices = new ArrayList<>();
         //Add devices for some device types
         Device d1 = new Device("Autosaw 1", t1);
-        deviceRepository.save(d1);
+        devices.add(d1);
         Device d2 = new Device("Autosaw 2", t1);
-        deviceRepository.save(d2);
+        devices.add(d2);
         Device d3 = new Device("Uniframe 1", t11);
-        deviceRepository.save(d3);
+        devices.add(d3);
         Device d4 = new Device("Vacuum Setup 1", t12);
-        deviceRepository.save(d4);
+        devices.add(d4);
         Device d5 = new Device("Water Bath 1", t13);
-        deviceRepository.save(d5);
+        devices.add(d5);
         Device d6 = new Device("Wheel Tracking Test 1", t14);
-        deviceRepository.save(d6);
+        devices.add(d6);
         Device d7 = new Device("Oven 1", t7);
         d7.setComment("Perfect oven to bake a pizza in your spare times");
-        deviceRepository.save(d7);
+        d7.setDevicePictureName("Oven.png");
+        devices.add(d7);
         Device d8 = new Device("Oven 2", t7);
-        deviceRepository.save(d8);
+        devices.add(d8);
         Device d9 = new Device("Oven 3", t7);
-        deviceRepository.save(d9);
+        devices.add(d9);
         Device d10 = new Device("Gyratory 1", t6);
-        deviceRepository.save(d10);
+        devices.add(d10);
         Device d11 = new Device("Caliper 1", t4);
-        deviceRepository.save(d11);
+        devices.add(d11);
         Device d12 = new Device("SVM Setup 1", t10);
-        deviceRepository.save(d12);
-
+        devices.add(d12);
         Device d13 = new Device("Big mixer 1", t3);
-        deviceRepository.save(d13);
+        devices.add(d13);
         Device d14 = new Device("Cooling chamber 1", t5);
-        deviceRepository.save(d14);
+        devices.add(d14);
         Device d15 = new Device("Balance 1", t2);
+        devices.add(d15);
+
+        //Add random information for default information types
+        //Lorem ipsum generator for random information blocks
+        Lorem lorem = LoremIpsum.getInstance();
+
+        for (Device device : devices) {
+            List<DeviceInformation> deviceinformations = new ArrayList<DeviceInformation>();
+
+            //Add a new block for each default information type (Maintenance , Calibration ...)
+            for (int current = 0; current < Device.getDefaultInformationtypes().size(); current++) {
+                //Add new device information block
+                DeviceInformation i = new DeviceInformation(Device.getDefaultInformationtypes().get(current), lorem.getWords(20));
+
+                //Adding some files for Oven 1type , files were already loaded into the correct directory
+                if (device.getDevicename().equals("Oven 1")) {
+                    if (current == 0) {
+                        i.addFile("placeholder.pdf");
+                    } else if (current == 2) {
+                        i.addFile("placeholder.xlsx");
+                        i.addFile("placeholder.jpg");
+                    }
+                }
+                deviceinformations.add(i);
+                deviceInformationRepository.save(i);
+            }
+
+            //Add an extra block of info for oven to show full possibilities
+            if (device.getDevicename().equals("Oven 1")) {
+                DeviceInformation i = new DeviceInformation("Other", lorem.getWords(10));
+                deviceinformations.add(i);
+                deviceInformationRepository.save(i);
+            }
+            device.setDeviceInformation(deviceinformations);
+        }
+
+        deviceRepository.save(d1);
+        deviceRepository.save(d2);
+        deviceRepository.save(d3);
+        deviceRepository.save(d4);
+        deviceRepository.save(d5);
+        deviceRepository.save(d6);
+        deviceRepository.save(d7);
+        deviceRepository.save(d8);
+        deviceRepository.save(d9);
+        deviceRepository.save(d10);
+        deviceRepository.save(d11);
+        deviceRepository.save(d12);
+        deviceRepository.save(d13);
+        deviceRepository.save(d14);
         deviceRepository.save(d15);
-
-
         //create some products
         OwnTag tag1 = new OwnTag("Aggregates");
         List<OwnTag> tags1 = new ArrayList<>();

@@ -17,8 +17,7 @@ import java.util.Optional;
 public class DeviceTypeService {
     @Autowired
     private DeviceTypeRepository deviceTypeRepository;
-    @Autowired
-    private DeviceInformationRepository deviceInformationRepository;
+
     public DeviceTypeService() {
     }
 
@@ -40,17 +39,6 @@ public class DeviceTypeService {
             tempDeviceType.setOvernightuse(deviceType.getOvernightuse());
             tempDeviceType.setColor(deviceType.getColor());
             tempDeviceType.setDeviceTypeName(deviceType.getDeviceTypeName());
-            if(deviceType.getDeviceInformations() !=null) {
-                for (DeviceInformation deviceInformation : deviceType.getDeviceInformations()) {
-                    DeviceInformation tempDeviceInformation = deviceInformation.getId() == null ? null : deviceInformationRepository.findById(deviceInformation.getId()).orElse(null);
-                    if (tempDeviceInformation != null) {
-                        tempDeviceInformation.setInformationName(deviceInformation.getInformationName());
-                        deviceInformationRepository.save(tempDeviceInformation);
-                    } else {
-                        deviceInformationRepository.save(deviceInformation);
-                    }
-                }
-            }
             deviceTypeRepository.save(tempDeviceType);
         }
         else{

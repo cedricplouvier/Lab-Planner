@@ -1,6 +1,7 @@
 package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.Exception.StorageFileNotFoundException;
+import be.uantwerpen.labplanner.Model.Device;
 import be.uantwerpen.labplanner.Model.DeviceType;
 import be.uantwerpen.labplanner.Model.Mixture;
 import be.uantwerpen.labplanner.Model.OwnProduct;
@@ -36,7 +37,7 @@ public class FileController {
 	@Autowired
 	private DeviceInformationService deviceInformationService;
 	@Autowired
-	private DeviceTypeService deviceTypeService;
+	private DeviceService deviceService;
 	@Autowired
 	private OwnProductService productService;
 	@Autowired
@@ -56,34 +57,35 @@ public class FileController {
 
 
 
-	@PostMapping("/upload/typeimage/{typeid}")
-	public String handleTypeImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long typeid) {
-		DeviceType tempDeviceType =  deviceTypeService.findById( typeid).orElse(null);
-		if(tempDeviceType!=null) {
-			String filename = tempDeviceType.getDeviceTypeName()+"."+file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+	@PostMapping("/upload/typeimage/{deviceid}")
+	public String handleTypeImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long deviceid) {
+		Device tempDevice =  deviceService.findById( deviceid).orElse(null);
+		System.out.println(deviceid);
+		if(tempDevice!=null) {
+			String filename = tempDevice.getDevicename()+"."+file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 			storageService.store(file,"images",filename);
-			tempDeviceType.setDevicePictureName(filename);
-			deviceTypeService.saveNewDeviceType(tempDeviceType);
+			tempDevice.setDevicePictureName(filename);
+			deviceService.saveNewDevice(tempDevice);
 
 		}
 
-		return "redirect:/devices/types/"+typeid;
+		return "redirect:/devices/"+deviceid;
 	}
 
 	@GetMapping("/file/delete/{typeid}/{infoid}/{filename}")
 	public String handleFileDelete( @PathVariable Long infoid, RedirectAttributes redirectAttributes, @PathVariable Long typeid, @PathVariable String filename) {
 
-		storageService.delete(deviceTypeService.findById(typeid).orElse(null).getDeviceTypeName()+"/"+filename);
+		storageService.delete(deviceService.findById(typeid).orElse(null).getDevicename()+"/"+filename);
 		deviceInformationService.removeFile(filename,infoid);
 		redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + filename+ "!");
 		return "redirect:/devices/info/"+infoid+"/"+typeid;
 	}
-	@PostMapping("/upload/file/{typeid}/{infoid}")
-	public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable Long infoid, RedirectAttributes redirectAttributes, @PathVariable Long typeid) {
-		storageService.store(file,deviceTypeService.findById(typeid).orElse(null).getDeviceTypeName(),file.getOriginalFilename());
+	@PostMapping("/upload/file/{deviceid}/{infoid}")
+	public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable Long infoid, RedirectAttributes redirectAttributes, @PathVariable Long deviceid) {
+		storageService.store(file,deviceService.findById(deviceid).orElse(null).getDevicename(),file.getOriginalFilename());
 		deviceInformationService.addFile(file.getOriginalFilename(),infoid);
 		redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + file.getOriginalFilename() + "!");
-		return "redirect:/devices/info/"+infoid+"/"+typeid;
+		return "redirect:/devices/info/"+infoid+"/"+deviceid;
 	}
 
 	@ExceptionHandler(StorageFileNotFoundException.class)
