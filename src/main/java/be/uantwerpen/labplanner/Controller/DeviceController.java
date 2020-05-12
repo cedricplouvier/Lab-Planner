@@ -3,6 +3,7 @@ package be.uantwerpen.labplanner.Controller;
 import be.uantwerpen.labplanner.Model.*;
 import be.uantwerpen.labplanner.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -46,7 +47,13 @@ public class DeviceController {
     //List of devices
     @PreAuthorize("hasAuthority('Device - Read only - Basic') or hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices", method= RequestMethod.GET)
-    public String showDevices(final ModelMap model){
+    public String showDevices(@ModelAttribute("deviceError") String deviceError, @ModelAttribute("MailSuccess") String MailSuccess, ModelMap model){
+        if (!deviceError.trim().equals("")) {
+            model.addAttribute(deviceError);
+        }
+        if (!MailSuccess.trim().equals("")){
+            model.addAttribute(MailSuccess);
+        }
         model.addAttribute("allDevices", deviceService.findAll());
         return "Devices/list-devices";
     }
@@ -63,10 +70,11 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Read only - Basic') or hasAuthority('Device - Modify - All')")
     @RequestMapping(value ="/device/info/{id}", method= RequestMethod.GET)
     public String viewDeviceInfo(@PathVariable Long id, final ModelMap model) throws IOException {
+        Locale current = LocaleContextHolder.getLocale();
         Device device = deviceService.findById(id).orElse(null);
         if(device==null){
-            model.addAttribute("errorTitle", "Unknown device ID");
-            model.addAttribute("errorMessage","A device with id "+id+" could not be found.");
+            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
+            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.unknown.id"));
             return "Errors/custom-error";
         }
         model.addAttribute("device",deviceService.findById(id).orElse(null));
@@ -81,10 +89,11 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices/{id}", method= RequestMethod.GET)
     public String viewEdiDevice(@PathVariable Long id, final ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
         Device device = deviceService.findById(id).orElse(null);
         if(device==null){
-            model.addAttribute("errorTitle", "Unknown device ID");
-            model.addAttribute("errorMessage","A device with id "+id+" could not be found.");
+            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
+            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.unknown.id"));
             return "Errors/custom-error";
         }
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
@@ -95,10 +104,11 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices/types/{id}", method= RequestMethod.GET)
     public String viewEdiDeviceType(@PathVariable Long id, final ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
         DeviceType deviceType = deviceTypeService.findById(id).orElse(null);
         if(deviceType==null){
-            model.addAttribute("errorTitle", "Unknown deviceType ID");
-            model.addAttribute("errorMessage","A deviceType with id "+id+" could not be found.");
+            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
+            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.type.unknown.id"));
             return "Errors/custom-error";
         }
         model.addAttribute("deviceTypeObject",deviceType);
@@ -113,16 +123,17 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices/info/{id}/{typeid}", method= RequestMethod.GET)
     public String viewEdiDeviceInfo(@PathVariable Long id, @PathVariable Long typeid, final ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
         DeviceInformation deviceInformation =deviceInformationService.findById(id).orElse(null);
         if(deviceInformation==null){
-            model.addAttribute("errorTitle", "Unknown deviceInformation ID");
-            model.addAttribute("errorMessage","A deviceInformation with id "+id+" could not be found.");
+            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
+            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.information.unknown.id"));
             return "Errors/custom-error";
         }
-        DeviceType deviceType = deviceTypeService.findById(id).orElse(null);
+        DeviceType deviceType = deviceTypeService.findById(typeid).orElse(null);
         if(deviceType==null){
-            model.addAttribute("errorTitle", "Unknown deviceType ID");
-            model.addAttribute("errorMessage","A deviceType with id "+id+" could not be found.");
+            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
+            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.type.unknown.id"));
             return "Errors/custom-error";
         }
         model.addAttribute("deviceInfoObject",deviceInformation);
@@ -168,6 +179,7 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value={"/devices/", "/devices/{id}"}, method= RequestMethod.POST)
     public String addDevice(@Valid Device device, BindingResult result, final ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
         if(result.hasErrors()){
             model.addAttribute("deviceType", deviceTypeService.findAll());
             return "Devices/device-manage";
@@ -181,14 +193,14 @@ public class DeviceController {
         if(device.getDevicename().length()==0||Device.getDefaultDevicename().equals(device.getDevicename())){
             model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
             model.addAttribute("device",device);
-            model.addAttribute("errormessage","Give a valid name");
+            model.addAttribute("errormessage",ResourceBundle.getBundle("messages",current).getString("error.invalid.name"));
             return "Devices/device-manage";
         }
         Device tempDevice = deviceService.findByDevicename(device.getDevicename()).orElse(null);
         if(tempDevice!=null&&!device.getId().equals(tempDevice.getId())){
             model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
             model.addAttribute("device",device);
-            model.addAttribute("errormessage","The name "+device.getDevicename()+" is already used");
+            model.addAttribute("errormessage",ResourceBundle.getBundle("messages",current).getString("error.name.inuse"));
             return "Devices/device-manage";
         }
         deviceService.saveNewDevice(device);
@@ -198,8 +210,22 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value={"/devices/info","/devices/info/{id}/{typeid}"}, method= RequestMethod.POST)
     public String addDeviceInfo(@Valid DeviceInformation deviceInformation, @PathVariable Long typeid, BindingResult result, final ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
+
+        if(deviceInformation.getInformationName().length()==0||DeviceInformation.getDefaultInformationName().equals(deviceInformation.getInformationName())){
+
+            model.addAttribute("deviceInfoObject",deviceInformation);
+            model.addAttribute("deviceTypeObject",deviceTypeService.findById(typeid).orElse(null));
+            model.addAttribute("errormessage",ResourceBundle.getBundle("messages",current).getString("error.invalid.name"));
+            model.addAttribute("files", storageService.loadDir(Objects.requireNonNull(deviceTypeService.findById(typeid).orElse(null)).getDeviceTypeName()).map(
+                    path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
+                            "serveFile", new String[]{ path.getFileName().toString(),path.getParent().toString()}).build().toUri().toString())
+                    .collect(Collectors.toList()));
+            return "Devices/device-info-manage";
+        }
+
         if(result.hasErrors()){
-            model.addAttribute("deviceInfoObject", deviceInformationService.findAll());
+            model.addAttribute("deviceInfoObject", deviceInformation);
             return "Devices/device-info-manage";
         }
         deviceInformationService.saveNewDeviceInformation(deviceInformation,typeid);
@@ -209,13 +235,14 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value={"/devices/types", "/devices/types/{id}"}, method= RequestMethod.POST)
     public String addDeviceType(@Valid DeviceType deviceType, BindingResult result, final ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
         if(result.hasErrors()){
             model.addAttribute("devicetypes", deviceTypeService.findAll());
             return "Devices/device-type-manage";
         }
 
         if(deviceType.getDeviceTypeName().length()==0||DeviceType.getDefaultDevicetypename().equals(deviceType.getDeviceTypeName())){
-            model.addAttribute("NameIsUsed","Give a valid name");
+            model.addAttribute("NameIsUsed",ResourceBundle.getBundle("messages",current).getString("error.invalid.name"));
             model.addAttribute("devicetypes", deviceTypeService.findAll());
             model.addAttribute("deviceTypeObject",deviceType);
             return "Devices/device-type-manage";
@@ -223,7 +250,7 @@ public class DeviceController {
 
         if(deviceType.getId()==null){
             if(deviceTypeService.findByDevicetypeName( deviceType.getDeviceTypeName()).orElse(null)!=null){
-                model.addAttribute("NameIsUsed","The name "+deviceType.getDeviceTypeName()+" is already used");
+                model.addAttribute("NameIsUsed",ResourceBundle.getBundle("messages",current).getString("error.name.inuse"));
                 model.addAttribute("devicetypes", deviceTypeService.findAll());
                 model.addAttribute("deviceTypeObject",deviceType);
                 return "Devices/device-type-manage";
@@ -236,7 +263,7 @@ public class DeviceController {
         DeviceType tempDeviceType = deviceTypeService.findById(deviceType.getId()).orElse(null);
         if(!tempDeviceType.getDeviceTypeName().equals(deviceType.getDeviceTypeName())){
             if(deviceTypeService.findByDevicetypeName( deviceType.getDeviceTypeName()).orElse(null)!=null){
-                model.addAttribute("NameIsUsed","The name "+deviceType.getDeviceTypeName()+" is already used");
+                model.addAttribute("NameIsUsed",ResourceBundle.getBundle("messages",current).getString("error.name.inuse"));
                 model.addAttribute("devicetypes", deviceTypeService.findAll());
                 model.addAttribute("deviceTypeObject",tempDeviceType);
                 return "Devices/device-type-manage";
@@ -251,10 +278,11 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices/{id}/delete")
     public String deleteDevice(@PathVariable Long id, final ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
         Device device = deviceService.findById(id).orElse(null);
         if(device==null){
-            model.addAttribute("errorTitle", "Unknown device ID");
-            model.addAttribute("errorMessage","A device with id "+id+" could not be found.");
+            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
+            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.unknown.id"));
             return "Errors/custom-error";
         }
         List<Step> allSteps = stepService.findAll();
@@ -265,8 +293,8 @@ public class DeviceController {
             }
         }
         if(isUsed){
-            model.addAttribute("errorTitle", "Device in use");
-            model.addAttribute("errorMessage", "The device that you are trying to delete is still in use by one or more Steps.");
+            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.inuse"));
+            model.addAttribute("errorMessage", ResourceBundle.getBundle("messages",current).getString("error.device.inuse"));
             return "Errors/custom-error";
         }
         deviceService.delete(id);
@@ -277,10 +305,11 @@ public class DeviceController {
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices/types/{id}/delete")
     public String deleteDeviceType(@PathVariable Long id, final ModelMap model){
+        Locale current = LocaleContextHolder.getLocale();
         DeviceType deviceType = deviceTypeService.findById(id).orElse(null);
         if(deviceType==null){
-            model.addAttribute("errorTitle", "Unknown deviceType ID");
-            model.addAttribute("errorMessage","A deviceType with id "+id+" could not be found.");
+            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
+            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.type.unknown.id"));
             return "Errors/custom-error";
         }
         List<Device> allDevices = deviceService.findAll();
@@ -299,9 +328,14 @@ public class DeviceController {
             }
         }
         if(isUsed){
-            model.addAttribute("errorTitle", "DeviceType in use");
-            model.addAttribute("errorMessage", "The deviceType that you are trying to delete is still in use by a stepType or a device.");
+            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.inuse"));
+            model.addAttribute("errorMessage", ResourceBundle.getBundle("messages",current).getString("error.device.type.inuse"));
             return "Errors/custom-error";
+        }
+        if(isUsed){
+            model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("error.device.type.inuse"));
+            return "Devices/list-device-types";
         }
         deviceTypeService.deleteById(id);
         model.clear();

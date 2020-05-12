@@ -190,9 +190,6 @@ public class UserControllerTests {
         mockMvc.perform(get("/usermanagement/users/{id}","fff"))
                 .andExpect(status().is4xxClientError())
                 .andDo(print());
-
-
-
     }
 
 
@@ -258,10 +255,6 @@ public class UserControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("Users/user-list"))
                 .andDo(print());
-
-
-
-
     }
 
 
@@ -284,8 +277,6 @@ public class UserControllerTests {
                 .andExpect(model().attribute("UserInUse",notNullValue()))
                 .andExpect(view().name("Users/user-manage"))
                 .andDo(print());
-
-
 
         //empty username string
         user.setUsername("");
@@ -319,7 +310,7 @@ public class UserControllerTests {
     //add new user with unique name
     public void addNewCorrectUserTest() throws Exception{
         User user = new User("admin","admin");
-
+        user.setEmail("test@test.com");
 
         user.setUaNumber("2");
 
@@ -340,9 +331,11 @@ public class UserControllerTests {
 
     @Test
     //add new user with unique name
-    public void addUserDoubleUANumber() throws Exception{
+    public void addNewUserWrongMailTest() throws Exception{
         User user = new User("admin","admin");
-        user.setUaNumber("1");
+        user.setEmail("test@");
+
+        user.setUaNumber("2");
 
         User user2 = new User("Ua","Ua");
         user2.setUaNumber("1");
@@ -361,9 +354,19 @@ public class UserControllerTests {
 
     @Test
     //add new user with unique name
-    public void addNewCorrectUserWrongPWTest() throws Exception{
-        User user = new User("admin"," admin");
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
 
+    public void addUserDoubleUANumber() throws Exception{
+        User user = new User("admin","admin");
+        user.setUaNumber("1");
+        user.setEmail("test@test.com");
+        User user2 = new User("Ua","Ua");
+        user2.setUaNumber("1");
+        user2.setId((long) 789);
+        List<User> users = new ArrayList<>();
+        users.add(user2);
+
+        when(userService.findAll()).thenReturn(users);
         when(userService.findByUsername("admin")).thenReturn(Optional.empty());
         mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
                 .andExpect(status().is(200))
@@ -373,10 +376,26 @@ public class UserControllerTests {
     }
 
     @Test
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
+//add new user with unique name
+    public void addNewCorrectUserWrongPWTest() throws Exception{
+        User user = new User("admin"," admin");
+        user.setEmail("test@test.com");
+        when(userService.findByUsername("admin")).thenReturn(Optional.empty());
+        mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
+                .andExpect(status().is(200))
+                .andExpect(model().attribute("UserInUse",notNullValue()))
+                .andDo(print());
+
+    }
+
+    @Test
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
+
     //add new user with unique name
     public void addNewFalseUserTest() throws Exception{
         User user = new User("admin","admin");
-
+        user.setEmail("test@test.com");
         when(userService.findByUsername("admin")).thenReturn(Optional.of(user));
         mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
                 .andExpect(status().is(200))
@@ -387,10 +406,11 @@ public class UserControllerTests {
     }
 
     @Test
-    //add new user with unique name
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
+//add new user with unique name
     public void addNewFalsePasswOrdUserTest() throws Exception{
         User user = new User("admin","admin ");
-
+        user.setEmail("test@test.com");
         when(userService.findByUsername("admin")).thenReturn(Optional.of(user));
         mockMvc.perform(post("/usermanagement/users/").flashAttr("user",user))
                 .andExpect(status().is(200))
@@ -401,11 +421,12 @@ public class UserControllerTests {
     }
 
     @Test
-    // edit existing user without changing name.
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
+// edit existing user without changing name.
     public void EditCorrectUserTest() throws Exception{
         User user = new User("admin","admin");
         long id = 10;
-
+        user.setEmail("test@test.com");
         when(userService.findById(id)).thenReturn(Optional.of(user));
         mockMvc.perform(post("/usermanagement/users/{id}","10").flashAttr("user",user))
                 .andExpect(status().is(302))
@@ -415,11 +436,12 @@ public class UserControllerTests {
     }
 
     @Test
-    // edit existing user without changing name.
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
+// edit existing user without changing name.
     public void EditCorrectUserWrongPWTest() throws Exception{
         User user = new User("admin","admin ");
         long id = 10;
-
+        user.setEmail("test@test.com");
         when(userService.findById(id)).thenReturn(Optional.of(user));
         mockMvc.perform(post("/usermanagement/users/{id}","10").flashAttr("user",user))
                 .andExpect(status().is(200))
@@ -429,12 +451,13 @@ public class UserControllerTests {
     }
 
     @Test
-    // Edit existing user with non unique name
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
+// Edit existing user with non unique name
     public void EditUserNonUniqueNameTest() throws Exception{
         User user = new User("admin","admin");
         long id = 10;
         user.setId(id);
-
+        user.setEmail("test@test.com");
         User user2 = new User("admin2","admin2");
 
         when(userService.findById(id)).thenReturn(Optional.of(user2));
@@ -449,12 +472,13 @@ public class UserControllerTests {
     }
 
     @Test
-    // Edit existing user with unique name
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
+// Edit existing user with unique name
     public void EditUserUniqueNameTest() throws Exception{
         User user = new User("admin","admin");
         long id = 10;
         user.setId(id);
-
+        user.setEmail("test@test.com");
         User user2 = new User("admin2","admin2");
 
         when(userService.findById(id)).thenReturn(Optional.of(user2));
@@ -468,12 +492,13 @@ public class UserControllerTests {
     }
 
     @Test
+    @WithUserDetails(value="ruben.joosen@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
     // Edit existing user with unique name
     public void EditUserUniqueNameWrongPasswordTest() throws Exception{
         User user = new User("admin","admin ");
         long id = 10;
         user.setId(id);
-
+        user.setEmail("test@test.com");
         User user2 = new User("admin2","admin2");
 
         when(userService.findById(id)).thenReturn(Optional.of(user2));

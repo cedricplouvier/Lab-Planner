@@ -92,7 +92,8 @@
                        th:value="*{experimentname}" disabled>
             </th>
             <th>
-                <a style="text-align:right; margin-right: 10px" th:href="@{/planning/experiments/{id}/(id=*{experimentType.id})}"
+                <a style="text-align:right; margin-right: 10px"
+                   th:href="@{/planning/experiments/{id}/(id=*{experimentType.id})}"
                    class="btn btn-outline-primary" th:text="#{device.info}">info</a>
             </th>
             </tbody>
@@ -117,10 +118,13 @@
                                th:value="*{piecesOfMixture[__${itemStat.index}__].mixture.name}"
                                disabled>
                     </th>
-                    <th>
-                        <input style="font-size:80%;" class=" form-control input-device"
-                               th:value="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
-                               disabled>
+                    <th align="center">
+                        <div class="input-group-append">
+                            <input type="number" min="0" step="0.01" class=" form-control input-device"
+                                   th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
+                                   placeholder="Amount of mixture" required>
+                            <span class="input-group-text" style="color:#808080">kg</span>
+                        </div>
                     </th>
                     <th>
                         <input style="font-size:80%;" class=" form-control input-device"
@@ -157,59 +161,100 @@
             <!-- IMPORTANT, class="list" have to be at tbody -->
             <tbody id="list" class="list" style=" font-size:100%;">
 
+
             <div th:if="(*{experimentType}!=null)">
+                <div th:each="stepType, itemStat : *{experimentType.stepTypes}">
 
-                <tr th:each="stepType, itemStat : *{experimentType.stepTypes}">
-                    <td>
-                        <input style="font-size:80%;" class=" form-control input-device"
-                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].stepTypeName}" disabled>
-                    </td>
-                    <td>
-                        <input style="font-size:80%;" class=" form-control input-device"
-                               id="selectDevice"
-                               th:value="*{steps[__${itemStat.index}__].device.devicename}" disabled>
-                    </td>
-                    <td>
-                        <input required style="font-size:80%;" id="startDate" type="text"
-                               th:value="*{steps[__${itemStat.index}__].start}"
-                               class="form-control " disabled>
-                    </td>
-                    <td>
-                        <input required style="font-size:80%;" type="text" id="startHour"
-                               class="form-control float-right "
-                               th:value="*{steps[__${itemStat.index}__].startHour}" disabled>
+                    <tr>
+                        <td>
+                            <input style="font-size:80%;" class=" form-control input-device"
+                                   th:value="*{experimentType.stepTypes[__${itemStat.index}__].stepTypeName}"
+                                   disabled>
+                        </td>
+                        <td>
+                            <input style="font-size:80%;" class=" form-control input-device"
+                                   id="selectDevice"
+                                   th:value="*{steps[__${itemStat.index}__].device.devicename}" disabled>
+                        </td>
+                        <td style="vertical-align:center; text-align:center;">
+                            <p th:text="#{start}"></p>
+                            <p th:text="#{end}"></p>
+                        </td>
+                        <td style="vertical-align:center; text-align:center;">
+                            <div class="input-group">
+                                <input required style="width: 90%; font-size:80%;" id="startDate" type="date"
+                                       th:value="*{steps[__${itemStat.index}__].start}"
+                                       th:field="*{steps[__${itemStat.index}__].start}"
+                                       class="form-control input-date"
+                                       placeholder="Start date" disabled/>
 
-                    </td>
+                                <input required style="width: 90%; font-size:80%; " id="endDate" type="date"
+                                       th:value="*{steps[__${itemStat.index}__].end}"
+                                       th:field="*{steps[__${itemStat.index}__].end}"
+                                       class="form-control input-date"
+                                       placeholder="End date" disabled/>
+                            </div>
 
-                    <td>
-                        <input required style="font-size:80%;" id="endDate" type="text"
-                               th:value="*{steps[__${itemStat.index}__].end}"
-                               class="form-control " disabled>
-                    </td>
-                    <td>
+                        </td>
+                        <td style="vertical-align:bottom; text-align:center;">
+                            <p th:text="#{start}"></p>
+                            <p th:text="#{end}"></p>
+                        </td>
+                        <td style="vertical-align:center; text-align:center;">
 
-                        <input required style="font-size:80%;" type="text" id="endHour"
-                               class="form-control float-right "
-                               th:value="*{steps[__${itemStat.index}__].endHour}" disabled>
-                    </td>
-
-                    <td style="width: 10%; font-size:80%; text-align:center" id="continuity" name="continuity"
-                        th:utext="*{experimentType.stepTypes[__${itemStat.index}__].continuity.hours} + ':' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}+
-                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.type}">
-                    </td>
-                    <td>
-                        <input style="font-size:80%; " type="text" id="comment"
-                               class="form-control float-right"
-                               th:value="*{steps[__${itemStat.index}__].comment}" disabled>
-                    </td>
-                    <td>
-                        <a style="text-align:right; margin-right: 10px"
-                           th:href="@{/device/info/{id}/(id=*{steps[__${itemStat.index}__].device.id})}"
-                           class="btn btn-outline-primary" th:text="#{device.info}">info</a>
-                    </td>
-                </tr>
+                            <input required style="width: 100%; font-size:80%;" type="time" id="startHour"
+                                   class="form-control float-right input-hour"
+                                   th:value="*{steps[__${itemStat.index}__].startHour}"
+                                   th:field="*{steps[__${itemStat.index}__].startHour}" placeholder="Start hour" disabled>
+                            <input required style="width: 100%; font-size:80%; " type="time" id="endHour"
+                                   class="form-control float-right input-hour"
+                                   th:value="*{steps[__${itemStat.index}__].endHour}"
+                                   th:field="*{steps[__${itemStat.index}__].endHour}" placeholder="End hour" disabled>
+                        </td>
+                        <td>
+                        </td>
+                        <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center"
+                            id="fixedtimeLength"
+                            name="fixedtimeLength"
+                            th:utext="*{experimentType.stepTypes[__${itemStat.index}__].hasFixedLength} ?
+                         *{experimentType.stepTypes[__${itemStat.index}__].fixedTimeHours}  +':' +*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeMinutes}+
+                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].fixedTimeType}
+                         : 'No'">
+                        </td>
+                        <td>
+                            <input style="font-size:80%; " type="text" id="comment"
+                                   class="form-control float-right"
+                                   th:value="*{steps[__${itemStat.index}__].comment}" disabled>
+                        </td>
+                        <td>
+                            <a style="text-align:right; margin-right: 10px"
+                               th:href="@{/device/info/{id}/(id=*{steps[__${itemStat.index}__].device.id})}"
+                               class="btn btn-outline-primary" th:text="#{device.info}">info</a>
+                        </td>
+                    </tr>
+                    <tr th:if="(*{experimentType.stepTypes.size()} > 1) and (${itemStat.index} < *{experimentType.stepTypes.size()}-1)">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center" id="continuity"
+                            name="continuity"
+                            th:utext="(*{experimentType.stepTypes[__${itemStat.index}__].continuity.type} != 'No') ?
+                        *{experimentType.stepTypes[__${itemStat.index}__].continuity.hours} + ':' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}+
+                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.type}+
+                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.directionType}
+                        : 'No'">
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </div>
             </div>
             </tbody>
+
         </table>
 
         <div>

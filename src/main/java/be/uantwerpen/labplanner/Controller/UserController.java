@@ -136,34 +136,17 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User curruser = (User) authentication.getPrincipal();
 
+
         if (curruser.getId() != user.getId()){
             model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwfalse") );
             model.addAttribute(user);
             return "Users/password-manage";
         }
 
-        else if(user.getPassword().length()<6){
-            model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwshort") );
-            model.addAttribute(user);
-            return "Users/password-manage";
 
-        }
-
-        else if (user.getPassword().equals(user.getPassword().toLowerCase()) || user.getPassword().equals(user.getPassword().toUpperCase())){
-
-            model.addAttribute(user);
-            model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwcapital") );
-            return "Users/password-manage";
-        }
-
-        else if (!user.getPassword().matches(".*\\d.*")){
-            model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwnumber") );
-            model.addAttribute(user);
-            return "Users/password-manage";
-        }
-
-        else if (!user.getPassword().equals(user.getPassword().trim())){
-            model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwspace") );
+        //false
+        if (!validatePassword(user.getPassword())) {
+            model.addAttribute("PWError", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("users.passwordCorrect"));
             model.addAttribute(user);
             return "Users/password-manage";
         }
@@ -171,11 +154,6 @@ public class UserController {
         //if it passes all tests
         curruser.setPassword(user.getPassword());
         userService.save(curruser);
-
-
-
-
-
         return "redirect:/home";
     }
 
@@ -221,6 +199,13 @@ public class UserController {
         return "Users/user-manage";
     }
 
+    private boolean isValidEmailAddress(String email) {
+        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+        java.util.regex.Matcher m = p.matcher(email);
+        return m.matches();
+    }
+
 
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = {"/usermanagement/users/","/usermanagement/users/{id}"}, method = RequestMethod.POST)
@@ -233,11 +218,19 @@ public class UserController {
             return "Users/user-manage";
         }
 
+        //check on invalid mail adres
+        if ((!isValidEmailAddress(user.getEmail()))&&(!user.getEmail().trim().equals(""))){
+            model.addAttribute("allRoles", roleService.findAll());
+            model.addAttribute("allUsers",userService.findAll());
+            model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.mailError") );
+
+            return "Users/user-manage";
+        }
 
         //test for duplicate UA number
         for(User temp : userService.findAll()){
 
-            if ( (temp.getUaNumber()!= null) && (user.getUaNumber()!=null)   && ((temp.getUaNumber().equals(user.getUaNumber()))&&(temp.getId()!=user.getId()))){
+            if ( (temp.getUaNumber()!= null) && (user.getUaNumber()!=null)   && ((temp.getUaNumber().equals(user.getUaNumber()))&&(!temp.getId().equals(user.getId())))){
                 model.addAttribute("allRoles", roleService.findAll());
                 model.addAttribute("allUsers",userService.findAll());
                 model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.UAError") );
@@ -308,14 +301,6 @@ public class UserController {
         return "redirect:/usermanagement/users";
     }
 
-
-
-
-
-
-
-
-
     @PreAuthorize("hasAnyAuthority('User Management')")
     @RequestMapping(value = "/usermanagement/users/{id}/delete",method = RequestMethod.GET)
     public String deleteUser(@PathVariable long id, final ModelMap model) {
@@ -375,9 +360,18 @@ public class UserController {
         return "redirect:/usermanagement/users";
     }
 
-
-
-
-
+    private boolean validatePassword(String pw){
+        if(pw.length()<6){
+            return false;
+        }
+        //check for capital & lower letter and number
+        else if (!pw.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$")){
+            return false;
+        }
+        else if (!pw.equals(pw.trim())){
+            return false;
+        }
+        return true;
+    }
 
 }

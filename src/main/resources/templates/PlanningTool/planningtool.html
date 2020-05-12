@@ -35,8 +35,6 @@
                 if (status == "Error")
                     toastr.error(messages);
             }
-            var mixturesz = /*[[${allMixtures}]]*/ {};
-            console.log(mixturesz);
             $('.js-example-basic-single').select2();
             $('#sel').on('change', function () {
                 var devices =  /*[[${allDevices}]]*/ {};
@@ -62,10 +60,12 @@
 
                 document.getElementById("deviceNames").style.visibility = "visible";
                 $('#deviceNames').on('change', function () {
+                    document.getElementById("startTime").value = new Date().toDateInputValue();
                     document.getElementById("startTime").style.visibility = "visible";
                     document.getElementById("startHour").style.visibility = "visible";
                 })
-                $('#startTime').on('change', function () {
+                $('#startHour').on('change', function () {
+                    document.getElementById("endTime").value = new Date().toDateInputValue();
                     document.getElementById("endTime").style.visibility = "visible";
                     document.getElementById("endHour").style.visibility = "visible";
                 })
@@ -111,6 +111,11 @@
             alert(id);
             document.getElementById("DeviceNameDropDown").style.visibility = "visible";
         }
+        Date.prototype.toDateInputValue = (function() {
+            var local = new Date(this);
+            local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+            return local.toJSON().slice(0,10);
+        });
     </script>
     <style>
         .input-date {
@@ -144,10 +149,16 @@
             </button>
 
             <p/>
-            <a th:href="@{/planning/experiments/book/}">
+            <a th:href="@{/planning/experiments/book/fixed}">
                 <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal"
-                        data-target="#staticBackdropExperiment" th:text="#{book.Experiment}">
-                    Book new Experiment
+                        data-target="#staticBackdropExperiment" th:text="#{book.Experiment.fixed}">
+                    Book fixed experiment
+                </button>
+            </a>
+            <a th:href="@{/planning/experiments/book/custom}">
+                <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal"
+                        data-target="#staticBackdropExperiment" th:text="#{book.Experiment.custom}">
+                    Book custom experiment
                 </button>
             </a>
 
@@ -155,9 +166,10 @@
 
         </h1>
 
-        <input class="floating" id="search" placeholder="Search" />
+        <input class="floating" id="search" th:placeholder="#{search.all}" />
 
         <table class="table table-hover">
+            <h2> <span th:text="#{steps}"></span></h2>
             <thead>
             <tr>
                 <th th:text="#{step.user.username}">Username</th>
@@ -166,6 +178,8 @@
                 <th th:text="#{step.startHour}">Start Hour</th>
                 <th th:text="#{step.end}">End Date</th>
                 <th th:text="#{step.endHour}">End Hour</th>
+                <th></th>
+                <th></th>
             </tr>
             </thead>
             <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -207,7 +221,6 @@
         <table class="table table-hover"
                sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')">
 
-            <h2> <span th:text="#{steps}"></span></h2>
             <thead>
             <tr>
                 <th th:text="#{step.user.username}"></th>
@@ -216,6 +229,8 @@
                 <th th:text="#{step.startHour}">Start Hour</th>
                 <th th:text="#{step.end}">End Date</th>
                 <th th:text="#{step.endHour}">End Hour</th>
+                <th></th>
+                <th></th>
             </tr>
             </thead>
             <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -262,6 +277,8 @@
                 <th th:text="#{experiment.type}">Experiment Type</th>
                 <th th:text="#{step.start}">Start Date</th>
                 <th th:text="#{step.end}">End Date</th>
+                <th></th>
+                <th></th>
             </tr>
             </thead>
             <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -285,9 +302,51 @@
                         <span class="fas fa-trash" style="color: red" ></span> </a>
                 </td>
             </tr>
+            <tr class='notfound' th:if="${userExperiments.isEmpty()}">
+                <td colspan='4' th:text="#{experiment.norecord}">No record found</td>
+            </tr>
             </tbody>
         </table>
 
+        <h5 th:if="${!studentExperiments.isEmpty()}" sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')"> <span th:text="#{experiment.student}"></span></h5>
+
+        <table th:if="${!studentExperiments.isEmpty()}" class="table table-hover"  sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')">
+            <thead>
+            <tr>
+                <th th:text="#{step.user.username}"></th>
+                <th th:text="#{experiment.name}">Experiment Name</th>
+                <th th:text="#{experiment.type}">Experiment Type</th>
+                <th th:text="#{step.start}">Start Date</th>
+                <th th:text="#{step.end}">End Date</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody class="list" id="list-students">
+            <tr th:each="experiment : ${studentExperiments}">
+                <td class="user" th:value="${experiment.getUser()}" th:text="${experiment.getUser().getFirstName() + ' ' + experiment.getUser().getLastName()}"></td>
+                <td class="experimentName" th:value="${experiment.getExperimentname()}" th:text="${experiment.getExperimentname()}" >Experiment name</td>
+                <td class="experimentType" th:value="${experiment.getExperimentType().getExperimentTypeName()}" th:text="${experiment.getExperimentType().getExperimentTypeName()}">Experiment Type name</td>
+                <td class="startTime" th:value="${experiment.getStartDate()}" th:text="${experiment.getStartDate()}"> Start Date</td>
+                <td class="endTime" th:value="${experiment.getEndDate()}" th:text="${experiment.getEndDate()}"> End Date</td>
+                <td>
+                    <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}" th:text="#{experiment.info}" class="btn btn-primary"></a>
+                </td>
+                <td>
+                    <a th:href="@{/planning/experiments/book/{id}/(id=${experiment.id})}"><span
+                            class="fas fa-edit"></span></a>
+
+                    <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                        <span class="fas fa-trash" style="color: red" ></span> </a>
+                </td>
+
+            </tr>
+            <tr class='notfound' th:if="${studentExperiments.isEmpty()}" >
+                <td colspan='4' th:text="#{experiment.norecord}">No record found</td>
+            </tr>
+            </tbody>
+        </table>
 
 
         <a th:href="@{/planning/experiments}" type="button" class="btn btn-primary" th:text="#{experiment.types}">

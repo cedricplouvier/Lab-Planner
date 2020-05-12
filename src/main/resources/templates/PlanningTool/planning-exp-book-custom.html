@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<head>
+    <div th:insert="navbar :: head"></div>
+    <script src="/webjars/jquery/2.1.4/jquery.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" media="screen" href="http://cdn.jsdelivr.net/webjars/bootstrap/4.3.0/css/bootstrap.min.css"
+          th:href="@{/webjars/bootstrap/4.3.0/css/bootstrap.min.css}"/>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <meta http-equiv="content-type" content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <link rel='stylesheet' href='https://uicdn.toast.com/tui-calendar/latest/tui-calendar.css'>
+    <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css"/>
+    <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/default.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/icons.css}">
+</head>
+
+<script th:inline="javascript">
+    let errorMsg = [[${errorMsg}]]
+    let stepTypeRowIndexWithRemovedItems = 0;
+    $(document).ready(function () {
+        if (errorMsg) {
+            $("#myToast").toast('show');
+        }
+        //check checkBox to make isfixedType variable false
+        document.getElementById("checkboxIsFixedType").checked = false;
+        stepTypeRowIndexWithRemovedItems = $('#list tr').length / 2;
+    });
+
+    let devices = [[${allDevices}]];
+    let deviceTypes = [[${allDeviceTypes}]];
+    let steps = [[${allSteps}]];
+    let allExperiments = [[${allExperimentTypes}]];
+    let tempExpIndex = 0;
+    let tempStepIndex = 0;
+    let userSteps = [[${userSteps}]];
+    let otherSteps = [[${otherSteps}]];
+    let holidays = [[${holidays}]];
+
+    let calendarUpdate = {
+        experimentIndex: 0,
+        stepIndex: 0,
+        start: 0,
+        end: 0,
+        startHour: 0,
+        endHour: 0,
+    }
+
+    function addMixtureRow(mixtures) {
+        var i = $('#mixtureList tr').length;
+        var deviceOptions = null;
+        for (let j = 0; j < mixtures.length; j++) {
+            deviceOptions += '<option class="dropdown-item" value="' + mixtures[j].id + '" selected="selected">' + mixtures[j].name + '</option>'
+        }
+        $('#mixtureList')
+            .append(
+                '<tr>' +
+                '   <th>' +
+                '   <select required="" class=" form-control input-device" id="selectMixture" name="piecesOfMixture[' + i + '].mixture">' +
+                '       <option hidden="" value="">Select mixture</option>' +
+                deviceOptions +
+                '   </select>' +
+                '   </th>' +
+                '   <th align="center">' +
+                '       <div class="input-group-append">' +
+                '           <input type="number" min="0" step="0.01" class=" form-control input-device" placeholder="Amount of mixture" id="piecesOfMixture' + i + '.mixtureAmount" name="piecesOfMixture[' + i + '].mixtureAmount" required>' +
+                '           <span class="input-group-text" style="color:#808080">kg</span>' +
+                '       </div>' +
+                '   </th>' +
+                '   <th>' +
+                '       <input class=" form-control input-device" placeholder="Mixture comment" id="piecesOfMixture' + i + '.mixtureComment" name="piecesOfMixture[' + i + '].mixtureComment">' +
+                '   </th>' +
+                '</tr>');
+    }
+
+
+    function removeMixtureRow() {
+        var i = $('#mixtureList tr').length;
+        if (i > 0) {
+            document.getElementById("mixtureList").deleteRow(i - 1);
+        }
+    }
+
+    function refreshDevices(a) {
+        let devices = [[${allDevices}]];
+        var selectDeviceType = $(a).closest("tr").find("td:eq(2)").find("select")[0];
+        var selectDevices = $(a).closest("tr").find("td:eq(2)").find("select")[1];
+
+        //remove previous options
+        for (var i = selectDevices.options.length - 1; i >= 0; i--) {
+            selectDevices.remove(i);
+        }
+
+        var found = false
+        //add new options by selected deviceType
+        for (let j = 0; j < devices.length; j++) {
+            if (devices[j].deviceType.id == selectDeviceType.options[selectDeviceType.selectedIndex].value) {
+                found = true;
+                var option = document.createElement("option");
+                option.text = devices[j].devicename;
+                option.value = devices[j].id;
+                selectDevices.appendChild(option);
+            }
+        }
+        if (!found) {
+            var option = document.createElement("option");
+            option.text = "Select device";
+            option.hidden = true;
+            option.selected = true;
+            option.disabled = true;
+            selectDevices.appendChild(option);
+        }
+    }
+
+    function addStepRow() {
+        //reference table
+        var i = stepTypeRowIndexWithRemovedItems;
+        stepTypeRowIndexWithRemovedItems++;
+        let devices = [[${allDevices}]];
+        let deviceTypes = [[${allDeviceTypes}]];
+
+        tempStepIndex = i;
+
+        var deviceTypeOprions = '';
+        var selectedDeviceTypeId = null;
+        for (let j = 0; j < deviceTypes.length; j++) {
+            if (j == 0) {
+                selectedDeviceTypeId = deviceTypes[j].id;
+
+                deviceTypeOprions += '<option selected class="dropdown-item" value="' + deviceTypes[j].id + '">'
+                    + deviceTypes[j].deviceTypeName +
+                    '</option>';
+            } else {
+                deviceTypeOprions += '<option class="dropdown-item" value="' + deviceTypes[j].id + '">'
+                    + deviceTypes[j].deviceTypeName +
+                    '</option>';
+            }
+        }
+
+        var deviceOprions = '';
+        for (let j = 0; j < devices.length; j++) {
+            if (devices[j].deviceType.id == selectedDeviceTypeId) {
+                deviceOprions += '<option class="dropdown-item" value="' + devices[j].id + '">'
+                    + devices[j].devicename +
+                    '</option>';
+            }
+        }
+        $('#list')
+            .append(
+                '<tr class="row' + i + '" id="row' + i + '">' +
+                '   <input id="step" type="hidden" name="steps[' + i + ']">' +
+                '   <input id="stepType" type="hidden" name="experimentType.stepTypes[' + i + ']">' +
+                '<td style="vertical-align:center;">' +
+                '    <input required="" style="font-size:80%;" class=" form-control input-device" placeholder="Name" id="experimentType.stepTypes' + i + '.stepTypeName" name="experimentType.stepTypes[' + i + '].stepTypeName" value="">' +
+                '</td>' +
+                '<td style="vertical-align:center;">' +
+                '    <p>Type</p>' +
+                '    <p>Device</p>' +
+                '</td>' +
+                '   <td style="vertical-align:center; text-align:center;">' +
+                '       <select required style="font-size:80%;" class="form-control input-device" onchange="refreshDevices(this)" id="selectDeviceType' + i + '" name="experimentType.stepTypes[' + i + '].deviceType">' +
+                '           <option hidden="" value="">Select</option>' +
+                deviceTypeOprions +
+                '       </select>' +
+                '       <select required style="font-size:80%;" class=" form-control input-device" id="selectDevice' + i + '" name="steps[' + i + '].device" style=" width: 110%;font-size:90%;">' +
+                '           <option hidden selected disabled value="">Select device</option>' +
+                deviceOprions +
+                '       </select>' +
+                '   </td>' +
+                '   <td style="vertical-align:center; text-align:center;">' +
+                '       <p>Start</p>' +
+                '       <p>End</p>' +
+                '   </td>' +
+                '   <td style="vertical-align:center; text-align:center;">' +
+                '       <div class="input-group">' +
+                '           <input required style="width: 90%; font-size:80%;" id="startDate' + i + '" type="date"  class="form-control input-date" placeholder="Start date" name="steps[' + i + '].start">' +
+                '           <input required style="width: 90%; font-size:80%; " id="endDate' + i + '" type="date"  class="form-control input-date" placeholder="End date" name="steps[' + i + '].end">' +
+                '       </div>' +
+                '   </td>' +
+                '   <td style="vertical-align:center; text-align:center;">' +
+                '       <p>Start</p>' +
+                '       <p>End</p>' +
+                '   </td>' +
+                '   <td style="vertical-align:center; text-align:center;">' +
+                '       <input required="" style="width: 100%; font-size:80%;" type="time" id="startHour' + i + '" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + i + '].startHour">' +
+                '        <input required="" style="width: 100%; font-size:80%; " type="time" id="endHour' + i + '" class="form-control float-right input-hour" placeholder="End hour" name="steps[' + i + '].endHour">' +
+                '   </td> ' +
+                '   <td> ' +
+                '   </td> ' +
+                '   <td style="width: 10%; font-size:80%; text-align:center" id="fixedStepLength' + i + '" name="fixedStepLength" value=""> No ' +
+                '   </td> ' +
+                '   <td>' +
+                '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + i + '].comment" value="" >' +
+                '   </td> ' +
+                '   <td>' +
+                '       <button style="width: 100%; font-size:80%; "type="button" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + i + ')" >Choose in calendar</button>' +
+                '   </td>' +
+                '   <td style="vertical-align: bottom">' +
+                '       <a onclick="removeRow(this)">' +
+                '           <span class="fas fa-trash" style="color: red"></span>' +
+                '       </a>' +
+                '   </td>' +
+                '</tr>' +
+                '<tr>' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '   <td style="width: 10%; font-size:80%; text-align:center" id="continuity' + i + '" name="continuity" value="">No ' +
+                '    </td> ' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '    <td></td>' +
+                '</tr>'
+            );
+    }
+
+    function removeStepsRows() {
+        var table = document.getElementById('list');
+
+        var rowCount = table.rows.length;
+
+        if (rowCount > 0) {
+            //delete stepType row
+            table.deleteRow(rowCount - 1);
+            //delete continuity
+            table.deleteRow(rowCount - 2);
+        }
+    }
+
+    function addStepsRows() {
+        //reference table
+
+        var experimentTypeId = $('#selectExperimentType :selected').val();
+
+        var tableLength = stepTypeRowIndexWithRemovedItems;
+        //a = experimentType
+        var a;
+        let devices = [[${allDevices}]];
+        let deviceTypes = [[${allDeviceTypes}]];
+        let experimentTypes = [[${allExperimentTypes}]];
+        for (let i = 0; i < experimentTypes.length; i++) {
+            if (experimentTypeId == experimentTypes[i].id) {
+                a = experimentTypes[i];
+                //tempExpIndex = i;
+            }
+        }
+        //only if experiment type is selected
+        if (a) {
+            for (let i = 0; i < a.stepTypes.length; i++) {
+                //tempStepIndex = i;
+                stepTypeRowIndexWithRemovedItems += i;
+                var deviceOprions = '';
+                for (let j = 0; j < devices.length; j++) {
+                    if (devices[j].deviceType.id == a.stepTypes[i].deviceType.id) {
+                        deviceOprions += '<option class="dropdown-item" value="' + devices[j].id + '">'
+                            + devices[j].devicename +
+                            '</option>';
+                    }
+                }
+                var deviceTypeOprions = '';
+                for (let j = 0; j < deviceTypes.length; j++) {
+                    if (deviceTypes[j].id == a.stepTypes[i].deviceType.id) {
+
+                        deviceTypeOprions += '<option selected class="dropdown-item" value="' + deviceTypes[j].id + '">'
+                            + deviceTypes[j].deviceTypeName +
+                            '</option>';
+                    } else {
+                        deviceTypeOprions += '<option class="dropdown-item" value="' + deviceTypes[j].id + '">'
+                            + deviceTypes[j].deviceTypeName +
+                            '</option>';
+                    }
+                }
+
+                // set continuity text if time steptype has fixed time, otherwise set to 'No'
+                var continuityText = a.stepTypes[i].continuity.type != "No" ? a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '<br />' + a.stepTypes[i].continuity.type + '<br />' + a.stepTypes[i].continuity.directionType + '' : 'No';
+                // set fixed length text if time steptype has fixed time, otherwise set to 'No'
+                var fixedLengthText = a.stepTypes[i].hasFixedLength ? a.stepTypes[i].fixedTimeHours + ':' + a.stepTypes[i].fixedTimeMinutes + '<br />' + a.stepTypes[i].fixedTimeType : 'No'
+                var index = i + tableLength
+                $('#list')
+                    .append(
+                        '<tr class="row' + index + '" id="row' + index + '">' +
+                        '   <input id="step" type="hidden" name="steps[' + index + ']">' +
+                        '   <input id="stepType" type="hidden" name="experimentType.stepTypes[' + index + ']">' +
+                        '   <input id="stepType.hasFixedLength' + index + '" type="hidden" name="experimentType.stepTypes[' + index + '].hasFixedLength"  value="' + a.stepTypes[i].hasFixedLength + '">' +
+                        '   <input id="stepType.fixedTimeType' + index + '" type="hidden" name="experimentType.stepTypes[' + index + '].fixedTimeType" value="' + a.stepTypes[i].fixedTimeType + '">' +
+                        '   <input id="stepType.fixedTimeHours' + index + '" type="hidden" name="experimentType.stepTypes[' + index + '].fixedTimeHours" value="' + a.stepTypes[i].fixedTimeHours + '">' +
+                        '   <input id="stepType.fixedTimeMinutes' + index + '" type="hidden" name="experimentType.stepTypes[' + index + '].fixedTimeMinutes" value="' + a.stepTypes[i].fixedTimeMinutes + '">' +
+                        '<td style="vertical-align:center;">' +
+                        '    <input required="" style="font-size:80%;" class=" form-control input-device" placeholder="Name" id="experimentType.stepTypes' + index + '.stepTypeName" name="experimentType.stepTypes[' + index + '].stepTypeName" value="' + a.stepTypes[i].stepTypeName + '">' +
+                        '</td>' +
+                        '<td style="vertical-align:center;">' +
+                        '    <p>Type</p>' +
+                        '    <p>Device</p>' +
+                        '</td>' +
+                        '   <td style="vertical-align:center; text-align:center;">' +
+                        '       <select required style="font-size:80%;" class="form-control input-device" onchange="refreshDevices(this)" id="selectDeviceType" name="experimentType.stepTypes[' + index + '].deviceType">' +
+                        '           <option hidden="" value="">Select</option>' +
+                        deviceTypeOprions +
+                        '       </select>' +
+                        '       <select required style="font-size:80%;" class=" form-control input-device" id="selectDevice' + index + '" name="steps[' + index + '].device" style=" width: 110%;font-size:90%;">' +
+                        '           <option hidden selected disabled value="">Select device</option>' +
+                        deviceOprions +
+                        '       </select>' +
+                        '   </td>' +
+                        '   <td style="vertical-align:center; text-align:center;">' +
+                        '       <p>Start</p>' +
+                        '       <p>End</p>' +
+                        '   </td>' +
+                        '   <td style="vertical-align:center; text-align:center;">' +
+                        '       <div class="input-group">' +
+                        '           <input required style="width: 90%; font-size:80%;" id="startDate' + index + '" type="date"  class="form-control input-date" placeholder="Start date" name="steps[' + index + '].start">' +
+                        '           <input required style="width: 90%; font-size:80%; " id="endDate' + index + '" type="date"  class="form-control input-date" placeholder="End date" name="steps[' + index + '].end">' +
+                        '       </div>' +
+                        '   </td>' +
+                        '   <td style="vertical-align:center; text-align:center;">' +
+                        '       <p>Start</p>' +
+                        '       <p>End</p>' +
+                        '   </td>' +
+                        '   <td style="vertical-align:center; text-align:center;">' +
+                        '       <input required="" style="width: 100%; font-size:80%;" type="time" id="startHour' + index + '" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + index + '].startHour">' +
+                        '        <input required="" style="width: 100%; font-size:80%; " type="time" id="endHour' + index + '" class="form-control float-right input-hour" placeholder="End hour" name="steps[' + index + '].endHour">' +
+                        '   </td> ' +
+                        '   <td>' +
+                        '   </td> ' +
+                        '   <td style="width: 10%; font-size:80%; text-align:center" id="fixedStepLength' + index + '" name="fixedStepLength" value=""> ' + fixedLengthText +
+                        '   </td> ' +
+                        '   <td>' +
+                        '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + index + '].comment" value="" >' +
+                        '   </td> ' +
+                        '   <td>' +
+                        '       <button style="width: 100%; font-size:80%;" type="button" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + index + ')" >Choose in calendar</button>' +
+                        '   </td>' +
+                        '   <td style="vertical-align: bottom">' +
+                        '       <a onclick="removeRow(this)">' +
+                        '           <span class="fas fa-trash" style="color: red"></span>' +
+                        '       </a>' +
+                        '   </td>' +
+                        '</tr>' +
+                        '<tr>' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '    <td style="width: 10%; font-size:80%; text-align:center" id="continuity' + i + '" name="continuity" value=""> ' + continuityText +
+                        //Add continuity
+                        '   <input id="continuityHours' + i + '" type="hidden"  name="experimentType.stepTypes[' + index + '].continuity.hours" value = "' + a.stepTypes[i].continuity.hours + '">' +
+                        '   <input id="continuityMinutes' + i + '" type="hidden"  name="experimentType.stepTypes[' + index + '].continuity.minutes" value = "' + a.stepTypes[i].continuity.minutes + '">' +
+                        '   <input id="continuityType' + i + '" type="hidden"  name="experimentType.stepTypes[' + index + '].continuity.type" value = "' + a.stepTypes[i].continuity.type + '">' +
+                        '   <input id="continuityDirectionType' + i + '" type="hidden"  name="experimentType.stepTypes[' + index + '].continuity.directionType" value = "' + a.stepTypes[i].continuity.directionType + '">' +
+
+                        '    </td> ' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '    <td></td>' +
+                        '</tr>');
+            }
+        } else {
+            alert("You need to select desired experiment type!");
+        }
+    }
+
+    function filterFunction() {
+        var input, filter, ul, li, a, i;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        div = document.getElementById("myDropdown");
+        a = div.getElementsByTagName("a");
+        for (i = 0; i < a.length; i++) {
+            txtValue = a[i].textContent || a[i].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                a[i].style.display = "";
+            } else {
+                a[i].style.display = "none";
+            }
+        }
+    }
+
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function myFunction() {
+        document.getElementById("myDropdown").classList.toggle("show");
+    }
+
+    function removeRow(r) {
+        $(r).closest('tr').next().remove();
+        $(r).closest('tr').remove();
+    }
+
+    function openCalendar(expInd, stepInd) {
+        calendarUpdate.experimentIndex = expInd;
+        calendarUpdate.stepIndex = stepInd;
+        calendarUpdate.start = document.getElementById('startDate' + stepInd + '').value
+        calendarUpdate.end = document.getElementById('endDate' + stepInd + '').value
+        calendarUpdate.startHour = document.getElementById('startHour' + stepInd + '').value
+        calendarUpdate.endHour = document.getElementById('endHour' + stepInd + '').value
+    }
+</script>
+<style>
+    .dropbtn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 16px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .dropbtn:hover, .dropbtn:focus {
+        background-color: #3e8e41;
+    }
+
+    #myInput {
+        box-sizing: border-box;
+        background-position: 14px 12px;
+        background-repeat: no-repeat;
+        padding: 14px 20px 12px 45px;
+        border: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    #myInput:focus {
+        outline: 3px solid #ddd;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f6f6f6;
+        min-width: 230px;
+        overflow: auto;
+        border: 1px solid #ddd;
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown a:hover {
+        background-color: #ddd;
+    }
+
+
+    .show {
+        display: block;
+    }
+
+    .modal-xl {
+        width: 100%;
+        height: 100%;
+    !important;
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+
+    .modal-dialog,
+    .modal-content {
+        /* 80% of window height */
+        height: 100%;
+    !important;
+
+    }
+
+    .modal-body {
+        /* 100% = dialog height, 120px = header + footer */
+        /*overflow-y: scroll;*/
+        height: 100%;
+    !important;
+
+    }
+</style>
+
+
+<div class="toast" id="myToast" data-delay="5000" style=" background-color:red ;position: absolute; top: 0; right: 0;">
+    <div class="toast-body">
+        <strong th:text="${errorMsg}"></strong>
+    </div>
+</div>
+
+
+<body>
+<div class="container">
+    <div th:replace="navbar :: navbar"></div>
+    <form id="MyForm" action="#" th:action="@{/planning/experiments/book/{id}  (id=${{experiment}})}"
+          th:object="${experiment}" method="post">
+        <input th:field="*{id}" th:type="hidden"/>
+        <input th:type="hidden" th:field="*{user}"/>
+        <input th:type="hidden" th:field="*{experimentType.id}"/>
+        <input th:type="hidden" th:field="*{experimentType.expname}"/>
+        <input type="checkbox" id="checkboxIsFixedType" th:field="*{experimentType.isFixedType}" hidden/>
+
+        <h3><span th:text="#{experiment.info}"></span></h3>
+        <table class="table table-hover" style="text-align:center; font-size:90%;">
+            <thead>
+            <tr>
+                <th th:text="#{experiment.type}">Experiment Type</th>
+                <th th:text="#{experiment.name}">Experiment Name</th>
+            </tr>
+            </thead>
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody>
+
+            <th>
+                <input type="text" class=" form-control input-device"
+                       th:value="#{experiment.custom}" disabled>
+            </th>
+            <th>
+                <input class=" form-control input-device" th:field="*{experimentname}" placeholder="Expirement Name"
+                       required>
+            </th>
+            </tbody>
+        </table>
+
+        <h3><span th:text="#{mixture.info}"></span></h3>
+        <table class="table table-hover" style="text-align:center; font-size:90%;">
+            <thead>
+            <tr>
+                <th th:text="#{mixture}">Mixture</th>
+                <th th:text="#{mixtures.amount}">Amount</th>
+                <th>Comment</th>
+            </tr>
+            </thead>
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody id="mixtureList">
+            <div th:if="(*{piecesOfMixture}!=null)">
+                <tr th:each="mixture, itemStat : *{piecesOfMixture}">
+                    <th>
+                        <select required class=" form-control input-device" id="selectMixture"
+                                th:field="*{piecesOfMixture[__${itemStat.index}__].mixture}">
+                            <option selected hidden th:text="#{mixture.select}" value=""> Select mixture
+                            </option>
+                            <option class="dropdown-item"
+                                    th:each="mixture  : ${allMixtures}"
+                                    th:value="${{mixture}}"
+                                    th:text="${mixture.name}">
+                            </option>
+                        </select>
+                    </th>
+                    <th align="center">
+                        <div class="input-group-append">
+                            <input type="number" min="0" step="0.01" class=" form-control input-device"
+                                   th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
+                                   placeholder="Amount of mixture" required>
+                            <span class="input-group-text" style="color:#808080">kg</span>
+                        </div>
+                    </th>
+                    <th>
+                        <input class=" form-control input-device"
+                               th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureComment}"
+                               placeholder="Mixture comment">
+                    </th>
+                </tr>
+
+            </div>
+            </tbody>
+        </table>
+        <button style="margin-right: 10px;font-size: 90%" class="btn btn-primary "
+                type="button"
+                th:text="#{mixture.add}"
+                th:onclick="addMixtureRow([[${allMixtures}]])">
+        </button>
+
+        <button style="margin-right: 10px;font-size: 90%" class="btn btn-outline-primary"
+                type="button"
+                th:text="#{mixture.remove}"
+                th:onclick="removeMixtureRow()">
+        </button>
+
+
+        <h3><span th:text="#{step.info}"></span></h3>
+
+        <table>
+            <tr>
+                <th>
+                    <button style="margin-right: 10px;font-size: 90%" class="btn btn-primary "
+                            type="button"
+                            th:text="#{add.step}"
+                            th:onclick="addStepRow()">
+                    </button>
+                </th>
+                <th>
+                    <select class=" form-control input-device" id="selectExperimentType">
+                        <option selected hidden th:text="#{experiment.type.select}" value=""> Select
+                            experiment type
+                        </option>
+                        <option class="dropdown-item"
+                                th:each="experimentTypep : ${allExperimentTypes}"
+                                th:value="${{experimentTypep}}"
+                                th:text="${experimentTypep.getExperimentTypeName()}">
+                        </option>
+                    </select>
+                </th>
+                <th>
+                    <button style="margin-right: 10px;font-size: 90%" class="btn btn-primary "
+                            type="button"
+                            th:text="#{add.experiment.steps}"
+                            th:onclick="addStepsRows()">
+                    </button>
+                </th>
+            </tr>
+            <tr></tr>
+        </table>
+        <table class="table table-hover" style=" font-size:100%; text-align:center;">
+
+            <thead>
+            <tr>
+                <th>Step Type</th>
+                <th></th>
+                <th>Device</th>
+                <th></th>
+                <th th:text="#{date}">Date</th>
+                <th></th>
+                <th th:text="#{time}">Time</th>
+                <th>Continuity</th>
+                <th>Fixed step time</th>
+                <th>Comment</th>
+                <th>Choose in Calendar</th>
+            </tr>
+            </thead>
+
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody id="list" class="list" style=" font-size:100%;">
+
+            <div th:if="(*{experimentType}!=null)">
+                <div th:each="stepType, itemStat : *{experimentType.stepTypes}">
+                    <tr>
+                        <input id="step" th:type="hidden"
+                               th:field="*{steps[__${itemStat.index}__].id}">
+                        <input th:type="hidden" th:field="*{steps[__${itemStat.index}__].user}"/>
+                        <input id="stepType" th:type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].id}">
+                        <input th:id="'continuity' + ${itemStat.index}" th:type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].continuity}"
+                               th:value="${stepType.continuity}">
+
+                        <input th:id="'hasFixedLength'+ ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].hasFixedLength}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].hasFixedLength}">
+                        <input th:id="'fixedTimeType' + ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeType}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeType}">
+                        <input th:id="'fixedTimeHours' + ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeHours}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeHours}">
+                        <input th:id="'fixedTimeMinutes' + ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeMinutes}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeMinutes}">
+
+
+                        <input th:id="'continuityHours'+ ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}">
+                        <input th:id="'continuityMinutes' + ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].continuity.hours}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].continuity.hours}">
+                        <input th:id="'continuityType' + ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].continuity.type}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].continuity.type}">
+                        <input th:id="'continuityDirectionType' + ${itemStat.index}" type="hidden"
+                               th:field="*{experimentType.stepTypes[__${itemStat.index}__].continuity.directionType}"
+                               th:value="*{experimentType.stepTypes[__${itemStat.index}__].continuity.directionType}">
+
+                        <td style="vertical-align:center;">
+
+                            <input required style="font-size:80%;" class=" form-control input-device"
+                                   th:field="*{experimentType.stepTypes[__${itemStat.index}__].stepTypeName}"
+                                   placeholder="Name">
+                        </td>
+
+                        <td style="vertical-align:center;">
+                            <p th:text="#{type}"></p>
+                            <p th:text="#{device}"></p>
+                        </td>
+                        <td style="vertical-align:center;">
+
+                            <select required style="font-size:80%;" class="form-control input-device"
+                                    id="selectDeviceType"
+                                    th:field="*{experimentType.stepTypes[__${itemStat.index}__].deviceType}"
+                                    th:onchange="refreshDevices(this)">
+                                <option selected hidden th:text="#{select}" value=""> Select
+                                </option>
+                                <option class="dropdown-item"
+                                        th:each="deviceType  : ${allDeviceTypes}"
+                                        th:value="${{deviceType}}"
+                                        th:text="${deviceType.deviceTypeName}">
+                                </option>
+                            </select>
+
+                            <select required style="font-size:80%;" class=" form-control input-device"
+                                    id="selectDevice"
+                                    th:field="*{steps[__${itemStat.index}__].device}">
+                                <option hidden selected th:text="#{device.select}" value=""> Select device
+                                </option>
+                                <option th:each="device : ${allDevices}"
+                                        th:if="${device.deviceType.id} == ${stepType.deviceType.id} "
+                                        class="dropdown-item"
+                                        th:value="${{device}}"
+                                        th:text="${device.devicename}">
+                                </option>
+                            </select>
+                        </td>
+                        <td style="vertical-align:center; ">
+                            <p th:text="#{start}"></p>
+                            <p th:text="#{end}"></p>
+                        </td>
+                        <td style="vertical-align:center; ">
+                            <div class="input-group">
+                                <input required style="width: 90%; font-size:80%;"
+                                       id="startDate" type="date"
+                                       th:value="*{steps[__${itemStat.index}__].start}"
+                                       th:field="*{steps[__${itemStat.index}__].start}"
+                                       class="form-control input-date"
+                                       placeholder="Start date"/>
+
+                                <input required style="width: 90%; font-size:80%;"
+                                       id="endDate" type="date"
+                                       th:value="*{steps[__${itemStat.index}__].end}"
+                                       th:field="*{steps[__${itemStat.index}__].end}"
+                                       class="form-control input-date"
+                                       placeholder="End date"/>
+                            </div>
+
+                        </td>
+                        <td style="vertical-align:center; ">
+                            <p th:text="#{start}"></p>
+                            <p th:text="#{end}"></p>
+                        </td>
+                        <td style="vertical-align:center; ">
+
+                            <input required style="width: 100%; font-size:80%;" type="time" id="startHour"
+                                   class="form-control float-right input-hour"
+                                   th:value="*{steps[__${itemStat.index}__].startHour}"
+                                   th:field="*{steps[__${itemStat.index}__].startHour}" placeholder="Start hour">
+                            <input required style="width: 100%; font-size:80%; " type="time" id="endHour"
+                                   class="form-control float-right input-hour"
+                                   th:value="*{steps[__${itemStat.index}__].endHour}"
+                                   th:field="*{steps[__${itemStat.index}__].endHour}" placeholder="End hour">
+                        </td>
+
+                        <td>
+                        </td>
+
+                        <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center"
+                            id="fixedtimeLength"
+                            name="fixedtimeLength"
+                            th:utext="*{experimentType.stepTypes[__${itemStat.index}__].hasFixedLength} ?
+                         *{experimentType.stepTypes[__${itemStat.index}__].fixedTimeHours}  +':' +*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeMinutes}+
+                         '<br />'+ *{experimentType.stepTypes[__${itemStat.index}__].fixedTimeType}
+                         : 'No'">
+                        </td>
+                        <td style="vertical-align:center;">
+                            <input style="width: 100%; font-size:80%; " type="text" id="comment"
+                                   class="form-control float-right" placeholder="comment"
+                                   th:field="*{steps[__${itemStat.index}__].comment}">
+                        </td>
+                        <td>
+                            <button style="width: 100%; font-size:80%;" class="btn btn-primary" type="button"
+                                    id="choose" data-toggle="modal" data-target="#extraLargeModal"
+                                    onclick="openCalendar(tempExpIndex, tempStepIndex)">Choose in calendar
+                            </button>
+                        </td>
+
+                        <td style="vertical-align: bottom">
+                            <a onclick="removeRow(this)">
+                                <span class="fas fa-trash" style="color: red"></span>
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center" id="continuity"
+                            name="continuity"
+                            th:utext="(*{experimentType.stepTypes[__${itemStat.index}__].continuity.type} != 'No') ?
+                        *{experimentType.stepTypes[__${itemStat.index}__].continuity.hours} + ':' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}+
+                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.type}+
+                        '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.directionType}
+                        : 'No'">
+
+
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </div>
+            </div>
+            <div id="extraLargeModal" class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Schedule picker</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="menu">
+        <span class="dropdown">
+                        <button id="dropdownMenu-calendarType" class="btn btn-default btn-sm dropdown-toggle"
+                                type="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="true">
+                            <i id="calendarTypeIcon" class="calendar-icon ic_view_month" style="margin-right: 4px;"></i>
+                            <span id="calendarTypeName">Dropdown</span>&nbsp;
+                            <i class="calendar-icon tui-full-calendar-dropdown-arrow"></i>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu-calendarType">
+                            <li role="presentation">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-daily">
+                                    <i class="calendar-icon ic_view_day"></i>Daily
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weekly">
+                                    <i class="calendar-icon ic_view_week"></i>Weekly
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-monthly">
+                                    <i class="calendar-icon ic_view_month"></i>Month
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weeks2">
+                                    <i class="calendar-icon ic_view_week"></i>2 weeks
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weeks3">
+                                    <i class="calendar-icon ic_view_week"></i>3 weeks
+                                </a>
+                            </li>
+                            <li role="presentation" class="dropdown-divider"></li>
+                            <li role="presentation">
+                                <a role="menuitem" data-action="toggle-workweek">
+                                    <input type="checkbox" class="tui-full-calendar-checkbox-square"
+                                           value="toggle-workweek" checked>
+                                    <span class="checkbox-title"></span>Show weekends
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" data-action="toggle-start-day-1">
+                                    <input type="checkbox" class="tui-full-calendar-checkbox-square"
+                                           value="toggle-start-day-1">
+                                    <span class="checkbox-title"></span>Start Week on Monday
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" data-action="toggle-narrow-weekend">
+                                    <input type="checkbox" class="tui-full-calendar-checkbox-square"
+                                           value="toggle-narrow-weekend">
+                                    <span class="checkbox-title"></span>Narrower than weekdays
+                                </a>
+                            </li>
+                        </ul>
+                    </span>
+                                <span id="menu-navi">
+                        <button type="button" class="btn btn-default btn-sm move-today"
+                                data-action="move-today">Today</button>
+                        <button type="button" class="btn btn-default btn-sm move-day" data-action="move-prev">
+                            <i class="calendar-icon ic-arrow-line-left" data-action="move-prev"></i>
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm move-day" data-action="move-next">
+                            <i class="calendar-icon ic-arrow-line-right" data-action="move-next"></i>
+                        </button>
+                    </span>
+                                <span id="renderRange" class="render-range"></span>
+                            </div>
+                            <div id="calendar" style="overflow-y: auto"></div>
+                        </div>
+                        <div class="modal-footer" style="flex-direction: column;display: flex;">
+                            <div id="legend" style="display: flex; flex-direction: row;">
+                                <div class="alert alert-info" id="help" role="alert">
+                                    Drag and release to create a schedule.
+                                </div>
+                            </div>
+
+                            <div style="display: flex;
+  flex-direction: row;">
+                                <select required id="deviceTypeDropdown" class="form-control input-device"
+                                        style="visibility: visible;">
+                                    <option value="none" selected disabled hidden>No available device</option>
+                                </select>
+                                <button type="button" id="selectStep" data-dismiss="modal" class="btn btn-primary"
+                                        disabled>Select
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </tbody>
+        </table>
+        <div>
+            <a style="margin-right: 10px" th:href="@{/planning/}" class="btn btn-outline-primary"
+               th:text="#{experimentstype.return}">Return</a>
+
+            <button style="margin-right: 10px" type="submit" class="btn btn-primary"
+                    th:text="#{experiment.type.submit}">
+                Submit
+            </button>
+        </div>
+    </form>
+</div>
+
+
+</div>
+<div th:replace="footer :: footer"></div>
+</div>
+<!-- Modal -->
+
+
+<!-- Add all extra library script-->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popp
+er.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+<script src='https://uicdn.toast.com/tui.code-snippet/latest/tui-code-snippet.js'></script>
+<script src="https://uicdn.toast.com/tui.code-snippet/latest/tui-code-snippet.js"></script>
+<script src="https://uicdn.toast.com/tui.dom/v3.0.0/tui-dom.js"></script>
+<script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.min.js"></script>
+<script src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.min.js"></script>
+<script src="https://uicdn.toast.com/tui-calendar/latest/tui-calendar.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.13/chance.min.js"></script>
+<!--Add the necessary custom scripts for the calendar -->
+
+<script th:src="@{/js/bookstepCalendar.js}" type="text/javascript"></script>
+<script class="reloadMe" th:src="@{/js/app.js}" type="text/javascript"></script>
+
+</body>
+</html>

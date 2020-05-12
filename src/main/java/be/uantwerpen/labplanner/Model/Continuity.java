@@ -4,6 +4,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Continuity extends AbstractPersistable<Long> {
@@ -13,15 +14,26 @@ public class Continuity extends AbstractPersistable<Long> {
     private int hours;
     @Column(name = "minutes")
     private int minutes;
-    @Column(name="type")
+    
+    @Column(name = "type")
     private String type;
+    @Column(name = "directionType")
+    private String directionType    ;
 
-    public Continuity(){}
-    public Continuity(int hours, int minutes, String type){
-        this.hours=hours;
-        this.minutes=minutes;
-        this.type=type;
+    public Continuity() {
+        type = "No";
+        hours = 0;
+        minutes = 0;
+        directionType = "After";
     }
+
+    public Continuity(int hours, int minutes, String type, String directionType) {
+        this.hours = hours;
+        this.minutes = minutes;
+        this.type = type;
+        this.directionType = directionType;
+    }
+
     public int getHours() {
         return hours;
     }
@@ -44,5 +56,23 @@ public class Continuity extends AbstractPersistable<Long> {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getDirectionType() {
+        return directionType;
+    }
+
+    public void setDirectionType(String directionType) {
+        this.directionType = directionType;
+    }
+
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Override
+    protected void setId(Long id) {
+        super.setId(id);
     }
 }

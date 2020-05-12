@@ -175,6 +175,33 @@ public class FileController {
 		return "redirect:/products";
 	}
 
+	@PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
+	@PostMapping("/upload/productPdf/{productId}")
+	public String handleProductPdfUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long productId) throws Exception{
+		OwnProduct temp =  productService.findById( productId).orElse(null);
+		Locale current = LocaleContextHolder.getLocale();
+
+		if(temp!=null) {
+			String fileContentType = file.getContentType();
+			List<String> extensions = new ArrayList<>();
+			extensions.add("application/pdf");
+			if(extensions.contains(fileContentType)) {
+				//append productid to filename to make sure file is unique for each product
+				String filename = file.getOriginalFilename();
+				storageService.store(file,"pdfs",filename);
+				temp.setDocument(filename);
+				productService.save(temp);}
+			else{
+				redirectAttributes.addFlashAttribute("error", ResourceBundle.getBundle("messages",current).getString("type.error"));
+				return "redirect:/products";
+			}
+
+		}
+		redirectAttributes.addFlashAttribute("success", ResourceBundle.getBundle("messages",current).getString("pdf.success"));
+
+		return "redirect:/products";
+	}
+
 
 
 
