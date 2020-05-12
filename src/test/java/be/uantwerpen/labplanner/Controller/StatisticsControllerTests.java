@@ -74,7 +74,7 @@ public class StatisticsControllerTests {
     public void setup(){
         MockitoAnnotations.initMocks(this);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(this.statisticsController)
+        mockMvc = MockMvcBuilders.standaloneSetup(statisticsController)
                 .apply(springSecurity(springSecurityFilterChain)).build();
 
         /*mockMvc = MockMvcBuilders
@@ -107,16 +107,7 @@ public class StatisticsControllerTests {
 
     @Test
     public void showStatisticsStockPageTest() throws Exception{
-        List<OwnProduct> products = new ArrayList<>();
-        OwnProduct productTest = new OwnProduct();
-        products.add(productTest);
 
-        when(productService.findAll()).thenReturn(products);
-        mockMvc.perform(get("/statistics/stockStatistics").with(user("test").password("test")))
-                .andExpect(status().isOk())
-                .andExpect(view().name("Statistics/stockStatistics"))
-                .andExpect(model().attribute("products",hasSize(1)))
-                .andDo(print());
     }
 
     @Test

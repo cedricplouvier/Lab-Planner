@@ -8,13 +8,16 @@ import be.uantwerpen.labplanner.common.service.stock.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,35 +29,29 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.Math.round;
 
 @Controller
-@SessionAttributes({"deviceCounter", "selectedYear", "selectedTypeOfGraph", "selectedDevices", "occupancyDevicesHours",
+@SessionAttributes({"deviceCounter","productCounter", "selectedYear", "selectedTypeOfGraph", "selectedDevices", "occupancyDevicesHours",
                     "occupancyDevicesHoursPast", "occupancyDevicesHoursFuture", "occupancyDevicesDays", "occupancyDevicesDaysPast",
                     "occupancyDevicesDaysFuture","totalHours", "totalHoursPast", "totalHoursFuture", "highestAbsoluteValueHours",
-                    "productNames", "selectedTimePeriod"})
+                    "selectedTimePeriod", "selectedStartMonthStockHistory","selectedMonthStock", "selectedProducts",
+                    "stockLevelStartMonthHistory"})
 public class StatisticsController {
 
     @Autowired
     private DeviceService deviceService;
 
     @Autowired
-    private DeviceTypeService deviceTypeService;
-
-    @Autowired
     private StepService stepService;
-
-    @Autowired
-    private CompositionService compositionService;
-
-    @Autowired
-    private PieceOfMixtureService pieceOfMixtureService;
-
-    @Autowired
-    private ExperimentService experimentService;
 
     @Autowired
     private OwnProductService productService;
 
     @ModelAttribute("deviceCounter")
     private int getdeviceCounter(){
+        return 0;
+    }
+
+    @ModelAttribute("productCounter")
+    private int getProductCounterCounter(){
         return 0;
     }
     
@@ -141,24 +138,50 @@ public class StatisticsController {
         return 0;
     }
 
-    @ModelAttribute("productNames")
-    private List<String> prodNames(){
-        return new ArrayList<>();
-    }
-
     @ModelAttribute("selectableYears")
     private List<String> selectableYears(){
         return new ArrayList<>(Arrays.asList("2019","2020","2021", "2022"));
     }
 
     @ModelAttribute("selectableGraphTypes")
-    public List<String> selectableGraphs() {
+    private List<String> selectableGraphs() {
         return new ArrayList<>(Arrays.asList("Device hours by month","Device occupancy rate in hours","Device occupancy rate in days"));
     }
 
     @ModelAttribute("selectableTimePeriods")
-    public List<String> selectableTimePeriods() {
+    private List<String> selectableTimePeriods() {
         return new ArrayList<>(Arrays.asList("Started","All","Future"));
+    }
+
+    @ModelAttribute("selectedStartMonthStockHistory")
+    private String selectedStartMonthStockHistory(){
+        //the calendarshould always start 6 month behind us as standard
+        Calendar cal = Calendar.getInstance();
+        cal.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        cal.add(Calendar.MONTH, -5);
+        sdf.format(cal.getTime());
+        return sdf.format(cal.getTime());
+    }
+
+    @ModelAttribute("selectedMonthStock")
+    private String selectedMonthStock(){
+        return new SimpleDateFormat("yyyy-MM").format(new Date());
+    }
+
+    @ModelAttribute("selectedProducts")
+    private List<OwnProduct> selectProd(){
+        return new ArrayList<>(Arrays.asList(new OwnProduct(),new OwnProduct(),new OwnProduct(),new OwnProduct(),new OwnProduct()));
+    }
+
+    @ModelAttribute("stockLevelStartMonthHistory")
+    private List<Double[]> stockLevelStartMonthHis(){
+        return new ArrayList<Double[]>(Arrays.asList(
+                new Double[]{0.0,0.0,0.0,0.0,0.0,0.0},
+                new Double[]{0.0,0.0,0.0,0.0,0.0,0.0},
+                new Double[]{0.0,0.0,0.0,0.0,0.0,0.0},
+                new Double[]{0.0,0.0,0.0,0.0,0.0,0.0},
+                new Double[]{0.0,0.0,0.0,0.0,0.0,0.0}));
     }
 
     float amountOfWorkDaysInYear = 200;
@@ -184,7 +207,6 @@ public class StatisticsController {
         List<Float> occupancyDevicesDays = (List) model.getAttribute("occupancyDevicesDays");
 
         List<Device> devices = deviceService.findAll();
-
         calculateDataGraphs(model);
 
         model.addAttribute("allDevices", devices);
@@ -226,42 +248,6 @@ public class StatisticsController {
 
         return "Statistics/statistics";
     }
-
-    /**
-     *
-     * method that add all correct attributes to the model map for the stock statistics
-     *
-     * @param model MolelMap that holds all the model attributes
-     * @return path to the html page of the stock statistics
-     */
-    @PreAuthorize("hasAnyAuthority('Statistics Access')")
-    @RequestMapping(value = "/statistics/stockStatistics", method = RequestMethod.GET)
-    public String showStatisticsStockPage(final ModelMap model) {
-
-        List<OwnProduct> products = productService.findAll();
-        List<Double> currentStockLevel = new ArrayList<>();
-        List<String> productNames = (List) model.getAttribute("productNames");
-        //get all the product names
-        for(OwnProduct product: products){
-            productNames.add(product.getName());
-        }
-
-        for(OwnProduct product: products){
-            currentStockLevel.add(product.getStockLevel());
-        }
-
-        //get all the stock levels
-        model.addAttribute("products",products);
-        model.addAttribute("productNames",productNames);
-        model.addAttribute("currentStockLevel",currentStockLevel);
-
-        for(int j=0; j<products.size();j++) {
-            currentStockLevel.add(products.get(j).getStockLevel());
-        }
-
-        return "Statistics/stockStatistics";
-    }
-
 
     /**
      *
@@ -372,6 +358,208 @@ public class StatisticsController {
     public String getSelectedTimePeriod(final ModelMap model, String selectedTimePeriod){
         model.addAttribute("selectedTimePeriod", selectedTimePeriod);
         return "redirect:/statistics/statistics";
+    }
+
+    /**
+     *
+     * Method that fetches all data needed to show on the stock statistics webpage.
+     * It fetches the data of the stock history, the months to be shown on the x-axis and
+     * the data to be shown in the current stock. It also calculates the y axis scale for the current stock levels graph
+     *
+     * @param model ModelMap that holds the model attribute
+     * @return path to the html page of the stock statistics
+     * @throws ParseException when date gets wronlgy parse
+     */
+    @PreAuthorize("hasAnyAuthority('Statistics Access')")
+    @RequestMapping(value = "/statistics/stockStatistics", method = RequestMethod.GET)
+    public String showStatisticsStockPage(final ModelMap model) throws ParseException{
+
+        List<OwnProduct> listSelectedProducts = (List) model.getAttribute("selectedProducts");
+        List<Double[]> stockLevelStartMonthHis = (List) model.getAttribute("stockLevelStartMonthHistory");
+        List<OwnProduct> products = productService.findAll();
+        List<Double> stockLevelMonth = new ArrayList<>();
+        List<String> shownMonthsHistory = new ArrayList<>();
+        List<String> productNames = new ArrayList<>();
+        List<String> selectedProductNames = new ArrayList<>();
+        model.addAttribute("selectedProd",new OwnProduct());
+
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+
+        //get all the product names
+        for(OwnProduct product: products){
+            productNames.add(product.getName());
+        }
+
+        for(OwnProduct product: products){
+            String selectedMonth = (String) model.getAttribute("selectedMonthStock");
+            Map<String, Double> stockHistoryMap = product.getProductStockHistory();
+            stockLevelMonth.add(stockHistoryMap.get(selectedMonth));
+        }
+
+        String selectedStartMonth = (String) model.getAttribute("selectedStartMonthStockHistory");
+        cal.setTime(sdf.parse(selectedStartMonth));
+        //Get selected months strings for x-axis
+        String shownMonth = sdf.format(cal.getTime());
+        shownMonthsHistory.add(shownMonth);
+        for(int j=0; j<5;j++){
+            cal.add(Calendar.MONTH, 1);
+            shownMonth = sdf.format(cal.getTime());
+            shownMonthsHistory.add(shownMonth);
+        }
+        //Calculate data points for graph
+        if((int)model.getAttribute("productCounter")>0) {
+            //for (OwnProduct product : listSelectedProducts) {
+            for(int z=0;z<(int)model.getAttribute("productCounter");z++){
+                OwnProduct product = listSelectedProducts.get(z);
+                selectedProductNames.add(product.getName());
+                cal.setTime(sdf.parse(selectedStartMonth));
+                String month = sdf.format(cal.getTime());
+                Double[] data = stockLevelStartMonthHis.get(z);
+
+                Map<String, Double> stockHistoryMap = product.getProductStockHistory();
+                data[0] = stockHistoryMap.get(selectedStartMonth);
+
+                for (int i = 1; i < 6; i++) {
+                    cal.setTime(sdf.parse(month));
+                    cal.add(Calendar.MONTH, 1);
+                    month = sdf.format(cal.getTime());
+                    data[i] = stockHistoryMap.get(month);
+                }
+            }
+        }
+
+        //calculate highest stock level for y-axis of current stock graph
+        double highestDataPointStock = 100.0;
+        for(int j=0; j<stockLevelMonth.size();j++){
+            Double data = stockLevelMonth.get(j);
+            if(!(data == null)){
+                if (data >= highestDataPointStock) {
+                    highestDataPointStock = data;
+                }
+            }
+        }
+
+        //get all the stock levels
+        model.addAttribute("products",products);
+        model.addAttribute("selectedProducts",listSelectedProducts);
+        model.addAttribute("productNames",productNames);
+        model.addAttribute("selectedProductNames", selectedProductNames);
+        model.addAttribute("productCounter");
+        model.addAttribute("highestDataPointStock",highestDataPointStock);
+        model.addAttribute("shownMonthsHistory",shownMonthsHistory);
+        model.addAttribute("stockLevelMonth",stockLevelMonth);
+        model.addAttribute("maxDateSelect",new SimpleDateFormat("yyyy-MM").format(new Date()));
+
+        return "Statistics/stockStatistics";
+    }
+
+    /**
+     * Method gets called when the user clear the graph. Attributes of the graph get reset in the model
+     * @param model ModelMap that holds the model attributes
+     * @return path to the redirected method, showStatisticsStockPage().
+     */
+    @PreAuthorize("hasAnyAuthority('Statistics Access')")
+    @RequestMapping(value = "/statistics/stockStatistics/resetGraphStockHistory")
+    public String resetGraphStockHistory(final ModelMap model){
+        model.addAttribute("productCounter",0);
+        model.addAttribute("selectedProducts", new ArrayList<>(Arrays.asList(new OwnProduct(),new OwnProduct(),new OwnProduct(),new OwnProduct(),new OwnProduct())));
+        return "redirect:/statistics/stockStatistics";
+    }
+
+    /**
+     *
+     * Method gets called when the user selects a different start date for the stock month history graph.
+     * The selected date string gets added to the model attribute
+     *
+     * @param model ModelMap that holds the model attributes
+     * @return path to the redirected method, showStatisticsStockPage().
+     */
+    @PreAuthorize("hasAnyAuthority('Statistics Access')")
+    @RequestMapping(value = "/statistics/stockStatistics/getSelectedStartStockHistory")
+    public String getSelectedStartStockHistory(final ModelMap model, String selectedStartMonthStockHistory){
+        model.addAttribute("selectedStartMonthStockHistory", selectedStartMonthStockHistory);
+        return "redirect:/statistics/stockStatistics";
+    }
+
+    /**
+     *
+     * Method gets called when the user selects a different start date for the current stock graph.
+     * The selected date string gets added to the model attribute
+     *
+     * @param model ModelMap that holds the model attributes
+     * @return path to the redirected method, showStatisticsStockPage().
+     */
+    @PreAuthorize("hasAnyAuthority('Statistics Access')")
+    @RequestMapping(value = "/statistics/stockStatistics/getSelectedMonthStock")
+    public String getSelectedMonthStock(final ModelMap model, String selectedMonthStock){
+        model.addAttribute("selectedMonthStock", selectedMonthStock);
+        return "redirect:/statistics/stockStatistics";
+    }
+
+    /**
+     *
+     * Method gets called when the user selects a product to be added to the stock history graph.
+     * The selected product gets added to the list of selected products.
+     * It checks if the product has already been added to the graph and that there are not more than 5 products
+     * already in the graph.
+     *
+     * @param model ModelMap that holds the model attributes
+     * @return path to the redirected method, showStatisticsStockPage().
+     */
+    @PreAuthorize("hasAnyAuthority('Statistics Access')")
+    @RequestMapping(value = "/statistics/stockStatistics/getSelectedProduct")
+    public String getSelectedProduct(final ModelMap model, OwnProduct selectedProd, RedirectAttributes redAttr){
+
+        List<OwnProduct> listSelectedProducts = (List) model.getAttribute("selectedProducts");
+        List<OwnProduct> allProducts = productService.findAll();
+
+        boolean duplicate = false;
+        for (int i = 0; i < listSelectedProducts.size(); i++) {
+            OwnProduct prod = listSelectedProducts.get(i);
+            if(prod.getName().matches(selectedProd.getName())){
+                duplicate = true;
+            }
+        }
+        if(!duplicate) {
+            if ((int) model.getAttribute("productCounter") < 5) {
+                for(OwnProduct prod : allProducts){
+                    if(selectedProd.getName().equals(prod.getName())){
+                        listSelectedProducts.set((int) model.getAttribute("productCounter"), prod);
+                    }
+                }
+
+                int dc = (int) model.get("productCounter") + 1;
+                model.addAttribute("productCounter", dc);
+            } else {
+                redAttr.addFlashAttribute("ProdStatus", "productLimit");
+            }
+        }
+        else{
+            redAttr.addFlashAttribute("ProdStatus", "productDuplicate");
+        }
+        model.addAttribute("selectedProducts",listSelectedProducts);
+        return "redirect:/statistics/stockStatistics";
+    }
+
+    /**
+     * Periodic method that gets called every minute to update the stock levels of every product.
+     * If we are still in the same month we keep overwriting the value of current month in the map that holds
+     * the date and level for every product.
+     */
+    //Schedule for testing
+    @Scheduled(cron =  "0 */1 * * * ?")
+    public void upDateStockMap(){
+        System.out.println("UPDATED STOCK");
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        List<OwnProduct> products = productService.findAll();
+        for(OwnProduct product : products){
+            Map<String, Double> stockHis = product.getProductStockHistory();
+            stockHis.put(sdf.format(cal.getTime()),product.getStockLevel());
+            productService.save(product);
+        }
     }
 
     /**
