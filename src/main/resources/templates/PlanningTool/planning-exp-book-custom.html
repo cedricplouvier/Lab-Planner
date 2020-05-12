@@ -45,12 +45,11 @@
     let userAccessRights =[[${userAccessRights}]];
     let experiment =[[${experiment}]];
 
-    let tempExp = [];
-    for(var current=0;current<allExperiments.length;current++){
-        tempExp.push(allExperiments[current]);
-    }
-    tempExp.push(allExperiments[0]);
-    tempExp[tempExp.length-1]['stepTypes']=[];
+
+    tempExp = allExperiments.slice(0);
+    tempExp.push(JSON.parse(JSON.stringify(allExperiments[0])));
+    tempExp[tempExp.length-1]['stepTypes'] = [];
+    allExperiments = tempExp;
     // allExperiments.push(tempExp);
     console.log(tempExp);
     let calendarUpdate = {
@@ -412,8 +411,7 @@
 
     }
     function openCalendar(expInd, stepInd) {
-        console.log([[${experiment}]]);
-        console.log([[${allExperimentTypes}]]);
+
         // allExperiments[experimentLength]['experimentTypeName'] = "test";
         //     {
         //     experimentTypeName: "ITSR",
@@ -441,8 +439,47 @@
         //     },
         // }
 
-        calendarUpdate.experimentIndex = expInd;
+        calendarUpdate.experimentIndex = allExperiments.length-1;
+        allExperiments[calendarUpdate.experimentIndex]['stepTypes'] = [];
+        for(let current = 0; current <document.getElementById('list').children.length/2;current++){
+            allExperiments[calendarUpdate.experimentIndex]['stepTypes'].push(JSON.parse(JSON.stringify(allExperiments[0]['stepTypes'][0])));
+            //Set deviceType
+            var e = document.getElementById('selectDeviceType' + current + '');
+            var strUser = e.options[e.selectedIndex].value;
+            for(var currentDeviceType =0;currentDeviceType<deviceTypes.length;currentDeviceType++){
+                if(deviceTypes[currentDeviceType]['id']==strUser){
+                    allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current] = JSON.parse(JSON.stringify(deviceTypes[currentDeviceType]));
+                }
+            }
+            // //Fixed length
+            // allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['hasFixedLength'] = false;
+            // allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['fixedTimeType'] = "Equal";
+            // allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['fixedTimeHours'] = 0;
+            // allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['fixedTimeMinutes'] = 0;
+            // allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['id'] = current;
+            //
+            // //Continuity
+            console.log(document.getElementById('continuity'+current).innerText=="No     ")
+            if(document.getElementById('continuity'+current).innerText=="No     "){
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['directionType'] = "After";
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['hours'] = 0;
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['minutes'] = 0;
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['type'] = "No";
+            }else {
+                // allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['directionType'] = document.getElementById('continuityDirectionType'+current).value;
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['hours'] = document.getElementById('continuityHours' + current + '').value;
+                // allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['minutes'] = document.getElementById('continuityMinutes'+current).value;
+                // allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['type'] = document.getElementById('continuityType'+current).value;
+            }
+            }
+
+
+
+
+
         calendarUpdate.stepIndex = stepInd;
+        console.log(allExperiments);
+
         document.getElementById('steptitle').innerText = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['deviceTypeName'];
         document.getElementById('length').innerText = "Length: unimplemented";
         if (stepInd > 0) {
