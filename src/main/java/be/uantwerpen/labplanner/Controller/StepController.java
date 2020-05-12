@@ -657,7 +657,7 @@ public class StepController {
             }
             if (isUsed) {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("Experiment type is still in use."));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.type.inuse")));
                 logger.error(currentUser.getUsername() + " tried to delete experiment type that is still in use.");
             } else {
                 ExperimentType experimentType = experimentTypeService.findById(id).get();
@@ -667,11 +667,12 @@ public class StepController {
                 }
                 experimentTypeService.delete(id);
                 ra.addFlashAttribute("Status", new String("Success"));
-                ra.addFlashAttribute("Message", new String("Experiment type successfully deleted."));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.type.delete.success")));
+
             }
         } else {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("You have no rights to delete experiment."));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.type.delete.norights")));
         }
         model.clear();
         return "redirect:/planning/experiments";

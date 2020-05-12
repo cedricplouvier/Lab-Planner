@@ -22,7 +22,7 @@
             <th th:text="#{step.end}">End Date</th>
             <th th:text="#{step.endHour}">End Hour</th>
             <th>
-                <a th:href="@{/calendar/user}" class="btn btn-default btn-block lnb-new-schedule-btn "  id="btn-new-schedule" type="button" >
+                <a th:href="@{/calendar/user}" class="btn btn-default btn-block lnb-new-schedule-btn "  id="btn-new-schedule" th:text="#{personal.calendar}" type="button" >
                     Go to personal calendar
                 </a>
             </th>
