@@ -55,7 +55,6 @@ public class Device extends AbstractPersistable<Long> {
         super.setId(id);
     }
 
-
     public String getDevicename() {
         return devicename;
     }
@@ -72,7 +71,6 @@ public class Device extends AbstractPersistable<Long> {
     public void setDeviceType(DeviceType deviceType) {
         this.deviceType = deviceType;
     }
-
 
     public String getComment() {
         return Comment;
