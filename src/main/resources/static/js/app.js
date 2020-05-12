@@ -110,7 +110,7 @@ let showOtherItems = false;
                     if (e.end) {
                         newSchedule.end = e.end;
                     }
-                    var check = checkContinuity(calendarUpdate.stepIndex, schedule)
+                    var check = checkContinuity(calendarUpdate.stepIndex, schedule,false)
                     if (check.ok||$('#deviceTypeDropdown').children().length!=0) {
                         newSchedule.bgColor = '#5cb85c';
                         newSchedule.dragBgColor = '#5cb85c';
@@ -163,7 +163,7 @@ let showOtherItems = false;
                 if (e.changes.end) {
                     newSchedule.end = e.changes.end;
                 }
-                var check = checkContinuity(calendarUpdate.stepIndex, schedule)
+                var check = checkContinuity(calendarUpdate.stepIndex, schedule,false)
                 if (check.ok) {
                     newSchedule.bgColor = '#5cb85c';
                     newSchedule.dragBgColor = '#5cb85c';
@@ -327,7 +327,7 @@ let showOtherItems = false;
 
         document.getElementById('selectDevice' + calendarUpdate.stepIndex + '').value =  document.getElementById('deviceTypeDropdown').value;
 
-        var check = checkContinuity(calendarUpdate.stepIndex,newSchedule);
+        var check = checkContinuity(calendarUpdate.stepIndex,newSchedule,false);
         if(check.ok) {
             document.getElementById('row' + calendarUpdate.stepIndex + '').setAttribute("style", "background-color:#5cb85c;");
         }else{
@@ -455,7 +455,7 @@ let showOtherItems = false;
             schedule.bgColor = "#5cb85c";
             schedule.borderColor = "#5cb85c";
         }
-        var check = checkContinuity(calendarUpdate.stepIndex,schedule)
+        var check = checkContinuity(calendarUpdate.stepIndex,schedule,false)
         if(check.ok) {
             schedule.bgColor = '#5cb85c';
             schedule.dragBgColor = '#5cb85c';
@@ -531,7 +531,7 @@ let showOtherItems = false;
                     currentEndDate.setMinutes(currentEndDate.getMinutes()+30);
                     for(let currentTimeslot=0;currentTimeslot<48;currentTimeslot++){
                         var schedule =  createSuggestionSchedule(currentStartDate,currentEndDate,CalendarList[0]);
-                        if(!checkContinuity(calendarUpdate.stepIndex,schedule).ok||checkOverlap(schedule,true).length==0){
+                        if(!checkContinuity(calendarUpdate.stepIndex,schedule,false).ok||checkOverlap(schedule,true).length==0){
                                 var iDiv = document.createElement('div');
                                 iDiv.id = 'greyout';
                                 iDiv.className = 'greyout';
@@ -553,7 +553,8 @@ let showOtherItems = false;
         });
     }
     function calculateExperimentSuggestion() {
-
+        var e = document.getElementById("selectExperimentType");
+        calendarUpdate.experimentIndex = e.selectedIndex-1;
         let numberOfSteps = allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length;
         let date = document.getElementById("datePicker").value;
         if(date!=""){
@@ -567,17 +568,21 @@ let showOtherItems = false;
         }
         calendarUpdate.stepIndex=0;
         for (let current = 0; current < numberOfSteps; current++){
-            calculateSuggestion(current,document.getElementById("defaultUnchecked").checked)
-            newSchedule = suggestion;
-            suggestion = null;
-            addDevices(checkOverlap(newSchedule));
-            saveScheduleChanges();
-            newSchedule=null;
+            if(calculateSuggestion(current,document.getElementById("defaultUnchecked").checked,document.getElementById("withinOfficehours").checked)){
+                newSchedule = suggestion;
+                suggestion = null;
+                addDevices(checkOverlap(newSchedule,document.getElementById("defaultUnchecked").checked));
+                saveScheduleChanges();
+                newSchedule=null;
+            } else{
+                console.log("failed");
+                break;
+            }
         }
         $('#extraLargeModal').modal('toggle');
 
     }
-    function calculateSuggestion(index,personalAllowed) {
+    function calculateSuggestion(index,personalAllowed,withinOfficehours) {
         let today = new Date();
         let currentDate;
         let endDate
@@ -608,30 +613,40 @@ let showOtherItems = false;
         }
 
 
-        let step = 60; //in minutes
+        let step = 30; //in minutes
         let length = 60;
+        console.log(calendarUpdate);
+        if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][index]['hasFixedLength']){
+            length = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][index]['fixedTimeHours']*60+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][index]['fixedTimeMinutes'];
+        }
         let found = false;
         var calendar = selectedCalendar ? selectedCalendar : CalendarList[0];
         let schedule = null;
         currentDate.setMinutes(currentDate.getMinutes()-30);
-
+        if(calendarUpdate.stepIndex>0){
+            if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['continuity']['directionType']=="Before"){
+                currentDate.setMinutes(currentDate.getMinutes()-2*allExperiments[calendarUpdate.experimentIndex]['stepTypes'][index]['continuity']['hours']*60-allExperiments[calendarUpdate.experimentIndex]['stepTypes'][index]['continuity']['minutes']);
+            }
+        }
         while(!found && currentDate<endDate){
             currentDate.setMinutes(currentDate.getMinutes()+30);
             let end = new Date(currentDate.getFullYear(),currentDate.getMonth(),currentDate.getDate(),currentDate.getHours(),currentDate.getMinutes());
-            end.setMinutes(end.getMinutes()+60);
+            end.setMinutes(end.getMinutes()+length);
             schedule = createSuggestionSchedule(currentDate,end,calendar);
-            if(checkContinuity(index,schedule).ok&&checkOverlap(schedule,personalAllowed).length!=0){
+            if(checkContinuity(index,schedule,withinOfficehours).ok&&checkOverlap(schedule,personalAllowed).length!=0){
                 // check if other steps can still be found
                 if(index<allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length-1){
                     filledInSteps[index] = schedule;
                     let temp = index;
                     temp++;
-                    if(calculateSuggestion(temp,personalAllowed)){
+                    if(calculateSuggestion(temp,personalAllowed,withinOfficehours)){
                         found = true;
                     }
+                    console.log(index);
                 }else{
                     found = true;
                 }
+                // found = true;
             }
         }
         if(found&&index==calendarUpdate.stepIndex){
@@ -717,7 +732,7 @@ let showOtherItems = false;
         $("#nextstep").on('click',nextStep);
         $("#previousstep").on('click',previousStep);
         $("#suggestStep").on('click',function () {
-            calculateSuggestion(calendarUpdate.stepIndex,true);
+            calculateSuggestion(calendarUpdate.stepIndex,true,document.getElementById('withinOfficehoursSingleSuggest').checked);
         });
         $("#suggestExperiment").on('click',calculateExperimentSuggestion);
 
@@ -748,14 +763,15 @@ let showOtherItems = false;
         refreshScheduleVisibility();
     }
     function setUI(){
+        console.log( allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex])
         if(calendarUpdate.stepIndex==allExperiments[calendarUpdate.experimentIndex].length-1){
             document.getElementById('selectStep').innerHTML = "Finish experiment";
         }
         document.getElementById('steptitle').innerText = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['deviceTypeName'];
-        document.getElementById('length').innerText = "Length: unimplemented";
+        document.getElementById('length').innerText = "Length: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['fixedTimeHours']+"h"+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['fixedTimeMinutes'];
         if(calendarUpdate.stepIndex>0){
             document.getElementById('continuity').innerText = "Continuity: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type'];
-            document.getElementById('align').innerText = "Alignment: After";
+            document.getElementById('align').innerText = "Alignment: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['directionType'];
             document.getElementById('time').innerText = "Time: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['hours']+"h "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['minutes']+"m";
         }else{
             document.getElementById('continuity').innerText = "Continuity: None";
