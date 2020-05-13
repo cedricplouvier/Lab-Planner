@@ -470,7 +470,7 @@ public class StepController {
         }
 
         Step step = stepService.findById(id).orElse(null);
-        if(step!=null){
+        if (step != null) {
             //user can edit his own step
             if (step.getUser().equals(user)) {
                 allowedToEdit = true;
@@ -491,12 +491,11 @@ public class StepController {
                 }
 
             }
-        }
-        else {
-            Experiment experiment= experimentService.findById(id).orElse(null);
-            if(experiment!=null){
+        } else {
+            Experiment experiment = experimentService.findById(id).orElse(null);
+            if (experiment != null) {
                 if (experiment.getUser().equals(user))
-                    allowedToEdit=true;
+                    allowedToEdit = true;
             }
             //researcher can edit step of one of his students.
             if (user.getRoles().contains(promotorRole)) {
@@ -684,77 +683,76 @@ public class StepController {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Set<Role> userRoles = currentUser.getRoles();
         Role adminRol = roleService.findByName("Administrator").get();
-        Experiment experiment =experimentService.findById(id).orElse(null);
-        if(experiment!=null)
-        {
-            if (allowedToEdit(currentUser,id)) {
-
-
-                for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
-                    pieceOfMixtureService.delete(pom);
+        Experiment experiment = experimentService.findById(id).orElse(null);
+        if (experiment != null) {
+            if (allowedToEdit(currentUser, id)) {
+                if (experiment.getPiecesOfMixture() != null) {
+                    for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
+                        pieceOfMixtureService.delete(pom);
+                    }
                 }
-
                 for (Step step : experiment.getSteps()) {
                     stepService.delete(step.getId());
                 }
-            //if it is custom experiment, delete experimentType as well
-            if (!experiment.getExperimentType().getIsFixedType()) {
-                for (StepType stepType : experiment.getExperimentType().getStepTypes()) {
-                    stepTypeService.delete(stepType.getId());
-                }
-
-                ExperimentType expTypeToDelete = experiment.getExperimentType();
-                experiment.setExperimentType(null);
-                experimentTypeService.delete(expTypeToDelete.getId());
-            }
-
-
-                //add amounts back to the stock.
-                Map<OwnProduct, Double> productMapStock = new HashMap<>();
-                Map<OwnProduct, Double> productMapReserved = new HashMap<>();
-
-
-                for (PieceOfMixture piece : experiment.getPiecesOfMixture()) {
-                    Mixture mix = piece.getMixture();
-                    List<Composition> compositions = mix.getCompositions();
-                    for (Composition comp : compositions) {
-                        OwnProduct prod = comp.getProduct();
-                        if (!productMapStock.containsKey(prod)) {
-                            productMapStock.put(prod, prod.getStockLevel());
-                        }
-                        if (!productMapReserved.containsKey(prod)) {
-                            productMapReserved.put(prod, prod.getReservedStockLevel());
-                        }
-                        double stocklevel = productMapStock.get(prod);
-                        double reservedLevel = productMapReserved.get(prod);
-                        stocklevel += comp.getAmount() * piece.getMixtureAmount() / 100;
-                        reservedLevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
-                        productMapStock.put(prod, stocklevel);
-                        productMapReserved.put(prod, reservedLevel);
+                //if it is custom experiment, delete experimentType as well
+                if (!experiment.getExperimentType().getIsFixedType()) {
+                    for (StepType stepType : experiment.getExperimentType().getStepTypes()) {
+                        stepTypeService.delete(stepType.getId());
                     }
+
+                    ExperimentType expTypeToDelete = experiment.getExperimentType();
+                    experiment.setExperimentType(null);
+                    experimentTypeService.delete(expTypeToDelete.getId());
                 }
-                Iterator it = productMapStock.entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry pair = (Map.Entry) it.next();
-                    OwnProduct prod = (OwnProduct) pair.getKey();
-                    prod.setStockLevel((Double) pair.getValue());
-                    productService.save(prod);
-                }
-                //add amounts to reserved stock
-                Iterator it3 = productMapReserved.entrySet().iterator();
-                while (it3.hasNext()) {
-                    Map.Entry pair = (Map.Entry) it3.next();
-                    OwnProduct prod = (OwnProduct) pair.getKey();
-                    prod.setReservedStockLevel((Double) pair.getValue());
-                    productService.save(prod);
+
+
+                //add amounts back to the stock, if piece of mixture is not null
+                if (experiment.getPiecesOfMixture() != null) {
+                    Map<OwnProduct, Double> productMapStock = new HashMap<>();
+                    Map<OwnProduct, Double> productMapReserved = new HashMap<>();
+
+
+                    for (PieceOfMixture piece : experiment.getPiecesOfMixture()) {
+                        Mixture mix = piece.getMixture();
+                        List<Composition> compositions = mix.getCompositions();
+                        for (Composition comp : compositions) {
+                            OwnProduct prod = comp.getProduct();
+                            if (!productMapStock.containsKey(prod)) {
+                                productMapStock.put(prod, prod.getStockLevel());
+                            }
+                            if (!productMapReserved.containsKey(prod)) {
+                                productMapReserved.put(prod, prod.getReservedStockLevel());
+                            }
+                            double stocklevel = productMapStock.get(prod);
+                            double reservedLevel = productMapReserved.get(prod);
+                            stocklevel += comp.getAmount() * piece.getMixtureAmount() / 100;
+                            reservedLevel -= comp.getAmount() * piece.getMixtureAmount() / 100;
+                            productMapStock.put(prod, stocklevel);
+                            productMapReserved.put(prod, reservedLevel);
+                        }
+                    }
+                    Iterator it = productMapStock.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry pair = (Map.Entry) it.next();
+                        OwnProduct prod = (OwnProduct) pair.getKey();
+                        prod.setStockLevel((Double) pair.getValue());
+                        productService.save(prod);
+                    }
+                    //add amounts to reserved stock
+                    Iterator it3 = productMapReserved.entrySet().iterator();
+                    while (it3.hasNext()) {
+                        Map.Entry pair = (Map.Entry) it3.next();
+                        OwnProduct prod = (OwnProduct) pair.getKey();
+                        prod.setReservedStockLevel((Double) pair.getValue());
+                        productService.save(prod);
+                    }
                 }
 
 
                 // add deleted experiment to list
-                if (deletedExperiments.containsKey(experiment)){
-                    deletedExperiments.replace(experiment,currentUser);
-                }
-                else {
+                if (deletedExperiments.containsKey(experiment)) {
+                    deletedExperiments.replace(experiment, currentUser);
+                } else {
                     deletedExperiments.put(experiment, currentUser);
                 }
                 addedExperiments.remove(experiment);
@@ -763,15 +761,13 @@ public class StepController {
                 ra.addFlashAttribute("Status", new String("Success"));
                 ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.deleteSuccess")));
 
-            }
-            else {
+            } else {
                 ra.addFlashAttribute("Status", new String("Error"));
                 ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.deleteUnauthorized")));
             }
-        }
-         else {
+        } else {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.deleteInvalidId")+id+"."));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.deleteInvalidId") + id + "."));
         }
         model.clear();
         return "redirect:/planning/";
@@ -942,7 +938,7 @@ public class StepController {
         if (!experiment.getExperimentType().getIsFixedType()) {
 
             //1. set name of experimentType if it's null or empty
-            if (experiment.getExperimentType().getExpname() == null || experiment.getExperimentType().getExpname()  == "") {
+            if (experiment.getExperimentType().getExpname() == null || experiment.getExperimentType().getExpname() == "") {
                 int nameIndex = 0;
                 String expTypeName = "";
                 // check, if name already exists
@@ -967,7 +963,7 @@ public class StepController {
             //2. adjust stepTypes according to received experiment model
             for (int i = 0; i < experiment.getExperimentType().getStepTypes().size(); i++) {
                 //if stepType is null delete it from list (happens when row was deleted during booking custom exp.)
-                if (experiment.getExperimentType().getStepTypes().get(i) == null || experiment.getSteps().get(i) == null|| experiment.getExperimentType().getStepTypes().get(i).getStepTypeName() == null) {
+                if (experiment.getExperimentType().getStepTypes().get(i) == null || experiment.getSteps().get(i) == null || experiment.getExperimentType().getStepTypes().get(i).getStepTypeName() == null) {
                     experiment.getExperimentType().getStepTypes().remove(i);
                     experiment.getSteps().remove(i);
                     i--; //Size of array was changed, so same index needs to be check again
