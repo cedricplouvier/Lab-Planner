@@ -835,6 +835,26 @@ public class StepController {
         for (Role role : currentUser.getRoles()) {
             accessRights.add(role.getName());
         }
+        // Add options for continuity and fixed step length
+        List<String> typeOptions = new ArrayList<>();
+        typeOptions.add("No");
+        typeOptions.add("Soft (at least)");
+        typeOptions.add("Soft (at most)");
+        typeOptions.add("Hard");
+
+        List<String> allFixedTimeTypeOptions = new ArrayList<>();
+        allFixedTimeTypeOptions.add("Equal");
+        allFixedTimeTypeOptions.add("At least");
+        allFixedTimeTypeOptions.add("At most");
+
+        List<String> directionOptions = new ArrayList<>();
+        directionOptions.add("After");
+        directionOptions.add("Before");
+
+        model.addAttribute("allTypeOptions", typeOptions);
+        model.addAttribute("allFixedTimeTypeOptions", allFixedTimeTypeOptions);
+        model.addAttribute("allTypeDirections", directionOptions);
+
 
         HolidayManager manager = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
         Set<Holiday> holidays = manager.getHolidays(Calendar.getInstance().get(Calendar.YEAR));
@@ -1384,6 +1404,26 @@ public class StepController {
 
     //Method to prepare model atributes when user entered wrong input
     private void prepareModelAtributesToRebookExperiment(final ModelMap model, Experiment experiment, String errorMessage, List<Step> userSteps, List<Step> otherSteps, ArrayList<String> accessRights) {
+
+        List<String> typeOptions = new ArrayList<>();
+        typeOptions.add("No");
+        typeOptions.add("Soft (at least)");
+        typeOptions.add("Soft (at most)");
+        typeOptions.add("Hard");
+
+        List<String> allFixedTimeTypeOptions = new ArrayList<>();
+        allFixedTimeTypeOptions.add("Equal");
+        allFixedTimeTypeOptions.add("At least");
+        allFixedTimeTypeOptions.add("At most");
+
+        List<String> directionOptions = new ArrayList<>();
+        directionOptions.add("After");
+        directionOptions.add("Before");
+
+        model.addAttribute("allTypeOptions", typeOptions);
+        model.addAttribute("allFixedTimeTypeOptions", allFixedTimeTypeOptions);
+        model.addAttribute("allTypeDirections", directionOptions);
+
 
         HolidayManager manager = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
         Set<Holiday> holidays = manager.getHolidays(Calendar.getInstance().get(Calendar.YEAR));
