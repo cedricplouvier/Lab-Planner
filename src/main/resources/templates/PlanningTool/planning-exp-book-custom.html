@@ -352,7 +352,7 @@
                 let allTypeOptions = [[${allTypeOptions}]];
                 var typeOptions = '';
                 for (let j = 0; j < allTypeOptions.length; j++) {
-                    if (allTypeOptions[j] == a.stepTypes[j].continuity.type) {
+                    if (allTypeOptions[j] == a.stepTypes[i].continuity.type) {
                         typeOptions += '<option selected class="dropdown-item"' + allTypeOptions[j] + '">' + allTypeOptions[j] + '</option>'
                     } else {
                         typeOptions += '<option class="dropdown-item"' + allTypeOptions[j] + '">' + allTypeOptions[j] + '</option>'
@@ -365,7 +365,7 @@
                 let allTypeDirections = [[${allTypeDirections}]];
                 var directionOptions = '';
                 for (let j = 0; j < allTypeDirections.length; j++) {
-                    if (allTypeDirections[j] == a.stepTypes[j].continuity.directionType) {
+                    if (allTypeDirections[j] == a.stepTypes[i].continuity.directionType) {
                         directionOptions += '<option selected class="dropdown-item"' + allTypeDirections[j] + '">' + allTypeDirections[j] + '</option>'
                     } else {
                         directionOptions += '<option class="dropdown-item"' + allTypeDirections[j] + '">' + allTypeDirections[j] + '</option>'
@@ -378,7 +378,7 @@
                 let allFixedTimeTypeOptions = [[${allFixedTimeTypeOptions}]];
                 var fixedTypesOptions = '';
                 for (let j = 0; j < allFixedTimeTypeOptions.length; j++) {
-                    if (allFixedTimeTypeOptions[j] == a.stepTypes[j].fixedTimeType) {
+                    if (allFixedTimeTypeOptions[j] == a.stepTypes[i].fixedTimeType) {
                         fixedTypesOptions += '<option selected class="dropdown-item"' + allFixedTimeTypeOptions[j] + '">' + allFixedTimeTypeOptions[j] + '</option>'
                     } else {
                         fixedTypesOptions += '<option class="dropdown-item"' + allFixedTimeTypeOptions[j] + '">' + allFixedTimeTypeOptions[j] + '</option>'
