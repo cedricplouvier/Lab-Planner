@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -141,7 +142,7 @@ public class StockController {
     public String viewCreateProducts(final ModelMap model){
         model.addAttribute("allProducts", productService.findAll());
         model.addAttribute("allTags", tagService.findAll());
-        model.addAttribute("product",new OwnProduct("","",0.0, 0.0, 0.0, 0.0, null, "URL", "", null,null, LocalDateTime.now(), LocalDateTime.now(), null,null,null));
+        model.addAttribute("product",new OwnProduct("","",0.0, 0.0, 0.0, 0.0, null, "URL", "", null,null, LocalDateTime.now(), LocalDateTime.now(), null,null,null,new HashMap<>()));
         model.addAttribute("units",Unit.values());
         return "Stock/products-manage";
     }
