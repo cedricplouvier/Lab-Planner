@@ -184,14 +184,18 @@ public class DeviceController {
             model.addAttribute("deviceType", deviceTypeService.findAll());
             return "Devices/device-manage";
         }
-
+        if(device.getDeviceType()==null){
+            model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+            model.addAttribute("device",device);
+            model.addAttribute("errormessage","The device has no devicetype object");
+            return "Devices/device-manage";
+        }
         if(device.getDevicename().length()==0||Device.getDefaultDevicename().equals(device.getDevicename())){
             model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
             model.addAttribute("device",device);
             model.addAttribute("errormessage",ResourceBundle.getBundle("messages",current).getString("error.invalid.name"));
             return "Devices/device-manage";
         }
-
         Device tempDevice = deviceService.findByDevicename(device.getDevicename()).orElse(null);
         if(tempDevice!=null&&!device.getId().equals(tempDevice.getId())){
             model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
@@ -275,14 +279,12 @@ public class DeviceController {
     @RequestMapping(value="/devices/{id}/delete")
     public String deleteDevice(@PathVariable Long id, final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
-
         Device device = deviceService.findById(id).orElse(null);
         if(device==null){
             model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
             model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.unknown.id"));
             return "Errors/custom-error";
         }
-
         List<Step> allSteps = stepService.findAll();
         Boolean isUsed = false;
         for(Step currentStep : allSteps){
@@ -295,8 +297,6 @@ public class DeviceController {
             model.addAttribute("errorMessage", ResourceBundle.getBundle("messages",current).getString("error.device.inuse"));
             return "Errors/custom-error";
         }
-
-
         deviceService.delete(id);
         model.clear();
         return "redirect:/devices";
@@ -337,7 +337,7 @@ public class DeviceController {
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("error.device.type.inuse"));
             return "Devices/list-device-types";
         }
-        deviceTypeService.delete(id);
+        deviceTypeService.deleteById(id);
         model.clear();
         return "redirect:/devices";
     }
@@ -346,9 +346,9 @@ public class DeviceController {
     @RequestMapping(value="/devices/info/{id}/{typeid}/delete")
     public String deleteDeviceInfo(@PathVariable Long id, final ModelMap model, @PathVariable Long typeid){
         DeviceType deviceType = deviceTypeService.findById(typeid).get();
-        List<DeviceInformation> informations = deviceType.getDeviceInformations();
+        List<DeviceInformation> informations = deviceType.getDeviceInformation();
         informations.remove(deviceInformationService.findById(id).get());
-        deviceType.setDeviceInformations(informations);
+        deviceType.setDeviceInformation(informations);
         deviceTypeService.saveNewDeviceType(deviceType);
         deviceInformationService.deleteById(id);
         model.clear();
