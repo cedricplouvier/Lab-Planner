@@ -2704,4 +2704,65 @@ public class StepControllerTests {
                 .andExpect(view().name("redirect:/planning/"));
     }
 
+
+    @Test
+    @WithUserDetails(value="ondrej.bures@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
+    //Try to delete an experiment type that has still an experiment in use
+    public void viewBookFixedExperiment() throws Exception{
+        User user = new User("tester","tester");
+
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType,new Continuity(4,0,"Hard", "After"),"TestStepType");
+        StepType stepType1 = new StepType(deviceType,new Continuity(0,0,"No", "After"),"New StepType");
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes,true);
+        experimentType.setId((long)60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Role role = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        role.setId((long) 31);
+        mockMvc.perform(get("/planning/experiments/book/fixed"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("allExperimentTypes",hasSize(1)))
+                .andExpect(view().name("PlanningTool/planning-exp-book-fixed"));
+
+    }
+
+    @Test
+    @WithUserDetails(value="ondrej.bures@student.uantwerpen.be",userDetailsServiceBeanName="newSecurityService")
+    //Try to delete an experiment type that has still an experiment in use
+    public void viewBookCustomExperiment() throws Exception{
+        User user = new User("tester","tester");
+
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType,new Continuity(4,0,"Hard", "After"),"TestStepType");
+        StepType stepType1 = new StepType(deviceType,new Continuity(0,0,"No", "After"),"New StepType");
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        // CustomExperiment was created
+        ExperimentType experimentType = new ExperimentType("TestExperimentType",stepTypes,false);
+        experimentType.setId((long)60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Role role = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        role.setId((long) 31);
+        mockMvc.perform(get("/planning/experiments/book/custom"))
+                .andExpect(status().isOk())
+                //only custom experiment was created, so size has to be 0
+                .andExpect(model().attribute("allExperimentTypes",hasSize(0)))
+                .andExpect(view().name("PlanningTool/planning-exp-book-custom"));
+
+    }
+
 }
