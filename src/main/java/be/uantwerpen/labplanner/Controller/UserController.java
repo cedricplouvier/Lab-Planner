@@ -16,10 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -48,6 +51,9 @@ public class UserController {
 
     @Autowired
     private OfficeHoursService officeHoursService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     //Populate
@@ -152,7 +158,7 @@ public class UserController {
         }
 
         //if it passes all tests
-        curruser.setPassword(user.getPassword());
+        curruser.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.save(curruser);
         return "redirect:/home";
     }
@@ -257,6 +263,9 @@ public class UserController {
                 model.addAttribute("allUsers",userService.findAll());
                 return "Users/user-manage";
             }
+
+            //encode password
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             userService.save(user);
             return "redirect:/usermanagement/users";
         }
@@ -266,6 +275,7 @@ public class UserController {
         User tempUser = userService.findById(user.getId()).orElse(null);
         //check password, if password equals default_password, it needs to be changed back to the pw if the database.
         if (user.getPassword().equals("default_password")){
+            //should not be hashed, because in database is already hashed.
             user.setPassword(tempUser.getPassword());
         }
 
@@ -297,6 +307,8 @@ public class UserController {
             model.addAttribute("allUsers",userService.findAll());
             return "Users/user-manage";
         }
+
+        //existing id, so should not be rehashed.
         userService.save(user);
         return "redirect:/usermanagement/users";
     }
