@@ -48,7 +48,7 @@
             <a th:href="@{/usermanagement/privileges}" class="btn btn-outline-secondary"
                th:text="#{privileges.page}"></a>
 
-            <input class="float-right" id="search" placeholder="Search" />
+            <input class="float-right" id="search" th:placeholder="#{search.all}"" />
 
             <div class="alert alert-danger" role="alert" th:if="${inUseError}!=null" th:text="${inUseError}"></div>
 

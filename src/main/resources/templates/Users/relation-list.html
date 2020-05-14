@@ -40,7 +40,7 @@
 
 
 
-            <input class="float-right" id="search" placeholder="Search" />
+            <input class="float-right" id="search" th:placeholder="#{search.all}" />
             <div class="alert alert-danger" role="alert" th:if="${RelationError}!=null" th:text="${RelationError}"></div>
 
             <table class="table table-hover">
