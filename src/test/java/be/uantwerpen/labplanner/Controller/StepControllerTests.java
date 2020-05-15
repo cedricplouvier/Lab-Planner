@@ -4568,17 +4568,16 @@ public class StepControllerTests {
         step.setEndHour("10:00");
         step.setUser(user);
         step.setDevice(device);
-        step.setId((long) 71);
+        step.setId((long) 57);
         Step step1 = new Step();
         step1.setStepType(stepType);
         step1.setStart("2020-06-18");
-        // fixed time is not 1 hour
         step1.setStartHour("15:30");
         step1.setEnd("2020-06-18");
         step1.setEndHour("16:30");
         step1.setDevice(device1);
         step1.setUser(user);
-        step1.setId((long) 72);
+        step1.setId((long) 56);
         List<Step> steps = new ArrayList<>();
         steps.add(step);
         steps.add(step1);
@@ -4625,11 +4624,11 @@ public class StepControllerTests {
         when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
         when(experimentService.findAll()).thenReturn(experiments);
         when(stepService.findAll()).thenReturn(steps);
-        when(stepService.findById((long) 71)).thenReturn(Optional.of(step));
+        when(stepService.findById((long) 57)).thenReturn(Optional.of(step));
         when(relationService.findAll()).thenReturn(rels);
         role.setId((long) 32);
 
-        mockMvc.perform(post("/planning/", 71).flashAttr("step", step))
+        mockMvc.perform(post("/planning/").flashAttr("step", step))
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/planning/"));
 
