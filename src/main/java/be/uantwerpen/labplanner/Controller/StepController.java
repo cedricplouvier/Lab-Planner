@@ -74,7 +74,7 @@ public class StepController {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    ExperimentRepository experimentservice;
+    ExperimentRepository experimentRepository;
 
     private Map<Step, User> addedSteps = new HashMap<>();
     private Map<Step, User> editedSteps = new HashMap<>();
@@ -901,14 +901,11 @@ public class StepController {
             accessRights.add(role.getName());
         }
 
-        if (experiment == null || experiment.getExperimentType() == null) {
+        if (experiment.getExperimentType() == null) {
             errorMessage = "Error while trying to save Experiment.";
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
-            if (experiment.getExperimentType().getIsFixedType()) {
-                return "PlanningTool/planning-exp-book-fixed";
-            } else {
                 return "PlanningTool/planning-exp-book-custom";
-            }
+
         }
 
 
@@ -1918,8 +1915,8 @@ public class StepController {
     }
 
     private boolean isStepPartOfExperiment(Step step) {
-        if (experimentservice != null) {
-            List<Experiment> allExperiments = experimentservice.findAll();
+        if (experimentService != null) {
+            List<Experiment> allExperiments = experimentService.findAll();
             for (Experiment tmpExp : allExperiments) {
                 for (Step tmpStep : tmpExp.getSteps()) {
                     if (tmpStep.getId() == step.getId()) {
@@ -1932,8 +1929,8 @@ public class StepController {
     }
 
     private Experiment getExperimentOfStep(Step step) {
-        if (experimentservice != null) {
-            List<Experiment> allExperiments = experimentservice.findAll();
+        if (experimentService != null) {
+            List<Experiment> allExperiments = experimentService.findAll();
             for (Experiment tmpExp : allExperiments) {
                 for (Step tmpStep : tmpExp.getSteps()) {
                     if ((long) tmpStep.getId() == (long) step.getId()) {

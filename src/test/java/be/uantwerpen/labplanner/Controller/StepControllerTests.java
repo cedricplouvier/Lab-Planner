@@ -1512,6 +1512,96 @@ public class StepControllerTests {
     }
 
     @Test
+    @WithUserDetails(value = "researcher@uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookFixedExperimentInsideOfficeHourResearcher() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(4, 0, "Hard", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType");
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-18");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-18");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        step1.setStartHour("14:00");
+        step1.setEnd("2020-06-18");
+        step1.setEndHour("15:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setExperimentType(experimentType);
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        Role role = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+        role.setId((long) 32);
+
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(302))
+                .andExpect(MockMvcResultMatchers.flash().attribute("Status", "Success"))
+                .andDo(print())
+                .andExpect(view().name("redirect:/planning/"));
+    }
+
+    @Test
     @WithUserDetails(value = "bachelor@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
     public void bookFixedExperimentInsideOfficeHoursBachelor() throws Exception {
         User user = new User("tester", "tester");
@@ -1610,6 +1700,107 @@ public class StepControllerTests {
                 .andExpect(MockMvcResultMatchers.flash().attribute("Status", "Success"))
                 .andDo(print())
                 .andExpect(view().name("redirect:/planning/"));
+    }
+
+    @Test
+    @WithUserDetails(value = "bachelor@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookFixedExperimentNegativeMixtureAmountProblem() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(4, 0, "Hard", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType");
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-18");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-18");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        step1.setStartHour("14:00");
+        step1.setEnd("2020-06-18");
+        step1.setEndHour("15:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Mixture mix = new Mixture();
+        mix.setId((long) 63);
+
+        PieceOfMixture pom = new PieceOfMixture(mix, "Test", -1);
+        pom.setId((long) 64);
+        List<PieceOfMixture> pomList = new ArrayList<>();
+        pomList.add(pom);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setExperimentType(experimentType);
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        experiment.setPiecesOfMixture(pomList);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        Role role = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(pieceOfMixtureService.findAll()).thenReturn(pomList);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+        role.setId((long) 32);
+
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(200))
+                .andDo(print())
+                .andExpect(view().name("PlanningTool/planning-exp-book-fixed"));
+
     }
 
 
@@ -1804,6 +1995,526 @@ public class StepControllerTests {
                 .andDo(print())
                 .andExpect(view().name("PlanningTool/planning-exp-book-fixed"));
     }
+
+
+
+    @Test
+    @WithUserDetails(value = "bachelor@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentWithWrongId() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(4, 0, "Hard", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType");
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-18");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-18");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        step1.setStartHour("14:00");
+        step1.setEnd("2020-06-18");
+        //outside office hours
+        step1.setEndHour("15:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setExperimentType(experimentType);
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        experiment.setId((long) 66);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        //roles
+        Role role0 = new Role("Masterstudent");
+        when(roleService.findByName("Masterstudent")).thenReturn(java.util.Optional.of(role0));
+        role0.setId((long) 31);
+
+        Role role1 = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
+        role1.setId((long) 32);
+
+        Role role2 = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(role2));
+        role2.setId((long) 33);
+
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+
+        // Test that experiment was not booked
+        mockMvc.perform(post("/planning/experiments/book/{id}", 6).flashAttr("experiment", experiment))
+                .andExpect(status().is(302))
+                .andDo(print())
+                .andExpect(view().name("redirect:/planning/"));
+    }
+
+
+    @Test
+    @WithUserDetails(value = "bachelor@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentWithNoExperimentType() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(4, 0, "Hard", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType");
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-18");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-18");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        step1.setStartHour("14:00");
+        step1.setEnd("2020-06-18");
+        //outside office hours
+        step1.setEndHour("15:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        //roles
+        Role role0 = new Role("Masterstudent");
+        when(roleService.findByName("Masterstudent")).thenReturn(java.util.Optional.of(role0));
+        role0.setId((long) 31);
+
+        Role role1 = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
+        role1.setId((long) 32);
+
+        Role role2 = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(role2));
+        role2.setId((long) 33);
+
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+
+        // Test that experiment was not booked
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(200))
+                .andDo(print())
+                .andExpect(view().name("PlanningTool/planning-exp-book-custom"));
+    }
+
+
+    @Test
+    @WithUserDetails(value = "bachelor@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentWithNoStepTypes() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(4, 0, "Hard", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType");
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", null, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-18");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-18");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        step1.setStartHour("14:00");
+        step1.setEnd("2020-06-18");
+        //outside office hours
+        step1.setEndHour("15:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setExperimentType(experimentType);
+        experiment.setUser(user);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        //roles
+        Role role0 = new Role("Masterstudent");
+        when(roleService.findByName("Masterstudent")).thenReturn(java.util.Optional.of(role0));
+        role0.setId((long) 31);
+
+        Role role1 = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
+        role1.setId((long) 32);
+
+        Role role2 = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(role2));
+        role2.setId((long) 33);
+
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+
+        // Test that experiment was not booked
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(200))
+                .andDo(print())
+                .andExpect(view().name("PlanningTool/planning-exp-book-fixed"));
+    }
+
+
+    @Test
+    @WithUserDetails(value = "bachelor@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentWithWrongStepTypeSize() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(4, 0, "Hard", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType");
+        stepType1.setId((long) 59);
+        StepType stepType2 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType");
+        stepType2.setId((long) 159);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        stepTypes.add(stepType2);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-18");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-18");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        step1.setStartHour("14:00");
+        step1.setEnd("2020-06-18");
+        //outside office hours
+        step1.setEndHour("15:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setExperimentType(experimentType);
+        experiment.setUser(user);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        //roles
+        Role role0 = new Role("Masterstudent");
+        when(roleService.findByName("Masterstudent")).thenReturn(java.util.Optional.of(role0));
+        role0.setId((long) 31);
+
+        Role role1 = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
+        role1.setId((long) 32);
+
+        Role role2 = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(role2));
+        role2.setId((long) 33);
+
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+
+        // Test that experiment was not booked
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(200))
+                .andDo(print())
+                .andExpect(view().name("PlanningTool/planning-exp-book-fixed"));
+    }
+
+    @Test
+    @WithUserDetails(value = "bachelor@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentWithNoNameOfExperimentType() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(4, 0, "Hard", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType");
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType();
+        experimentType.setStepTypes(stepTypes);
+        experimentType.setIsFixedType(false);
+        experimentType.setId((long) 60);
+        ExperimentType experimentType1 = new ExperimentType();
+        experimentType1.setStepTypes(stepTypes);
+        experimentType1.setIsFixedType(false);
+        experimentType1.setId((long) 160);
+        experimentType1.setExpname("Custom0");
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType1);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-18");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-18");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        step1.setStartHour("14:00");
+        step1.setEnd("2020-06-18");
+        //outside office hours
+        step1.setEndHour("15:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        experiment.setExperimentType(experimentType);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        //roles
+        Role role0 = new Role("Masterstudent");
+        when(roleService.findByName("Masterstudent")).thenReturn(java.util.Optional.of(role0));
+        role0.setId((long) 31);
+
+        Role role1 = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
+        role1.setId((long) 32);
+
+        Role role2 = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(role2));
+        role2.setId((long) 33);
+
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(302))
+                .andDo(print())
+                .andExpect(view().name("redirect:/planning/"));
+    }
+
 
     @Test
     @WithUserDetails(value = "ondrej.bures@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
@@ -2174,9 +2885,9 @@ public class StepControllerTests {
         DeviceType deviceType = new DeviceType();
         deviceType.setDeviceTypeName("TestDeviceType");
         List<StepType> stepTypes = new ArrayList<>();
-        StepType stepType = new StepType(deviceType, new Continuity(4, 0, "Soft (at least)", "After"), "TestStepType");
+        StepType stepType = new StepType(deviceType, new Continuity(4, 0, "Soft (at least)", "Before"), "TestStepType");
         stepType.setId((long) 58);
-        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType");
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "Before"), "New StepType");
         stepType1.setId((long) 59);
         stepTypes.add(stepType);
         stepTypes.add(stepType1);
@@ -2348,7 +3059,7 @@ public class StepControllerTests {
 
     @Test
     @WithUserDetails(value = "ondrej.bures@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
-    public void bookExperimentFixedTime() throws Exception {
+    public void bookExperimentFixedTimeEqualProblem() throws Exception {
         User user = new User("tester", "tester");
         user.setId((long) 40);
         DeviceType deviceType = new DeviceType();
@@ -2429,6 +3140,852 @@ public class StepControllerTests {
         when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
         when(relationService.findAll()).thenReturn(rels);
         role.setId((long) 32);
+
+        // Test that experiment was not booked
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(200))
+                .andDo(print())
+                .andExpect(view().name("PlanningTool/planning-exp-book-fixed"));
+    }
+
+    @Test
+    @WithUserDetails(value = "ondrej.bures@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentFixedTimeAtLeastProblem() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(1, 0, "Soft (at least)", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType", true, "At least", 1, 0);
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-18");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-18");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        step1.setStartHour("15:30");
+        step1.setEnd("2020-06-18");
+        step1.setEndHour("16:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setExperimentType(experimentType);
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        Role role = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+        role.setId((long) 32);
+
+        // Test that experiment was not booked
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(200))
+                .andDo(print())
+                .andExpect(view().name("PlanningTool/planning-exp-book-fixed"));
+    }
+
+    @Test
+    @WithUserDetails(value = "ondrej.bures@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentFixedTimeAtMostProblem() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(1, 0, "Soft (at least)", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType", true, "At most", 0, 5);
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-18");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-18");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        // fixed time is not 1 hour
+        step1.setStartHour("15:30");
+        step1.setEnd("2020-06-18");
+        step1.setEndHour("16:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setExperimentType(experimentType);
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        Role role = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+        role.setId((long) 32);
+
+        // Test that experiment was not booked
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(200))
+                .andDo(print())
+                .andExpect(view().name("PlanningTool/planning-exp-book-fixed"));
+    }
+
+
+    @Test
+    @WithUserDetails(value = "ondrej.bures@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentFixedTimeEqualOK() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(1, 0, "Soft (at least)", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType", true, "Equal", 0, 30);
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-18");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-18");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        // fixed time is not 1 hour
+        step1.setStartHour("15:30");
+        step1.setEnd("2020-06-18");
+        step1.setEndHour("16:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setExperimentType(experimentType);
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        Role role = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+        role.setId((long) 32);
+
+        // Test that experiment was not booked
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(302))
+                .andDo(print())
+                .andExpect(view().name("redirect:/planning/"));
+    }
+
+    @Test
+    @WithUserDetails(value = "ondrej.bures@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentFixedTimeAtLeastOK() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(1, 0, "Soft (at least)", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType", true, "At least", 0, 10);
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-18");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-18");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        step1.setStartHour("15:30");
+        step1.setEnd("2020-06-18");
+        step1.setEndHour("16:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setExperimentType(experimentType);
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        Role role = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+        role.setId((long) 32);
+
+        // Test that experiment was not booked
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(302))
+                .andDo(print())
+                .andExpect(view().name("redirect:/planning/"));
+    }
+
+    @Test
+    @WithUserDetails(value = "ondrej.bures@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentFixedTimeAtMostOK() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(1, 0, "Soft (at least)", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType", true, "At most", 1, 0);
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-18");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-18");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        // fixed time is not 1 hour
+        step1.setStartHour("15:30");
+        step1.setEnd("2020-06-18");
+        step1.setEndHour("16:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setExperimentType(experimentType);
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        Role role = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+        role.setId((long) 32);
+
+        // Test that experiment was not booked
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(302))
+                .andDo(print())
+                .andExpect(view().name("redirect:/planning/"));
+    }
+
+
+    @Test
+    @WithUserDetails(value = "ondrej.bures@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentOnWeekendProblem() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(1, 0, "Soft (at least)", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType", true, "Equal", 1, 0);
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-20");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-20");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-20");
+        // fixed time is not 1 hour
+        step1.setStartHour("15:30");
+        step1.setEnd("2020-06-20");
+        step1.setEndHour("16:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setExperimentType(experimentType);
+        experiment.setStartDate("2020-06-20");
+        experiment.setEndDate("2020-06-20");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        //roles
+        Role role0 = new Role("Masterstudent");
+        when(roleService.findByName("Masterstudent")).thenReturn(java.util.Optional.of(role0));
+        role0.setId((long) 31);
+
+        Role role1 = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
+        role1.setId((long) 32);
+
+        Role role2 = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(role2));
+        role2.setId((long) 33);
+
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+
+        // Test that experiment was not booked
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(200))
+                .andDo(print())
+                .andExpect(view().name("PlanningTool/planning-exp-book-fixed"));
+    }
+
+
+
+
+    @Test
+    @WithUserDetails(value = "ondrej.bures@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentInputProblem() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(1, 0, "Soft (at least)", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType", true, "Equal", 1, 0);
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("");
+        step.setStartHour("09:30");
+        step.setEnd("");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        // fixed time is not 1 hour
+        step1.setStartHour("15:30");
+        step1.setEnd("2020-06-18");
+        step1.setEndHour("16:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setExperimentType(experimentType);
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        Role role = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+        role.setId((long) 32);
+
+        // Test that experiment was not booked
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(200))
+                .andDo(print())
+                .andExpect(view().name("PlanningTool/planning-exp-book-fixed"));
+    }
+
+
+
+
+    @Test
+    @WithUserDetails(value = "ondrej.bures@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentOnHolidayProblem() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(1, 0, "Soft (at least)", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType", true, "Equal", 1, 0);
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-12-24");
+        step.setStartHour("09:30");
+        step.setEnd("2020-12-24");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-12-24");
+        // fixed time is not 1 hour
+        step1.setStartHour("15:30");
+        step1.setEnd("2020-12-24");
+        step1.setEndHour("16:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setExperimentType(experimentType);
+        experiment.setStartDate("2020-12-24");
+        experiment.setEndDate("2020-12-24");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        Role role = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+        role.setId((long) 32);
+
+        // Test that experiment was not booked
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(200))
+                .andDo(print())
+                .andExpect(view().name("PlanningTool/planning-exp-book-fixed"));
+    }
+
+
+    @Test
+    @WithUserDetails(value = "ondrej.bures@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentOverNightProblem() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(1, 0, "Soft (at least)", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType", true, "Equal", 1, 0);
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-17");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-18");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        // fixed time is not 1 hour
+        step1.setStartHour("15:30");
+        step1.setEnd("2020-06-18");
+        step1.setEndHour("16:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setExperimentType(experimentType);
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        //roles
+        Role role0 = new Role("Masterstudent");
+        when(roleService.findByName("Masterstudent")).thenReturn(java.util.Optional.of(role0));
+        role0.setId((long) 31);
+
+        Role role1 = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
+        role1.setId((long) 32);
+
+        Role role2 = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(role2));
+        role2.setId((long) 33);
+
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
 
         // Test that experiment was not booked
         mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
@@ -2828,7 +4385,6 @@ public class StepControllerTests {
         Step step1 = new Step();
         step1.setStepType(stepType);
         step1.setStart("2020-06-18");
-        // fixed time is not 1 hour
         step1.setStartHour("15:30");
         step1.setEnd("2020-06-18");
         step1.setEndHour("16:00");
@@ -2876,7 +4432,7 @@ public class StepControllerTests {
         when(relationService.findAll()).thenReturn(rels);
         role.setId((long) 32);
 
-        mockMvc.perform(get("/planning/experiments/book/{id}",66))
+        mockMvc.perform(get("/planning/experiments/book/{id}", 66))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("allExperimentTypes", hasSize(1)))
                 .andExpect(model().attribute("allExperiments", hasSize(1)))
@@ -2923,7 +4479,6 @@ public class StepControllerTests {
         Step step1 = new Step();
         step1.setStepType(stepType);
         step1.setStart("2020-06-18");
-        // fixed time is not 1 hour
         step1.setStartHour("15:30");
         step1.setEnd("2020-06-18");
         step1.setEndHour("16:00");
@@ -2971,7 +4526,7 @@ public class StepControllerTests {
         when(relationService.findAll()).thenReturn(rels);
         role.setId((long) 32);
 
-        mockMvc.perform(get("/planning/experiments/book/info/{id}",66))
+        mockMvc.perform(get("/planning/experiments/book/info/{id}", 66))
                 .andExpect(status().isOk())
                 .andExpect(view().name("PlanningTool/planning-exp-info"));
 
@@ -3020,7 +4575,7 @@ public class StepControllerTests {
         // fixed time is not 1 hour
         step1.setStartHour("15:30");
         step1.setEnd("2020-06-18");
-        step1.setEndHour("16:00");
+        step1.setEndHour("16:30");
         step1.setDevice(device1);
         step1.setUser(user);
         step1.setId((long) 72);
@@ -3068,21 +4623,108 @@ public class StepControllerTests {
 
         Role role = new Role("Administrator");
         when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
-        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
         when(experimentService.findAll()).thenReturn(experiments);
         when(stepService.findAll()).thenReturn(steps);
         when(stepService.findById((long) 71)).thenReturn(Optional.of(step));
+        when(relationService.findAll()).thenReturn(rels);
+        role.setId((long) 32);
+
+        mockMvc.perform(post("/planning/", 71).flashAttr("step", step))
+                .andExpect(status().is(302))
+                .andExpect(view().name("redirect:/planning/"));
+
+    }
+
+
+    @Test
+    @WithUserDetails(value = "researcher@uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    //Try to delete an experiment type that has still an experiment in use
+    public void viewExperimentInfoAsResearcher() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(1, 0, "Soft (at least)", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType", true, "Equal", 1, 0);
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-06-18");
+        step.setStartHour("09:30");
+        step.setEnd("2020-06-18");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-06-18");
+        step1.setStartHour("15:30");
+        step1.setEnd("2020-06-18");
+        step1.setEndHour("16:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setExperimentType(experimentType);
+        experiment.setStartDate("2020-06-18");
+        experiment.setEndDate("2020-06-18");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        experiment.setId((long) 66);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        Role role = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role));
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
         when(experimentService.findById((long) 66)).thenReturn(Optional.of(experiment));
         when(stepTypeService.findAll()).thenReturn(stepTypes);
         when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
         when(relationService.findAll()).thenReturn(rels);
         role.setId((long) 32);
 
-        mockMvc.perform(post("/planning/{id}",71).flashAttr("step", step))
+        mockMvc.perform(get("/planning/experiments/book/{id}", 66))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("allSteps", hasSize(2)))
-                .andExpect(view().name("redirect:/planning/"));
+                .andExpect(view().name("PlanningTool/planning-exp-book-fixed"));
 
     }
-
 }
