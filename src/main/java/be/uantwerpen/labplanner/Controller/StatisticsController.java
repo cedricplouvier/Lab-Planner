@@ -57,7 +57,7 @@ public class StatisticsController {
     private int getdeviceCounter(){
         return 0;
     }
-    
+
     @ModelAttribute("selectedTypeOfGraph")
     private String graphType(){
         return "Device hours by month";
@@ -493,7 +493,6 @@ public class StatisticsController {
                                 if (startDay.matches(endDay) == true) {
                                     //Problem: this code to calculate days only take into account days longer than 24h
                                     //long diff = thisStepDateEnd.getDate() - thisStepDateStart.getDate();
-                                    //System.out.println ("Days: " + TimeUnit.DAYS.convert(diff, TimeUnit.HOURS));
                                     totalHoursByMonth[i] = totalHoursByMonth[i] + calculateHourDiff(selectedDeviceSteps.get(j));
                                 } else if (startDay.matches(endDay) == false) {
                                     int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;
@@ -570,7 +569,6 @@ public class StatisticsController {
                         if ((startMonth.matches(months[i])) && (startMonth.matches(endMonth) == true)) {
                             if (startDay.matches(endDay) == true) {
                                 //long diff = thisStepDateEnd.getDate() - thisStepDateStart.getDate();
-                                //System.out.println ("Days: " + TimeUnit.DAYS.convert(diff, TimeUnit.HOURS));
                                 totalHoursByMonth[i] = totalHoursByMonth[i] + calculateHourDiff(selectedDeviceSteps.get(j));
                             } else if (startDay.matches(endDay) == false) {
                                 int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;
@@ -647,7 +645,6 @@ public class StatisticsController {
                             if ((startMonth.matches(months[i])) && (startMonth.matches(endMonth) == true)) {
                                 if (startDay.matches(endDay) == true) {
                                     //long diff = thisStepDateEnd.getDate() - thisStepDateStart.getDate();
-                                    //System.out.println ("Days: " + TimeUnit.DAYS.convert(diff, TimeUnit.HOURS));
                                     totalHoursByMonth[i] = totalHoursByMonth[i] + calculateHourDiff(selectedDeviceSteps.get(j));
                                 } else if (startDay.matches(endDay) == false) {
                                     int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;

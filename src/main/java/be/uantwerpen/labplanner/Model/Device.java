@@ -55,7 +55,6 @@ public class Device extends AbstractPersistable<Long> {
     public Device() {
         this(DEFAULT_DEVICENAME,null);
         initDirectory();
-
     }
 
     public Device(String devicename,DeviceType deviceType) {

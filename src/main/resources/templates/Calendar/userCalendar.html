@@ -15,13 +15,13 @@
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css"/>
     <link rel="stylesheet" type="text/css" th:href="@{/css/default.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/icons.css}">
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 
 <body>
 
-<div class="container">
-    <div id="navbar" th:replace="navbar :: navbar"></div>
-</div>
+
 <!-- Import menu bar -->
 <div id="lnb">
     <div class="lnb-new-schedule">
@@ -47,7 +47,6 @@
         <div id="calendarList" class="lnb-calendars-d1">
         </div>
     </div>
-    <div th:replace="footer :: footer"></div>
 </div>
 <div id="right">
     <div id="menu">
@@ -123,17 +122,22 @@
     </div>
     <div id="calendar"></div>
 </div>
-
+<div class="container" >
+    <div id="navbar" th:replace="navbar :: navbar" style="background-color: #ffffff"></div>
+</div>
 <!-- Add the attributes so they are accessible in the scripts -->
 <script th:inline="javascript">
     let devices = [[${allDevices}]];
     let deviceTypes = [[${allDeviceTypes}]];
     let userSteps = [[${userSteps}]]
     let otherSteps = [[${otherSteps}]]
+    document.getElementById("myNavbar").style.backgroundColor = "#ffffff";
 </script>
 
 <!-- Add all extra library script-->
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+<script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
         crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 <script src="https://uicdn.toast.com/tui.code-snippet/v1.5.2/tui-code-snippet.min.js"></script>

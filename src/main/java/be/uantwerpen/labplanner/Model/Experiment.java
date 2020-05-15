@@ -57,7 +57,6 @@ public class Experiment extends AbstractPersistable<Long> {
         super.setId(id);
     }
 
-
     public Experiment() {
     }
 

@@ -3,12 +3,16 @@ package be.uantwerpen.labplanner;
 import be.uantwerpen.labplanner.Service.NewSecurityService;
 import be.uantwerpen.labplanner.Service.StorageService;
 
+import org.apache.catalina.connector.Connector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -73,7 +77,17 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
     }
-
+    @Bean
+    public ConfigurableServletWebServerFactory webServerFactory() {
+        TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+        factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+            @Override
+            public void customize(Connector connector) {
+                connector.setProperty("relaxedQueryChars", "|{}[]");
+            }
+        });
+        return factory;
+    }
     @EnableScheduling
     @Order(Ordered.HIGHEST_PRECEDENCE)
     @Configuration
@@ -100,6 +114,9 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
     public ApplicationSecurity applicationSecurity() {
         return new ApplicationSecurity();
     }
+
+
+
     @Order(99)
     protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
         @Override
@@ -115,6 +132,7 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
              //       .and().authorizeRequests().antMatchers("/regsiter*").permitAll().anyRequest().fullyAuthenticated()
                     .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                     .and().exceptionHandling().accessDeniedPage("/access?error");
+
         }
     }
 

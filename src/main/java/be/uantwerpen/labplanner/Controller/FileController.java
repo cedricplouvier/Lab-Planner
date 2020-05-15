@@ -55,20 +55,15 @@ public class FileController {
 				"attachment; filename=\"" + file.getFilename() + "\"").body(file);
 	}
 
-
-
 	@PostMapping("/upload/typeimage/{deviceid}")
 	public String handleTypeImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long deviceid) {
 		Device tempDevice =  deviceService.findById( deviceid).orElse(null);
-		System.out.println(deviceid);
 		if(tempDevice!=null) {
 			String filename = tempDevice.getDevicename()+"."+file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 			storageService.store(file,"images",filename);
 			tempDevice.setDevicePictureName(filename);
 			deviceService.saveNewDevice(tempDevice);
-
 		}
-
 		return "redirect:/devices/"+deviceid;
 	}
 
@@ -80,6 +75,7 @@ public class FileController {
 		redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + filename+ "!");
 		return "redirect:/devices/info/"+infoid+"/"+typeid;
 	}
+
 	@PostMapping("/upload/file/{deviceid}/{infoid}")
 	public String handleFileUpload(@RequestParam("file") MultipartFile file, @PathVariable Long infoid, RedirectAttributes redirectAttributes, @PathVariable Long deviceid) {
 		storageService.store(file,deviceService.findById(deviceid).orElse(null).getDevicename(),file.getOriginalFilename());
@@ -93,13 +89,11 @@ public class FileController {
 		return ResponseEntity.notFound().build();
 	}
 
-
 	@PreAuthorize("hasAuthority('Stock - Modify - All') or hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced')")
 	@PostMapping("/upload/productimage/{productId}")
 	public String handleProductImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long productId) throws Exception{
 		OwnProduct temp =  productService.findById( productId).orElse(null);
 		Locale current = LocaleContextHolder.getLocale();
-
 		if(temp!=null) {
 			//append productid to filename to make sure file is unique for each product
 			String fileContentType = file.getContentType();
@@ -182,7 +176,6 @@ public class FileController {
 	public String handleProductPdfUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, @PathVariable Long productId) throws Exception{
 		OwnProduct temp =  productService.findById( productId).orElse(null);
 		Locale current = LocaleContextHolder.getLocale();
-
 		if(temp!=null) {
 			String fileContentType = file.getContentType();
 			List<String> extensions = new ArrayList<>();
@@ -204,11 +197,7 @@ public class FileController {
 		return "redirect:/products";
 	}
 
-
-
-
-
-		//when upload is too big.
+	//when upload is too big.
 	@ControllerAdvice
 	public class FileUploadExceptionAdvice {
 

@@ -15,12 +15,12 @@ import java.util.Locale;
 public class StepFormatter implements Formatter<Step> {
     @Autowired
     private StepRepository stepRepository;
-    public Step parse(final String text, final Locale locale)
-            throws ParseException {
+    public Step parse(final String text, final Locale locale)  throws ParseException {
         if (text != null && !text.isEmpty())
             return stepRepository.findById(new Long(text)).orElse(null);
         else return null;
     }
+
     public String print(final Step object, final Locale locale)
     { return (object != null ? object.getId().toString() : "");
     }

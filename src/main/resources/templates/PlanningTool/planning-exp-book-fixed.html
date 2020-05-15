@@ -19,6 +19,8 @@
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css"/>
     <link rel="stylesheet" type="text/css" th:href="@{/css/default.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/icons.css}">
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 
 <script th:inline="javascript">
@@ -50,6 +52,10 @@
         startHour: 0,
         endHour: 0,
     }
+    let experiment =[[${experiment}]];
+
+
+
     function addMixtureRow(mixtures) {
         var i = $('#mixtureList tr').length;
 
@@ -209,12 +215,12 @@
         document.getElementById('steptitle').innerText = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['deviceTypeName'];
         document.getElementById('length').innerText = "Length: unimplemented";
         if (stepInd > 0) {
-            document.getElementById('continuity').innerText = "Continuity: " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['type'];
+            document.getElementById('continuity2').innerText = "Continuity: " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['type'];
             document.getElementById('align').innerText = "Alignment: After";
             document.getElementById('time').innerText = "Time: " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['hours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['minutes'] + "m";
 
         } else {
-            document.getElementById('continuity').innerText = "Continuity: None";
+            document.getElementById('continuity2').innerText = "Continuity: None";
             document.getElementById('align').innerText = "Alignment: None";
             document.getElementById('time').innerText = "Time: None";
 
@@ -328,6 +334,8 @@
 <body>
 <div class="container">
     <div th:replace="navbar :: navbar"></div>
+    <input id="contextpath" th:value="@{/}" th:type="hidden"/>
+
     <form id="MyForm" action="#" th:action="@{/planning/experiments/book/{id}  (id=${{experiment}})}"
           th:object="${experiment}" method="post">
         <input th:field="*{id}" th:type="hidden"/>
@@ -424,21 +432,7 @@
         </button>
 
         <h3><span th:text="#{step.info}"></span></h3>
-        <div style="display: flex;flex-direction: row">
-        <button type="button" id="suggestExperiment" class="btn btn-warning" style="flex: 1">Suggest Entire Experiment</button>
-            <div class="custom-control custom-checkbox" style="display:flex;flex-direction:row;flex: 1">
-                <input style="flex:1;" type="checkbox" class="custom-control-input" id="defaultUnchecked" checked>
-                <label style="flex:1;" class="custom-control-label" for="defaultUnchecked">Allow personal overlap</label>
-            </div>
-            <div class="custom-control custom-checkbox" style="display:flex;flex-direction:row;flex: 1">
-                <input style="flex:1;" type="checkbox" class="custom-control-input" id="withinOfficehours" checked>
-                <label style="flex:1;" class="custom-control-label" for="withinOfficehours">Within officehours</label>
-            </div>
-            <div style="display:flex;flex-direction:row;flex: 1">
-                <input id="datePicker" style="flex:1;" type="date">
-                <label style="flex:1;">Starting Date</label>
-            </div>
-        </div>
+
 
         <table class="table table-hover" style=" font-size:100%; text-align:center;">
             <thead>
@@ -657,7 +651,7 @@
                                     <li class="list-group-item" style="padding-bottom: 0px;" id="length">Length:
                                         5h
                                     </li>
-                                    <li class="list-group-item" style="padding-bottom: 0px;" id="continuity">
+                                    <li class="list-group-item" style="padding-bottom: 0px;" id="continuity2">
                                         Continuity:
                                         Hard
                                     </li>
@@ -689,6 +683,13 @@
                                 <input style="flex:1;" type="checkbox" class="custom-control-input" id="withinOfficehoursSingleSuggest" checked>
                                 <label style="flex:1;" class="custom-control-label" for="withinOfficehoursSingleSuggest">Suggest within officehours</label>
                             </div>
+
+                            </div>
+                            <div style="flex: 1;margin: 10px;">
+                                <div class="custom-control custom-checkbox" style="display:flex;flex-direction:row;flex: 1">
+                                    <input style="flex:1;" type="checkbox" class="custom-control-input" id="allowOverlap" checked>
+                                    <label style="flex:1;" class="custom-control-label" for="allowOverlap">Allow personal overlap</label>
+                                </div>
                             </div>
                             <div style="flex: 1;margin: 10px;">
                                 <select required id="deviceTypeDropdown" class="form-control input-device"
@@ -769,8 +770,9 @@
 
 
 <!-- Add all extra library script-->
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+<script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
         crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popp
 er.js@1.16.0/dist/umd/popper.min.js"

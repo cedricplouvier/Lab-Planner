@@ -5,10 +5,21 @@
 /* global moment, tui, chance */
 /* global findCalendar, CalendarList, ScheduleList, generateSchedule */
 let filledInSteps=[];
+let preCalculatedSuggestions = [];
 let newSchedule;
 let suggestion;
 let showOwnItems = true;
 let showOtherItems = false;
+ var token = $("meta[name='_csrf']").attr("content");
+ var header = $("meta[name='_csrf_header']").attr("content");
+ // Prepend context path to all jQuery AJAX requests
+ $.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
+     if (!options.crossDomain) {
+         options.url = contextpath + options.url;
+     }
+     jqXHR.setRequestHeader('X-CSRF-Token', token);
+
+ });
 (function(window, Calendar) {
     let cal, resizeThrottled;
     let useCreationPopup = false;
@@ -44,9 +55,6 @@ let showOtherItems = false;
             disableDblClick: true,
             disableClick: true,
             isReadOnly:true,
-            week: {
-                startDayOfWeek: 1 // monday
-            },
             scheduleView: ['time'],
             template: {
                 time: function(schedule) {
@@ -336,6 +344,11 @@ let showOtherItems = false;
         suggestion=null;
         if(calendarUpdate.stepIndex<allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length-1){
             calendarUpdate.stepIndex++;
+            let startDate = preCalculatedSuggestions[calendarUpdate.stepIndex].start;
+            let start = new Date(startDate.date.year,startDate.date.month-1,startDate.date.day,startDate.time.hour,startDate.time.minute,0,0);
+            let endDate = preCalculatedSuggestions[calendarUpdate.stepIndex].end;
+            let end = new Date(endDate.date.year,endDate.date.month-1,endDate.date.day,endDate.time.hour,endDate.time.minute,0,0);
+            suggestion = createSuggestionSchedule(start,end,CalendarList[0])
             setSchedules();
             setUI();
         }
@@ -552,117 +565,6 @@ let showOtherItems = false;
             span.style.backgroundColor = input.checked ? span.style.borderColor : 'transparent';
         });
     }
-    function calculateExperimentSuggestion() {
-        var e = document.getElementById("selectExperimentType");
-        calendarUpdate.experimentIndex = e.selectedIndex-1;
-        let numberOfSteps = allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length;
-        let date = document.getElementById("datePicker").value;
-        if(date!=""){
-            let startDate = new Date(date);
-            let endDate = new Date(date);
-            endDate.setMinutes(endDate.getMinutes()+30);
-            if(startDate.getTime()>new Date().getTime()) {
-                newSchedule = createSuggestionSchedule(startDate, endDate, CalendarList[0])
-            }
-
-        }
-        calendarUpdate.stepIndex=0;
-        for (let current = 0; current < numberOfSteps; current++){
-            if(calculateSuggestion(current,document.getElementById("defaultUnchecked").checked,document.getElementById("withinOfficehours").checked)){
-                newSchedule = suggestion;
-                suggestion = null;
-                addDevices(checkOverlap(newSchedule,document.getElementById("defaultUnchecked").checked));
-                saveScheduleChanges();
-                newSchedule=null;
-            } else{
-                console.log("failed");
-                break;
-            }
-        }
-        $('#extraLargeModal').modal('toggle');
-
-    }
-    function calculateSuggestion(index,personalAllowed,withinOfficehours) {
-        let today = new Date();
-        let currentDate;
-        let endDate
-
-        if(index!=calendarUpdate.stepIndex){
-            let temp = index;
-            temp--;
-            currentDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());
-            endDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());;
-            endDate.setDate(endDate.getDate()+14);
-        }else if(newSchedule!=null&&newSchedule.start){
-            currentDate = new Date(newSchedule.start.getFullYear(), newSchedule.start.getMonth(), newSchedule.start.getDate(), newSchedule.start.getHours(), newSchedule.start.getMinutes());
-            endDate = new Date(newSchedule.start.getFullYear(), newSchedule.start.getMonth(), newSchedule.start.getDate(), newSchedule.start.getHours(), newSchedule.start.getMinutes());;
-            endDate.setDate(endDate.getDate()+14);
-        }else if(index>0){
-            let temp = index;
-            temp--;
-            currentDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());
-            endDate = new Date(filledInSteps[temp].start.getFullYear(), filledInSteps[temp].start.getMonth(), filledInSteps[temp].start.getDate(), filledInSteps[temp].start.getHours(), filledInSteps[temp].start.getMinutes());;
-            endDate.setDate(endDate.getDate()+14);
-        }
-        else {
-            currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), today.getHours(), 0);
-            currentDate.setHours(currentDate.getHours()+1)
-            endDate = new Date(today.getFullYear(),today.getMonth(),today.getDate(),today.getHours(),0);
-            endDate.setHours(endDate.getHours()+1)
-            endDate.setDate(endDate.getDate()+14);
-        }
-
-
-        let step = 30; //in minutes
-        let length = 60;
-        console.log(calendarUpdate);
-        if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][index]['hasFixedLength']){
-            length = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][index]['fixedTimeHours']*60+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][index]['fixedTimeMinutes'];
-        }
-        let found = false;
-        var calendar = selectedCalendar ? selectedCalendar : CalendarList[0];
-        let schedule = null;
-        currentDate.setMinutes(currentDate.getMinutes()-30);
-        if(calendarUpdate.stepIndex>0){
-            if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['continuity']['directionType']=="Before"){
-                currentDate.setMinutes(currentDate.getMinutes()-2*allExperiments[calendarUpdate.experimentIndex]['stepTypes'][index]['continuity']['hours']*60-allExperiments[calendarUpdate.experimentIndex]['stepTypes'][index]['continuity']['minutes']);
-            }
-        }
-        while(!found && currentDate<endDate){
-            currentDate.setMinutes(currentDate.getMinutes()+30);
-            let end = new Date(currentDate.getFullYear(),currentDate.getMonth(),currentDate.getDate(),currentDate.getHours(),currentDate.getMinutes());
-            end.setMinutes(end.getMinutes()+length);
-            schedule = createSuggestionSchedule(currentDate,end,calendar);
-            if(checkContinuity(index,schedule,withinOfficehours).ok&&checkOverlap(schedule,personalAllowed).length!=0){
-                // check if other steps can still be found
-                if(index<allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length-1){
-                    filledInSteps[index] = schedule;
-                    let temp = index;
-                    temp++;
-                    if(calculateSuggestion(temp,personalAllowed,withinOfficehours)){
-                        found = true;
-                    }
-                    console.log(index);
-                }else{
-                    found = true;
-                }
-                // found = true;
-            }
-        }
-        if(found&&index==calendarUpdate.stepIndex){
-            suggestion = schedule;
-            setSchedules();
-            $('#toastsuggestionsuccess').toast('show')
-            cal.setDate(suggestion.start);
-            refreshScheduleVisibility()
-
-        }
-        if(!found&&index==calendarUpdate.stepIndex){
-            $('#toastsuggestionerror').toast('show')
-
-        }
-        return found;
-    }
 
     function setDropdownCalendarType() {
         var calendarTypeName = document.getElementById('calendarTypeName');
@@ -719,7 +621,6 @@ let showOtherItems = false;
 
     function setEventListener() {
         $('#lnb-calendars').on('change', onChangeCalendars);
-
         $('#menu-navi').on('click', onClickNavi);
         $('.dropdown-menu a[role="menuitem"]').on('click', onClickMenu);
         $('#btn-save-schedule').on('click', onNewSchedule);
@@ -732,12 +633,90 @@ let showOtherItems = false;
         $("#nextstep").on('click',nextStep);
         $("#previousstep").on('click',previousStep);
         $("#suggestStep").on('click',function () {
-            calculateSuggestion(calendarUpdate.stepIndex,true,document.getElementById('withinOfficehoursSingleSuggest').checked);
+            // calculateSuggestion(calendarUpdate.stepIndex,true,document.getElementById('withinOfficehoursSingleSuggest').checked);
+            getSuggestionFromServer(calendarUpdate.stepIndex,true,document.getElementById('withinOfficehoursSingleSuggest').checked);
         });
-        $("#suggestExperiment").on('click',calculateExperimentSuggestion);
-
         window.addEventListener('resize', resizeThrottled);
     }
+    function suggestionObject() {
+        this.deviceType = null;
+        this.start = null;
+        this.end = null;
+        this.continuity = null;
+        this.fixedTimeHours = null
+        this.fixedTimeMinutes=  null
+        this.fixedTimeType = null
+        this.hasFixedLength = false
+    }
+    function getSuggestionFromServer(stepIndex, personalAllowed,withinOfficeHours)
+    {
+        let steps = []
+        for(let current = 0;current< allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length;current++) {
+            let newStep = new suggestionObject();
+            // newStep.user
+            if(filledInSteps[current]) {
+                console.log(filledInSteps[current]['start'])
+                let start = filledInSteps[current]['start'];
+                let end = filledInSteps[current]['end'];
+                start = (new Date(start.getFullYear(),start.getMonth(),start.getDate(),start.getHours(),start.getMinutes(),0,0));
+                end = (new Date(end.getFullYear(),end.getMonth(),end.getDate(),end.getHours(),end.getMinutes(),0,0))
+                newStep.start = new Date(start.getTime() - start.getTimezoneOffset() * 60000).toISOString() ;
+                newStep.end= new Date(end.getTime() - end.getTimezoneOffset() * 60000).toISOString() ;
+            }
+            newStep.deviceType = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['deviceType']
+            newStep.continuity = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']
+            newStep.hasFixedLength = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['hasFixedLength']
+            newStep.fixedTimeHours = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['fixedTimeHours']
+            newStep.fixedTimeMinutes = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['fixedTimeMinutes']
+            newStep.fixedTimeType = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['fixedTimeType']
+            delete newStep.deviceType.new ;
+            delete newStep.continuity.new ;
+            steps.push(newStep)
+        }
+        var date = new Date();
+        date.setSeconds(0);
+        date.setMinutes(date.getMinutes()/30);
+        date.setMilliseconds(0);
+        var suggestPost = {
+             "steps": JSON.stringify(steps),
+             "dateTime":date.toISOString(),
+             "currentStep":calendarUpdate.stepIndex,
+             "overlapAllowed":document.getElementById("allowOverlap").checked,
+             "withinOfficeHours":document.getElementById("withinOfficehoursSingleSuggest").checked,
+        }
+        if(newSchedule){
+            if(newSchedule.end){
+                suggestPost.dateTime =new Date(newSchedule.end.getFullYear(), newSchedule.end.getMonth(), newSchedule.end.getDate(), newSchedule.end.getHours(), newSchedule.end.getMinutes(),0,0).toISOString();
+            }
+        }
+        $.ajax({
+            type: "POST",
+            contentType : 'application/json; charset=utf-8',
+            dataType : 'json',
+            accept: 'application/json',
+            url: "calendar/calculateStepSuggestion",
+            data: JSON.stringify(suggestPost), // Note it is important
+            success :function(result) {
+                preCalculatedSuggestions = result;
+                let startDate = result[calendarUpdate.stepIndex].start;
+                let start = new Date(startDate.date.year,startDate.date.month-1,startDate.date.day,startDate.time.hour,startDate.time.minute,0,0);
+                let endDate = result[calendarUpdate.stepIndex].end;
+                let end = new Date(endDate.date.year,endDate.date.month-1,endDate.date.day,endDate.time.hour,endDate.time.minute,0,0);
+                suggestion = createSuggestionSchedule(start,end,CalendarList[0])
+                cal.setDate(suggestion.start);
+                setSchedules();
+                refreshScheduleVisibility();
+            },
+            error: function(xhr, desc, err) {
+                console.log(xhr);
+                console.log("Details0: " + desc + "\nError:" + err);
+            },
+        });
+
+
+
+    }
+
     function changeviewmode() {
         let viewmode = document.getElementById("steps-items").value;
         if(viewmode==="1"){
@@ -763,18 +742,18 @@ let showOtherItems = false;
         refreshScheduleVisibility();
     }
     function setUI(){
-        console.log( allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex])
+
         if(calendarUpdate.stepIndex==allExperiments[calendarUpdate.experimentIndex].length-1){
             document.getElementById('selectStep').innerHTML = "Finish experiment";
         }
         document.getElementById('steptitle').innerText = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['deviceTypeName'];
         document.getElementById('length').innerText = "Length: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['fixedTimeHours']+"h"+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['fixedTimeMinutes'];
         if(calendarUpdate.stepIndex>0){
-            document.getElementById('continuity').innerText = "Continuity: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type'];
+            document.getElementById('continuity2').innerText = "Continuity: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type'];
             document.getElementById('align').innerText = "Alignment: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['directionType'];
             document.getElementById('time').innerText = "Time: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['hours']+"h "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['minutes']+"m";
         }else{
-            document.getElementById('continuity').innerText = "Continuity: None";
+            document.getElementById('continuity2').innerText = "Continuity: None";
             document.getElementById('align').innerText = "Alignment: None";
             document.getElementById('time').innerText = "Time: None";
         }

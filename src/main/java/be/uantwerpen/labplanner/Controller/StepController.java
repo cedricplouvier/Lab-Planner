@@ -811,8 +811,6 @@ public class StepController {
         model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("experiment", new Experiment());
         model.addAttribute("holidays", holidays);
-
-
         return "PlanningTool/planning-exp-book-fixed";
     }
 
@@ -1005,7 +1003,6 @@ public class StepController {
                     }
                     //if previous step is not in use, delete it
                     if (!stepStillInUse) {
-                        System.out.println("Step with id " + previousStep.getId() + " was deleted");
                         stepService.delete(previousStep.getId());
                     }
                 }

@@ -38,6 +38,7 @@ public class DeviceController {
     public Iterable<Device> populateDevices() {
         return this.deviceService.findAll();
     }
+
     @ModelAttribute("allDeviceTypes")
     public Iterable<DeviceType> populateDeviceTypes() { return this.deviceTypeService.findAll(); }
     @ModelAttribute("allDeviceInformations")
@@ -69,14 +70,16 @@ public class DeviceController {
     //Info page for device
     @PreAuthorize("hasAuthority('Device - Read only - Basic') or hasAuthority('Device - Modify - All')")
     @RequestMapping(value ="/device/info/{id}", method= RequestMethod.GET)
-    public String viewDeviceInfo(@PathVariable Long id, final ModelMap model) throws IOException {
-        Locale current = LocaleContextHolder.getLocale();
+    public String viewDeviceInfo(@PathVariable Long id, final ModelMap model) {
+        Locale locale = LocaleContextHolder.getLocale();
         Device device = deviceService.findById(id).orElse(null);
+
         if(device==null){
-            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
-            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.unknown.id"));
+            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",locale).getString("error.title.unknown.id"));
+            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",locale).getString("error.device.unknown.id"));
             return "Errors/custom-error";
         }
+
         model.addAttribute("device",deviceService.findById(id).orElse(null));
         model.addAttribute("files", storageService.loadDir(deviceService.findById(id).orElse(null).getDevicename()).map(
                 path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
@@ -145,14 +148,12 @@ public class DeviceController {
     }
 
     //Create new
-
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices/put", method= RequestMethod.GET)
     public String viewCreateDevice(final ModelMap model){
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("device",new Device(Device.getDefaultDevicename(),deviceTypeService.findAll().get(0)));
         model.addAttribute("files", null);
-
         return "Devices/device-manage";
     }
 
@@ -268,19 +269,16 @@ public class DeviceController {
     }
 
     //Delete
-
     @PreAuthorize("hasAuthority('Device - Modify - All')")
     @RequestMapping(value="/devices/{id}/delete")
     public String deleteDevice(@PathVariable Long id, final ModelMap model){
         Locale current = LocaleContextHolder.getLocale();
-
         Device device = deviceService.findById(id).orElse(null);
         if(device==null){
             model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
             model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.unknown.id"));
             return "Errors/custom-error";
         }
-
         List<Step> allSteps = stepService.findAll();
         Boolean isUsed = false;
         for(Step currentStep : allSteps){
@@ -300,7 +298,6 @@ public class DeviceController {
         for(DeviceInformation information : informations){
             deviceInformationService.deleteById(Objects.requireNonNull(information.getId()));
         }
-        System.out.println(device.getDeviceInformation().size());
         deviceService.delete(id);
         model.clear();
         return "redirect:/devices";

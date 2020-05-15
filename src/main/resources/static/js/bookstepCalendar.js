@@ -218,7 +218,6 @@ function checkOverlap(schedule,personalAllowed) {
                         } else if (scheduleStart.getTime() <= stepStart.getTime() && scheduleEnd.getTime() >= stepEnd.getTime()) {
                             overlap = true;
                         }
-
                 }
             }
             if(!overlap){
@@ -246,8 +245,8 @@ function checkContinuity(stepindex,schedule,withinOfficehours) {
                 ok:false,
             }
         }
-        firstDate.setHours(firstDate.getHours()+previousStepType['continuity']['hours']);
-        firstDate.setMinutes(firstDate.getMinutes()+previousStepType['continuity']['minutes']);
+        firstDate.setHours(firstDate.getHours()+parseInt(previousStepType['continuity']['hours']));
+        firstDate.setMinutes(firstDate.getMinutes()+parseInt(previousStepType['continuity']['minutes']));
 
 
         //Continuity
@@ -258,9 +257,11 @@ function checkContinuity(stepindex,schedule,withinOfficehours) {
         if(previousStepType['continuity']['type']=="Hard"){
             if(previousStepType['continuity']['directionType']=="After"){
                 //add hours and minutes of continuity
-                firstDate.setHours(firstDate.getHours()+previousStepType['continuity']['hours']);
-                firstDate.setMinutes(firstDate.getMinutes()+previousStepType['continuity']['minutes']);
+                firstDate.setHours(firstDate.getHours()+parseInt(previousStepType['continuity']['hours']));
+                firstDate.setMinutes(firstDate.getMinutes()+parseInt(previousStepType['continuity']['minutes']));
                 secondDate = new Date(schedule.start.getFullYear(), schedule.start.getMonth(), schedule.start.getDate(), schedule.start.getHours(), schedule.start.getMinutes());
+                // console.log(secondDate);
+
                 if(firstDate.getTime()!=secondDate.getTime()){
                 return {
                     message: "This device requires a hard continuity, This step should be exactly "+previousStepType['continuity']['hours']+" hours after the previous step in the experiment.",
@@ -270,8 +271,8 @@ function checkContinuity(stepindex,schedule,withinOfficehours) {
             }else {
                 secondDate = new Date(schedule.start.getFullYear(), schedule.start.getMonth(), schedule.start.getDate(), schedule.start.getHours(), schedule.start.getMinutes());
 //add hours and minutes of continuity
-                firstDate.setHours(firstDate.getHours()-previousStepType['continuity']['hours']);
-                firstDate.setMinutes(firstDate.getMinutes()-previousStepType['continuity']['minutes']);
+                firstDate.setHours(firstDate.getHours()-parseInt(previousStepType['continuity']['hours']));
+                firstDate.setMinutes(firstDate.getMinutes()-parseInt(previousStepType['continuity']['minutes']));
                 if(firstDate.getTime()!=secondDate.getTime()){
                     return {
                         message: "This device requires a hard continuity, This step should be exactly "+previousStepType['continuity']['hours']+" hours after the previous step in the experiment.",
@@ -291,12 +292,11 @@ function checkContinuity(stepindex,schedule,withinOfficehours) {
                 }
             }
         }else {
-            console.log("tast");
             firstDate = new Date(previousSchedule.end.getFullYear(), previousSchedule.end.getMonth(), previousSchedule.end.getDate(), previousSchedule.end.getHours(), previousSchedule.end.getMinutes());
 
             secondDate = new Date(schedule.start.getFullYear(), schedule.start.getMonth(), schedule.start.getDate(), schedule.start.getHours(), schedule.start.getMinutes());
-            firstDate.setHours(firstDate.getHours()-previousStepType['continuity']['hours']);
-            firstDate.setMinutes(firstDate.getMinutes()-previousStepType['continuity']['minutes']);
+            firstDate.setHours(firstDate.getHours()-parseInt(previousStepType['continuity']['hours']));
+            firstDate.setMinutes(firstDate.getMinutes()-parseInt(previousStepType['continuity']['minutes']));
             if(!(secondDate.getTime()>=firstDate.getTime())) {
                 return {
                     message: "This device requires a soft (at least) continuity, This step should be at least more then " + previousStepType['continuity']['hours'] + " hours after the previous step in the experiment.",
@@ -318,8 +318,8 @@ function checkContinuity(stepindex,schedule,withinOfficehours) {
             }
         }else {
             secondDate = new Date(schedule.start.getFullYear(), schedule.start.getMonth(), schedule.start.getDate(), schedule.start.getHours(), schedule.start.getMinutes());
-            firstDate.setHours(firstDate.getHours()-previousStepType['continuity']['hours']);
-            firstDate.setMinutes(firstDate.getMinutes()-previousStepType['continuity']['minutes']);
+            firstDate.setHours(firstDate.getHours()-parseInt(previousStepType['continuity']['hours']));
+            firstDate.setMinutes(firstDate.getMinutes()-parseInt(previousStepType['continuity']['minutes']));
             if(!(secondDate.getTime()<=firstDate.getTime())) {
                 return {
                     message: "This device requires a hard continuity, This step should be at most mort then " + previousStepType['continuity']['hours'] + " hours after the previous step in the experiment.",
@@ -359,7 +359,6 @@ function checkContinuity(stepindex,schedule,withinOfficehours) {
             ok:false,
         }
     }
-
     //Hollidays
     var str = schedule.start.getFullYear().toString()+ "-" + ("0" + (schedule.start.getMonth() + 1)).slice(-2) + "-" + ("0" + (schedule.start.getDate())).slice(-2) ;
     for (let current = 0; current < holidays.length; current++) {
@@ -421,7 +420,7 @@ function createSuggestionSchedule(start,end,calendar) {
     let schedule = new ScheduleInfo();
     schedule.id = chance.guid();
     schedule.calendarId = calendar.id;
-    schedule.title = "Suggestion: click to select"
+    schedule.title = 'Suggestion: click to select'
     schedule.body = 'Step '+(calendarUpdate.stepIndex+1)+' of Experiment '+allExperiments[calendarUpdate.experimentIndex]['experimentTypeName']+', \nDevice = '+step['deviceType']['deviceTypeName'];
     schedule.isReadOnly = true;
     schedule.start = start;
@@ -555,7 +554,6 @@ function generateSchedule(viewName, renderStart, renderEnd) {
     }
     if(suggestion){
         ScheduleList.push(suggestion);
-
     }
 }
 
