@@ -23,7 +23,7 @@ public class StepType extends AbstractPersistable<Long> {
     @Column(name = "fixedTimeType")
     private String fixedTimeType = "No";
     @Column(name = "fixedTimeHours")
-    private int fixedTimeHours;
+    private int fixedTimeHours = 1  ;
     @Column(name = "fixedTimeMinutes")
     private int fixedTimeMinutes;
 

@@ -91,11 +91,11 @@ public class LabplannerApplication extends WebMvcConfigurerAdapter {
 
     }
 
-    @Bean
-    public NoOpPasswordEncoder passwordEncoder() {
-        return (NoOpPasswordEncoder)
-                NoOpPasswordEncoder.getInstance();
-    }
+//    @Bean
+//    public NoOpPasswordEncoder passwordEncoder() {
+//        return (NoOpPasswordEncoder)
+//                NoOpPasswordEncoder.getInstance();
+//    }
 
     @Bean
     public ApplicationSecurity applicationSecurity() {

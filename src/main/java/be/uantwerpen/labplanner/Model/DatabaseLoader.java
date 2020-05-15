@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -80,7 +81,12 @@ public class DatabaseLoader {
 
         this.officeHoursRepository = officeHoursRepository;
         this.systemSettingsRepository = systemSettingsRepository;
+
+
     }
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostConstruct
     private void initDatabase() throws IOException {
@@ -271,16 +277,16 @@ public class DatabaseLoader {
         roleRepository.save(administrator);
 
 
-        User u1 = new User("Cedric", "PW", "cedric.plouvier@student.uantwerpen.be", "Cedric", "Plouvier", "20152267", "", "", null, null, null);
-        User u2 = new User("Ruben", "PW", "ruben.joosen@student.uantwerpen.be", "Ruben", "Joosen", "20164473", "", "", null, null, null);
-        User u3 = new User("Jaimie", "PW", "jaimie.vranckx@student.uantwerpen.be", "Jaimie", "Vranckx", "20155797", "", "", null, null, null);
-        User u4 = new User("Ali", "PW", "mohammad.amir2@student.uantwerpen.be", "Ali", "Amir", "20163446", "", "", null, null, null);
-        User u5 = new User("Timo", "PW", "timo.nelen@student.uantwerpen.be", "Timo", "Nelen", "S0162117", "", "", null, null, null);
-        User u6 = new User("Ondrej", "PW", "ondrej.bures@student.uantwerpen.be", "Ondrej", "Bures", "20160002", "", "", null, null, null);
-        User u7 = new User("Bachelor", "PW", "bachelor@student.uantwerpen.be", "Bach", "Student", "20170001", "", "", null, null, null);
-        User u8 = new User("Master", "PW", "master@student.uantwerpen.be", "Mas", "Student", "20160009", "", "", null, null, null);
-        User u9 = new User("Researcher", "PW", "researcher@uantwerpen.be", "Researcher", "Developper", "20100001", "", "", null, null, null);
-        User admin = new User("admin", "admin", "admin@uantwerpen.be", "admin", "admin", null, "", "", null, null, null);
+        User u1 = new User("Cedric", passwordEncoder.encode("PW"), "cedric.plouvier@student.uantwerpen.be", "Cedric", "Plouvier", "20152267", "", "", null, null, null);
+        User u2 = new User("Ruben", passwordEncoder.encode("PW"), "ruben.joosen@student.uantwerpen.be", "Ruben", "Joosen", "20164473", "", "", null, null, null);
+        User u3 = new User("Jaimie", passwordEncoder.encode("PW"), "jaimie.vranckx@student.uantwerpen.be", "Jaimie", "Vranckx", "20155797", "", "", null, null, null);
+        User u4 = new User("Ali", passwordEncoder.encode("PW"), "mohammad.amir2@student.uantwerpen.be", "Ali", "Amir", "20163446", "", "", null, null, null);
+        User u5 = new User("Timo", passwordEncoder.encode("PW"), "timo.nelen@student.uantwerpen.be", "Timo", "Nelen", "S0162117", "", "", null, null, null);
+        User u6 = new User("Ondrej", passwordEncoder.encode("PW"), "ondrej.bures@student.uantwerpen.be", "Ondrej", "Bures", "20160002", "", "", null, null, null);
+        User u7 = new User("Bachelor", passwordEncoder.encode("PW"), "bachelor@student.uantwerpen.be", "Bach", "Student", "20170001", "", "", null, null, null);
+        User u8 = new User("Master", passwordEncoder.encode("PW"), "master@student.uantwerpen.be", "Mas", "Student", "20160009", "", "", null, null, null);
+        User u9 = new User("Researcher", passwordEncoder.encode("PW"), "researcher@uantwerpen.be", "Researcher", "Developper", "20100001", "", "", null, null, null);
+        User admin = new User("admin", passwordEncoder.encode("admin"), "admin@uantwerpen.be", "admin", "admin", null, "", "", null, null, null);
         //Set<Role> roles = new HashSet<>();
         Set<Role> roles = new HashSet<>();
         roles.add(administrator);
