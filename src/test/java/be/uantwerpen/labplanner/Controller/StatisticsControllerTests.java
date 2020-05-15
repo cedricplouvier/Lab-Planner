@@ -381,7 +381,7 @@ public class StatisticsControllerTests {
         steps.clear();
         step1.setEnd("2020-01-11");
         steps.add(step1);
-        Assert.assertEquals(19,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[0]);
+        Assert.assertEquals(31,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[0]);
 
         //not same month February => march leap
         steps.clear();
@@ -389,16 +389,16 @@ public class StatisticsControllerTests {
         step1.setStart("2016-02-28");
         step1.setEnd("2016-03-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
         //not same month February => march not leap
         steps.clear();
         statisticsController.setSelectedYear(model,"2017");
         step1.setStart("2017-02-28");
         step1.setEnd("2017-03-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
 
         //if even month -> odd month => +30
         steps.clear();
@@ -406,32 +406,32 @@ public class StatisticsControllerTests {
         step1.setStart("2020-04-30");
         step1.setEnd("2020-05-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
         //if odd month -> even month => +31
         steps.clear();
         step1.setStart("2020-05-30");
         step1.setEnd("2020-06-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
 
         //more than one month start even month
         steps.clear();
         step1.setStart("2020-04-30");
         step1.setEnd("2020-06-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
-        Assert.assertEquals(365,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
+        Assert.assertEquals(730,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
         //more than one month start odd month
         steps.clear();
         step1.setStart("2020-09-30");
         step1.setEnd("2020-11-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[8]);
-        Assert.assertEquals(365,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[9]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[10]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[8]);
+        Assert.assertEquals(730,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[9]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[10]);
     }
 
     @Test
@@ -459,7 +459,7 @@ public class StatisticsControllerTests {
         steps.clear();
         step1.setEnd("2019-01-11");
         steps.add(step1);
-        Assert.assertEquals(19,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[0]);
+        Assert.assertEquals(31,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[0]);
 
         //not same month February => march leap
         steps.clear();
@@ -467,16 +467,16 @@ public class StatisticsControllerTests {
         step1.setStart("2016-02-28");
         step1.setEnd("2016-03-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
         //not same month February => march not leap
         steps.clear();
         statisticsController.setSelectedYear(model,"2017");
         step1.setStart("2017-02-28");
         step1.setEnd("2017-03-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
 
         //if even month -> odd month => +30
         steps.clear();
@@ -484,32 +484,32 @@ public class StatisticsControllerTests {
         step1.setStart("2019-04-30");
         step1.setEnd("2019-05-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
         //if odd month -> even month => +31
         steps.clear();
         step1.setStart("2019-05-30");
         step1.setEnd("2019-06-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
 
         //more than one month start even month
         steps.clear();
         step1.setStart("2019-04-30");
         step1.setEnd("2019-06-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
-        Assert.assertEquals(365,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
+        Assert.assertEquals(730,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
         //more than one month start odd month
         steps.clear();
         step1.setStart("2019-09-30");
         step1.setEnd("2019-11-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[8]);
-        Assert.assertEquals(365,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[9]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[10]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[8]);
+        Assert.assertEquals(730,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[9]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[10]);
 
 
         // Test if not started step gets rejected
@@ -549,7 +549,7 @@ public class StatisticsControllerTests {
         steps.clear();
         step1.setEnd("3021-01-11");
         steps.add(step1);
-        Assert.assertEquals(19,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[0]);
+        Assert.assertEquals(31,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[0]);
 
         //not same month February => march leap
         steps.clear();
@@ -557,16 +557,16 @@ public class StatisticsControllerTests {
         step1.setStart("3020-02-28");
         step1.setEnd("3020-03-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
         //not same month February => march not leap
         steps.clear();
         statisticsController.setSelectedYear(model,"3021");
         step1.setStart("3021-02-28");
         step1.setEnd("3021-03-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
 
         //if even month -> odd month => +30
         steps.clear();
@@ -574,32 +574,32 @@ public class StatisticsControllerTests {
         step1.setStart("3021-04-30");
         step1.setEnd("3021-05-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
         //if odd month -> even month => +31
         steps.clear();
         step1.setStart("3021-05-30");
         step1.setEnd("3021-06-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
 
         //more than one month start even month
         steps.clear();
         step1.setStart("3021-04-30");
         step1.setEnd("3021-06-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
-        Assert.assertEquals(365,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
+        Assert.assertEquals(730,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
         //more than one month start odd month
         steps.clear();
         step1.setStart("3021-09-30");
         step1.setEnd("3021-11-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[8]);
-        Assert.assertEquals(365,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[9]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[10]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[8]);
+        Assert.assertEquals(730,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[9]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[10]);
 
         // Test if not future step gets rejected
         steps.clear();
