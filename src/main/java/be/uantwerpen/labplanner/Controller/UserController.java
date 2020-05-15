@@ -143,7 +143,7 @@ public class UserController {
         User curruser = (User) authentication.getPrincipal();
 
 
-        if (curruser.getId() != user.getId()){
+        if (!curruser.getId().equals(user.getId())){
             model.addAttribute("PWError", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("users.pwfalse") );
             model.addAttribute(user);
             return "Users/password-manage";
