@@ -36,7 +36,7 @@ public class PieceOfMixture extends AbstractPersistable<Long> {
     }
 
     @Override
-    protected void setId(Long id) {
+    public void setId(Long id) {
         super.setId(id);
     }
 
