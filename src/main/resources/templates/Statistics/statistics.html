@@ -39,7 +39,8 @@
                   onmouseenter="this.style.backgroundColor='rgb(39,107,210)'" onmouseleave="this.style.backgroundColor='rgb(47,126,247'">
                 <br>
                 <ul>
-                    <p><span th:text="#{statistics.selectedText}"></span><span th:text="${selectedTypeOfGraph}"></span></p>
+                    <p><span th:text="#{statistics.selectedText}"></span>
+                    <b style="color: rgb(135,26,51); font-size: 20px"><span th:text="${selectedTypeOfGraph}"></span></b></p>
                     <ul th:each="graphType : ${selectableGraphTypes}">
                         <div>
                             <input type="radio" th:name="selectedTypeOfGraph" th:value="${graphType}" onclick="this.form.submit();">
@@ -55,7 +56,8 @@
                   onmouseenter="this.style.backgroundColor='rgb(39,107,210)'" onmouseleave="this.style.backgroundColor='rgb(47,126,247'">
                 <br>
                 <ul>
-                    <p><span th:text="#{statistics.selectedText}"></span><span th:text="${selectedTimePeriod}"></span></p>
+                    <p><span th:text="#{statistics.selectedText}"></span>
+                        <b style="color: rgb(135,26,51); font-size: 20px"><span th:text="${selectedTimePeriod}"></span></b></p>
                     <ul th:each="timePeriod : ${selectableTimePeriods}">
                         <div>
                             <input type="radio" th:name="selectedTimePeriod" th:value="${timePeriod}" onclick="this.form.submit();">
@@ -71,7 +73,8 @@
                   onmouseenter="this.style.backgroundColor='rgb(39,107,210)'" onmouseleave="this.style.backgroundColor='rgb(47,126,247'">
                 <br>
                 <ul>
-                    <p><span th:text="#{statistics.selectedText}"></span><span th:text="${selectedYear}"></span></p>
+                    <p><span th:text="#{statistics.selectedText}"></span>
+                        <b style="color: rgb(135,26,51); font-size: 20px"><span th:text="${selectedYear}"></span></b></p>
                     <ul th:each="years : ${selectableYears}">
                         <div>
                             <input type="radio" th:name="selectedYear" th:value="${years}" onclick="this.form.submit();">

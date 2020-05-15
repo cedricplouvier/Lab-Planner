@@ -82,7 +82,7 @@
                 '   </td>' +
                 '   <td>' +
                 '      <div class="input-group">' +
-                '           <input type="number" min="0" max="23" step="1" class=" form-control input-device" style="width: 20%;" value="0" id="stepTypes' + rowCount + '.continuity.hours" name="stepTypes[' + rowCount + '].continuity.hours">' +
+                '           <input type="number" min="0" step="1" class=" form-control input-device" style="width: 20%;" value="0" id="stepTypes' + rowCount + '.continuity.hours" name="stepTypes[' + rowCount + '].continuity.hours">' +
                 '           <span class="input-group-btn" style="width:0px;"></span>' +
                 '           <input type="number" min="0" max="59" step="1" class="form-control input-device" style="width: 20%; " value="0" id="stepTypes' + rowCount + '.continuity.minutes" name="stepTypes[' + rowCount + '].continuity.minutes">' +
                 '       </div>' +
@@ -101,7 +101,7 @@
                 '   <td>' +
                 '       <div class="input-group">' +
                 '           <input type="number" min="0" step="1" class=" form-control input-device" style="width: 20%; " value="0" id="stepTypes' + rowCount + '.fixedTimeHours" name="stepTypes[' + rowCount + '].fixedTimeHours" disabled>' +
-                '           <span class="input-group-btn" max="23" style="width:0px;"></span>' +
+                '           <span class="input-group-btn" style="width:0px;"></span>' +
                 '           <input type="number" min="0" max="59" step="1" class=" form-control input-device" style="width: 20%;" value="0" id="stepTypes' + rowCount + '.fixedTimeMinutes" name="stepTypes[' + rowCount + '].fixedTimeMinutes" disabled>' +
                 '       </div>' +
                 '   </td>' +
@@ -247,7 +247,7 @@
                 </td>
                 <td>
                     <div class="input-group">
-                        <input type="number" min="0"  max="23" step="1" class=" form-control input-device"
+                        <input type="number" min="0" step="1" class=" form-control input-device"
                                style="width: 20%;"
                                th:field="*{stepTypes[__${itemStat.index}__].continuity.hours}"
                                th:value="${stepType.continuity.hours}"/>
@@ -276,7 +276,7 @@
                 </td>
                 <td>
                     <div class="input-group">
-                        <input type="number" min="0" max="23" step="1" class=" form-control input-device"
+                        <input type="number" min="0" step="1" class=" form-control input-device"
                                style="width: 20%;"
                                th:field="*{stepTypes[__${itemStat.index}__].fixedTimeHours}"
                                th:value="${stepType.fixedTimeHours}"

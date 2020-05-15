@@ -63,6 +63,7 @@ public class OwnProductService {
             tempProd.setProductCreatorId(product.getProductCreatorId());
             tempProd.setTags(product.getTags());
             tempProd.setUrl(product.getUrl());
+            tempProd.setProductStockHistory(product.getProductStockHistory());
 
             if(product.getImageName()!=null){
                 tempProd.setImageName(product.getImageName());

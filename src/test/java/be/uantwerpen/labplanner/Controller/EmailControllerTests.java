@@ -100,6 +100,8 @@ public class EmailControllerTests {
         user.setId((long)34);
         user.setEmail("ruben.joosen@gmail.com");
         user.setRoles(roles);
+        user.setFirstName("test");
+
 
 
         List<User> users = new ArrayList<>();
@@ -135,6 +137,8 @@ public class EmailControllerTests {
         user.setId((long)34);
         user.setEmail("ruben.joosen@gmail.com");
         user.setRoles(roles);
+        user.setFirstName("test");
+
 
 
         List<User> users = new ArrayList<>();
@@ -171,6 +175,7 @@ public class EmailControllerTests {
         user.setId((long)34);
         user.setEmail("ruben.joose");
         user.setRoles(roles);
+        user.setFirstName("test");
 
 
         List<User> users = new ArrayList<>();

@@ -185,14 +185,18 @@ public class DeviceController {
             model.addAttribute("deviceType", deviceTypeService.findAll());
             return "Devices/device-manage";
         }
-
+        if(device.getDeviceType()==null){
+            model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+            model.addAttribute("device",device);
+            model.addAttribute("errormessage","The device has no devicetype object");
+            return "Devices/device-manage";
+        }
         if(device.getDevicename().length()==0||Device.getDefaultDevicename().equals(device.getDevicename())){
             model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
             model.addAttribute("device",device);
             model.addAttribute("errormessage",ResourceBundle.getBundle("messages",current).getString("error.invalid.name"));
             return "Devices/device-manage";
         }
-
         Device tempDevice = deviceService.findByDevicename(device.getDevicename()).orElse(null);
         if(tempDevice!=null&&!device.getId().equals(tempDevice.getId())){
             model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
@@ -338,7 +342,7 @@ public class DeviceController {
             model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("error.device.type.inuse"));
             return "Devices/list-device-types";
         }
-        deviceTypeService.delete(id);
+        deviceTypeService.deleteById(id);
         model.clear();
         return "redirect:/devices";
     }

@@ -40,6 +40,9 @@ public class StepTypeService {
             tempStep.setDeviceType(stepType.getDeviceType());
             tempStep.setStepTypeName(stepType.getStepTypeName());
             tempStep.setFixedTimeType(stepType.getFixedTimeType());
+            tempStep.setHasFixedLength(stepType.getHasFixedLength());
+            tempStep.setFixedTimeHours(stepType.getFixedTimeHours());
+            tempStep.setFixedTimeMinutes(stepType.getFixedTimeMinutes());
             // continuity is already saved and in custom experiment can't be changed
             Continuity customContinuity = continuityService.findById((long) 191).orElse(null);
             tempStep.setContinuity(customContinuity);
@@ -56,6 +59,9 @@ public class StepTypeService {
             tempStep.setDeviceType(stepType.getDeviceType());
             tempStep.setStepTypeName(stepType.getStepTypeName());
             tempStep.setFixedTimeType(stepType.getFixedTimeType());
+            tempStep.setHasFixedLength(stepType.getHasFixedLength());
+            tempStep.setFixedTimeHours(stepType.getFixedTimeHours());
+            tempStep.setFixedTimeMinutes(stepType.getFixedTimeMinutes());
             //save continuity
             Continuity tmpContinuity = stepType.getContinuity().getId() == null ? null : continuityService.findById(stepType.getContinuity().getId()).orElse(null);
             if (tmpContinuity != null) {

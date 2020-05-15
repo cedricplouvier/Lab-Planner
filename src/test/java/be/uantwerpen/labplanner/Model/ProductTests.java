@@ -24,7 +24,8 @@ public class ProductTests {
     public void TestProduct() throws Exception{
         product = new OwnProduct();
 
-        assertNull(product.getName());
+        //assertNull(product.getName());
+        assertEquals(product.getName(), "default_productname");
         assertNull(product.getTags());
         assertNull(product.getDescription());
         assertNull(product.getStockLevel());

@@ -17,26 +17,56 @@
 
 </head>
 <body>
-<div class ="container" >
-    <div th:replace="navbar :: navbar"></div>
-</div>
+    <div class ="container" >
+        <div th:replace="navbar :: navbar"></div>
+    </div>
 
-<div class = "container">
-    <hr style="color:rgb(0,115,250); background-color:rgb(0,115,250); height:1px">
-<div class='wrap'>
-    <div class='code-html' id='code-html'>
-        <div id="chart-area2"></div>
+    <div class = "container">
         <hr style="color:rgb(0,115,250); background-color:rgb(0,115,250); height:1px">
-        <div id="chart-area"></div>
-    </div>
-    <div class='custom-area'>
-        <div id='error-dim'>
-            <span id='error-text'></span>
-            <div id='error-stack'></div>
-        </div>
-    </div>
-</div>
+    <div class='wrap'>
+        <div class='code-html' id='code-html'>
+            <form th:action="@{/statistics/stockStatistics/getSelectedStartStockHistory}">
+                <label class="control-label" th:text="#{stockStatistics.setStartMonth}"></label>
+                <input type="month" id="start" th:name="selectedStartMonthStockHistory"
+                       th:value="${selectedStartMonthStockHistory}"
+                       min="2019-01" th:max="${maxDateSelect}">
+                <button type="submit" name="history-start" class="btn btn-primary" th:text="#{statistics.changeDate}"></button>
+            </form> <br>
 
+            <form th:action="@{/statistics/stockStatistics/getSelectedProduct}" th:object="${selectedProd}">
+                <select th:field="*{name}">
+                    <option th:each="product : ${products}"
+                            th:value="${product.getName()}"
+                            th:text="${product.getName()}"
+                    >Options</option>
+                </select>
+                <br><br>
+                <button class="btn btn-primary" type="submit" th:text="#{statistics.addProduct}"></button>
+                <a th:href="@{/statistics/stockStatistics/resetGraphStockHistory}" class="btn btn-primary" th:text="#{statistics.clearProdList}"></a>
+                <br><br>
+            </form>
+            <div class="alert alert-danger" role="alert" th:if="${ProdStatus}==productLimit" th:text="#{statistics.amountProdErrorMessage}"></div>
+            <div class="alert alert-danger" role="alert" th:if="${ProdStatus}==productDuplicate" th:text="#{statistics.duplicateProduct}"></div>
+            <p th:text="#{statistics.amountProdMessage}"></p>
+            <div id="chart-area"></div>
+            <hr style="color:rgb(0,115,250); background-color:rgb(0,115,250); height:1px">
+            <form th:action="@{/statistics/stockStatistics/getSelectedMonthStock}">
+                <label class="control-label" th:text="#{stockStatistics.setStartMonth}"></label>
+                <input type="month" th:name="selectedMonthStock"
+                       th:value="${selectedMonthStock}"
+                       min="2019-01" th:max="${maxDateSelect}">
+                <button type="submit" name="history-start" class="btn btn-primary" th:text="#{statistics.changeDate}"></button>
+            </form> <br>
+            <div id="chart-area2"></div>
+        </div>
+        <div class='custom-area'>
+            <div id='error-dim'>
+                <span id='error-text'></span>
+                <div id='error-stack'></div>
+            </div>
+        </div>
+        <hr style="color:rgb(0,115,250); background-color:rgb(0,115,250); height:1px">
+    </div>
 </div>
 <script type='text/javascript' src='https://uicdn.toast.com/tui.chart/latest/raphael.js'></script>
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/core-js/2.5.7/core.js'></script>
@@ -44,26 +74,17 @@
 
 <script classe='code-js' id="'code-js" th:inline="javascript">
 
-    var allProductNames = [];
-
-    var stockLevels = [];
-
-    /*[# th:each="n : ${products}"]*/
-    allProductNames.push("[(${n.getName()})]");
-    /*[/]*/
-
-    /*[# th:each="n : ${products}"]*/
-    stockLevels.push("[(${n.getStockLevel()})]");
-    /*[/]*/
-
+    var allProductNames = /*[[${productNames}]]*/ [];
+    var stockLevelSelectedMonth = /*[[${stockLevelMonth}]]*/ [];
+    var highestDataPointStock = "[(${highestDataPointStock})]";
 
     var container = document.getElementById('chart-area2');
     var data = {
-        categories: [allProductNames[0],allProductNames[1],allProductNames[2],allProductNames[3],allProductNames[4],allProductNames[5],allProductNames[6],allProductNames[7]],
+        categories: allProductNames,
         series: [
             {
                 name: 'Stock Levels',
-                data: [stockLevels[0], stockLevels[1], stockLevels[2], stockLevels[3], stockLevels[4], stockLevels[5], stockLevels[6], stockLevels[7]]
+                data: stockLevelSelectedMonth
             }
         ]
     };
@@ -75,9 +96,9 @@
             format: '1,000'
         },
         yAxis: {
-            title: 'Amount',
+            title: 'Amount (kg/liter/unit)',
             min: 0,
-            max: 2100
+            max: highestDataPointStock + 100
         },
         xAxis: {
             title: 'Products'
@@ -102,50 +123,99 @@
 
 <script class='code-js' id='code-js' th:inline="javascript">
     var container = document.getElementById('chart-area');
-    var allProductNames2 = [];
+    var selectedProductNames2 = /*[[${selectedProductNames}]]*/ [];
+    var shownMonthsHistory = /*[[${shownMonthsHistory}]]*/ [];
+    var stockLevels2 = /*[[${stockLevelStartMonthHistory}]]*/ [];
+    var productCounter = "[(${productCounter})]";
 
-    var stockLevels2 = [];
-
-    /*[# th:each="n : ${products}"]*/
-    allProductNames2.push("[(${n.getName()})]");
-    /*[/]*/
-
-    /*[# th:each="n : ${products}"]*/
-    stockLevels2.push("[(${n.getStockLevel()})]");
-    /*[/]*/
-    var data = {
-        categories: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    var data0 = {
+        categories: shownMonthsHistory,
+        series: [
+            {}
+        ]
+    };
+    var data1 = {
+        categories: shownMonthsHistory,
         series: [
             {
-                name: allProductNames2[0],
-                data: [-3.5, -1.1, 4.0, 11.3, 17.5, 21.5, 24.9, 25.2, 20.4, 13.9, 6.6, -0.6]
+                name: selectedProductNames2[0],
+                data: stockLevels2[0]
+            }
+        ]
+    };
+    var data2 = {
+        categories: shownMonthsHistory,
+        series: [
+            {
+                name: selectedProductNames2[0],
+                data: stockLevels2[0]
             },
             {
-                name: allProductNames2[1],
-                data: [3.8, 5.6, 7.0, 9.1, 12.4, 15.3, 17.5, 17.8, 15.0, 10.6, 6.4, 3.7]
+                name: selectedProductNames2[1],
+                data: stockLevels2[1]
+            }
+        ]
+    };
+    var data3 = {
+        categories: shownMonthsHistory,
+        series: [
+            {
+                name: selectedProductNames2[0],
+                data: stockLevels2[0]
             },
             {
-                name: allProductNames2[2],
-                data: [22.1, 22.0, 20.9, 18.3, 15.2, 12.8, 11.8, 13.0, 15.2, 17.6, 19.4, 21.2]
+                name: selectedProductNames2[1],
+                data: stockLevels2[1]
             },
             {
-                name: allProductNames2[3],
-                data: [-10.3, -9.1, -4.1, 4.4, 12.2, 16.3, 18.5, 16.7, 10.9, 4.2, -2.0, -7.5]
+                name: selectedProductNames2[2],
+                data: stockLevels2[2]
+            }
+        ]
+    };
+    var data4 = {
+        categories: shownMonthsHistory,
+        series: [
+            {
+                name: selectedProductNames2[0],
+                data: stockLevels2[0]
             },
             {
-                name: allProductNames2[4],
-                data: [-5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5]
+                name: selectedProductNames2[1],
+                data: stockLevels2[1]
             },
             {
-                name: allProductNames2[5],
-                data: [-10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10]
+                name: selectedProductNames2[2],
+                data: stockLevels2[2]
             },
             {
-                name: allProductNames2[6],
-                data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-            },{
-                name: allProductNames2[7],
-                data: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+                name: selectedProductNames2[3],
+                data: stockLevels2[3]
+            }
+        ]
+    };
+    var data5 = {
+        categories: shownMonthsHistory,
+        series: [
+            {
+                name: selectedProductNames2[0],
+                data: stockLevels2[0]
+            },
+            {
+                name: selectedProductNames2[1],
+                data: stockLevels2[1]
+            },
+            {
+                name: selectedProductNames2[2],
+                data: stockLevels2[2]
+            },
+            {
+                name: selectedProductNames2[3],
+                data: stockLevels2[3]
+            },
+            {
+                name: selectedProductNames2[4],
+                data: stockLevels2[4]
             }
         ]
     };
@@ -165,11 +235,11 @@
             tickInterval: 'auto'
         },
         series: {
-            showDot: false,
+            showDot: true,
             zoomable: true
         },
         tooltip: {
-            suffix: '°C'
+            suffix: 'kg/liter/unit'
         },
         plot: {
             bands: [
@@ -198,7 +268,19 @@
     // For apply theme
     // tui.chart.registerTheme('myTheme', theme);
     // options.theme = 'myTheme';
-    var chart = tui.chart.lineChart(container, data, options);
+    if (productCounter == 0) {
+        tui.chart.lineChart(container, data0, options);
+    } else if (productCounter == 1) {
+        tui.chart.lineChart(container, data1, options);
+    } else if (productCounter == 2) {
+        tui.chart.lineChart(container, data2, options);
+    } else if (productCounter == 3) {
+        tui.chart.lineChart(container, data3, options);
+    } else if (productCounter == 4) {
+        tui.chart.lineChart(container, data4, options);
+    } else if (productCounter == 5) {
+        tui.chart.lineChart(container, data5, options);
+    }
 </script>
 <!--For tutorial page-->
 <script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/codemirror.js'></script>
@@ -208,6 +290,6 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/mode/javascript/javascript.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/addon/lint/lint.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/addon/lint/javascript-lint.js'></script>
-
+    <div th:replace="footer :: footer"></div>
 </body>
 </html>
