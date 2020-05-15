@@ -1,14 +1,8 @@
 package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.LabplannerApplication;
-import be.uantwerpen.labplanner.Model.Device;
-import be.uantwerpen.labplanner.Model.DeviceType;
-import be.uantwerpen.labplanner.Model.OwnProduct;
-import be.uantwerpen.labplanner.Model.Step;
-import be.uantwerpen.labplanner.Service.DeviceService;
-import be.uantwerpen.labplanner.Service.DeviceTypeService;
-import be.uantwerpen.labplanner.Service.OwnProductService;
-import be.uantwerpen.labplanner.Service.StepService;
+import be.uantwerpen.labplanner.Model.*;
+import be.uantwerpen.labplanner.Service.*;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,6 +56,9 @@ public class StatisticsControllerTests {
     @Mock
     private OwnProductService productService;
 
+    @Mock
+    private OfficeHoursService officeHoursService;
+
     @InjectMocks
     private StatisticsController statisticsController;
 
@@ -88,7 +85,10 @@ public class StatisticsControllerTests {
 
         List<Device> devices = new ArrayList<>();
         List<Step> steps = new ArrayList<>();
-
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(8,20,0,0);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
         when(deviceService.findAll()).thenReturn(devices);
         when(stepService.findAll()).thenReturn(steps);
         mockMvc.perform(get("/statistics/statistics").with(user("test").password("test")
@@ -118,6 +118,11 @@ public class StatisticsControllerTests {
         int highestAbsoluteValueHours=10;
         int test=11;
         int testValue = 1;
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(8,20,0,0);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
         Device dev = new Device();
         dev.setId(id);
         DeviceType devType = new DeviceType();
@@ -359,6 +364,12 @@ public class StatisticsControllerTests {
         model.addAttribute("selectedTimePeriod","All");
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
+
         //calculate for month i if same month & same day
         step1.setStart("2020-01-10");
         step1.setEnd("2020-01-10");
@@ -431,6 +442,12 @@ public class StatisticsControllerTests {
         model.addAttribute("selectedTimePeriod","Started");
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
+
         //calculate for month i if same month & same day
         step1.setStart("2019-01-10");
         step1.setEnd("2019-01-10");
@@ -515,6 +532,12 @@ public class StatisticsControllerTests {
         model.addAttribute("selectedTimePeriod","Future");
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
+
         //calculate for month i if same month & same day
         step1.setStart("3021-01-10");
         step1.setEnd("3021-01-10");
@@ -600,7 +623,15 @@ public class StatisticsControllerTests {
         model.addAttribute("selectedTimePeriod","All");
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
-        Float labOpeningHoursInYear = statisticsController.getLabOpeningHoursInYear();
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        float labClosingTime = currentOfficeHours.getEndHour();
+        float labOpeningTime = currentOfficeHours.getStartHour();
+        float labOpeningHoursInYear = (statisticsController.getAmountOfWorkDaysInYear()*(labClosingTime-labOpeningTime));
+        when(officeHoursService.findAll()).thenReturn(officeHours);
+
         //calculate if same month & same day
         step1.setStart("2020-01-10");
         step1.setEnd("2020-01-10");
@@ -661,7 +692,15 @@ public class StatisticsControllerTests {
         model.addAttribute("selectedTimePeriod","Started");
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
-        Float labOpeningHoursInYear = statisticsController.getLabOpeningHoursInYear();
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        float labClosingTime = currentOfficeHours.getEndHour();
+        float labOpeningTime = currentOfficeHours.getStartHour();
+        float labOpeningHoursInYear = (statisticsController.getAmountOfWorkDaysInYear()*(labClosingTime-labOpeningTime));
+        when(officeHoursService.findAll()).thenReturn(officeHours);
+
         //calculate if same month & same day
         step1.setStart("2019-01-10");
         step1.setEnd("2019-01-10");
@@ -731,7 +770,15 @@ public class StatisticsControllerTests {
         model.addAttribute("selectedTimePeriod","Future");
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
-        Float labOpeningHoursInYear = statisticsController.getLabOpeningHoursInYear();
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        float labClosingTime = currentOfficeHours.getEndHour();
+        float labOpeningTime = currentOfficeHours.getStartHour();
+        float labOpeningHoursInYear = (statisticsController.getAmountOfWorkDaysInYear()*(labClosingTime-labOpeningTime));
+        when(officeHoursService.findAll()).thenReturn(officeHours);
+
         //calculate if same month & same day
         step1.setStart("3019-01-10");
         step1.setEnd("3019-01-10");
@@ -799,6 +846,11 @@ public class StatisticsControllerTests {
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2020");
         model.addAttribute("selectedTimePeriod", "All");
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
         Float amountOfWorkDaysInYear = statisticsController.getAmountOfWorkDaysInYear();
         List<Step> steps = new ArrayList<>();
         Step stepTest = new Step();
@@ -1036,6 +1088,11 @@ public class StatisticsControllerTests {
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","3019");
         model.addAttribute("selectedTimePeriod", "Future");
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
         Float amountOfWorkDaysInYear = statisticsController.getAmountOfWorkDaysInYear();
         List<Step> steps = new ArrayList<>();
         Step stepTest = new Step();
@@ -1273,6 +1330,11 @@ public class StatisticsControllerTests {
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2019");
         model.addAttribute("selectedTimePeriod", "Started");
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
         Float amountOfWorkDaysInYear = statisticsController.getAmountOfWorkDaysInYear();
         List<Step> steps = new ArrayList<>();
         Step stepTest = new Step();

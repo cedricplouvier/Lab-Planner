@@ -45,6 +45,9 @@ public class StatisticsController {
     @Autowired
     private OwnProductService productService;
 
+    @Autowired
+    private OfficeHoursService officeHoursService;
+
     @ModelAttribute("deviceCounter")
     private int getdeviceCounter(){
         return 0;
@@ -185,10 +188,6 @@ public class StatisticsController {
     }
 
     float amountOfWorkDaysInYear = 200;
-    float labOpeningTime = 8;
-    float labClosingTime = 20;
-    float labOpeningHoursInYear = amountOfWorkDaysInYear*(labClosingTime-labOpeningTime);
-
 
     /**
      *
@@ -654,6 +653,9 @@ public class StatisticsController {
      * @throws ParseException if date object is badly parsed
      */
     public int[] calculateTotalHoursDeviceByYearAndMonth(final ModelMap model, List<Step> selectedDeviceSteps) throws ParseException {
+        OfficeHours currentOfficeHours = officeHoursService.findAll().get(0);
+        float labOpeningTime = currentOfficeHours.getStartHour();
+        float labClosingTime = currentOfficeHours.getEndHour();
         int[] totalHoursByMonth = new int[12];
         String[] months = new String[]{"01","02","03","04","05","06","07","08","09","10","11","12"};
         String selectedTimePeriod = (String) model.getAttribute("selectedTimePeriod");
@@ -922,6 +924,10 @@ public class StatisticsController {
      * @throws ParseException if date object is badly parsed
      */
     public float calculateOccupancyHours(final ModelMap model, List<Step> selectedDeviceSteps, float totalDeviceHoursYear) throws ParseException {
+        OfficeHours currentOfficeHours = officeHoursService.findAll().get(0);
+        float labOpeningTime = currentOfficeHours.getStartHour();
+        float labClosingTime = currentOfficeHours.getEndHour();
+        float labOpeningHoursInYear = amountOfWorkDaysInYear*(labClosingTime-labOpeningTime);
         float occupancySelectedYearHours=0;
         String selectedTimePeriod = (String) model.getAttribute("selectedTimePeriod");
         SimpleDateFormat formatDateHourMin = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -1135,6 +1141,9 @@ public class StatisticsController {
      * @throws ParseException when date object is badly parsed
      */
     public float calculateOccupancyDays(final ModelMap model, List<Step> selectedDeviceSteps, float totalDeviceDaysYear) throws ParseException {
+        OfficeHours currentOfficeHours = officeHoursService.findAll().get(0);
+        float labOpeningTime = currentOfficeHours.getStartHour();
+        float labClosingTime = currentOfficeHours.getEndHour();
         float occupancySelectedYearDays=0;
         List<String> bookedDaysStart = new ArrayList<>();
         List<String> bookedDaysEnd = new ArrayList<>();
@@ -1786,14 +1795,6 @@ public class StatisticsController {
      */
     public void setSelectedYear(final ModelMap model, String year) {
          model.addAttribute("selectedYear",year);
-    }
-
-    /**
-     * getter method for the lab opening hours in a year
-     * @return opening hour of the lab in a year
-     */
-    public float getLabOpeningHoursInYear(){
-        return labOpeningHoursInYear;
     }
 
     /**
