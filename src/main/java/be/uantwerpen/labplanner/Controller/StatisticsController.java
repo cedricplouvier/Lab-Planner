@@ -45,6 +45,9 @@ public class StatisticsController {
     @Autowired
     private OwnProductService productService;
 
+    @Autowired
+    private OfficeHoursService officeHoursService;
+
     @ModelAttribute("deviceCounter")
     private int getdeviceCounter(){
         return 0;
@@ -185,10 +188,6 @@ public class StatisticsController {
     }
 
     float amountOfWorkDaysInYear = 200;
-    float labOpeningTime = 8;
-    float labClosingTime = 20;
-    float labOpeningHoursInYear = amountOfWorkDaysInYear*(labClosingTime-labOpeningTime);
-
 
     /**
      *
@@ -654,6 +653,9 @@ public class StatisticsController {
      * @throws ParseException if date object is badly parsed
      */
     public int[] calculateTotalHoursDeviceByYearAndMonth(final ModelMap model, List<Step> selectedDeviceSteps) throws ParseException {
+        OfficeHours currentOfficeHours = officeHoursService.findAll().get(0);
+        float labOpeningTime = currentOfficeHours.getStartHour();
+        float labClosingTime = currentOfficeHours.getEndHour();
         int[] totalHoursByMonth = new int[12];
         String[] months = new String[]{"01","02","03","04","05","06","07","08","09","10","11","12"};
         String selectedTimePeriod = (String) model.getAttribute("selectedTimePeriod");
@@ -685,7 +687,7 @@ public class StatisticsController {
                                     totalHoursByMonth[i] = totalHoursByMonth[i] + calculateHourDiff(selectedDeviceSteps.get(j));
                                 } else if (startDay.matches(endDay) == false) {
                                     int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;
-                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (dayDiff * (24)) + (Integer.parseInt(endHour)));
                                 }
                             }
                             //not same month same year
@@ -701,16 +703,16 @@ public class StatisticsController {
                                         if (leap) {
                                             int fullDaysThisMonth = 29 - Integer.parseInt(startDay);
                                             int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
 
                                         }
                                         //if not leap +28
                                         else {
                                             int fullDaysThisMonth = 28 - Integer.parseInt(startDay);
                                             int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
 
                                         }
                                     }
@@ -718,15 +720,15 @@ public class StatisticsController {
                                     else if (Integer.parseInt(startMonth) % 2 == 0) {
                                         int fullDaysThisMonth = 30 - Integer.parseInt(startDay);
                                         int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
                                     }
                                     // if odd month -> even month => +31
                                     else {
                                         int fullDaysThisMonth = 31 - Integer.parseInt(startDay);
                                         int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
                                     }
                                 }
                                 //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity
@@ -739,11 +741,11 @@ public class StatisticsController {
                                     }
                                     int fullDaysLastMonth = Integer.parseInt(endDay) - 1;
                                     float fullDaysMonthsInbetween = (float) 30.4375;
-                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                    totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                    totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (24)) + (Integer.parseInt(endHour)));
                                     // Calculate months in between
                                     for (int z = 1; z < monthsDifference; z++) {
-                                        totalHoursByMonth[i + z] = (int) (totalHoursByMonth[i + z] + (fullDaysMonthsInbetween * (labClosingTime - labOpeningTime)));
+                                        totalHoursByMonth[i + z] = (int) (totalHoursByMonth[i + z] + (fullDaysMonthsInbetween * (24)));
                                     }
                                 }
                             }
@@ -762,7 +764,7 @@ public class StatisticsController {
                                 totalHoursByMonth[i] = totalHoursByMonth[i] + calculateHourDiff(selectedDeviceSteps.get(j));
                             } else if (startDay.matches(endDay) == false) {
                                 int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;
-                                totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (dayDiff * (24)) + (Integer.parseInt(endHour)));
                             }
                         }
                         //not same month same year
@@ -778,16 +780,16 @@ public class StatisticsController {
                                     if (leap) {
                                         int fullDaysThisMonth = 29 - Integer.parseInt(startDay);
                                         int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
 
                                     }
                                     //if not leap +28
                                     else {
                                         int fullDaysThisMonth = 28 - Integer.parseInt(startDay);
                                         int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
 
                                     }
                                 }
@@ -795,15 +797,15 @@ public class StatisticsController {
                                 else if (Integer.parseInt(startMonth) % 2 == 0) {
                                     int fullDaysThisMonth = 30 - Integer.parseInt(startDay);
                                     int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                    totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                    totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
                                 }
                                 // if odd month -> even month => +31
                                 else {
                                     int fullDaysThisMonth = 31 - Integer.parseInt(startDay);
                                     int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                    totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                    totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
                                 }
                             }
                             //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
@@ -816,11 +818,11 @@ public class StatisticsController {
                                 }
                                 int fullDaysLastMonth = Integer.parseInt(endDay) - 1;
                                 float fullDaysMonthsInbetween = (float) 30.4375;
-                                totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (24)) + (Integer.parseInt(endHour)));
                                 // Calculate months in between
                                 for (int z = 1; z < monthsDifference; z++) {
-                                    totalHoursByMonth[i + z] = (int) (totalHoursByMonth[i + z] + (fullDaysMonthsInbetween * (labClosingTime - labOpeningTime)));
+                                    totalHoursByMonth[i + z] = (int) (totalHoursByMonth[i + z] + (fullDaysMonthsInbetween * (24)));
                                 }
                             }
                         }
@@ -839,7 +841,7 @@ public class StatisticsController {
                                     totalHoursByMonth[i] = totalHoursByMonth[i] + calculateHourDiff(selectedDeviceSteps.get(j));
                                 } else if (startDay.matches(endDay) == false) {
                                     int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;
-                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (dayDiff * (24)) + (Integer.parseInt(endHour)));
                                 }
                             }
                             //not same month same year
@@ -855,16 +857,16 @@ public class StatisticsController {
                                         if (leap) {
                                             int fullDaysThisMonth = 29 - Integer.parseInt(startDay);
                                             int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
 
                                         }
                                         //if not leap +28
                                         else {
                                             int fullDaysThisMonth = 28 - Integer.parseInt(startDay);
                                             int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
 
                                         }
                                     }
@@ -872,15 +874,15 @@ public class StatisticsController {
                                     else if (Integer.parseInt(startMonth) % 2 == 0) {
                                         int fullDaysThisMonth = 30 - Integer.parseInt(startDay);
                                         int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
                                     }
                                     // if odd month -> even month => +31
                                     else {
                                         int fullDaysThisMonth = 31 - Integer.parseInt(startDay);
                                         int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
                                     }
                                 }
                                 //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
@@ -893,11 +895,11 @@ public class StatisticsController {
                                     }
                                     int fullDaysLastMonth = Integer.parseInt(endDay) - 1;
                                     float fullDaysMonthsInbetween = (float) 30.4375;
-                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                    totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                    totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (24)) + (Integer.parseInt(endHour)));
                                     // Calculate months in between
                                     for (int z = 1; z < monthsDifference; z++) {
-                                        totalHoursByMonth[i + z] = (int) (totalHoursByMonth[i + z] + (fullDaysMonthsInbetween * (labClosingTime - labOpeningTime)));
+                                        totalHoursByMonth[i + z] = (int) (totalHoursByMonth[i + z] + (fullDaysMonthsInbetween * (24)));
                                     }
                                 }
                             }
@@ -922,6 +924,10 @@ public class StatisticsController {
      * @throws ParseException if date object is badly parsed
      */
     public float calculateOccupancyHours(final ModelMap model, List<Step> selectedDeviceSteps, float totalDeviceHoursYear) throws ParseException {
+        OfficeHours currentOfficeHours = officeHoursService.findAll().get(0);
+        float labOpeningTime = currentOfficeHours.getStartHour();
+        float labClosingTime = currentOfficeHours.getEndHour();
+        float labOpeningHoursInYear = amountOfWorkDaysInYear*(labClosingTime-labOpeningTime);
         float occupancySelectedYearHours=0;
         String selectedTimePeriod = (String) model.getAttribute("selectedTimePeriod");
         SimpleDateFormat formatDateHourMin = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -1135,6 +1141,9 @@ public class StatisticsController {
      * @throws ParseException when date object is badly parsed
      */
     public float calculateOccupancyDays(final ModelMap model, List<Step> selectedDeviceSteps, float totalDeviceDaysYear) throws ParseException {
+        OfficeHours currentOfficeHours = officeHoursService.findAll().get(0);
+        float labOpeningTime = currentOfficeHours.getStartHour();
+        float labClosingTime = currentOfficeHours.getEndHour();
         float occupancySelectedYearDays=0;
         List<String> bookedDaysStart = new ArrayList<>();
         List<String> bookedDaysEnd = new ArrayList<>();
@@ -1786,14 +1795,6 @@ public class StatisticsController {
      */
     public void setSelectedYear(final ModelMap model, String year) {
          model.addAttribute("selectedYear",year);
-    }
-
-    /**
-     * getter method for the lab opening hours in a year
-     * @return opening hour of the lab in a year
-     */
-    public float getLabOpeningHoursInYear(){
-        return labOpeningHoursInYear;
     }
 
     /**
