@@ -920,14 +920,9 @@ public class StepController {
             accessRights.add(role.getName());
         }
 
-<<<<<<< HEAD
         if (experiment == null || experiment.getExperimentType() == null) {
             errorMessage = ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.save.error");
 
-=======
-        if (experiment.getExperimentType() == null) {
-            errorMessage = "Error while trying to save Experiment.";
->>>>>>> release/sprint3
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
                 return "PlanningTool/planning-exp-book-custom";
 
@@ -1060,7 +1055,7 @@ public class StepController {
         if (experiment.getPiecesOfMixture() != null) {
             for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
                 if (pom.getMixtureAmount() < 0) {
-                    errorMessage = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.amount.negative");
+                    errorMessage = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("step.amount.negative");
                     prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
 
                     if (experiment.getExperimentType().getIsFixedType()) {
@@ -1075,7 +1070,7 @@ public class StepController {
         if (experiment.getPiecesOfMixture() != null) {
             for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
                 if (pom.getMixtureAmount() < 0) {
-                    errorMessage = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("steps.amount.negative");
+                    errorMessage = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("step.amount.negative");
                     prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
 
                     if (experiment.getExperimentType().getIsFixedType()) {
