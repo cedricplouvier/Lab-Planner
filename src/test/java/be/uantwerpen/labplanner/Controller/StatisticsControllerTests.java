@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -502,7 +503,7 @@ public class StatisticsControllerTests {
 
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2020");
-        model.addAttribute("selectedTimePeriod","All");
+        model.addAttribute("selectedTimePeriod",ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.all"));
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
 
@@ -580,7 +581,7 @@ public class StatisticsControllerTests {
 
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2019");
-        model.addAttribute("selectedTimePeriod","Started");
+        model.addAttribute("selectedTimePeriod",ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.started"));
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
 
@@ -670,7 +671,7 @@ public class StatisticsControllerTests {
 
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","3021");
-        model.addAttribute("selectedTimePeriod","Future");
+        model.addAttribute("selectedTimePeriod",ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.future"));
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
 
@@ -761,7 +762,7 @@ public class StatisticsControllerTests {
 
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2020");
-        model.addAttribute("selectedTimePeriod","All");
+        model.addAttribute("selectedTimePeriod",ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.all"));
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
 
@@ -830,7 +831,7 @@ public class StatisticsControllerTests {
 
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2019");
-        model.addAttribute("selectedTimePeriod","Started");
+        model.addAttribute("selectedTimePeriod",ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.started"));
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
 
@@ -908,7 +909,7 @@ public class StatisticsControllerTests {
 
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","3019");
-        model.addAttribute("selectedTimePeriod","Future");
+        model.addAttribute("selectedTimePeriod",ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.future"));
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
 
@@ -986,7 +987,7 @@ public class StatisticsControllerTests {
     public void occupancyRateDaysTest() throws ParseException{
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2020");
-        model.addAttribute("selectedTimePeriod", "All");
+        model.addAttribute("selectedTimePeriod", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.all"));
 
         List<OfficeHours> officeHours = new ArrayList<>();
         OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
@@ -1228,7 +1229,7 @@ public class StatisticsControllerTests {
     public void occupancyRateDaysFutureTest() throws ParseException{
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","3019");
-        model.addAttribute("selectedTimePeriod", "Future");
+        model.addAttribute("selectedTimePeriod", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.future"));
 
         List<OfficeHours> officeHours = new ArrayList<>();
         OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
@@ -1470,7 +1471,7 @@ public class StatisticsControllerTests {
     public void occupancyRateDaysStartedTest() throws ParseException{
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2019");
-        model.addAttribute("selectedTimePeriod", "Started");
+        model.addAttribute("selectedTimePeriod", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("statistics.started"));
 
         List<OfficeHours> officeHours = new ArrayList<>();
         OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);

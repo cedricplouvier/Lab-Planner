@@ -239,8 +239,6 @@ public class StepController {
             model.addAttribute("userExperiments", userExperiments);
             model.addAttribute("studentExperiments", studentExperiments);
         }
-//        model.addAttribute("startformat", new String());
-//        model.addAttribute("endformat", new String());
         return "PlanningTool/planningtool";
     }
 
@@ -321,7 +319,7 @@ public class StepController {
                 //check if steps inside this experiment fulfills continuity
                 if (isProblemWithContinuity(exp.getSteps())) {
                     ra.addFlashAttribute("Status", new String("Error"));
-                    ra.addFlashAttribute("Message", new String("Error while trying to save step as part of experiment. Problem with continuity"));
+                    ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("step.continuity.problem")));
                     return "redirect:/planning/";
                 }
             }
@@ -335,7 +333,7 @@ public class StepController {
         }
         if (step.getAmount() < 0) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error: Amount of mixture can't be negative."));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("step.amount.negative")));
             return "redirect:/planning/";
         }
 
@@ -656,7 +654,7 @@ public class StepController {
             }
             if (isUsed) {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("Experiment type is still in use."));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.type.inuse")));
                 logger.error(currentUser.getUsername() + " tried to delete experiment type that is still in use.");
             } else {
                 ExperimentType experimentType = experimentTypeService.findById(id).get();
@@ -666,11 +664,12 @@ public class StepController {
                 }
                 experimentTypeService.delete(id);
                 ra.addFlashAttribute("Status", new String("Success"));
-                ra.addFlashAttribute("Message", new String("Experiment type successfully deleted."));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.type.delete.success")));
+
             }
         } else {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("You have no rights to delete experiment."));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.type.delete.norights")));
         }
         model.clear();
         return "redirect:/planning/experiments";
@@ -879,14 +878,14 @@ public class StepController {
 
         if (experiment == null) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying to save Experiment."));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.save.error")));
             return "redirect:/planning/";
         }
 
         //when editting experiment that is not in database
         if (experiment.getId() != null && !experimentService.findById(experiment.getId()).isPresent()) {
             ra.addFlashAttribute("Status", new String("Error"));
-            ra.addFlashAttribute("Message", new String("Error while trying edit Experiment."));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.edit.error")));
             return "redirect:/planning/";
         }
 
@@ -921,8 +920,9 @@ public class StepController {
             accessRights.add(role.getName());
         }
 
-        if (experiment.getExperimentType() == null) {
-            errorMessage = "Error while trying to save Experiment.";
+        if (experiment == null || experiment.getExperimentType() == null) {
+            errorMessage = ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("experiment.save.error");
+
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
                 return "PlanningTool/planning-exp-book-custom";
 
@@ -940,7 +940,7 @@ public class StepController {
 
         //check, if there are some steps in experiment
         if (experiment.getSteps() == null || experiment.getExperimentType().getStepTypes() == null) {
-            errorMessage = "Error while trying to save Experiment. Experiment without steps can not be booked";
+            errorMessage = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.booking.nosteps");
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
 
             if (experiment.getExperimentType().getIsFixedType()) {
@@ -1030,7 +1030,7 @@ public class StepController {
         for (Experiment exp : experimentService.findAll()) {
             //If there is experiment with different ID and same name, it's not unique
             if (experiment.getExperimentname().equals(exp.getExperimentname()) && !Objects.equals(experiment.getId(), exp.getId())) {
-                errorMessage = "Experiment with this name already exists";
+                errorMessage = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.name.alreadyexists");
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
 
                 if (experiment.getExperimentType().getIsFixedType()) {
@@ -1055,7 +1055,7 @@ public class StepController {
         if (experiment.getPiecesOfMixture() != null) {
             for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
                 if (pom.getMixtureAmount() < 0) {
-                    errorMessage = "Ammount of mixture can't be negative";
+                    errorMessage = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("step.amount.negative");
                     prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
 
                     if (experiment.getExperimentType().getIsFixedType()) {
@@ -1070,7 +1070,7 @@ public class StepController {
         if (experiment.getPiecesOfMixture() != null) {
             for (PieceOfMixture pom : experiment.getPiecesOfMixture()) {
                 if (pom.getMixtureAmount() < 0) {
-                    errorMessage = "Ammount of mixture can't be negative";
+                    errorMessage = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("step.amount.negative");
                     prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
 
                     if (experiment.getExperimentType().getIsFixedType()) {
@@ -1115,7 +1115,7 @@ public class StepController {
 
         //Both, step size and stepType size has to be same
         if (experiment.getSteps().size() != experiment.getExperimentType().getStepTypes().size()) {
-            errorMessage = "Error while trying to save Experiment. Problem with length of steps";
+            errorMessage = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.steps.lengthproblem");
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
 
             if (experiment.getExperimentType().getIsFixedType()) {
@@ -1165,7 +1165,7 @@ public class StepController {
 
         if (!allowedToEdit) {
             //no rights, so error message & save nothing
-            errorMessage = "Student has no right to edit experiment";
+            errorMessage = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.edit.norights");
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
 
             if (experiment.getExperimentType().getIsFixedType()) {
@@ -1185,7 +1185,7 @@ public class StepController {
                     step.getStart().trim().equals("") || step.getEnd().trim().equals("") ||
                     step.getStartHour().trim().equals("") || step.getEndHour().trim().equals(""))) {
 
-                errorMessage = "Error while trying to save Experiment. Wrong input";
+                errorMessage = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.wrong.input");
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
 
                 if (experiment.getExperimentType().getIsFixedType()) {
@@ -1196,8 +1196,9 @@ public class StepController {
             }
 
             if (isPorblemWithFixedLength(experiment.getExperimentType().getStepTypes().get(index), step)) {
-                errorMessage = "Error while trying to save Experiment. Step" + experiment.getExperimentType().getStepTypes().get(index).getStepTypeName() + " has fixed time";
-                prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
+                errorMessage = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.error.fixedtime1") + experiment.getExperimentType().getStepTypes().get(index).getStepTypeName() +ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.error.fixedtime2");
+
+                        prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
 
                 if (experiment.getExperimentType().getIsFixedType()) {
                     return "PlanningTool/planning-exp-book-fixed";
@@ -1208,7 +1209,7 @@ public class StepController {
 
             //check, double booking
             if (overlapCheck(step)) {
-                errorMessage = "Error while trying to save Experiment. Problem with double booking of device " + step.getDevice().getDevicename();
+                errorMessage = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.save.doublebooking")+ step.getDevice().getDevicename();
                 prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
 
                 if (experiment.getExperimentType().getIsFixedType()) {
@@ -1242,7 +1243,7 @@ public class StepController {
 
         //check if steps inside this experiment fulfills continuity
         if (isProblemWithContinuity(experiment.getSteps())) {
-            errorMessage = "Error while trying to save Experiment. Problem with continuity";
+            errorMessage = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.error.continuity");
             prepareModelAtributesToRebookExperiment(model, experiment, errorMessage, userSteps, otherSteps, accessRights);
 
             if (experiment.getExperimentType().getIsFixedType()) {
@@ -1389,7 +1390,7 @@ public class StepController {
         }
 
         ra.addFlashAttribute("Status", "Success");
-        String message = new String("Experiment has been added/edited.");
+        String message = new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.added"));
         ra.addFlashAttribute("Message", message);
         return "redirect:/planning/";
     }
@@ -1504,7 +1505,7 @@ public class StepController {
                 }
             } else {
                 ra.addFlashAttribute("Status", new String("Error"));
-                ra.addFlashAttribute("Message", new String("user can not edit specific step!"));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.edit.step.norights")));
                 return "redirect:/planning/";
             }
         } else {
@@ -1526,26 +1527,27 @@ public class StepController {
     @PreAuthorize("hasAuthority('Planning - Make new experiment')")
     @RequestMapping(value = "/planning/experiments/put", method = RequestMethod.GET)
     public String viewCreateExperimentType(final ModelMap model) {
-        List<String> typeOptions = new ArrayList<>();
-        typeOptions.add("No");
-        typeOptions.add("Soft (at least)");
-        typeOptions.add("Soft (at most)");
-        typeOptions.add("Hard");
 
-        List<String> allFixedTimeTypeOptions = new ArrayList<>();
-        allFixedTimeTypeOptions.add("Equal");
-        allFixedTimeTypeOptions.add("At least");
-        allFixedTimeTypeOptions.add("At most");
+        List<String> typeOptions = new ArrayList<>();
+        typeOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.no"));
+        typeOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.soft.atleast"));
+        typeOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.soft.atmost"));
+        typeOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.hard"));
+
+        List<String> fixedTimeTypeOptions = new ArrayList<>();
+        fixedTimeTypeOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.equal"));
+        fixedTimeTypeOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.atleast"));
+        fixedTimeTypeOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.atmost"));
 
         List<String> directionOptions = new ArrayList<>();
-        directionOptions.add("After");
-        directionOptions.add("Before");
+        directionOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.after"));
+        directionOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.before"));
 
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("experimentType", new ExperimentType());
         model.addAttribute("allTypeOptions", typeOptions);
-        model.addAttribute("allFixedTimeTypeOptions", allFixedTimeTypeOptions);
+        model.addAttribute("allFixedTimeTypeOptions", fixedTimeTypeOptions);
         model.addAttribute("allTypeDirections", directionOptions);
         return "PlanningTool/planning-exp-manage";
     }
@@ -1559,19 +1561,19 @@ public class StepController {
         }
 
         List<String> typeOptions = new ArrayList<>();
-        typeOptions.add("No");
-        typeOptions.add("Soft (at least)");
-        typeOptions.add("Soft (at most)");
-        typeOptions.add("Hard");
+        typeOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.no"));
+        typeOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.soft.atleast"));
+        typeOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.soft.atmost"));
+        typeOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.hard"));
 
         List<String> fixedTimeTypeOptions = new ArrayList<>();
-        fixedTimeTypeOptions.add("Equal");
-        fixedTimeTypeOptions.add("At least");
-        fixedTimeTypeOptions.add("At most");
+        fixedTimeTypeOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.equal"));
+        fixedTimeTypeOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.atleast"));
+        fixedTimeTypeOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.atmost"));
 
         List<String> directionOptions = new ArrayList<>();
-        directionOptions.add("After");
-        directionOptions.add("Before");
+        directionOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.after"));
+        directionOptions.add(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.before"));
 
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
@@ -1589,12 +1591,12 @@ public class StepController {
             model, RedirectAttributes ra) {
 
         if (result.hasErrors()) {
-            ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type."));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error")));
             return "redirect:/planning/experiments/put";
         }
 
         if (experimentType.getStepTypes() == null) {
-            ra.addFlashAttribute("Message", new String("You can not create experiment type with no steps"));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.nosteps")));
             return "redirect:/planning/experiments/put";
         }
 
@@ -1602,7 +1604,7 @@ public class StepController {
         for (ExperimentType expType : experimentTypeService.findAll()) {
             //If there is experimentType with different ID and same name, it's not unique
             if (experimentType.getExpname().equals(expType.getExpname()) && !Objects.equals(experimentType.getId(), expType.getId())) {
-                ra.addFlashAttribute("Message", new String("Experiment Type with this name already exists"));
+                ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.alreadyexists")));
                 return "redirect:/planning/experiments/put";
 
             }
@@ -1623,43 +1625,43 @@ public class StepController {
             for (ExperimentType exptyp : experimentTypeService.findAll()) {
                 if (experimentType.getExpname().equals(exptyp.getExpname())) {
                     ra.addFlashAttribute("Status", new String("Error"));
-                    ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nThis experiment type name is already occupied!"));
+                    ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.new.alreadyexists")));
                     return "redirect:/planning/experiments/put";
                 }
             }
             for (StepType stepType : experimentType.getStepTypes()) {
                 if (stepType.getContinuity().getHours() < 0) {
                     ra.addFlashAttribute("Status", new String("Error"));
-                    ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
+                    ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.hours")));
                     return "redirect:/planning/experiments/put";
                 }
                 if (stepType.getContinuity().getMinutes() > 59 || stepType.getContinuity().getMinutes() < 0) {
                     ra.addFlashAttribute("Status", new String("Error"));
-                    ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
+                    ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.minutes")));
                     return "redirect:/planning/experiments/put";
                 } else
                     stepTypeService.saveNewStepType(stepType);
             }
             ra.addFlashAttribute("Status", new String("Success"));
-            ra.addFlashAttribute("Message", new String("Experiment type successfully added."));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.success")));
         } else {
 
 
             for (StepType stepType : experimentType.getStepTypes()) {
                 if (stepType.getContinuity().getHours() < 0) {
                     ra.addFlashAttribute("Status", new String("Error"));
-                    ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for hours."));
+                    ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.hours")));
                     return "redirect:/planning/experiments/{id}";
                 }
                 if (stepType.getContinuity().getMinutes() > 59 || stepType.getContinuity().getMinutes() < 0) {
                     ra.addFlashAttribute("Status", new String("Error"));
-                    ra.addFlashAttribute("Message", new String("There was a problem in adding the Experiment Type:\nInvalid value for minutes."));
+                    ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.minutes")));
                     return "redirect:/planning/experiments/{id}";
                 } else
                     stepTypeService.saveNewStepType(stepType);
             }
             ra.addFlashAttribute("Status", new String("Success"));
-            ra.addFlashAttribute("Message", new String("Experiment type successfully edited."));
+            ra.addFlashAttribute("Message", new String(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.edited")));
         }
         experimentTypeService.saveExperimentType(experimentType);
         return "redirect:/planning/experiments";
@@ -1726,11 +1728,11 @@ public class StepController {
 
         //check if startDate is before endDate
         if (currentEndDate.isBefore(currentStartDate)) {
-            return "Error while trying to save Experiment. Start date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is after end date.";
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.after.enddate");
         }
         //check if startDate is not the same as endDate
         if (currentEndDate.equals(currentStartDate)) {
-            return "Error while trying to save Experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is the same as end date.";
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.same.enddate");
         }
 
         Role adminole = roleService.findByName("Administrator").get();
@@ -1741,33 +1743,33 @@ public class StepController {
         if (!currentUser.getRoles().contains(adminole) && !currentUser.getRoles().contains(promotorRole) && !currentUser.getRoles().contains(masterstudentRole)) {
             //check opening hours
             if (!isInsideOpeningHours(currentStartDate)) {
-                return "Error while trying to save step as a part of experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours.";
+                return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date2");
             }
             if (!isInsideOpeningHours(currentEndDate)) {
-                return "Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours.";
+                return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentEndDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date2");
             }
         }
         //check weekend
         if (isWeekend(currentStartDate)) {
-            return "Error while trying to save step as a part of experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is on weekend.";
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date3");
         }
         if (isWeekend(currentEndDate)) {
-            return "Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is on weekend.";
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentEndDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date3");
         }
         //check holidays
         if (isInsideHoliday(currentStartDate)) {
-            return "Error while trying to save step as a part of experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is at holidays.";
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date4");
 
         }
         if (isInsideHoliday(currentEndDate)) {
-            return "Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is at holidays.";
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentEndDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date4");
 
         }
 
         //CheckOverNight
         if (currentStartDate.getDayOfYear() < currentEndDate.getDayOfYear()) {
             if (!step.getDevice().getDeviceType().getOvernightuse()) {
-                return "Error while trying to save step as a part of experiment. Device " + step.getDevice().getDevicename() + " can't be used over nigh.";
+                return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.device") + step.getDevice().getDevicename() + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.device2");
 
             }
         }
@@ -1845,9 +1847,12 @@ public class StepController {
             nextStartDate = formatter.parseDateTime(steps.get(i + 1).getStart() + " " + steps.get(i + 1).getStartHour());
             nextEndDate = formatter.parseDateTime(steps.get(i + 1).getEnd() + " " + steps.get(i + 1).getEndHour());
 
+            String No = ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("options.type.no");
+
             switch (steps.get(i).getStepType().getContinuity().getType()) {
-                case "Soft (at least)":
-                    if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("After"))) {
+                case "Zacht (ten minste)":
+                case "Soft (at least)" :
+                    if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("After"))||steps.get(i).getStepType().getContinuity().getDirectionType().equals("Na")) {
                         //next step should be after end of previous
                         //nextStartDate - currentEndTime >= currentStartTime
                         if (!((nextStartDate.getMillis() - currentEndDate.getMillis()) >= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
@@ -1858,7 +1863,7 @@ public class StepController {
                         if (currentStartDate.isAfter(nextStartDate) || currentEndDate.isAfter(nextEndDate)) {
                             return true;
                         }
-                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("Before"))) {
+                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("Before")||steps.get(i).getStepType().getContinuity().getDirectionType().equals("Voor"))) {
                         //next step should be before end of previous
                         //currentEndTime - nextStartDate >= currentStartTime
                         if (!((currentEndDate.getMillis() - nextStartDate.getMillis()) >= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
@@ -1869,8 +1874,9 @@ public class StepController {
                         return true;
                     }
                     break;
+                case "Zacht (ten meeste)":
                 case "Soft (at most)":
-                    if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("After"))) {
+                    if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("After"))||steps.get(i).getStepType().getContinuity().getDirectionType().equals("Na")) {
                         //next step should be after end of previous
                         //nextStartDate - currentEndTime <= currentStartTime
                         if (!((nextStartDate.getMillis() - currentEndDate.getMillis()) <= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
@@ -1881,7 +1887,7 @@ public class StepController {
                         if (currentStartDate.isAfter(nextStartDate) || currentEndDate.isAfter(nextEndDate)) {
                             return true;
                         }
-                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("Before"))) {
+                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("Before")||steps.get(i).getStepType().getContinuity().getDirectionType().equals("Voor"))) {
                         //next step should be before end of previous
                         //currentEndTime - nextStartDate <= currentStartTime
                         if (!((currentEndDate.getMillis() - nextStartDate.getMillis()) <= 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
@@ -1893,7 +1899,7 @@ public class StepController {
                     }
                     break;
                 case "Hard":
-                    if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("After"))) {
+                    if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("After"))||steps.get(i).getStepType().getContinuity().getDirectionType().equals("Na")) {
                         //next step should be after end of previous
                         //nextStartDate - currentEndTime == currentStartTime
                         if (!((nextStartDate.getMillis() - currentEndDate.getMillis()) == 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
@@ -1904,7 +1910,7 @@ public class StepController {
                         if (currentStartDate.isAfter(nextStartDate) || currentEndDate.isAfter(nextEndDate)) {
                             return true;
                         }
-                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("Before"))) {
+                    } else if ((steps.get(i).getStepType().getContinuity().getDirectionType().equals("Before")||steps.get(i).getStepType().getContinuity().getDirectionType().equals("Voor"))) {
                         //next step should be before end of previous
                         //currentEndTime - nextStartDate == currentStartTime
                         if (!((currentEndDate.getMillis() - nextStartDate.getMillis()) == 1000 * 60 * 60 * steps.get(i).getStepType().getContinuity().getHours() + 1000 * 60 * steps.get(i).getStepType().getContinuity().getMinutes())) {
@@ -1915,6 +1921,7 @@ public class StepController {
                         return true;
                     }
                     break;
+                case "Geen":
                 case "No":
                     //If there is no continuity,
                     //current start date can't be after next start, but can start at same time

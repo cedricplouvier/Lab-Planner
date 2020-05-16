@@ -25,14 +25,14 @@
 <!-- Import menu bar -->
 <div id="lnb">
     <div class="lnb-new-schedule">
-            <a type="button" th:href="@{/planning/}" class="btn btn-default btn-block lnb-new-schedule-btn "  id="btn-new-schedule" >
+            <a type="button" th:href="@{/planning/}" class="btn btn-default btn-block lnb-new-schedule-btn "  id="btn-new-schedule" th:text="#{calendar.booking}" >
                 Go to booking
             </a>
     </div>
     <select sec:authorize="hasAuthority('Console Access')" id="steps-items">
-        <option value="1">Show personal steps</option>
-        <option value="2">Show other steps</option>
-        <option value="3">Show both</option>
+        <option value="1" th:text="#{steps.personal}">Show personal steps</option>
+        <option value="2" th:text="#{steps.other}">Show other steps</option>
+        <option value="3" th:text="#{steps.both}">Show both</option>
     </select>
     <div id="lnb-calendars" class="lnb-calendars">
         <div>
@@ -40,7 +40,7 @@
                 <label>
                     <input class="tui-full-calendar-checkbox-square" type="checkbox" value="all" checked>
                     <span></span>
-                    <strong>View all</strong>
+                    <strong th:text="#{calendar.all}">View all</strong>
                 </label>
             </div>
         </div>
@@ -56,33 +56,33 @@
                                 type="button" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="true">
                             <i id="calendarTypeIcon" class="calendar-icon ic_view_month" style="margin-right: 4px;"></i>
-                            <span id="calendarTypeName">Dropdown</span>&nbsp;
+                            <span id="calendarTypeName" th:text="#{calendar.view}">Dropdown</span>&nbsp;
                             <i class="calendar-icon tui-full-calendar-dropdown-arrow"></i>
                         </button>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu-calendarType">
                             <li role="presentation">
                                 <a class="dropdown-menu-title" role="menuitem" data-action="toggle-daily">
-                                    <i class="calendar-icon ic_view_day"></i>Daily
+                                    <i class="calendar-icon ic_view_day" ></i><small th:text="#{calendar.daily}"></small>
                                 </a>
                             </li>
                             <li role="presentation">
                                 <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weekly">
-                                    <i class="calendar-icon ic_view_week"></i>Weekly
+                                    <i class="calendar-icon ic_view_week" ></i><small th:text="#{calendar.weekly}"></small>
                                 </a>
                             </li>
                             <li role="presentation">
                                 <a class="dropdown-menu-title" role="menuitem" data-action="toggle-monthly">
-                                    <i class="calendar-icon ic_view_month"></i>Month
+                                    <i class="calendar-icon ic_view_month" ></i><small th:text="#{calendar.month}"></small>
                                 </a>
                             </li>
                             <li role="presentation">
                                 <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weeks2">
-                                    <i class="calendar-icon ic_view_week"></i>2 weeks
+                                    <i class="calendar-icon ic_view_week" ></i><small th:text="#{week.two}"></small>
                                 </a>
                             </li>
                             <li role="presentation">
                                 <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weeks3">
-                                    <i class="calendar-icon ic_view_week"></i>3 weeks
+                                    <i class="calendar-icon ic_view_week" ></i><small th:text="#{week.three}"></small>
                                 </a>
                             </li>
                             <li role="presentation" class="dropdown-divider"></li>
@@ -90,28 +90,28 @@
                                 <a role="menuitem" data-action="toggle-workweek">
                                     <input type="checkbox" class="tui-full-calendar-checkbox-square"
                                            value="toggle-workweek" checked>
-                                    <span class="checkbox-title"></span>Show weekends
+                                    <span class="checkbox-title" ></span><small th:text="#{weekends}"></small>
                                 </a>
                             </li>
                             <li role="presentation">
                                 <a role="menuitem" data-action="toggle-start-day-1">
                                     <input type="checkbox" class="tui-full-calendar-checkbox-square"
                                            value="toggle-start-day-1">
-                                    <span class="checkbox-title"></span>Start Week on Monday
+                                    <span class="checkbox-title" ></span><small th:text="#{week.start}"></small>
                                 </a>
                             </li>
                             <li role="presentation">
                                 <a role="menuitem" data-action="toggle-narrow-weekend">
                                     <input type="checkbox" class="tui-full-calendar-checkbox-square"
                                            value="toggle-narrow-weekend">
-                                    <span class="checkbox-title"></span>Narrower than weekdays
+                                    <span class="checkbox-title" ></span><small th:text="#{week.narrow}"></small>
                                 </a>
                             </li>
                         </ul>
                     </span>
         <span id="menu-navi">
                         <button type="button" class="btn btn-default btn-sm move-today"
-                                data-action="move-today">Today</button>
+                                data-action="move-today" th:text="#{calendar.today}">Today</button>
                         <button type="button" class="btn btn-default btn-sm move-day" data-action="move-prev">
                             <i class="calendar-icon ic-arrow-line-left" data-action="move-prev"></i>
                         </button>
