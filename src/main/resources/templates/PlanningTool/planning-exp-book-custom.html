@@ -32,7 +32,29 @@
         document.getElementById("checkboxIsFixedType").checked = false;
         stepTypeRowIndexWithRemovedItems = $('#list tr').length / 2;
     });
-
+    var translationStart = [[#{start}]];
+    var translationEnd = [[#{end}]];
+    var translationNo = [[#{options.type.no}]];
+    var Hard = [[#{options.type.hard}]];
+    var softatleast = [[#{options.type.soft.atleast}]];
+    var softatmost = [[#{options.type.soft.atmost}]];
+    var equaltype = [[#{options.type.equal}]];
+    var atleast = [[#{options.type.atleast}]];
+    var atmost = [[#{options.type.atmost}]];
+    var afters = [[#{options.type.after}]];
+    var befores = [[#{options.type.before}]];
+    var chooseincalendar = [[#{choose.calendar}]];
+    var selectdevice = [[#{device.select}]];
+    var comments=[[#{step.comment}]];
+    var selectmixture =[[#{mixture.select}]];
+    var amountofmixture = [[#{mixture.amountof}]];
+    var steplength = [[#{cal.book.length}]];
+    var continuity = [[#{cal.book.continuity}]];
+    var aligns = [[#{cal.book.align}]];
+    var timedif = [[#{cal.book.time}]];
+    var devicedef = [[#{device}]];
+    var unimplem = [[#{unimplemented}]];
+    var namedef = [[#{name}]];
     let devices = [[${allDevices}]];
     let deviceTypes = [[${allDeviceTypes}]];
     let steps = [[${allSteps}]];
@@ -63,18 +85,18 @@
                 '<tr>' +
                 '   <th>' +
                 '   <select required="" class=" form-control input-device" id="selectMixture" name="piecesOfMixture[' + i + '].mixture">' +
-                '       <option hidden="" value="">Select mixture</option>' +
+                '       <option hidden="" value="">'+selectmixture+'</option>' +
                 deviceOptions +
                 '   </select>' +
                 '   </th>' +
                 '   <th align="center">' +
                 '       <div class="input-group-append">' +
-                '           <input type="number" min="0" step="0.01" class=" form-control input-device" placeholder="Amount of mixture" id="piecesOfMixture' + i + '.mixtureAmount" name="piecesOfMixture[' + i + '].mixtureAmount" required>' +
+                '           <input type="number" min="0" step="0.01" class=" form-control input-device" placeholder="'+amountofmixture+'" id="piecesOfMixture' + i + '.mixtureAmount" name="piecesOfMixture[' + i + '].mixtureAmount" required>' +
                 '           <span class="input-group-text" style="color:#808080">kg</span>' +
                 '       </div>' +
                 '   </th>' +
                 '   <th>' +
-                '       <input class=" form-control input-device" placeholder="Mixture comment" id="piecesOfMixture' + i + '.mixtureComment" name="piecesOfMixture[' + i + '].mixtureComment">' +
+                '       <input class=" form-control input-device" placeholder="'+comments+'" id="piecesOfMixture' + i + '.mixtureComment" name="piecesOfMixture[' + i + '].mixtureComment">' +
                 '   </th>' +
                 '</tr>');
     }
@@ -178,25 +200,25 @@
                 '   <input id="step" type="hidden" name="steps[' + i + ']">' +
                 '   <input id="stepType" type="hidden" name="experimentType.stepTypes[' + i + ']">' +
                 '<td style="vertical-align:center;">' +
-                '    <input required="" style="font-size:80%;" class=" form-control input-device" placeholder="Name" id="experimentType.stepTypes' + i + '.stepTypeName" name="experimentType.stepTypes[' + i + '].stepTypeName" value="">' +
+                '    <input required="" style="font-size:80%;" class=" form-control input-device" placeholder="'+namedef+'" id="experimentType.stepTypes' + i + '.stepTypeName" name="experimentType.stepTypes[' + i + '].stepTypeName" value="">' +
                 '</td>' +
                 '<td style="vertical-align:center;">' +
                 '    <p>Type</p>' +
-                '    <p>Device</p>' +
+                '    <p>'+devicedef+'</p>' +
                 '</td>' +
                 '   <td style="vertical-align:center; text-align:center;">' +
                 '       <select required style="font-size:80%;" class="form-control input-device" onchange="refreshDevices(this)" id="selectDeviceType' + i + '" name="experimentType.stepTypes[' + i + '].deviceType">' +
-                '           <option hidden="" value="">Select</option>' +
+                '           <option hidden="" value="">'+selectdevice+'</option>' +
                 deviceTypeOprions +
                 '       </select>' +
                 '       <select required style="font-size:80%;" class=" form-control input-device" id="selectDevice' + i + '" name="steps[' + i + '].device" style=" width: 110%;font-size:90%;">' +
-                '           <option hidden selected disabled value="">Select device</option>' +
+                '           <option hidden selected disabled value="">'+selectdevice+'</option>' +
                 deviceOprions +
                 '       </select>' +
                 '   </td>' +
                 '   <td style="vertical-align:center; text-align:center;">' +
-                '       <p>Start</p>' +
-                '       <p>End</p>' +
+                '       <p>'+translationStart+'</p>' +
+                '       <p>'+translationEnd+'</p>' +
                 '   </td>' +
                 '   <td style="vertical-align:center; text-align:center;">' +
                 '       <div class="input-group">' +
@@ -205,8 +227,8 @@
                 '       </div>' +
                 '   </td>' +
                 '   <td style="vertical-align:center; text-align:center;">' +
-                '       <p>Start</p>' +
-                '       <p>End</p>' +
+                '       <p>'+translationStart+'</p>' +
+                '       <p>'+translationEnd+'</p>' +
                 '   </td>' +
                 '   <td style="vertical-align:center; text-align:center;">' +
                 '       <input required="" style="width: 100%; font-size:80%;" type="time" id="startHour' + i + '" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + i + '].startHour">' +
@@ -233,10 +255,10 @@
                 '   </td>' +
 
                 '   <td>' +
-                '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + i + '].comment" value="" >' +
+                '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="'+comments+'" name="steps[' + i + '].comment" value="" >' +
                 '   </td> ' +
                 '   <td>' +
-                '       <button style="width: 100%; font-size:80%; "type="button" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + i + ')" >Choose in calendar</button>' +
+                '       <button style="width: 100%; font-size:80%; "type="button" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + i + ')" >'+chooseincalendar+'</button>' +
                 '   </td>' +
                 '   <td style="vertical-align: bottom">' +
                 '       <a onclick="removeRow(this)">' +
@@ -393,11 +415,11 @@
                         '   <input id="step" type="hidden" name="steps[' + index + ']">' +
                         '   <input id="stepType" type="hidden" name="experimentType.stepTypes[' + index + ']">' +
                         '<td style="vertical-align:center;">' +
-                        '    <input required="" style="font-size:80%;" class=" form-control input-device" placeholder="Name" id="experimentType.stepTypes' + index + '.stepTypeName" name="experimentType.stepTypes[' + index + '].stepTypeName" value="' + a.stepTypes[i].stepTypeName + '">' +
+                        '    <input required="" style="font-size:80%;" class=" form-control input-device" placeholder="'+namedef+'" id="experimentType.stepTypes' + index + '.stepTypeName" name="experimentType.stepTypes[' + index + '].stepTypeName" value="' + a.stepTypes[i].stepTypeName + '">' +
                         '</td>' +
                         '<td style="vertical-align:center;">' +
                         '    <p>Type</p>' +
-                        '    <p>Device</p>' +
+                        '    <p>'+devicedef+'</p>' +
                         '</td>' +
                         '   <td style="vertical-align:center; text-align:center;">' +
                         '       <select required style="font-size:80%;" class="form-control input-device" onchange="refreshDevices(this)" id="selectDeviceType" name="experimentType.stepTypes[' + index + '].deviceType">' +
@@ -405,13 +427,13 @@
                         deviceTypeOprions +
                         '       </select>' +
                         '       <select required style="font-size:80%;" class=" form-control input-device" id="selectDevice' + index + '" name="steps[' + index + '].device" style=" width: 110%;font-size:90%;">' +
-                        '           <option hidden selected disabled value="">Select device</option>' +
+                        '           <option hidden selected disabled value="">'+selectdevice+'</option>' +
                         deviceOprions +
                         '       </select>' +
                         '   </td>' +
                         '   <td style="vertical-align:center; text-align:center;">' +
-                        '       <p>Start</p>' +
-                        '       <p>End</p>' +
+                        '       <p>'+translationStart+'</p>' +
+                        '       <p>'+translationEnd+'</p>' +
                         '   </td>' +
                         '   <td style="vertical-align:center; text-align:center;">' +
                         '       <div class="input-group">' +
@@ -420,8 +442,8 @@
                         '       </div>' +
                         '   </td>' +
                         '   <td style="vertical-align:center; text-align:center;">' +
-                        '       <p>Start</p>' +
-                        '       <p>End</p>' +
+                        '       <p>'+translationStart+'</p>' +
+                        '       <p>'+translationEnd+'</p>' +
                         '   </td>' +
                         '   <td style="vertical-align:center; text-align:center;">' +
                         '       <input required="" style="width: 100%; font-size:80%;" type="time" id="startHour' + index + '" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + index + '].startHour">' +
@@ -449,10 +471,10 @@
 
 
                         '   <td>' +
-                        '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + index + '].comment" value="" >' +
+                        '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="'+comments+'" name="steps[' + index + '].comment" value="" >' +
                         '   </td> ' +
                         '   <td>' +
-                        '       <button style="width: 100%; font-size:80%;" type="button" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + index + ')" >Choose in calendar</button>' +
+                        '       <button style="width: 100%; font-size:80%;" type="button" class="btn btn-primary" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,' + index + ')" >'+chooseincalendar+'</button>' +
                         '   </td>' +
                         '   <td style="vertical-align: bottom">' +
                         '       <a onclick="removeRow(this)">' +
@@ -661,7 +683,7 @@
                        th:value="#{experiment.custom}" disabled>
             </th>
             <th>
-                <input class=" form-control input-device" th:field="*{experimentname}" placeholder="Expirement Name"
+                <input class=" form-control input-device" th:field="*{experimentname}" th:placeholder="#{experiment.name}"
                        required>
             </th>
             </tbody>
@@ -673,7 +695,7 @@
             <tr>
                 <th th:text="#{mixtures}">Mixture</th>
                 <th th:text="#{mixtures.amount}">Amount</th>
-                <th>Comment</th>
+                <th th:text="#{step.comment}">Comment</th>
             </tr>
             </thead>
             <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -696,14 +718,14 @@
                         <div class="input-group-append">
                             <input type="number" min="0" step="0.01" class=" form-control input-device"
                                    th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
-                                   placeholder="Amount of mixture" required>
+                                   th:placeholder="#{mixture.amountof}" required>
                             <span class="input-group-text" style="color:#808080">kg</span>
                         </div>
                     </th>
                     <th>
                         <input class=" form-control input-device"
                                th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureComment}"
-                               placeholder="Mixture comment">
+                               th:placeholder="#{step.comment}">
                     </th>
                 </tr>
 
@@ -903,13 +925,13 @@
 
                         <td style="vertical-align:center;">
                             <input style="width: 100%; font-size:80%; " type="text" id="comment"
-                                   class="form-control float-right" placeholder="comment"
+                                   class="form-control float-right" th:placeholder="#{step.comment}"
                                    th:field="*{steps[__${itemStat.index}__].comment}">
                         </td>
                         <td>
                             <button style="width: 100%; font-size:80%;" class="btn btn-primary" type="button"
                                     id="choose" data-toggle="modal" data-target="#extraLargeModal"
-                                    onclick="openCalendar(tempExpIndex, tempStepIndex)">Choose in calendar
+                                    onclick="openCalendar(tempExpIndex, tempStepIndex)" th:text="#{choose.calendar}">Choose in calendar
                             </button>
                         </td>
 
@@ -975,37 +997,37 @@
                         </div>
                         <div class="modal-body">
                             <div id="menu">
-        <span class="dropdown">
+                        <span class="dropdown">
                         <button id="dropdownMenu-calendarType" class="btn btn-default btn-sm dropdown-toggle"
                                 type="button" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="true">
                             <i id="calendarTypeIcon" class="calendar-icon ic_view_month" style="margin-right: 4px;"></i>
-                            <span id="calendarTypeName">Dropdown</span>&nbsp;
+                            <span id="calendarTypeName" th:text="#{calendar.view}">Dropdown</span>&nbsp;
                             <i class="calendar-icon tui-full-calendar-dropdown-arrow"></i>
                         </button>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu-calendarType">
                             <li role="presentation">
-                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-daily">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-daily" th:text="#{calendar.daily}">
                                     <i class="calendar-icon ic_view_day"></i>Daily
                                 </a>
                             </li>
                             <li role="presentation">
-                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weekly">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weekly" th:text="#{calendar.weekly}">
                                     <i class="calendar-icon ic_view_week"></i>Weekly
                                 </a>
                             </li>
                             <li role="presentation">
-                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-monthly">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-monthly" th:text="#{calendar.month}">
                                     <i class="calendar-icon ic_view_month"></i>Month
                                 </a>
                             </li>
                             <li role="presentation">
-                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weeks2">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weeks2" th:text="#{week.two}">
                                     <i class="calendar-icon ic_view_week"></i>2 weeks
                                 </a>
                             </li>
                             <li role="presentation">
-                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weeks3">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weeks3" th:text="#{week.three}">
                                     <i class="calendar-icon ic_view_week"></i>3 weeks
                                 </a>
                             </li>
@@ -1035,7 +1057,7 @@
                     </span>
                                 <span id="menu-navi">
                         <button type="button" class="btn btn-default btn-sm move-today"
-                                data-action="move-today">Today</button>
+                                data-action="move-today" th:text="#{calendar.today}">Today</button>
                         <button type="button" class="btn btn-default btn-sm move-day" data-action="move-prev">
                             <i class="calendar-icon ic-arrow-line-left" data-action="move-prev"></i>
                         </button>
@@ -1049,7 +1071,7 @@
                         </div>
                         <div class="modal-footer" style="flex-direction: column;display: flex;">
                             <div id="legend" style="display: flex; flex-direction: row;">
-                                <div class="alert alert-info" id="help" role="alert">
+                                <div class="alert alert-info" id="help" role="alert" th:text="#{dragandrelease}">
                                     Drag and release to create a schedule.
                                 </div>
                             </div>
@@ -1058,7 +1080,7 @@
   flex-direction: row;">
                                 <select required id="deviceTypeDropdown" class="form-control input-device"
                                         style="visibility: visible;">
-                                    <option value="none" selected disabled hidden>No available device</option>
+                                    <option value="none" selected disabled hidden th:text="#{device.notavailable}">No available device</option>
                                 </select>
                                 <button type="button" id="selectStep" data-dismiss="modal" class="btn btn-primary"
                                         disabled>Select

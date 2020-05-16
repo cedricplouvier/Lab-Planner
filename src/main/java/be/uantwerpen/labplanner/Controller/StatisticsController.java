@@ -26,14 +26,15 @@ import java.time.Period;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static java.lang.Math.log;
 import static java.lang.Math.round;
 
 @Controller
-@SessionAttributes({"deviceCounter","productCounter", "selectedYear", "selectedTypeOfGraph", "selectedDevices", "occupancyDevicesHours",
+@SessionAttributes({"deviceCounter","productCounter", "selectedYear",  "selectedDevices", "occupancyDevicesHours",
                     "occupancyDevicesHoursPast", "occupancyDevicesHoursFuture", "occupancyDevicesDays", "occupancyDevicesDaysPast",
                     "occupancyDevicesDaysFuture","totalHours", "totalHoursPast", "totalHoursFuture", "highestAbsoluteValueHours",
-                    "selectedTimePeriod", "selectedStartMonthStockHistory","selectedMonthStock", "selectedProducts",
-                    "stockLevelStartMonthHistory"})
+                     "selectedStartMonthStockHistory","selectedMonthStock", "selectedProducts",
+                    "stockLevelStartMonthHistory"}) //"selectedTypeOfGraph", "selectedTimePeriod",
 public class StatisticsController {
 
     @Autowired
@@ -57,7 +58,7 @@ public class StatisticsController {
     
     @ModelAttribute("selectedTypeOfGraph")
     private String graphType(){
-        return "Device hours by month";
+        return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.deviceHoursByMonth");
     }
 
     @ModelAttribute("selectedYear")
@@ -67,7 +68,7 @@ public class StatisticsController {
 
     @ModelAttribute("selectedTimePeriod")
     private String selectTimePeriod(){
-        return "Started";
+        return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.started");
     }
 
     @ModelAttribute("selectedDevices")
@@ -145,12 +146,12 @@ public class StatisticsController {
 
     @ModelAttribute("selectableGraphTypes")
     private List<String> selectableGraphs() {
-        return new ArrayList<>(Arrays.asList("Device hours by month","Device occupancy rate in hours","Device occupancy rate in days"));
+        return new ArrayList<>(Arrays.asList(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.deviceHoursByMonth"),ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.occupancyRateInHours"),ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("statistics.occupancyRateInDays")));
     }
 
     @ModelAttribute("selectableTimePeriods")
     private List<String> selectableTimePeriods() {
-        return new ArrayList<>(Arrays.asList("Started","All","Future"));
+        return new ArrayList<>(Arrays.asList(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.started"),ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.all"),ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.future")));
     }
 
     @ModelAttribute("selectedStartMonthStockHistory")
@@ -671,8 +672,8 @@ public class StatisticsController {
 
             Date thisStepDateStart = formatDateHourMin.parse(devStep.getStart() + " " + devStep.getStartHour());
             Date thisStepDateEnd = formatDateHourMin.parse(devStep.getEnd() + " " + devStep.getEndHour());
-
-            if(selectedTimePeriod.matches("Started")) {
+            String matchStarted=ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.started");
+            if(selectedTimePeriod.matches(matchStarted)) {
                 if (thisStepDateStart.before(todaysDate)) {
                     for (int i = 0; i < months.length; i++) {
                         if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
@@ -751,7 +752,7 @@ public class StatisticsController {
                     }
                 }
             }
-            else if (selectedTimePeriod.matches("All")) {
+            else if (selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.all"))) {
                 for (int i = 0; i < months.length; i++) {
                     if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
                         //calculate for month i if same month
@@ -827,7 +828,7 @@ public class StatisticsController {
                     }
                 }
             }
-            else if (selectedTimePeriod.matches("Future")){
+            else if (selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.future"))){
                 if (thisStepDateStart.after(todaysDate)) {
                     for (int i = 0; i < months.length; i++) {
                         if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
@@ -933,7 +934,7 @@ public class StatisticsController {
 
             Date thisStepDateStart = formatDateHourMin.parse(devStep.getStart() + " " + devStep.getStartHour());
 
-            if(selectedTimePeriod.matches("Started")) {
+            if(selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.started"))) {
                 if(thisStepDateStart.before(todaysDate)) {
                     if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
                         String startDay = getStepDayStart(devStep);
@@ -994,7 +995,7 @@ public class StatisticsController {
                     }
                 }
             }
-            if(selectedTimePeriod.matches("All")) {
+            if(selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.all"))) {
                 if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
                     String startDay = getStepDayStart(devStep);
                     String endDay = getStepDayEnd(devStep);
@@ -1053,7 +1054,7 @@ public class StatisticsController {
                     }
                 }
             }
-            if(selectedTimePeriod.matches("Future")) {
+            if(selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.future"))) {
                 if(thisStepDateStart.after(todaysDate)) {
                     if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
                         String startDay = getStepDayStart(devStep);
@@ -1147,7 +1148,7 @@ public class StatisticsController {
 
             Date thisStepDateStart = formatDateHourMin.parse(devStep.getStart() + " " + devStep.getStartHour());
 
-            if(selectedTimePeriod.matches("Started")) {
+            if(selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.started"))) {
                 if(thisStepDateStart.before(todaysDate)) {
                     String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
                     if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
@@ -1311,7 +1312,7 @@ public class StatisticsController {
                     }
                 }
             }
-            else if (selectedTimePeriod.matches("All")){
+            else if (selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.all"))){
                 String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
                 if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
                     String stepDateStart = devStep.getStart();
@@ -1473,7 +1474,7 @@ public class StatisticsController {
                     }
                 }
             }
-            if(selectedTimePeriod.matches("Future")) {
+            if(selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.future"))) {
                 if(thisStepDateStart.after(todaysDate)) {
                     String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
                     if (yearStep.matches((String) model.getAttribute("selectedYear"))) {

@@ -361,7 +361,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">New Step</h5>
+                    <h5 class="modal-title" id="staticBackdropLabel" th:text="#{new.step}">New Step</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -378,7 +378,7 @@
                         </select>
                         <select required id="deviceNames" th:field="*{device}" class="form-control input-device"
                                 style="visibility: hidden;">
-                            <option value="none" selected disabled hidden>Device Name</option>
+                            <option value="none" selected disabled hidden th:text="#{device.name}">Device Name</option>
                         </select>
                         <div style="display: flow-root;">
                             <input required id="startTime" type="date" th:field="*{start}"
@@ -394,12 +394,12 @@
                         </div>
                         <div style="margin-top: 60px">
                             <div class="input-group">
-                                <input type="text" class="form-control" th:field="*{comment}" placeholder="Comment" >
+                                <input type="text" class="form-control" th:field="*{comment}" th:placeholder="#{step.comment}" >
                             </div>
                         </div>
                         <div >
                             <select required id="mixtures" th:field="*{mixture}" class="form-control input-mixture">
-                                <option value="" disabled th:selected="selected">Select Mixture</option>
+                                <option value="" disabled th:selected="selected" th:text="#{select.mixture}">Select Mixture</option>
                                 <option class="dropdown-item" th:each="Amixture : ${allMixtures}" th:value="${Amixture.getId()}" th:text="${Amixture.getName()}">
                                     Mixture
                                 </option>
@@ -414,8 +414,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{close}">Close</button>
+                        <button type="submit" class="btn btn-primary" th:text="#{save}">Submit</button>
                     </div>
                 </form>
             </div>

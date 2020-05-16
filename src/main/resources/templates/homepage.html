@@ -6,7 +6,7 @@
 <div class ="container" >
     <div th:replace="navbar :: navbar"></div>
 
-    <h1> Welcome <span th:text="${currentUser}"></span></h1>
+    <div style="display: flex;flex-direction: row;align-items: flex-start"> <h1 th:text="#{welcome}"> Welcome </h1><pre> </pre><h1 th:text="${currentUser}"></h1></div>
     <a  sec:authorize="hasAuthority('Console Access')" th:href="@{/reports/list}" th:text="#{report.list} + ' ('+${reportAmount}+')'" class="btn btn-primary"></a>
     <a  th:href="@{/reports/put}" th:text="#{report.problem}" class="btn btn-primary"></a>
     <a  sec:authorize="hasAuthority('Console Access')" th:href="@{/registrations}" th:text="#{registrations} + ' ('+${registrationAmount}+')'" class="btn btn-primary"></a>
