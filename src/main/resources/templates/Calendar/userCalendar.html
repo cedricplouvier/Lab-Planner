@@ -25,11 +25,11 @@
 <!-- Import menu bar -->
 <div id="lnb">
     <div class="lnb-new-schedule">
-            <a type="button" th:href="@{/planning/}" class="btn btn-default btn-block lnb-new-schedule-btn "  id="btn-new-schedule" th:text="#{calendar.booking}" >
+            <a type="button" th:href="@{/planning/}" class="btn btn-default btn-block lnb-new-schedule-btn "  id="btn-new-schedule" style="background-color:#6c757d;" th:text="#{calendar.booking}" >
                 Go to booking
             </a>
     </div>
-    <select sec:authorize="hasAuthority('Console Access')" id="steps-items">
+    <select sec:authorize="hasAuthority('Console Access')" id="steps-items" style="background-color: #007bff;">
         <option value="1" th:text="#{steps.personal}">Show personal steps</option>
         <option value="2" th:text="#{steps.other}">Show other steps</option>
         <option value="3" th:text="#{steps.both}">Show both</option>

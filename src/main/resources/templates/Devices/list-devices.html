@@ -70,7 +70,7 @@
                 <tr>
                     <th th:text="#{device}"></th>
                     <th th:text="#{device.type}"></th>
-                    <th th:text="#{device.info}"></th> <th></th>
+<!--                    <th th:text="#{device.info}"></th> <th></th>-->
                     <th th:text="#{device.manage}"></th> <th></th>
                 </tr>
                 </thead>
@@ -81,16 +81,18 @@
                         th:text="${device.devicename }" ></td>
                     <td class="firstName" th:value="${device.getDeviceType()}"
                         th:text="${device.deviceType.deviceTypeName }" ></td>
-                    <td >  <a th:href="@{/device/info/{id}/(id=${device.id})}" th:text="#{device.info}" class="btn btn-primary"></a></td>
-                    <td>
+<!--                    <td >  <a th:href="@{/device/info/{id}/(id=${device.id})}" th:text="#{device.info}" class="btn btn-primary"></a></td>-->
+<!--                    <td>-->
                     <td>
                     <a sec:authorize="hasAuthority('Device - Modify - All')" th:href="@{/devices/{id}/(id=${device.id})}" class="fa fa-edit">
                     </a>
                     <a sec:authorize="hasAuthority('Device - Modify - All')" th:href="@{/devices/{id}/delete(id=${device.id})}"  class="fa fa-trash" style="color: red" data-toggle="modal" data-target="#modal-warning"  th:attr="data-target='#modal-warning'+${device.id }">
                               </a>
                     <a th:href="@{/mail/maintanance/{id}(id=${device.id})}"  class="fa fa-envelope" style="color: yellowgreen" th:attr="onclick='return confirm(\'' + #{device.maintanance} + '\')'">
+                        <a th:href="@{/device/info/{id}/(id=${device.id})}">
+                            <span class="fas fa-info" style="color: #3e8e41"></span></a>
                     </a>
-                    </td>
+                    </td><td></td>
                     <div class="modal modal-warning fade" th:id="modal-warning+${device.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
