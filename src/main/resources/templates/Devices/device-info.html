@@ -79,7 +79,6 @@
             <h5 th:text="#{device.other}">Other Information</h5>
             <hr class="my-4">
             <div class="alert alert-info" role="alert" th:if="${device.getDeviceInformations().size()}==0" th:text="#{device.noinfo}"></div>
-
             <div class="container" th:each="deviceInfo : ${device.getDeviceInformation()}">
                 <div class="card" style="margin: 10px">
                     <div class="card-body">

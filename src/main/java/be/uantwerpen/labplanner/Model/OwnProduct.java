@@ -36,7 +36,7 @@ public class OwnProduct extends AbstractPersistable<Long> {
     @Column
     private String document;
 
-    @Column
+    @Column(length = 10000)
     private String description;
     @Column(
             name = "unit_cost"

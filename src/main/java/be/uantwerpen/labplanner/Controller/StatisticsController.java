@@ -26,14 +26,15 @@ import java.time.Period;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static java.lang.Math.log;
 import static java.lang.Math.round;
 
 @Controller
-@SessionAttributes({"deviceCounter","productCounter", "selectedYear", "selectedTypeOfGraph", "selectedDevices", "occupancyDevicesHours",
+@SessionAttributes({"deviceCounter","productCounter", "selectedYear",  "selectedDevices", "occupancyDevicesHours",
                     "occupancyDevicesHoursPast", "occupancyDevicesHoursFuture", "occupancyDevicesDays", "occupancyDevicesDaysPast",
                     "occupancyDevicesDaysFuture","totalHours", "totalHoursPast", "totalHoursFuture", "highestAbsoluteValueHours",
-                    "selectedTimePeriod", "selectedStartMonthStockHistory","selectedMonthStock", "selectedProducts",
-                    "stockLevelStartMonthHistory"})
+                     "selectedStartMonthStockHistory","selectedMonthStock", "selectedProducts",
+                    "stockLevelStartMonthHistory"}) //"selectedTypeOfGraph", "selectedTimePeriod",
 public class StatisticsController {
 
     @Autowired
@@ -44,6 +45,9 @@ public class StatisticsController {
 
     @Autowired
     private OwnProductService productService;
+
+    @Autowired
+    private OfficeHoursService officeHoursService;
 
     @ModelAttribute("deviceCounter")
     private int getdeviceCounter(){
@@ -57,7 +61,7 @@ public class StatisticsController {
 
     @ModelAttribute("selectedTypeOfGraph")
     private String graphType(){
-        return "Device hours by month";
+        return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.deviceHoursByMonth");
     }
 
     @ModelAttribute("selectedYear")
@@ -67,7 +71,7 @@ public class StatisticsController {
 
     @ModelAttribute("selectedTimePeriod")
     private String selectTimePeriod(){
-        return "Started";
+        return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.started");
     }
 
     @ModelAttribute("selectedDevices")
@@ -145,12 +149,12 @@ public class StatisticsController {
 
     @ModelAttribute("selectableGraphTypes")
     private List<String> selectableGraphs() {
-        return new ArrayList<>(Arrays.asList("Device hours by month","Device occupancy rate in hours","Device occupancy rate in days"));
+        return new ArrayList<>(Arrays.asList(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.deviceHoursByMonth"),ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.occupancyRateInHours"),ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("statistics.occupancyRateInDays")));
     }
 
     @ModelAttribute("selectableTimePeriods")
     private List<String> selectableTimePeriods() {
-        return new ArrayList<>(Arrays.asList("Started","All","Future"));
+        return new ArrayList<>(Arrays.asList(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.started"),ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.all"),ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.future")));
     }
 
     @ModelAttribute("selectedStartMonthStockHistory")
@@ -185,10 +189,6 @@ public class StatisticsController {
     }
 
     float amountOfWorkDaysInYear = 200;
-    float labOpeningTime = 8;
-    float labClosingTime = 20;
-    float labOpeningHoursInYear = amountOfWorkDaysInYear*(labClosingTime-labOpeningTime);
-
 
     /**
      *
@@ -410,7 +410,6 @@ public class StatisticsController {
         }
         //Calculate data points for graph
         if((int)model.getAttribute("productCounter")>0) {
-            //for (OwnProduct product : listSelectedProducts) {
             for(int z=0;z<(int)model.getAttribute("productCounter");z++){
                 OwnProduct product = listSelectedProducts.get(z);
                 selectedProductNames.add(product.getName());
@@ -653,6 +652,9 @@ public class StatisticsController {
      * @throws ParseException if date object is badly parsed
      */
     public int[] calculateTotalHoursDeviceByYearAndMonth(final ModelMap model, List<Step> selectedDeviceSteps) throws ParseException {
+        OfficeHours currentOfficeHours = officeHoursService.findAll().get(0);
+        float labOpeningTime = currentOfficeHours.getStartHour();
+        float labClosingTime = currentOfficeHours.getEndHour();
         int[] totalHoursByMonth = new int[12];
         String[] months = new String[]{"01","02","03","04","05","06","07","08","09","10","11","12"};
         String selectedTimePeriod = (String) model.getAttribute("selectedTimePeriod");
@@ -670,8 +672,8 @@ public class StatisticsController {
 
             Date thisStepDateStart = formatDateHourMin.parse(devStep.getStart() + " " + devStep.getStartHour());
             Date thisStepDateEnd = formatDateHourMin.parse(devStep.getEnd() + " " + devStep.getEndHour());
-
-            if(selectedTimePeriod.matches("Started")) {
+            String matchStarted=ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.started");
+            if(selectedTimePeriod.matches(matchStarted)) {
                 if (thisStepDateStart.before(todaysDate)) {
                     for (int i = 0; i < months.length; i++) {
                         if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
@@ -683,7 +685,7 @@ public class StatisticsController {
                                     totalHoursByMonth[i] = totalHoursByMonth[i] + calculateHourDiff(selectedDeviceSteps.get(j));
                                 } else if (startDay.matches(endDay) == false) {
                                     int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;
-                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (dayDiff * (24)) + (Integer.parseInt(endHour)));
                                 }
                             }
                             //not same month same year
@@ -699,16 +701,16 @@ public class StatisticsController {
                                         if (leap) {
                                             int fullDaysThisMonth = 29 - Integer.parseInt(startDay);
                                             int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
 
                                         }
                                         //if not leap +28
                                         else {
                                             int fullDaysThisMonth = 28 - Integer.parseInt(startDay);
                                             int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
 
                                         }
                                     }
@@ -716,15 +718,15 @@ public class StatisticsController {
                                     else if (Integer.parseInt(startMonth) % 2 == 0) {
                                         int fullDaysThisMonth = 30 - Integer.parseInt(startDay);
                                         int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
                                     }
                                     // if odd month -> even month => +31
                                     else {
                                         int fullDaysThisMonth = 31 - Integer.parseInt(startDay);
                                         int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
                                     }
                                 }
                                 //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity
@@ -737,11 +739,11 @@ public class StatisticsController {
                                     }
                                     int fullDaysLastMonth = Integer.parseInt(endDay) - 1;
                                     float fullDaysMonthsInbetween = (float) 30.4375;
-                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                    totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                    totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (24)) + (Integer.parseInt(endHour)));
                                     // Calculate months in between
                                     for (int z = 1; z < monthsDifference; z++) {
-                                        totalHoursByMonth[i + z] = (int) (totalHoursByMonth[i + z] + (fullDaysMonthsInbetween * (labClosingTime - labOpeningTime)));
+                                        totalHoursByMonth[i + z] = (int) (totalHoursByMonth[i + z] + (fullDaysMonthsInbetween * (24)));
                                     }
                                 }
                             }
@@ -749,7 +751,7 @@ public class StatisticsController {
                     }
                 }
             }
-            else if (selectedTimePeriod.matches("All")) {
+            else if (selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.all"))) {
                 for (int i = 0; i < months.length; i++) {
                     if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
                         //calculate for month i if same month
@@ -759,7 +761,7 @@ public class StatisticsController {
                                 totalHoursByMonth[i] = totalHoursByMonth[i] + calculateHourDiff(selectedDeviceSteps.get(j));
                             } else if (startDay.matches(endDay) == false) {
                                 int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;
-                                totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (dayDiff * (24)) + (Integer.parseInt(endHour)));
                             }
                         }
                         //not same month same year
@@ -775,16 +777,16 @@ public class StatisticsController {
                                     if (leap) {
                                         int fullDaysThisMonth = 29 - Integer.parseInt(startDay);
                                         int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
 
                                     }
                                     //if not leap +28
                                     else {
                                         int fullDaysThisMonth = 28 - Integer.parseInt(startDay);
                                         int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
 
                                     }
                                 }
@@ -792,15 +794,15 @@ public class StatisticsController {
                                 else if (Integer.parseInt(startMonth) % 2 == 0) {
                                     int fullDaysThisMonth = 30 - Integer.parseInt(startDay);
                                     int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                    totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                    totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
                                 }
                                 // if odd month -> even month => +31
                                 else {
                                     int fullDaysThisMonth = 31 - Integer.parseInt(startDay);
                                     int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                    totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                    totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
                                 }
                             }
                             //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
@@ -813,18 +815,18 @@ public class StatisticsController {
                                 }
                                 int fullDaysLastMonth = Integer.parseInt(endDay) - 1;
                                 float fullDaysMonthsInbetween = (float) 30.4375;
-                                totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (24)) + (Integer.parseInt(endHour)));
                                 // Calculate months in between
                                 for (int z = 1; z < monthsDifference; z++) {
-                                    totalHoursByMonth[i + z] = (int) (totalHoursByMonth[i + z] + (fullDaysMonthsInbetween * (labClosingTime - labOpeningTime)));
+                                    totalHoursByMonth[i + z] = (int) (totalHoursByMonth[i + z] + (fullDaysMonthsInbetween * (24)));
                                 }
                             }
                         }
                     }
                 }
             }
-            else if (selectedTimePeriod.matches("Future")){
+            else if (selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.future"))){
                 if (thisStepDateStart.after(todaysDate)) {
                     for (int i = 0; i < months.length; i++) {
                         if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
@@ -835,7 +837,7 @@ public class StatisticsController {
                                     totalHoursByMonth[i] = totalHoursByMonth[i] + calculateHourDiff(selectedDeviceSteps.get(j));
                                 } else if (startDay.matches(endDay) == false) {
                                     int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;
-                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (dayDiff * (24)) + (Integer.parseInt(endHour)));
                                 }
                             }
                             //not same month same year
@@ -851,16 +853,16 @@ public class StatisticsController {
                                         if (leap) {
                                             int fullDaysThisMonth = 29 - Integer.parseInt(startDay);
                                             int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
 
                                         }
                                         //if not leap +28
                                         else {
                                             int fullDaysThisMonth = 28 - Integer.parseInt(startDay);
                                             int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                            totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                            totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
 
                                         }
                                     }
@@ -868,15 +870,15 @@ public class StatisticsController {
                                     else if (Integer.parseInt(startMonth) % 2 == 0) {
                                         int fullDaysThisMonth = 30 - Integer.parseInt(startDay);
                                         int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
                                     }
                                     // if odd month -> even month => +31
                                     else {
                                         int fullDaysThisMonth = 31 - Integer.parseInt(startDay);
                                         int fullDaysNextMonth = Integer.parseInt(endDay) - 1;
-                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                        totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                        totalHoursByMonth[i + 1] = (int) (totalHoursByMonth[i + 1] + (fullDaysNextMonth * (24)) + (Integer.parseInt(endHour)));
                                     }
                                 }
                                 //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
@@ -889,11 +891,11 @@ public class StatisticsController {
                                     }
                                     int fullDaysLastMonth = Integer.parseInt(endDay) - 1;
                                     float fullDaysMonthsInbetween = (float) 30.4375;
-                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (labClosingTime - Integer.parseInt(startHour)) + (fullDaysThisMonth * (labClosingTime - labOpeningTime)));
-                                    totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime));
+                                    totalHoursByMonth[i] = (int) (totalHoursByMonth[i] + (24 - Integer.parseInt(startHour)) + (fullDaysThisMonth * (24)));
+                                    totalHoursByMonth[i + (int) monthsDifference] = (int) (totalHoursByMonth[i + (int) monthsDifference] + (fullDaysLastMonth * (24)) + (Integer.parseInt(endHour)));
                                     // Calculate months in between
                                     for (int z = 1; z < monthsDifference; z++) {
-                                        totalHoursByMonth[i + z] = (int) (totalHoursByMonth[i + z] + (fullDaysMonthsInbetween * (labClosingTime - labOpeningTime)));
+                                        totalHoursByMonth[i + z] = (int) (totalHoursByMonth[i + z] + (fullDaysMonthsInbetween * (24)));
                                     }
                                 }
                             }
@@ -918,6 +920,10 @@ public class StatisticsController {
      * @throws ParseException if date object is badly parsed
      */
     public float calculateOccupancyHours(final ModelMap model, List<Step> selectedDeviceSteps, float totalDeviceHoursYear) throws ParseException {
+        OfficeHours currentOfficeHours = officeHoursService.findAll().get(0);
+        float labOpeningTime = currentOfficeHours.getStartHour();
+        float labClosingTime = currentOfficeHours.getEndHour();
+        float labOpeningHoursInYear = amountOfWorkDaysInYear*(labClosingTime-labOpeningTime);
         float occupancySelectedYearHours=0;
         String selectedTimePeriod = (String) model.getAttribute("selectedTimePeriod");
         SimpleDateFormat formatDateHourMin = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -929,7 +935,7 @@ public class StatisticsController {
 
             Date thisStepDateStart = formatDateHourMin.parse(devStep.getStart() + " " + devStep.getStartHour());
 
-            if(selectedTimePeriod.matches("Started")) {
+            if(selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.started"))) {
                 if(thisStepDateStart.before(todaysDate)) {
                     if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
                         String startDay = getStepDayStart(devStep);
@@ -947,7 +953,7 @@ public class StatisticsController {
                         // if step is accros multiple days in same month
                         else if ((startDay.matches(endDay) == false) && (startMonth.matches(endMonth) == true)) {
                             int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;
-                            totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                            totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                         }
                         //if step over multiple months in same year
                         else if (startMonth.matches(endMonth) == false) {
@@ -961,36 +967,36 @@ public class StatisticsController {
                                     //if leap +29
                                     if (leap) {
                                         float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) - 1;
-                                        totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                        totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                                     }
                                     //if not leap +28
                                     else {
                                         float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) - 1;
-                                        totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                        totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                                     }
                                 }
                                 //if even month -> odd month => +30
                                 else if (Integer.parseInt(startMonth) % 2 == 0) {
                                     float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) - 1;
-                                    totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                    totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                                 }
                                 // if odd month -> even month => +31
                                 else {
                                     float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) - 1;
-                                    totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                    totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                                 }
                             }
                             //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
                                 float extraDaysMonths = monthsDifference * ((float) (30.4375));
                                 float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
-                                totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                             }
                         }
                     }
                 }
             }
-            if(selectedTimePeriod.matches("All")) {
+            if(selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.all"))) {
                 if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
                     String startDay = getStepDayStart(devStep);
                     String endDay = getStepDayEnd(devStep);
@@ -1007,7 +1013,7 @@ public class StatisticsController {
                     // if step is accros multiple days in same month
                     else if ((startDay.matches(endDay) == false) && (startMonth.matches(endMonth) == true)) {
                         int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;
-                        totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                        totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                     }
                     //if step over multiple months in same year
                     else if (startMonth.matches(endMonth) == false) {
@@ -1021,35 +1027,35 @@ public class StatisticsController {
                                 //if leap +29
                                 if (leap) {
                                     float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) - 1;
-                                    totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                    totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                                 }
                                 //if not leap +28
                                 else {
                                     float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) - 1;
-                                    totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                    totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                                 }
                             }
                             //if even month -> odd month => +30
                             else if (Integer.parseInt(startMonth) % 2 == 0) {
                                 float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) - 1;
-                                totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                             }
                             // if odd month -> even month => +31
                             else {
                                 float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) - 1;
-                                totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                             }
                         }
                             //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
                                 float extraDaysMonths = monthsDifference * ((float) (30.4375));
                                 float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
-                                totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                             }
                     }
                 }
             }
-            if(selectedTimePeriod.matches("Future")) {
+            if(selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.future"))) {
                 if(thisStepDateStart.after(todaysDate)) {
                     if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
                         String startDay = getStepDayStart(devStep);
@@ -1067,7 +1073,7 @@ public class StatisticsController {
                         // if step is accros multiple days in same month
                         else if ((startDay.matches(endDay) == false) && (startMonth.matches(endMonth) == true)) {
                             int dayDiff = ((Integer.parseInt(endDay) - Integer.parseInt(startDay))) - 1;
-                            totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                            totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                         }
                         //if step over multiple months in same year
                         else if (startMonth.matches(endMonth) == false) {
@@ -1081,30 +1087,30 @@ public class StatisticsController {
                                     //if leap +29
                                     if (leap) {
                                         float dayDiff = ((Integer.parseInt(endDay) + 29) - Integer.parseInt(startDay)) - 1;
-                                        totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                        totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                                     }
                                     //if not leap +28
                                     else {
                                         float dayDiff = ((Integer.parseInt(endDay) + 28) - Integer.parseInt(startDay)) - 1;
-                                        totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                        totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                                     }
                                 }
                                 //if even month -> odd month => +30
                                 else if (Integer.parseInt(startMonth) % 2 == 0) {
                                     float dayDiff = ((Integer.parseInt(endDay) + 30) - Integer.parseInt(startDay)) - 1;
-                                    totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                    totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                                 }
                                 // if odd month -> even month => +31
                                 else {
                                     float dayDiff = ((Integer.parseInt(endDay) + 31) - Integer.parseInt(startDay)) - 1;
-                                    totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                    totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                                 }
                             }
                             //If more than one month we take 30.4375 as average and don't take into account februari or leap years, to reduce complexity....
                             else {
                                 float extraDaysMonths = monthsDifference * ((float) (30.4375));
                                 float dayDiff = ((Integer.parseInt(endDay) + extraDaysMonths) - Integer.parseInt(startDay)) - 1;
-                                totalDeviceHoursYear = totalDeviceHoursYear + (labClosingTime - Integer.parseInt(startHour)) + (dayDiff * (labClosingTime - labOpeningTime)) + (Integer.parseInt(endHour) - labOpeningTime);
+                                totalDeviceHoursYear = totalDeviceHoursYear + (24 - Integer.parseInt(startHour)) + (dayDiff * 24) + (Integer.parseInt(endHour));
                             }
                         }
                     }
@@ -1131,6 +1137,7 @@ public class StatisticsController {
      * @throws ParseException when date object is badly parsed
      */
     public float calculateOccupancyDays(final ModelMap model, List<Step> selectedDeviceSteps, float totalDeviceDaysYear) throws ParseException {
+        OfficeHours currentOfficeHours = officeHoursService.findAll().get(0);
         float occupancySelectedYearDays=0;
         List<String> bookedDaysStart = new ArrayList<>();
         List<String> bookedDaysEnd = new ArrayList<>();
@@ -1143,7 +1150,7 @@ public class StatisticsController {
 
             Date thisStepDateStart = formatDateHourMin.parse(devStep.getStart() + " " + devStep.getStartHour());
 
-            if(selectedTimePeriod.matches("Started")) {
+            if(selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.started"))) {
                 if(thisStepDateStart.before(todaysDate)) {
                     String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
                     if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
@@ -1307,7 +1314,7 @@ public class StatisticsController {
                     }
                 }
             }
-            else if (selectedTimePeriod.matches("All")){
+            else if (selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.all"))){
                 String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
                 if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
                     String stepDateStart = devStep.getStart();
@@ -1469,7 +1476,7 @@ public class StatisticsController {
                     }
                 }
             }
-            if(selectedTimePeriod.matches("Future")) {
+            if(selectedTimePeriod.matches(ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.future"))) {
                 if(thisStepDateStart.after(todaysDate)) {
                     String yearStep = getStepYearStart(selectedDeviceSteps.get(j));
                     if (yearStep.matches((String) model.getAttribute("selectedYear"))) {
@@ -1782,14 +1789,6 @@ public class StatisticsController {
      */
     public void setSelectedYear(final ModelMap model, String year) {
          model.addAttribute("selectedYear",year);
-    }
-
-    /**
-     * getter method for the lab opening hours in a year
-     * @return opening hour of the lab in a year
-     */
-    public float getLabOpeningHoursInYear(){
-        return labOpeningHoursInYear;
     }
 
     /**

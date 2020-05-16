@@ -3,17 +3,13 @@
 <!-- Import header -->
 <head th:replace="navbar :: head (title='#{device.management}')"></head>
 <body onload="initPage()">
-<script type="text/javascript">
-    function initPage(){
-        $('#roles').multiSelect({
-            selectableHeader: '<div class="custom-header"th:text="#{selectable.items}">Selectable items</div>',
-        selectionHeader: '<div class="custom-header"th:text="#{selected.items}">Selected items</div>'
-    });
-    }
+<script th:inline="javascript">
+console.log([[${device}]].devicePictureName)
 </script>
 <div class="container">
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
+
     <form action="#" th:action="@{/devices/{id}(id=${device})}" th:object="${device}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
         <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>

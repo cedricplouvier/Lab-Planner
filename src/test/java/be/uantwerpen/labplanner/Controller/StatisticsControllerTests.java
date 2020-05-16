@@ -1,14 +1,9 @@
 package be.uantwerpen.labplanner.Controller;
 
 import be.uantwerpen.labplanner.LabplannerApplication;
-import be.uantwerpen.labplanner.Model.Device;
-import be.uantwerpen.labplanner.Model.DeviceType;
-import be.uantwerpen.labplanner.Model.OwnProduct;
-import be.uantwerpen.labplanner.Model.Step;
-import be.uantwerpen.labplanner.Service.DeviceService;
-import be.uantwerpen.labplanner.Service.DeviceTypeService;
-import be.uantwerpen.labplanner.Service.OwnProductService;
-import be.uantwerpen.labplanner.Service.StepService;
+import be.uantwerpen.labplanner.Model.*;
+import be.uantwerpen.labplanner.Service.*;
+import be.uantwerpen.labplanner.common.model.stock.Product;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -37,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.mockito.Mockito.when;
@@ -61,6 +58,9 @@ public class StatisticsControllerTests {
 
     @Mock
     private OwnProductService productService;
+
+    @Mock
+    private OfficeHoursService officeHoursService;
 
     @InjectMocks
     private StatisticsController statisticsController;
@@ -88,11 +88,13 @@ public class StatisticsControllerTests {
 
         List<Device> devices = new ArrayList<>();
         List<Step> steps = new ArrayList<>();
-
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(8,20,0,0);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
         when(deviceService.findAll()).thenReturn(devices);
         when(stepService.findAll()).thenReturn(steps);
         mockMvc.perform(get("/statistics/statistics").with(user("test").password("test")
-                //Testing on the authorities is not working
                 .authorities(new SimpleGrantedAuthority("Statistics Access"))))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("dev1", notNullValue()))
@@ -108,6 +110,126 @@ public class StatisticsControllerTests {
     @Test
     public void showStatisticsStockPageTest() throws Exception{
 
+        List<OwnProduct> products = new ArrayList<>();
+        OwnProduct product = new OwnProduct();
+        product.setId((long) 10);
+        Map<String, Double> stockHistoryMap1 = new HashMap<>();
+        stockHistoryMap1.put(new SimpleDateFormat("yyyy-MM").format(new Date()),(double) 2000);
+        product.setProductStockHistory(stockHistoryMap1);
+        product.setName("prod1");
+        products.add(product);
+        OwnProduct product2 = new OwnProduct();
+        product2.setId((long) 20);
+        Map<String, Double> stockHistoryMap2 = new HashMap<>();
+        stockHistoryMap2.put(new SimpleDateFormat("yyyy-MM").format(new Date()),(double) 2000);
+        product2.setProductStockHistory(stockHistoryMap2);
+        product2.setName("prod2");
+        products.add(product2);
+
+        List<OwnProduct> listSelectedProducts = new ArrayList<>();
+        listSelectedProducts.add(product);
+        listSelectedProducts.add(product2);
+
+        List<Double> stocklvl = new ArrayList<>();
+        stocklvl.add((double)2000);
+        stocklvl.add((double)2000);
+
+        when(productService.findAll()).thenReturn(products);
+
+        mockMvc.perform(get("/statistics/stockStatistics").with(user("test").password("test")
+                .authorities(new SimpleGrantedAuthority("Statistics Access")))
+                .flashAttr("selectedMonthStock",new SimpleDateFormat("yyyy-MM").format(new Date()))
+                .flashAttr("selectedStartMonthStockHistory",new SimpleDateFormat("yyyy-MM").format(new Date()))
+                .flashAttr("selectedProducts",listSelectedProducts)
+                .flashAttr("productCounter",2))
+                .andExpect(model().attribute("highestDataPointStock",2000.0))
+                .andExpect(model().attribute("stockLevelMonth",stocklvl))
+                .andExpect(status().isOk())
+                .andExpect(view().name("Statistics/stockStatistics"));
+    }
+
+    @Test
+    public void resetStockGraphTest() throws Exception {
+        mockMvc.perform(get("/statistics/stockStatistics/resetGraphStockHistory")
+                .with(user("test").password("test").authorities(new SimpleGrantedAuthority("Statistics Access"))))
+                .andExpect(model().attribute("productCounter",0))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/statistics/stockStatistics"))
+                .andDo(print());
+    }
+
+    @Test
+    public void getSelectedStartStockHistoryTest() throws Exception {
+        mockMvc.perform(get("/statistics/stockStatistics/getSelectedStartStockHistory")
+                .with(user("test").password("test").authorities(new SimpleGrantedAuthority("Statistics Access"))))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/statistics/stockStatistics"))
+                .andDo(print());
+    }
+
+    @Test
+    public void getSelectedMonthStockTest() throws Exception {
+        mockMvc.perform(get("/statistics/stockStatistics/getSelectedMonthStock")
+                .with(user("test").password("test").authorities(new SimpleGrantedAuthority("Statistics Access"))))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/statistics/stockStatistics"))
+                .andDo(print());
+    }
+
+    @Test
+    public void getSelectedProductTest() throws Exception {
+
+        List<OwnProduct> products = new ArrayList<>();
+        OwnProduct product = new OwnProduct();
+        product.setId((long) 10);
+        Map<String, Double> stockHistoryMap1 = new HashMap<>();
+        stockHistoryMap1.put(new SimpleDateFormat("yyyy-MM").format(new Date()),(double) 2000);
+        product.setProductStockHistory(stockHistoryMap1);
+        product.setName("prod1");
+        products.add(product);
+        OwnProduct product2 = new OwnProduct();
+        product2.setId((long) 20);
+        Map<String, Double> stockHistoryMap2 = new HashMap<>();
+        stockHistoryMap2.put(new SimpleDateFormat("yyyy-MM").format(new Date()),(double) 2000);
+        product2.setProductStockHistory(stockHistoryMap2);
+        product2.setName("prod2");
+        products.add(product2);
+
+        List<OwnProduct> listSelectedProducts = new ArrayList<>();
+        listSelectedProducts.add(product);
+        listSelectedProducts.add(product2);
+
+        when(productService.findAll()).thenReturn(products);
+
+        mockMvc.perform(get("/statistics/stockStatistics/getSelectedProduct")
+                .with(user("test").password("test").authorities(new SimpleGrantedAuthority("Statistics Access")))
+                .flashAttr("productCounter",2)
+                .flashAttr("selectedProducts",listSelectedProducts))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/statistics/stockStatistics"))
+                .andDo(print());
+    }
+
+    @Test
+    public void updateStockMapTest() throws Exception {
+        List<OwnProduct> products = new ArrayList<>();
+        OwnProduct product = new OwnProduct();
+        product.setId((long) 10);
+        Map<String, Double> stockHistoryMap1 = new HashMap<>();
+        stockHistoryMap1.put(new SimpleDateFormat("yyyy-MM").format(new Date()),(double) 2000);
+        product.setProductStockHistory(stockHistoryMap1);
+        product.setName("prod1");
+        products.add(product);
+        OwnProduct product2 = new OwnProduct();
+        product2.setId((long) 20);
+        Map<String, Double> stockHistoryMap2 = new HashMap<>();
+        stockHistoryMap2.put(new SimpleDateFormat("yyyy-MM").format(new Date()),(double) 2000);
+        product2.setProductStockHistory(stockHistoryMap2);
+        product2.setName("prod2");
+        products.add(product2);
+        when(productService.findAll()).thenReturn(products);
+
+        statisticsController.upDateStockMap();
     }
 
     @Test
@@ -115,31 +237,56 @@ public class StatisticsControllerTests {
         long id = 10;
         List<Step> steps = new ArrayList<>();
         int[] totalHoursSelectedDevice = new int[]{10,10,10,10,10,10,10,10,10,10,10,10};;
-        int highestAbsoluteValueHours=10;
-        int test=11;
-        int testValue = 1;
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(8,20,0,0);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
         Device dev = new Device();
         dev.setId(id);
-        DeviceType devType = new DeviceType();
-        devType.setId(id);
-        dev.setDevicename("testDevive");
-        dev.setDeviceType(devType);
+        dev.setDevicename("selectedDev");
         List<Device> devices = new ArrayList<>();
         devices.add(dev);
 
         when(stepService.findAll()).thenReturn(steps);
 
-        mockMvc.perform(get("/statistics/statistics/submit").flashAttr("test",test)
+        mockMvc.perform(get("/statistics/statistics/submit")
                 .flashAttr("totalHoursSelectedDevice", totalHoursSelectedDevice)
-                .flashAttr("highestAbsoluteValueHours",highestAbsoluteValueHours)
                 .flashAttr("selectedDev",dev)
                 .flashAttr("selectedDevices", devices)
-                .flashAttr("testValue", testValue)
                 .with(user("test").password("test")))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/statistics/statistics"))
                 .andDo(print());
+    }
 
+    @Test
+    public void submitTestToManyDevices() throws Exception{
+        List<Step> steps = new ArrayList<>();
+        int[] totalHoursSelectedDevice = new int[]{10,10,10,10,10,10,10,10,10,10,10,10};;
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(8,20,0,0);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
+        Device dev = new Device();
+        dev.setId((long) 10);
+        dev.setDevicename("selectedDev");
+        int dc = 5;
+        List<Device> devices = new ArrayList<>();
+        devices.add(dev);
+
+        when(stepService.findAll()).thenReturn(steps);
+
+        mockMvc.perform(get("/statistics/statistics/submit")
+                .flashAttr("totalHoursSelectedDevice", totalHoursSelectedDevice)
+                .flashAttr("selectedDev",dev)
+                .flashAttr("selectedDevices", devices)
+                .flashAttr("deviceCounter",dc)
+                .with(user("test").password("test")))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/statistics/statistics"))
+                .andDo(print());
     }
 
     @Test
@@ -356,9 +503,15 @@ public class StatisticsControllerTests {
 
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2020");
-        model.addAttribute("selectedTimePeriod","All");
+        model.addAttribute("selectedTimePeriod",ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.all"));
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
+
         //calculate for month i if same month & same day
         step1.setStart("2020-01-10");
         step1.setEnd("2020-01-10");
@@ -370,7 +523,7 @@ public class StatisticsControllerTests {
         steps.clear();
         step1.setEnd("2020-01-11");
         steps.add(step1);
-        Assert.assertEquals(19,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[0]);
+        Assert.assertEquals(31,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[0]);
 
         //not same month February => march leap
         steps.clear();
@@ -378,16 +531,16 @@ public class StatisticsControllerTests {
         step1.setStart("2016-02-28");
         step1.setEnd("2016-03-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
         //not same month February => march not leap
         steps.clear();
         statisticsController.setSelectedYear(model,"2017");
         step1.setStart("2017-02-28");
         step1.setEnd("2017-03-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
 
         //if even month -> odd month => +30
         steps.clear();
@@ -395,32 +548,32 @@ public class StatisticsControllerTests {
         step1.setStart("2020-04-30");
         step1.setEnd("2020-05-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
         //if odd month -> even month => +31
         steps.clear();
         step1.setStart("2020-05-30");
         step1.setEnd("2020-06-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
 
         //more than one month start even month
         steps.clear();
         step1.setStart("2020-04-30");
         step1.setEnd("2020-06-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
-        Assert.assertEquals(365,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
+        Assert.assertEquals(730,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
         //more than one month start odd month
         steps.clear();
         step1.setStart("2020-09-30");
         step1.setEnd("2020-11-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[8]);
-        Assert.assertEquals(365,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[9]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[10]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[8]);
+        Assert.assertEquals(730,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[9]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[10]);
     }
 
     @Test
@@ -428,9 +581,15 @@ public class StatisticsControllerTests {
 
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2019");
-        model.addAttribute("selectedTimePeriod","Started");
+        model.addAttribute("selectedTimePeriod",ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.started"));
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
+
         //calculate for month i if same month & same day
         step1.setStart("2019-01-10");
         step1.setEnd("2019-01-10");
@@ -442,7 +601,7 @@ public class StatisticsControllerTests {
         steps.clear();
         step1.setEnd("2019-01-11");
         steps.add(step1);
-        Assert.assertEquals(19,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[0]);
+        Assert.assertEquals(31,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[0]);
 
         //not same month February => march leap
         steps.clear();
@@ -450,16 +609,16 @@ public class StatisticsControllerTests {
         step1.setStart("2016-02-28");
         step1.setEnd("2016-03-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
         //not same month February => march not leap
         steps.clear();
         statisticsController.setSelectedYear(model,"2017");
         step1.setStart("2017-02-28");
         step1.setEnd("2017-03-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
 
         //if even month -> odd month => +30
         steps.clear();
@@ -467,32 +626,32 @@ public class StatisticsControllerTests {
         step1.setStart("2019-04-30");
         step1.setEnd("2019-05-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
         //if odd month -> even month => +31
         steps.clear();
         step1.setStart("2019-05-30");
         step1.setEnd("2019-06-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
 
         //more than one month start even month
         steps.clear();
         step1.setStart("2019-04-30");
         step1.setEnd("2019-06-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
-        Assert.assertEquals(365,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
+        Assert.assertEquals(730,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
         //more than one month start odd month
         steps.clear();
         step1.setStart("2019-09-30");
         step1.setEnd("2019-11-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[8]);
-        Assert.assertEquals(365,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[9]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[10]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[8]);
+        Assert.assertEquals(730,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[9]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[10]);
 
 
         // Test if not started step gets rejected
@@ -512,9 +671,15 @@ public class StatisticsControllerTests {
 
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","3021");
-        model.addAttribute("selectedTimePeriod","Future");
+        model.addAttribute("selectedTimePeriod",ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.future"));
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
+
         //calculate for month i if same month & same day
         step1.setStart("3021-01-10");
         step1.setEnd("3021-01-10");
@@ -526,7 +691,7 @@ public class StatisticsControllerTests {
         steps.clear();
         step1.setEnd("3021-01-11");
         steps.add(step1);
-        Assert.assertEquals(19,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[0]);
+        Assert.assertEquals(31,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[0]);
 
         //not same month February => march leap
         steps.clear();
@@ -534,16 +699,16 @@ public class StatisticsControllerTests {
         step1.setStart("3020-02-28");
         step1.setEnd("3020-03-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
         //not same month February => march not leap
         steps.clear();
         statisticsController.setSelectedYear(model,"3021");
         step1.setStart("3021-02-28");
         step1.setEnd("3021-03-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[1]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[2]);
 
         //if even month -> odd month => +30
         steps.clear();
@@ -551,32 +716,32 @@ public class StatisticsControllerTests {
         step1.setStart("3021-04-30");
         step1.setEnd("3021-05-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
         //if odd month -> even month => +31
         steps.clear();
         step1.setStart("3021-05-30");
         step1.setEnd("3021-06-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
 
         //more than one month start even month
         steps.clear();
         step1.setStart("3021-04-30");
         step1.setEnd("3021-06-01");
         steps.add(step1);
-        Assert.assertEquals(10,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
-        Assert.assertEquals(365,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
+        Assert.assertEquals(14,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[3]);
+        Assert.assertEquals(730,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[4]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[5]);
         //more than one month start odd month
         steps.clear();
         step1.setStart("3021-09-30");
         step1.setEnd("3021-11-01");
         steps.add(step1);
-        Assert.assertEquals(22,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[8]);
-        Assert.assertEquals(365,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[9]);
-        Assert.assertEquals(9,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[10]);
+        Assert.assertEquals(38,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[8]);
+        Assert.assertEquals(730,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[9]);
+        Assert.assertEquals(17,statisticsController.calculateTotalHoursDeviceByYearAndMonth(model,steps)[10]);
 
         // Test if not future step gets rejected
         steps.clear();
@@ -597,10 +762,18 @@ public class StatisticsControllerTests {
 
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2020");
-        model.addAttribute("selectedTimePeriod","All");
+        model.addAttribute("selectedTimePeriod",ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.all"));
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
-        Float labOpeningHoursInYear = statisticsController.getLabOpeningHoursInYear();
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        float labClosingTime = currentOfficeHours.getEndHour();
+        float labOpeningTime = currentOfficeHours.getStartHour();
+        float labOpeningHoursInYear = (statisticsController.getAmountOfWorkDaysInYear()*(labClosingTime-labOpeningTime));
+        when(officeHoursService.findAll()).thenReturn(officeHours);
+
         //calculate if same month & same day
         step1.setStart("2020-01-10");
         step1.setEnd("2020-01-10");
@@ -612,7 +785,7 @@ public class StatisticsControllerTests {
         steps.clear();
         step1.setEnd("2020-01-11");
         steps.add(step1);
-        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model,steps, 0),0.001);
+        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model,steps, 0),0.001);
 
 
         //not same month February => march leap
@@ -621,7 +794,7 @@ public class StatisticsControllerTests {
         step1.setStart("2016-02-28");
         step1.setEnd("2016-03-01");
         steps.add(step1);
-        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
+        Assert.assertEquals((55/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
 
         //not same month February => march not leap
         steps.clear();
@@ -629,7 +802,7 @@ public class StatisticsControllerTests {
         step1.setStart("2017-02-28");
         step1.setEnd("2017-03-01");
         steps.add(step1);
-        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
+        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
 
         //if even month -> odd month => +30
         steps.clear();
@@ -637,20 +810,20 @@ public class StatisticsControllerTests {
         step1.setStart("2020-04-30");
         step1.setEnd("2020-05-01");
         steps.add(step1);
-        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
+        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
         //if odd month -> even month => +31
         steps.clear();
         step1.setStart("2020-05-30");
         step1.setEnd("2020-06-01");
         steps.add(step1);
-        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
+        Assert.assertEquals((55/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
 
         // multiple months
         steps.clear();
         step1.setStart("2020-09-30");
         step1.setEnd("2020-11-01");
         steps.add(step1);
-        Assert.assertEquals((385/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.5);
+        Assert.assertEquals((761.5/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.5);
     }
 
     @Test
@@ -658,10 +831,18 @@ public class StatisticsControllerTests {
 
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2019");
-        model.addAttribute("selectedTimePeriod","Started");
+        model.addAttribute("selectedTimePeriod",ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.started"));
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
-        Float labOpeningHoursInYear = statisticsController.getLabOpeningHoursInYear();
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        float labClosingTime = currentOfficeHours.getEndHour();
+        float labOpeningTime = currentOfficeHours.getStartHour();
+        float labOpeningHoursInYear = (statisticsController.getAmountOfWorkDaysInYear()*(labClosingTime-labOpeningTime));
+        when(officeHoursService.findAll()).thenReturn(officeHours);
+
         //calculate if same month & same day
         step1.setStart("2019-01-10");
         step1.setEnd("2019-01-10");
@@ -673,7 +854,7 @@ public class StatisticsControllerTests {
         steps.clear();
         step1.setEnd("2019-01-11");
         steps.add(step1);
-        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model,steps, 0),0.001);
+        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model,steps, 0),0.001);
 
 
         //not same month February => march leap
@@ -682,7 +863,7 @@ public class StatisticsControllerTests {
         step1.setStart("2016-02-28");
         step1.setEnd("2016-03-01");
         steps.add(step1);
-        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
+        Assert.assertEquals((55/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
 
         //not same month February => march not leap
         steps.clear();
@@ -690,7 +871,7 @@ public class StatisticsControllerTests {
         step1.setStart("2017-02-28");
         step1.setEnd("2017-03-01");
         steps.add(step1);
-        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
+        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
 
         //if even month -> odd month => +30
         steps.clear();
@@ -698,20 +879,20 @@ public class StatisticsControllerTests {
         step1.setStart("2019-04-30");
         step1.setEnd("2019-05-01");
         steps.add(step1);
-        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
+        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
         //if odd month -> even month => +31
         steps.clear();
         step1.setStart("2019-05-30");
         step1.setEnd("2019-06-01");
         steps.add(step1);
-        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
+        Assert.assertEquals((55/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
 
         // multiple months
         steps.clear();
         step1.setStart("2019-09-30");
         step1.setEnd("2019-11-01");
         steps.add(step1);
-        Assert.assertEquals((385/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.5);
+        Assert.assertEquals((761.5/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.5);
 
         //exepct rejection for future steps
         steps.clear();
@@ -719,7 +900,7 @@ public class StatisticsControllerTests {
         step1.setEnd("3019-01-10");
         step1.setStartHour("10:00");
         step1.setEndHour("17:00");
-        Assert.assertNotEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model,steps, 0),0.001);
+        Assert.assertNotEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model,steps, 0),0.001);
         Assert.assertEquals(0, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
     }
 
@@ -728,10 +909,18 @@ public class StatisticsControllerTests {
 
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","3019");
-        model.addAttribute("selectedTimePeriod","Future");
+        model.addAttribute("selectedTimePeriod",ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.future"));
         Step step1 = new Step();
         List<Step> steps = new ArrayList<>();
-        Float labOpeningHoursInYear = statisticsController.getLabOpeningHoursInYear();
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        float labClosingTime = currentOfficeHours.getEndHour();
+        float labOpeningTime = currentOfficeHours.getStartHour();
+        float labOpeningHoursInYear = (statisticsController.getAmountOfWorkDaysInYear()*(labClosingTime-labOpeningTime));
+        when(officeHoursService.findAll()).thenReturn(officeHours);
+
         //calculate if same month & same day
         step1.setStart("3019-01-10");
         step1.setEnd("3019-01-10");
@@ -743,7 +932,7 @@ public class StatisticsControllerTests {
         steps.clear();
         step1.setEnd("3019-01-11");
         steps.add(step1);
-        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model,steps, 0),0.001);
+        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model,steps, 0),0.001);
 
 
         //not same month February => march leap
@@ -752,7 +941,7 @@ public class StatisticsControllerTests {
         step1.setStart("3020-02-28");
         step1.setEnd("3020-03-01");
         steps.add(step1);
-        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
+        Assert.assertEquals((55/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
 
         //not same month February => march not leap
         steps.clear();
@@ -760,7 +949,7 @@ public class StatisticsControllerTests {
         step1.setStart("3017-02-28");
         step1.setEnd("3017-03-01");
         steps.add(step1);
-        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
+        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
 
         //if even month -> odd month => +30
         steps.clear();
@@ -768,20 +957,20 @@ public class StatisticsControllerTests {
         step1.setStart("3019-04-30");
         step1.setEnd("3019-05-01");
         steps.add(step1);
-        Assert.assertEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
+        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
         //if odd month -> even month => +31
         steps.clear();
         step1.setStart("3019-05-30");
         step1.setEnd("3019-06-01");
         steps.add(step1);
-        Assert.assertEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
+        Assert.assertEquals((55/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
 
         // multiple months
         steps.clear();
         step1.setStart("3019-09-30");
         step1.setEnd("3019-11-01");
         steps.add(step1);
-        Assert.assertEquals((385/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.5);
+        Assert.assertEquals((761.5/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model, steps, 0),0.5);
 
         //exepct rejection for passed steps
         steps.clear();
@@ -789,7 +978,7 @@ public class StatisticsControllerTests {
         step1.setEnd("2019-01-10");
         step1.setStartHour("10:00");
         step1.setEndHour("17:00");
-        Assert.assertNotEquals((19/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model,steps, 0),0.001);
+        Assert.assertNotEquals((31/labOpeningHoursInYear)*100, statisticsController.calculateOccupancyHours(model,steps, 0),0.001);
         Assert.assertEquals(0, statisticsController.calculateOccupancyHours(model, steps, 0),0.001);
     }
 
@@ -798,7 +987,12 @@ public class StatisticsControllerTests {
     public void occupancyRateDaysTest() throws ParseException{
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2020");
-        model.addAttribute("selectedTimePeriod", "All");
+        model.addAttribute("selectedTimePeriod", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.all"));
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
         Float amountOfWorkDaysInYear = statisticsController.getAmountOfWorkDaysInYear();
         List<Step> steps = new ArrayList<>();
         Step stepTest = new Step();
@@ -1035,7 +1229,12 @@ public class StatisticsControllerTests {
     public void occupancyRateDaysFutureTest() throws ParseException{
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","3019");
-        model.addAttribute("selectedTimePeriod", "Future");
+        model.addAttribute("selectedTimePeriod", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("statistics.future"));
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
         Float amountOfWorkDaysInYear = statisticsController.getAmountOfWorkDaysInYear();
         List<Step> steps = new ArrayList<>();
         Step stepTest = new Step();
@@ -1272,7 +1471,12 @@ public class StatisticsControllerTests {
     public void occupancyRateDaysStartedTest() throws ParseException{
         ModelMap model = new ModelMap();
         model.addAttribute("selectedYear","2019");
-        model.addAttribute("selectedTimePeriod", "Started");
+        model.addAttribute("selectedTimePeriod", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("statistics.started"));
+
+        List<OfficeHours> officeHours = new ArrayList<>();
+        OfficeHours currentOfficeHours = new OfficeHours(0,8,0,20);
+        officeHours.add(currentOfficeHours);
+        when(officeHoursService.findAll()).thenReturn(officeHours);
         Float amountOfWorkDaysInYear = statisticsController.getAmountOfWorkDaysInYear();
         List<Step> steps = new ArrayList<>();
         Step stepTest = new Step();

@@ -38,6 +38,81 @@
             <button type="submit"  class="btn btnprimary" th:text="#{save}"></button>
         </p>
     </form>
+    <form th:if="${deviceTypeObject.id}!=null " method="POST" enctype="multipart/form-data"  th:action="@{/upload/typeimage/{typeid}(typeid=${deviceTypeObject.id})}">
+        <label th:text="#{device.upload.new}"></label>
+        <div class="input-group mb-3">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" accept="image/*" name="file" id="inputGroupFile02"/>
+                <label class="custom-file-label" for="inputGroupFile02" th:text="#{device.choosefile}"></label>
+            </div>
+            <div class="input-group-append">
+                <button id="upload-btn" class="btn btn-primary" type="submit" th:text="#{device.upload}" disabled></button>
+            </div>
+        </div>
+        <script>
+            function checkFileType(type){
+                type = type.split("/")[1];
+                let ok = false;
+                if(type == "jpeg"){
+                    ok=true;
+                }else if(type == "bmp"){
+                    ok=true;
+                }else if(type == "gif"){
+                    ok=true;
+                }else if(type == "png"){
+                    ok=true;
+                }
+                return ok;
+            }
+            var fileerror= [[#{devicetype.file.error}]];
+            var imageerror = [[#{devicetype.image.error}]];
+            $('#inputGroupFile02').on('change',function(){
+                if(this.files[0].size > 2097152*5){
+                    alert(fileerror);
+                    this.value = "";
+                }if(!checkFileType(this.files[0].type)){
+                    alert(imageerror);
+                    this.value = "";
+                }
+                else {
+                    //get the file name
+                    var fileName = $(this).val();
+                    //replace the "Choose a file" label
+                    $(this).next('.custom-file-label').html(fileName);
+                    $('#upload-btn').prop('disabled', false);
+                }
+            })
+
+        </script>
+    </form>
+    <div class="alert alert-info" role="alert" th:if="${deviceTypeObject.id}==null" th:text="#{device.savebeforepicture}"></div>
+
+    <hr class="my-4">
+    <div class="card" th:each="deviceInfo : ${deviceTypeObject.getDeviceInformation()}" style="margin-bottom: 15px">
+        <div class="card-body">
+            <h5 class="card-title" th:text="${deviceInfo.getInformationName()}"></h5>
+            <p class="card-text" th:text="${deviceInfo.getInformation()}"></p>
+            <div>
+                <ul>
+                    <div th:if="${files}!= null  or ${deviceInfo.getFiles().size()==0}"th:each="file : ${files}">
+                        <li  th:if="${#strings.contains(file, filename)}" th:each="filename : ${deviceInfo.getFiles()}">
+                            <a   th:href="${file}" th:text="${filename}"></a>
+                        </li>
+                    </div>
+                </ul>
+            </div>
+            <a type="button" class="btn btn-primary" th:href="@{/devices/info/{id}/{typeid}(id=${deviceInfo.getId()},typeid=${deviceTypeObject.getId()})}" th:text="#{edit}"></a>
+            <a type="button" class="btn btn-primary" th:href="@{/devices/info/{id}/{typeid}/delete(id=${deviceInfo.getId()},typeid=${deviceTypeObject.getId()})}" th:text="#{delete}"></a>
+
+        </div>
+    </div>
+    <div class="alert alert-primary" role="alert" th:if="${deviceTypeObject.getDeviceInformation()}!=null and ${deviceTypeObject.getDeviceInformation().size()}==0" th:text="#{device.noinfo}"></div>
+    <div class="alert alert-info" role="alert" th:if="${deviceTypeObject.id}==null" th:text="#{device.savebeforeinfo}"></div>
+    <hr class="my-4">
+    <p>
+        <a th:href="@{/devices/types}"  class="btn btn-primary" th:text="#{close}"></a>
+        <a th:if="${deviceTypeObject.id}!=null " th:href="@{/devices/info/put/{typeid}(typeid=${deviceTypeObject.getId()})}"  class="btn btn-primary" th:text="#{device.add.information}"></a>
+    </p>
 </div>
 </html>
 

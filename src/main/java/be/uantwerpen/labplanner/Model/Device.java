@@ -31,7 +31,7 @@ public class Device extends AbstractPersistable<Long> {
     @OneToOne
     @JoinColumn(name = "deviceType", nullable = true)
     private DeviceType deviceType;
-    @Column
+    @Column(length = 10000)
     private String Comment;
     @Column
     private String devicePictureName;
@@ -112,6 +112,8 @@ public class Device extends AbstractPersistable<Long> {
                 //
             } else {
                 String newDirName = devicename;
+                File otherDir = new File("upload-dir/"+devicename);
+                otherDir.delete();
                 File newDir = new File(dir.getParent() + "/" + newDirName);
                 dir.renameTo(newDir);
             }
@@ -120,7 +122,7 @@ public class Device extends AbstractPersistable<Long> {
                 File f1 = new File(rootlocation+this.devicePictureName);
                 File f2 = new File(rootlocation+devicename + "."+this.devicePictureName.substring(this.devicePictureName.lastIndexOf(".") + 1));
                 f1.renameTo(f2);
-                this.devicePictureName =devicename + "."+this.devicePictureName.substring(this.devicePictureName.lastIndexOf(".") + 1);
+                this.setDevicePictureName(devicename + "."+this.devicePictureName.substring(this.devicePictureName.lastIndexOf(".") + 1));
             }
         }
         this.devicename = devicename;

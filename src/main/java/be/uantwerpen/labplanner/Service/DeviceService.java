@@ -10,6 +10,7 @@ import be.uantwerpen.labplanner.common.repository.users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,7 +46,6 @@ public class DeviceService {
                 tempDevice.setDeviceType(device.getDeviceType());
                 tempDevice.setDevicename(device.getDevicename());
                 tempDevice.setComment(device.getComment());
-                tempDevice.setDevicePictureName(device.getDevicePictureName());
                 if(device.getDeviceInformations() !=null) {
                     for (DeviceInformation deviceInformation : device.getDeviceInformations()) {
                         DeviceInformation tempDeviceInformation = deviceInformation.getId() == null ? null : deviceInformationRepository.findById(deviceInformation.getId()).orElse(null);
@@ -63,7 +63,6 @@ public class DeviceService {
             }
         }else{
             deviceRepository.save(device);
-
         }
     }
     public void delete(Long id){

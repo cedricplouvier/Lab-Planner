@@ -206,7 +206,7 @@
     <table class="table table-hover">
         <div class="dropdown">
             <div  class="">
-                <input type="text" placeholder="Search.." id="myInput" onclick="toggleSearchlist()" onkeyup="filterFunction()">
+                <input type="text" th:placeholder="#{search.all}" id="myInput" onclick="toggleSearchlist()" onkeyup="filterFunction()">
                 <div  id="myDropdown" class="dropdown-content">
                     <a th:each="stepType : ${allDeviceTypes}" th:value="${stepType.getDeviceTypeName()}" th:text="${stepType.getDeviceTypeName()}" th:onclick="addrow([[${stepType}]])"></a>
                 </div>
@@ -214,11 +214,11 @@
             <thead>
             <tr>
                 <th th:text="#{step.type}">Step Type</th>
-                <th>Continuity type</th>
-                <th>Continuity direction</th>
-                <th>Continuity duration</th>
+                <th th:text="#{continuity.type}">Continuity type</th>
+                <th th:text="#{continuity.direction}">Continuity direction</th>
+                <th th:text="#{continuity.duration}">Continuity duration</th>
                 <th th:text="#{stepType.setFixedTime}">Set fixed time of step</th>
-                <th>Fixed time type</th>
+                <th th:text="#{stepType.fixedTimeType}">Fixed time type</th>
                 <th th:text="#{stepType.fixedTime}">Fixed time of step</th>
             </tr>
             </thead>

@@ -77,13 +77,13 @@
     var allProductNames = /*[[${productNames}]]*/ [];
     var stockLevelSelectedMonth = /*[[${stockLevelMonth}]]*/ [];
     var highestDataPointStock = "[(${highestDataPointStock})]";
-
+    var stocklevels = [[#{statistics.stocklevelss}]];
     var container = document.getElementById('chart-area2');
     var data = {
         categories: allProductNames,
         series: [
             {
-                name: 'Stock Levels',
+                name: stocklevels,
                 data: stockLevelSelectedMonth
             }
         ]
@@ -96,12 +96,12 @@
             format: '1,000'
         },
         yAxis: {
-            title: 'Amount (kg/liter/unit)',
+            title: amounts+' (kg/liter/unit)',
             min: 0,
             max: highestDataPointStock + 100
         },
         xAxis: {
-            title: 'Products'
+            title: products
         },
         legend: {
             align: 'top'
@@ -127,7 +127,9 @@
     var shownMonthsHistory = /*[[${shownMonthsHistory}]]*/ [];
     var stockLevels2 = /*[[${stockLevelStartMonthHistory}]]*/ [];
     var productCounter = "[(${productCounter})]";
-
+    var month = [[#{month}]];
+    var amounts = [[#{amount}]];
+    var products = [[#{statistics.products}]];
     var data0 = {
         categories: shownMonthsHistory,
         series: [
@@ -226,10 +228,10 @@
             title: '[(#{statistics.stockHistory})]'
         },
         yAxis: {
-            title: 'Amount (kg/liter/unit)',
+            title: amounts+' (kg/liter/unit)',
         },
         xAxis: {
-            title: 'Month',
+            title: month,
             pointOnColumn: true,
             dateFormat: 'MMM',
             tickInterval: 'auto'

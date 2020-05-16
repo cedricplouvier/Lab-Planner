@@ -32,7 +32,28 @@
         document.getElementById("checkboxIsFixedType").checked = true;
 
     });
-
+    var translationStart = [[#{start}]];
+    var translationEnd = [[#{end}]];
+    var translationNo = [[#{options.type.no}]];
+    var Hard = [[#{options.type.hard}]];
+    var softatleast = [[#{options.type.soft.atleast}]];
+    var softatmost = [[#{options.type.soft.atmost}]];
+    var equaltype = [[#{options.type.equal}]];
+    var atleast = [[#{options.type.atleast}]];
+    var atmost = [[#{options.type.atmost}]];
+    var afters = [[#{options.type.after}]];
+    var befores = [[#{options.type.before}]];
+    var chooseincalendar = [[#{choose.calendar}]];
+    var selectdevice = [[#{device.select}]];
+    var comments=[[#{step.comment}]];
+    var selectmixture =[[#{mixture.select}]];
+    var amountofmixture = [[#{mixture.amountof}]];
+    var steplength = [[#{cal.book.length}]];
+    var continuity = [[#{cal.book.continuity}]];
+    var aligns = [[#{cal.book.align}]];
+    var timedif = [[#{cal.book.time}]];
+    var unimplem = [[#{unimplemented}]];
+    var namedef = [[#{name}]];
     let devices = [[${allDevices}]];
     let deviceTypes = [[${allDeviceTypes}]];
     let steps = [[${allSteps}]];
@@ -67,18 +88,18 @@
                 '<tr>\n' +
                 '   <th>\n' +
                 '   <select required="" class=" form-control input-device" id="selectMixture" name="piecesOfMixture[' + i + '].mixture">' +
-                '       <option hidden="" value="">Select mixture</option>' +
+                '       <option hidden="" value="">'+selectmixture+'</option>' +
                 deviceOptions +
                 '   </select>' +
                 '   </th>' +
                 '   <th align="center">' +
                 '       <div class="input-group-append">' +
-                '           <input type="number" min="0" step="0.01" class=" form-control input-device" placeholder="Amount of mixture" id="piecesOfMixture' + i + '.mixtureAmount" name="piecesOfMixture[' + i + '].mixtureAmount" required>' +
+                '           <input type="number" min="0" step="0.01" class=" form-control input-device" placeholder="'+amountofmixture+'" id="piecesOfMixture' + i + '.mixtureAmount" name="piecesOfMixture[' + i + '].mixtureAmount" required>' +
                 '           <span class="input-group-text" style="color:#808080">kg</span>' +
                 '       </div>' +
                 '   </th>' +
                 '   <th>' +
-                '       <input class=" form-control input-device" placeholder="Mixture comment" id="piecesOfMixture' + i + '.mixtureComment" name="piecesOfMixture[' + i + '].mixtureComment">' +
+                '       <input class=" form-control input-device" placeholder="'+comments+'" id="piecesOfMixture' + i + '.mixtureComment" name="piecesOfMixture[' + i + '].mixtureComment">' +
                 '   </th>' +
                 '</tr>');
     }
@@ -123,23 +144,24 @@
                 }
 
             }
+
             // set continuity text if time steptype has fixed time, otherwise set to 'No'
-            var continuityText = a.stepTypes[i].continuity.type != "No" ? a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '<br />' + a.stepTypes[i].continuity.type + '<br />' + a.stepTypes[i].continuity.directionType + '' : 'No';
+            var continuityText = a.stepTypes[i].continuity.type != "No" ? a.stepTypes[i].continuity.hours + ':' + a.stepTypes[i].continuity.minutes + '<br />' + a.stepTypes[i].continuity.type + '<br />' + a.stepTypes[i].continuity.directionType + '' : translationNo;
             // set fixed length text if time steptype has fixed time, otherwise set to 'No'
-            var fixedLengthText = a.stepTypes[i].hasFixedLength ? a.stepTypes[i].fixedTimeHours + ':' + a.stepTypes[i].fixedTimeMinutes + '<br />' + a.stepTypes[i].fixedTimeType + '' : 'No';
+            var fixedLengthText = a.stepTypes[i].hasFixedLength ? a.stepTypes[i].fixedTimeHours + ':' + a.stepTypes[i].fixedTimeMinutes + '<br />' + a.stepTypes[i].fixedTimeType + '' : translationNo;
             $('#list')
                 .append(
                     '<tr class="row' + i + '" id="row' + i + '">' +
                     '   <td style="text-align:left;" value="' + a.stepTypes[i].id + '">' + a.stepTypes[i].stepTypeName + '</td>' +
                     '   <td>' +
                     '       <select required class=" form-control input-device" id="selectDevice' + i + '" name="steps[' + i + '].device" style=" width: 110%;font-size:90%;">' +
-                    '       <option hidden selected disabled value="">Select device</option>' +
+                    '       <option hidden selected disabled value="">'+selectdevice+'</option>' +
                     deviceOprions +
                     '       </select>' +
                     '   </td>' +
                     '   <td style="vertical-align:bottom; text-align:center;">' +
-                    '       <p>Start</p>' +
-                    '       <p>End</p>' +
+                    '       <p>'+translationStart+'</p>' +
+                    '       <p>'+translationEnd+'</p>' +
                     '   </td>' +
                     '   <td style="vertical-align:center; text-align:center;">' +
                     '       <div class="input-group">' +
@@ -148,8 +170,8 @@
                     '       </div>' +
                     '   </td>' +
                     '   <td style="vertical-align:bottom; text-align:center;">' +
-                    '       <p>Start</p>' +
-                    '       <p>End</p>' +
+                    '       <p>'+translationStart+'</p>' +
+                    '       <p>'+translationEnd+'</p>' +
                     '   </td>' +
                     '   <td style="vertical-align:center; text-align:center;">' +
                     '       <input required="" style="width: 100%; font-size:80%;" type="time" id="startHour' + i + '" class="form-control float-right input-hour" placeholder="Start hour" name="steps[' + i + '].startHour">' +
@@ -160,10 +182,10 @@
                     '   <td style="width: 10%; font-size:80%; text-align:center" id="fixedStepLength' + i + '" name="fixedStepLength" value=""> ' + fixedLengthText +
                     '   </td> ' +
                     '   <td>' +
-                    '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="comment" name="steps[' + i + '].comment" value="" >' +
+                    '       <input style="width: 100%; font-size:80%; " type="text" id="comment" class="form-control float-right" placeholder="'+comments+'" name="steps[' + i + '].comment" value="" >' +
                     '   </td> ' +
                     '   <td>' +
-                    '       <button  style="width: 100%; font-size:80%;" class="btn btn-primary" type="button" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,\'' + i + '\')" >Choose in calendar</button>' +
+                    '       <button  style="width: 100%; font-size:80%;" class="btn btn-primary" type="button" id="choose" data-toggle="modal" data-target="#extraLargeModal" onclick="openCalendar(tempExpIndex,\'' + i + '\')" >'+chooseincalendar+'</button>' +
                     '   </td>' +
                     '</tr>');
             if ((a.stepTypes.length > 1) && (i < a.stepTypes.length - 1)) {
@@ -215,7 +237,7 @@
         calendarUpdate.experimentIndex = expInd;
         calendarUpdate.stepIndex = stepInd;
         document.getElementById('steptitle').innerText = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['deviceTypeName'];
-        document.getElementById('length').innerText = "Length: unimplemented";
+        document.getElementById('length').innerText = steplength+" " +unimplem;
         if (stepInd > 0) {
             document.getElementById('continuity2').innerText = "Continuity: " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['type'];
             document.getElementById('align').innerText = "Alignment: After";
@@ -225,7 +247,6 @@
             document.getElementById('continuity2').innerText = "Continuity: None";
             document.getElementById('align').innerText = "Alignment: None";
             document.getElementById('time').innerText = "Time: None";
-
         }
         calendarUpdate.start = document.getElementById('startDate' + stepInd + '').value
         calendarUpdate.end = document.getElementById('endDate' + stepInd + '').value
@@ -373,19 +394,19 @@
                 </select>
             </th>
             <th>
-                <input class=" form-control input-device" th:field="*{experimentname}" placeholder="Expirement Name"
+                <input class=" form-control input-device" th:field="*{experimentname}" th:placeholder="#{experiment.name}"
                        required>
             </th>
             </tbody>
         </table>
 
-        <h3><span th:text="#{mixture.info}"></span></h3>
+        <h3><span th:text="#{mixtures.info}"></span></h3>
         <table class="table table-hover" style="text-align:center; font-size:90%;">
             <thead>
             <tr>
-                <th th:text="#{mixture}">Mixture</th>
+                <th th:text="#{mixtures}">Mixture</th>
                 <th th:text="#{mixtures.amount}">Amount</th>
-                <th>Comment</th>
+                <th th:text="#{step.comment}">Comment</th>
             </tr>
             </thead>
             <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -408,14 +429,14 @@
                         <div class="input-group-append">
                             <input type="number" min="0" step="0.01" class=" form-control input-device"
                                    th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureAmount}"
-                                   placeholder="Amount of mixture" required>
+                                   th:placeholder="#{mixture.amountof}" required>
                             <span class="input-group-text" style="color:#808080">kg</span>
                         </div>
                     </th>
                     <th>
                         <input class=" form-control input-device"
                                th:field="*{piecesOfMixture[__${itemStat.index}__].mixtureComment}"
-                               placeholder="Mixture comment">
+                               th:placeholder="#{step.comment}">
                     </th>
                 </tr>
 
@@ -435,21 +456,19 @@
         </button>
 
         <h3><span th:text="#{step.info}"></span></h3>
-
-
         <table class="table table-hover" style=" font-size:100%; text-align:center;">
             <thead>
             <tr>
-                <th>Step Type</th>
-                <th>Device</th>
+                <th th:text="#{step.type}">Step Type</th>
+                <th th:text="#{device}">Device</th>
                 <th></th>
                 <th th:text="#{date}">Date</th>
                 <th></th>
                 <th th:text="#{time}">Time</th>
-                <th>Continuity</th>
-                <th>Fixed step time</th>
-                <th>Comment</th>
-                <th>Choose in Calendar</th>
+                <th th:text="#{continuity}">Continuity</th>
+                <th th:text="#{fixed.step.time}">Fixed step time</th>
+                <th th:text="#{step.comment}">Comment</th>
+                <th th:text="#{choose.calendar}">Choose in Calendar</th>
             </tr>
             </thead>
             <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -526,13 +545,13 @@
                         </td>
                         <td style="vertical-align:center; text-align:center;">
                             <input style="width: 100%; font-size:80%; " type="text" th:id="'comment'+ ${itemStat.index}"
-                                   class="form-control float-right" placeholder="comment"
+                                   class="form-control float-right"  th:placeholder="#{step.comment}"
                                    th:field="*{steps[__${itemStat.index}__].comment}">
                         </td>
                         <td>
                             <button style="width: 100%; font-size:80%;" class="btn btn-primary" type="button"
                                     id="choose" data-toggle="modal" data-target="#extraLargeModal"
-                                    onclick="openCalendar(tempExpIndex, tempStepIndex)">Choose in calendar
+                                    onclick="openCalendar(tempExpIndex, tempStepIndex)" th:text="#{choose.calendar}">Choose in calendar
                             </button>
                         </td>
                     </tr>
@@ -567,27 +586,27 @@
                         </button>
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu-calendarType">
                             <li role="presentation">
-                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-daily">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-daily" th:text="#{calendar.daily}">
                                     <i class="calendar-icon ic_view_day"></i>Daily
                                 </a>
                             </li>
                             <li role="presentation">
-                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weekly">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weekly" th:text="#{calendar.weekly}">
                                     <i class="calendar-icon ic_view_week"></i>Weekly
                                 </a>
                             </li>
                             <li role="presentation">
-                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-monthly">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-monthly" th:text="#{calendar.month}">
                                     <i class="calendar-icon ic_view_month"></i>Month
                                 </a>
                             </li>
                             <li role="presentation">
-                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weeks2">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weeks2" th:text="#{week.two}">
                                     <i class="calendar-icon ic_view_week"></i>2 weeks
                                 </a>
                             </li>
                             <li role="presentation">
-                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weeks3">
+                                <a class="dropdown-menu-title" role="menuitem" data-action="toggle-weeks3" th:text="#{week.three}">
                                     <i class="calendar-icon ic_view_week"></i>3 weeks
                                 </a>
                             </li>
@@ -617,7 +636,7 @@
                     </span>
                                 <span id="menu-navi">
                         <button type="button" class="btn btn-default btn-sm move-today"
-                                data-action="move-today">Today</button>
+                                data-action="move-today" th:text="#{calendar.today}">Today</button>
                         <button type="button" class="btn btn-default btn-sm move-day" data-action="move-prev">
                             <i class="calendar-icon ic-arrow-line-left" data-action="move-prev"></i>
                         </button>
@@ -636,31 +655,31 @@
 
                             <div style="flex: 1;display: flex;flex-direction: row">
                                 <button type="button" id="previousstep" class="btn btn-primary"
-                                        style="padding: 5px;flex: 1;  margin:auto;display:block;width: 90%;">
+                                        style="padding: 5px;flex: 1;  margin:auto;display:block;width: 90%;" th:text="#{previous}">
                                     previous
                                 </button>
                                 <h6 id="steptitle" data-dismiss="modal"
                                     style="padding: 5px;flex: 3;   margin: auto; text-align:center;vertical-align: center"
-                                    disabled>Step name</h6>
+                                    disabled th:text="#{step.name}">Step name</h6>
                                 <button type="button" id="nextstep" class="btn btn-primary"
-                                        style="padding: 5px;flex: 1;  margin:auto;display:block;width: 90%;"> next
+                                        style="padding: 5px;flex: 1;  margin:auto;display:block;width: 90%;" th:text="#{next}"> next
                                 </button>
                             </div>
                             <div style="flex: 4;display: flex;flex-direction: column">
                                 <h6 data-dismiss="modal"
-                                    style="flex:1;padding: 5px;   margin: auto; text-align:center;vertical-align: center">
+                                    style="flex:1;padding: 5px;   margin: auto; text-align:center;vertical-align: center" th:text="#{requirements}">
                                     Requirements</h6>
                                 <ul class="list-group" style="flex:4;margin: 10px;">
-                                    <li class="list-group-item" style="padding-bottom: 0px;" id="length">Length:
+                                    <li class="list-group-item" style="padding-bottom: 0px;" id="length" th:text="#{cal.book.length}">Length:
                                         5h
                                     </li>
                                     <li class="list-group-item" style="padding-bottom: 0px;" id="continuity2">
                                         Continuity:
                                         Hard
                                     </li>
-                                    <li class="list-group-item" style="padding-bottom: 0px;" id="align">Align: After
+                                    <li class="list-group-item" style="padding-bottom: 0px;" id="align" th:text="#{cal.book.align}">Align: After
                                     </li>
-                                    <li class="list-group-item" style="padding-bottom: 0px;" id="time">Time
+                                    <li class="list-group-item" style="padding-bottom: 0px;" id="time" th:text="#{cal.book.time}">Time
                                         difference:
                                         After
                                     </li>
@@ -668,10 +687,10 @@
                             </div>
                             <div style="flex: 4;display: flex;flex-direction: column">
                                 <h6 data-dismiss="modal"
-                                    style="flex:1;padding: 5px;   margin: auto; text-align:center;vertical-align: center">
+                                    style="flex:1;padding: 5px;   margin: auto; text-align:center;vertical-align: center" th:text="#{legend}">
                                     Legend</h6>
                                 <div id="legend" style="display: flex;flex:1; flex-direction: column;margin: 10px;">
-                                    <div class="alert alert-info" id="help" role="alert">
+                                    <div class="alert alert-info" id="help" role="alert" th:text="#{dragandrelease}">
                                         Drag and release to create a schedule.
                                     </div>
                                 </div>
@@ -697,19 +716,19 @@
                             <div style="flex: 1;margin: 10px;">
                                 <select required id="deviceTypeDropdown" class="form-control input-device"
                                         style="visibility: visible;">
-                                    <option value="none" selected disabled hidden>No available device</option>
+                                    <option value="none" selected disabled hidden th:text="#{device.notavailable}">No available device</option>
                                 </select>
                             </div>
                             <div style="flex: 1;">
                                 <button type="button" id="suggestStep" class="btn btn-warning"
                                         style="width: 90%;  margin:auto;display:block;" data-placement="top"
                                         data-toggle="popover" title="Success"
-                                        data-content="suggestion succesfully generated">Suggest a step
+                                        data-content="suggestion succesfully generated" th:text="#{suggest.step}">Suggest a step
                                 </button>
                             </div>
                             <div style="flex: 1;">
                                 <button type="button" id="selectStep" class="btn btn-success"
-                                        style="width: 90%;  margin:auto;display:block;" disabled>Save step
+                                        style="width: 90%;  margin:auto;display:block;" disabled th:text="#{step.save}">Save step
                                 </button>
                             </div>
                             <div class="toast" id="toastsuggestionsuccess" data-delay="5000"
@@ -722,7 +741,7 @@
                                     </svg>
                                     <strong class="mr-auto">Success</strong>
                                 </div>
-                                <div class="toast-body">
+                                <div class="toast-body" th:text="#{suggestion.success}">
                                     A suggestion has successfully been generated
                                 </div>
                             </div>
@@ -734,9 +753,9 @@
                                          focusable="false" role="img">
                                         <rect width="100%" height="100%" fill="#d9534f"></rect>
                                     </svg>
-                                    <strong class="mr-auto">Problem</strong>
+                                    <strong class="mr-auto" th:text="#{problem}">Problem</strong>
                                 </div>
-                                <div class="toast-body">
+                                <div class="toast-body" th:text="#{problemcontent}">
                                     A suggestion cant be generated within the next 14 days, try changing the
                                     requirements or changing the previous steps.
                                 </div>
