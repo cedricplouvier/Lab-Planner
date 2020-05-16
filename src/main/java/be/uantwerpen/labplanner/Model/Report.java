@@ -13,7 +13,7 @@ public class Report extends AbstractPersistable<Long> {
     @Column
     private String title;
 
-    @Column
+    @Column(length = 10000)
     private String description;
 
     @ManyToOne

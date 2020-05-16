@@ -27,7 +27,7 @@ public class Step extends AbstractPersistable<Long> {
     private String startHour;
     @Column(name = "endHour")
     private String endHour;
-    @Column(name = "comment")
+    @Column(name = "comment", length = 10000)
     private String comment;
     @OneToOne
     @JoinColumn(name = "mixture")
