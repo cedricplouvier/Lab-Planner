@@ -36,7 +36,7 @@ public class DeviceRepositoryTests {
     public void testDeviceSave(){
         //create Device
         Device device = new Device();
-        device.setDevicename("device");
+        device.setDevicename("devicenewname");
         //Set variables
         device.setComment("test");
 
@@ -62,7 +62,7 @@ public class DeviceRepositoryTests {
         assertEquals(fetchedDevice.getComment(),device.getComment());
 
         //update name & desciption
-        fetchedDevice.setDevicename("testname");
+        fetchedDevice.setDevicename("newtestname");
         DeviceType d2 = new DeviceType("newDevice",true);
         deviceTypeRepository.save(d2);
         fetchedDevice.setDeviceType(d2);
