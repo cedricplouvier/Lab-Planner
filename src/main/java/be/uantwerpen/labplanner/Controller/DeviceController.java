@@ -95,9 +95,10 @@ public class DeviceController {
         Locale current = LocaleContextHolder.getLocale();
         Device device = deviceService.findById(id).orElse(null);
         if(device==null){
-            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
-            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.unknown.id"));
-            return "Errors/custom-error";
+            model.addAttribute("deviceError",ResourceBundle.getBundle("messages",current).getString("error.device.unknown.id"));
+            model.addAttribute("MailSuccess","");
+            model.addAttribute("allDevices", deviceService.findAll());
+            return "Devices/list-devices";
         }
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("device",device);
@@ -114,9 +115,9 @@ public class DeviceController {
         Locale current = LocaleContextHolder.getLocale();
         DeviceType deviceType = deviceTypeService.findById(id).orElse(null);
         if(deviceType==null){
-            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
-            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.type.unknown.id"));
-            return "Errors/custom-error";
+            model.addAttribute("errormessage",ResourceBundle.getBundle("messages",current).getString("error.device.type.unknown.id"));
+            model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+            return  "Devices/list-device-types";
         }
         model.addAttribute("deviceTypeObject",deviceType);
         return "Devices/device-type-manage";
@@ -128,15 +129,16 @@ public class DeviceController {
         Locale current = LocaleContextHolder.getLocale();
         DeviceInformation deviceInformation =deviceInformationService.findById(id).orElse(null);
         if(deviceInformation==null){
-            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
-            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.information.unknown.id"));
-            return "Errors/custom-error";
-        }
+            model.addAttribute("deviceError",ResourceBundle.getBundle("messages",current).getString("error.device.information.unknown.id"));
+            model.addAttribute("MailSuccess","");
+            model.addAttribute("allDevices", deviceService.findAll());
+            return "Devices/list-devices";        }
         Device device = deviceService.findById(deviceid).orElse(null);
         if(device==null){
-            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
-            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.unknown.id"));
-            return "Errors/custom-error";
+            model.addAttribute("deviceError",ResourceBundle.getBundle("messages",current).getString("error.device.unknown.id"));
+            model.addAttribute("MailSuccess","");
+            model.addAttribute("allDevices", deviceService.findAll());
+            return "Devices/list-devices";
         }
         model.addAttribute("deviceInfoObject",deviceInformation);
         model.addAttribute("deviceObject",deviceService.findById(deviceid).orElse(null));
@@ -188,7 +190,7 @@ public class DeviceController {
         if(device.getDeviceType()==null){
             model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
             model.addAttribute("device",device);
-            model.addAttribute("errormessage","The device has no devicetype object");
+            model.addAttribute("errormessage",ResourceBundle.getBundle("messages",current).getString("error.no.devicetype"));
             return "Devices/device-manage";
         }
         if(device.getDevicename().length()==0||Device.getDefaultDevicename().equals(device.getDevicename())){
@@ -279,9 +281,10 @@ public class DeviceController {
         Locale current = LocaleContextHolder.getLocale();
         Device device = deviceService.findById(id).orElse(null);
         if(device==null){
-            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
-            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.unknown.id"));
-            return "Errors/custom-error";
+            model.addAttribute("deviceError",ResourceBundle.getBundle("messages",current).getString("error.device.unknown.id"));
+            model.addAttribute("MailSuccess","");
+            model.addAttribute("allDevices", deviceService.findAll());
+            return "Devices/list-devices";
         }
         List<Step> allSteps = stepService.findAll();
         Boolean isUsed = false;
@@ -291,9 +294,10 @@ public class DeviceController {
             }
         }
         if(isUsed){
-            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.inuse"));
-            model.addAttribute("errorMessage", ResourceBundle.getBundle("messages",current).getString("error.device.inuse"));
-            return "Errors/custom-error";
+            model.addAttribute("deviceError", ResourceBundle.getBundle("messages",current).getString("error.device.inuse"));
+            model.addAttribute("MailSuccess","");
+            model.addAttribute("allDevices", deviceService.findAll());
+            return "Devices/list-devices";
         }
         List<DeviceInformation> informations = this.deviceService.findById(id).get().getDeviceInformation();
         if(informations!=null) {
@@ -315,9 +319,9 @@ public class DeviceController {
         Locale current = LocaleContextHolder.getLocale();
         DeviceType deviceType = deviceTypeService.findById(id).orElse(null);
         if(deviceType==null){
-            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.unknown.id"));
-            model.addAttribute("errorMessage",ResourceBundle.getBundle("messages",current).getString("error.device.type.unknown.id"));
-            return "Errors/custom-error";
+            model.addAttribute("errormessage",ResourceBundle.getBundle("messages",current).getString("error.device.type.unknown.id"));
+            model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+            return  "Devices/list-device-types";
         }
         List<Device> allDevices = deviceService.findAll();
         Boolean isUsed = false;
@@ -335,9 +339,9 @@ public class DeviceController {
             }
         }
         if(isUsed){
-            model.addAttribute("errorTitle", ResourceBundle.getBundle("messages",current).getString("error.title.inuse"));
-            model.addAttribute("errorMessage", ResourceBundle.getBundle("messages",current).getString("error.device.type.inuse"));
-            return "Errors/custom-error";
+            model.addAttribute("errormessage", ResourceBundle.getBundle("messages",current).getString("error.device.type.inuse"));
+            model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
+            return  "Devices/list-device-types";
         }
         if(isUsed){
             model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
