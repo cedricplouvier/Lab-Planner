@@ -16,7 +16,7 @@ public class DeviceInformation extends AbstractPersistable<Long> {
     private static String DEFAULT_INFORMATION_NAME = "DEFAULT_INFORMATION";
     @Column
     private String informationName;
-    @Column
+    @Column(length = 10000)
     private String information;
 
     @ElementCollection

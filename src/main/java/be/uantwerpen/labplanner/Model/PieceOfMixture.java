@@ -14,7 +14,7 @@ public class PieceOfMixture extends AbstractPersistable<Long> {
     @JoinColumn(name = "mixture")
     private Mixture mixture;
 
-    @Column(name = "mixtureComment")
+    @Column(name = "mixtureComment", length = 10000)
     private String mixtureComment;
 
     @Column(name = "mixtureAmount")

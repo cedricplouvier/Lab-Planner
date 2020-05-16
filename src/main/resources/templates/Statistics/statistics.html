@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
-    <title>Device Statistics</title>
+    <title th:text="#{statistics.device}">Device Statistics</title>
 
     <div th:insert="navbar :: head"></div>
     <link rel="stylesheet" media="screen" href="http://cdn.jsdelivr.net/webjars/bootstrap/4.3.0/css/bootstrap.min.css"
@@ -15,10 +15,28 @@
     <link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/codemirror.css'/>
     <link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/addon/lint/lint.css'/>
     <link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.43.0/theme/neo.css'/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
 </head>
 <script th:inline="javascript">
     toastr.options.extendedTimeOut = 5000;
+    var occupratehours = /*[[#{statistics.occupratehours}]]*/ null;
+    var january = /*[[#{january}]]*/ null;
+    console.log(january);
+    var february = [[#{february}]];
+    var march = [[#{march}]];
+    var april = [[#{april}]];
+    var may = [[#{may}]];
+    var june = [[#{june}]];
+    var july = [[#{july}]];
+    var august = [[#{august}]];
+    var september = [[#{september}]];
+    var october = [[#{october}]];
+    var november = [[#{november}]];
+    var december = [[#{december}]];
+    var hoursused = [[#{hoursused}]];
+    var month = [[#{month}]];
     $(document).ready(function () {
         var status = "[(${Status})]";
         var messages =  /*[[${Message}]]*/ "TEST";
@@ -211,7 +229,7 @@
         "[(${totalHours5[10]})]",
         "[(${totalHours5[11]})]"];
 
-    if(typeOfGraph === "Device hours by month") {
+    if(typeOfGraph === "[(#{statistics.deviceHoursByMonth})]") {
         var container = document.getElementById('chart-area');
         var allDeviceNames = [];
         var highesValueMonth = "[(${highestAbsoluteValueHours})]";
@@ -224,7 +242,7 @@
         var data0 = {
 
             categories:
-                ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                [january, february, march, april, may, june, july, august, september, october, november, december],
 
             series: [
                 {}
@@ -234,7 +252,7 @@
         var data1 = {
 
             categories:
-                ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                [january, february, march, april, may, june, july, august, september, october, november, december],
 
             series: [
                 {
@@ -247,7 +265,7 @@
         var data2 = {
 
             categories:
-                ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                [january, february, march, april, may, june, july, august, september, october, november, december],
 
             series: [
                 {
@@ -264,7 +282,7 @@
         var data3 = {
 
             categories:
-                ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                [january, february, march, april, may, june, july, august, september, october, november, december],
 
             series: [
                 {
@@ -285,7 +303,7 @@
         var data4 = {
 
             categories:
-                ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                [january, february, march, april, may, june, july, august, september, october, november, december],
 
             series: [
                 {
@@ -309,7 +327,7 @@
         var data5 = {
 
             categories:
-                ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                [january, february, march, april, may, june, july, august, september, october, november, december],
 
             series: [
                 {
@@ -344,12 +362,12 @@
                 format: '1,000'
             },
             yAxis: {
-                title: 'Hours used',
+                title: hoursused,
                 min: 0,
                 max: highesValueMonth
             },
             xAxis: {
-                title: 'Month'
+                title: month
             },
             legend: {
                 align: 'top'
@@ -381,7 +399,7 @@
         }
     }
 
-    else if(typeOfGraph==="Device occupancy rate in hours"){
+    else if(typeOfGraph===occupratehours){
         var container2 = document.getElementById('chart-area');
 
         var data0 = {
@@ -482,7 +500,7 @@
                 max: 100
             },
             xAxis: {
-                title: 'Device'
+                title: '[(#{device})]'
             },
             legend: {
                 align: 'top'
@@ -514,7 +532,7 @@
         }
     }
 
-    else if(typeOfGraph==="Device occupancy rate in days"){
+    else if(typeOfGraph==="[(#{statistics.occupratedays})]"){
         var container2 = document.getElementById('chart-area');
 
         var data0 = {
