@@ -40,7 +40,7 @@ public class DeviceRepositoryTests {
         //Set variables
         device.setComment("test");
 
-        DeviceType d1 = new DeviceType("devicetype",false);
+        DeviceType d1 = new DeviceType("devicetypetest",false);
         deviceTypeRepository.save(d1);
         device.setDeviceType(d1);
 
