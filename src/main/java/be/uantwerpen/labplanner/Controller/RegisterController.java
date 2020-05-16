@@ -6,6 +6,7 @@ import be.uantwerpen.labplanner.common.service.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -27,6 +28,9 @@ public class RegisterController {
 
     @Autowired
     private EmailController emailController;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     private Set<User> registredUsers = new HashSet<>();
@@ -168,7 +172,7 @@ public class RegisterController {
 
         //if it passes all tests
         //may not save it to userService, but in seperate folder where admin can validate.
-
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         registredUsers.add(user);
         return "redirect:/login?registered";
     }
