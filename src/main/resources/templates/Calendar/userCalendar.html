@@ -5,6 +5,7 @@
 
 <head>
     <div th:insert="navbar :: head"></div>
+
     <meta http-equiv="content-type" content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -24,6 +25,9 @@
 
 <!-- Import menu bar -->
 <div id="lnb">
+    <input id="contextpath" th:value="@{/}" th:type="hidden"/>
+
+
     <div class="lnb-new-schedule">
             <a type="button" th:href="@{/planning/}" class="btn btn-default btn-block lnb-new-schedule-btn "  id="btn-new-schedule" >
                 Go to booking

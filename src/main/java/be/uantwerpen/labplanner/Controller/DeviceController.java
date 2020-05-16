@@ -260,7 +260,7 @@ public class DeviceController {
         }
         //Check if name is not already used else return to the edit page
         DeviceType tempDeviceType = deviceTypeService.findById(deviceType.getId()).orElse(null);
-        if(!tempDeviceType.getDeviceTypeName().equals(deviceType.getDeviceTypeName())){
+        if(tempDeviceType!=null&&!tempDeviceType.getDeviceTypeName().equals(deviceType.getDeviceTypeName())){
             if(deviceTypeService.findByDevicetypeName( deviceType.getDeviceTypeName()).orElse(null)!=null){
                 model.addAttribute("NameIsUsed",ResourceBundle.getBundle("messages",current).getString("error.name.inuse"));
                 model.addAttribute("devicetypes", deviceTypeService.findAll());
@@ -296,11 +296,13 @@ public class DeviceController {
             return "Errors/custom-error";
         }
         List<DeviceInformation> informations = this.deviceService.findById(id).get().getDeviceInformation();
-        device.setDeviceInformation(new ArrayList<DeviceInformation>());
-        deviceService.saveNewDevice(device);
+        if(informations!=null) {
+            device.setDeviceInformation(new ArrayList<DeviceInformation>());
+            deviceService.saveNewDevice(device);
 
-        for(DeviceInformation information : informations){
-            deviceInformationService.deleteById(Objects.requireNonNull(information.getId()));
+            for (DeviceInformation information : informations) {
+                deviceInformationService.deleteById(Objects.requireNonNull(information.getId()));
+            }
         }
         deviceService.delete(id);
         model.clear();

@@ -155,7 +155,7 @@ function ScheduleInfo() {
 function addDevices(possibleDevices) {
     $('#deviceTypeDropdown').find('option').remove();
 
-    if(possibleDevices.length>0&&checkContinuity(calendarUpdate.stepIndex,newSchedule,false).ok) {
+    if(possibleDevices.length>0&&checkContinuity(calendarUpdate.stepIndex,newSchedule,false,false).ok) {
         for (let current = 0; current < possibleDevices.length; current++) {
             const optionText = devices[possibleDevices[current]]['devicename'];
             const optionValue = devices[possibleDevices[current]]['id'];
@@ -180,13 +180,14 @@ function checkOverlap(schedule,personalAllowed) {
                 if(otherSteps[currentStep]['device']['id']==deviceId){ //found step booked of same device
                     var stepStart = new Date(otherSteps[currentStep]['start']+ 'T'+otherSteps[currentStep]['startHour']);
                     var stepEnd = new Date(otherSteps[currentStep]['end']+ 'T'+otherSteps[currentStep]['endHour']);
+
                     //check if date overlaps with schedule
-                    if(scheduleStart.getTime()<=stepStart.getTime()&&scheduleEnd.getTime()>stepStart.getTime()&&scheduleEnd.getTime()<=stepEnd.getTime()){
+                    if(scheduleStart.getTime()<stepStart.getTime()&&scheduleEnd.getTime()>stepStart.getTime() ){
                         overlap = true;
-                    }else if(scheduleEnd.getTime()>=stepEnd.getTime()&&scheduleStart.getTime()<stepEnd.getTime()&&scheduleStart.getTime()>=stepStart.getTime()){
+                    }else if(scheduleEnd.getTime()>stepEnd.getTime() &&scheduleStart.getTime()<stepEnd.getTime() ){
                         overlap = true;
-                    }else if(scheduleStart.getTime()<=stepStart.getTime()&&scheduleEnd.getTime()>=stepEnd.getTime()){
-                        overlap=true;
+                    }else if(scheduleStart.getTime()>=stepStart.getTime()&&scheduleEnd.getTime()<=stepEnd.getTime()){
+                        overlap = true;
                     }
                 }
             }
@@ -197,11 +198,12 @@ function checkOverlap(schedule,personalAllowed) {
                         stepStart = new Date(userSteps[currentStep]['start'] + 'T' + userSteps[currentStep]['startHour']);
                         stepEnd = new Date(userSteps[currentStep]['end'] + 'T' + userSteps[currentStep]['endHour']);
                         //check if date overlaps with schedule
-                        if (scheduleStart.getTime() <= stepStart.getTime() && scheduleEnd.getTime() > stepStart.getTime() && scheduleEnd.getTime() <= stepEnd.getTime()) {
+
+                        if(scheduleStart.getTime()<stepStart.getTime()&&scheduleEnd.getTime()>stepStart.getTime() ){
                             overlap = true;
-                        } else if (scheduleEnd.getTime() >= stepEnd.getTime() && scheduleStart.getTime() < stepEnd.getTime() && scheduleStart.getTime() >= stepStart.getTime()) {
+                        }else if(scheduleEnd.getTime()>stepEnd.getTime() &&scheduleStart.getTime()<stepEnd.getTime() ){
                             overlap = true;
-                        } else if (scheduleStart.getTime() <= stepStart.getTime() && scheduleEnd.getTime() >= stepEnd.getTime()) {
+                        }else if(scheduleStart.getTime()>=stepStart.getTime()&&scheduleEnd.getTime()<=stepEnd.getTime()){
                             overlap = true;
                         }
                     }
@@ -211,13 +213,13 @@ function checkOverlap(schedule,personalAllowed) {
                         stepStart = new Date(userSteps[currentStep]['start'] + 'T' + userSteps[currentStep]['startHour']);
                         stepEnd = new Date(userSteps[currentStep]['end'] + 'T' + userSteps[currentStep]['endHour']);
                         //check if date overlaps with schedule
-                        if (scheduleStart.getTime() <= stepStart.getTime() && scheduleEnd.getTime() > stepStart.getTime() && scheduleEnd.getTime() <= stepEnd.getTime()) {
-                            overlap = true;
-                        } else if (scheduleEnd.getTime() >= stepEnd.getTime() && scheduleStart.getTime() < stepEnd.getTime() && scheduleStart.getTime() >= stepStart.getTime()) {
-                            overlap = true;
-                        } else if (scheduleStart.getTime() <= stepStart.getTime() && scheduleEnd.getTime() >= stepEnd.getTime()) {
-                            overlap = true;
-                        }
+                    if(scheduleStart.getTime()<stepStart.getTime()&&scheduleEnd.getTime()>stepStart.getTime() ){
+                        overlap = true;
+                    }else if(scheduleEnd.getTime()>stepEnd.getTime() &&scheduleStart.getTime()<stepEnd.getTime() ){
+                        overlap = true;
+                    }else if(scheduleStart.getTime()>=stepStart.getTime()&&scheduleEnd.getTime()<=stepEnd.getTime()){
+                        overlap = true;
+                    }
                 }
             }
             if(!overlap){
@@ -228,8 +230,41 @@ function checkOverlap(schedule,personalAllowed) {
     return possibleDevices;
 }
 
-function checkContinuity(stepindex,schedule,withinOfficehours) {
+function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
     let stepType =  allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex];
+    //Check length
+    if(!isGrayout) {
+        if (allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['hasFixedLength']) {
+            var start = new Date(schedule.start.getFullYear(), schedule.start.getMonth(), schedule.start.getDate(), schedule.start.getHours(), schedule.start.getMinutes());
+            var end = new Date(schedule.end.getFullYear(), schedule.end.getMonth(), schedule.end.getDate(), schedule.end.getHours(), schedule.end.getMinutes());
+            var lengthMinutes = parseInt((end - start) / 1000 / 60);
+            var requiredLength = (parseInt(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeHours']) * 60) + parseInt(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeMinutes']);
+            if (allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeType'] === "Equal") {
+                if (lengthMinutes != requiredLength) {
+                    return {
+                        message: "This step has to be exactly " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeHours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeMinutes'] + "m long",
+                        ok: false,
+                    }
+                }
+            } else if (allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeType'] === "At least") {
+                if (lengthMinutes < requiredLength) {
+                    return {
+                        message: "This step has to be at least " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeHours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeMinutes'] + "m long",
+                        ok: false,
+                    }
+                }
+            } else if (allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeType'] === "At most") {
+                if (lengthMinutes > requiredLength) {
+                    return {
+                        message: "This step has to be at most " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeHours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeMinutes'] + "m long",
+                        ok: false,
+                    }
+                }
+            }
+        }
+    }
+
+
 
     if(stepindex-1>=0&&filledInSteps[stepindex-1]){
 
@@ -285,7 +320,9 @@ function checkContinuity(stepindex,schedule,withinOfficehours) {
     //soft min
     if(previousStepType['continuity']['type']=="Soft (at least)"){
         if(previousStepType['continuity']['directionType']=="After"){
-            if(!(secondDate.getTime()>=firstDate.getTime())) {
+            firstDate.setHours(firstDate.getHours()+parseInt(previousStepType['continuity']['hours']));
+            firstDate.setMinutes(firstDate.getMinutes()+parseInt(previousStepType['continuity']['minutes']));
+            if(!(secondDate.getTime()>firstDate.getTime())) {
                 return {
                     message: "This device requires a soft (at least) continuity, This step should be at least more then " + previousStepType['continuity']['hours'] + " hours after the previous step in the experiment.",
                     ok: false,
@@ -422,7 +459,7 @@ function createSuggestionSchedule(start,end,calendar) {
     schedule.calendarId = calendar.id;
     schedule.title = 'Suggestion: click to select'
     schedule.body = 'Step '+(calendarUpdate.stepIndex+1)+' of Experiment '+allExperiments[calendarUpdate.experimentIndex]['experimentTypeName']+', \nDevice = '+step['deviceType']['deviceTypeName'];
-    schedule.isReadOnly = true;
+    schedule.isReadOnly = false;
     schedule.start = start;
     schedule.end = end;
     schedule.color = calendar.color;
@@ -529,7 +566,7 @@ function generateSchedule(viewName, renderStart, renderEnd) {
             ok=false;
         }
         if(ok){
-            let check = checkContinuity(current,schedule,false);
+            let check = checkContinuity(current,schedule,false,false);
             if(check.ok) {
                 schedule.bgColor = '#5cb85c';
                 schedule.dragBgColor = '#5cb85c';

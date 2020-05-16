@@ -801,7 +801,7 @@ public class DatabaseLoader {
         StepType stepType10 = new StepType(t13, continuity10, "Step" + t13.getDeviceTypeName(), true, "Equal", 3, 0);
 
         //Step 11 - Continuity: Hard, 0h, DeviceType: Cooling chamber, FixedTime: 4h
-        Continuity continuity11 = new Continuity(0, 0, "Hard", "After");
+        Continuity continuity11 = new Continuity(0, 0, "Soft (at least)", "After");
         StepType stepType11 = new StepType(t5, continuity11, "Step" + t5.getDeviceTypeName(), true, "Equal", 4, 0);
 
         //Step 12 - Continuity: Hard, 0h, DeviceType: Uniframe, FixedTime: 1h

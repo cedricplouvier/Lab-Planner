@@ -10,8 +10,9 @@ let newSchedule;
 let suggestion;
 let showOwnItems = true;
 let showOtherItems = false;
- var token = $("meta[name='_csrf']").attr("content");
- var header = $("meta[name='_csrf_header']").attr("content");
+var contextpath = document.getElementById('contextpath').value;
+var token = $("meta[name='_csrf']").attr("content");
+var header = $("meta[name='_csrf_header']").attr("content");
  // Prepend context path to all jQuery AJAX requests
  $.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
      if (!options.crossDomain) {
@@ -81,6 +82,7 @@ let showOtherItems = false;
                     setUI();
                 }
                 if(e.schedule.id==suggestion.id){
+                    cal.deleteSchedule(newSchedule.id, newSchedule.calendarId);
                     newSchedule = suggestion;
                     newSchedule.bgColor = '#5cb85c';
                     newSchedule.dragBgColor = '#5cb85c';
@@ -88,8 +90,9 @@ let showOtherItems = false;
                     newSchedule.body="No problems found";
                     newSchedule.isReadOnly = false;
                     suggestion = null;
+
                     cal.updateSchedule(newSchedule.id, newSchedule.calendarId, newSchedule);
-                    let possibleDevices =  checkOverlap(newSchedule,true);
+                    let possibleDevices =  checkOverlap(newSchedule,document.getElementById("allowOverlap").checked);
                     addDevices(possibleDevices);
                     if(possibleDevices.length==0){
                         newSchedule.bgColor = '#d9534f';
@@ -111,6 +114,7 @@ let showOtherItems = false;
 
                 let schedule = getCurrentSchedule()
                 if (schedule) {
+
                     newSchedule = schedule;
                     if (e.start) {
                         newSchedule.start = e.start;
@@ -118,7 +122,7 @@ let showOtherItems = false;
                     if (e.end) {
                         newSchedule.end = e.end;
                     }
-                    var check = checkContinuity(calendarUpdate.stepIndex, schedule,false)
+                    var check = checkContinuity(calendarUpdate.stepIndex, schedule,false,false)
                     if (check.ok||$('#deviceTypeDropdown').children().length!=0) {
                         newSchedule.bgColor = '#5cb85c';
                         newSchedule.dragBgColor = '#5cb85c';
@@ -147,7 +151,7 @@ let showOtherItems = false;
                     saveNewSchedule(e);
                 }
                 $("#help").text("you can drag and drop the calendar or drag again");
-                let possibleDevices =  checkOverlap(newSchedule,true);
+                let possibleDevices =  checkOverlap(newSchedule,document.getElementById("allowOverlap").checked);
                 addDevices(possibleDevices);
                 if(possibleDevices.length==0){
                     newSchedule.bgColor = '#d9534f';
@@ -156,6 +160,7 @@ let showOtherItems = false;
                     newSchedule.body = "No available devices";
                     cal.updateSchedule(newSchedule.id, newSchedule.calendarId,newSchedule);
                 }
+                CheckAllCalendars();
                 refreshScheduleVisibility();
             }
         },
@@ -171,7 +176,7 @@ let showOtherItems = false;
                 if (e.changes.end) {
                     newSchedule.end = e.changes.end;
                 }
-                var check = checkContinuity(calendarUpdate.stepIndex, schedule,false)
+                var check = checkContinuity(calendarUpdate.stepIndex, schedule,false,false)
                 if (check.ok) {
                     newSchedule.bgColor = '#5cb85c';
                     newSchedule.dragBgColor = '#5cb85c';
@@ -191,7 +196,7 @@ let showOtherItems = false;
                     changes.borderColor = '#d9534f';
                     changes.body = check.message;
                 }
-                let possibleDevices =  checkOverlap(newSchedule,true);
+                let possibleDevices =  checkOverlap(newSchedule,document.getElementById("allowOverlap").checked);
                 addDevices(possibleDevices);
                 if(possibleDevices.length==0){
                     newSchedule.bgColor = '#d9534f';
@@ -199,6 +204,7 @@ let showOtherItems = false;
                     newSchedule.borderColor = '#d9534f';
                     newSchedule.body = "No available devices";
                 }
+                filledInSteps[calendarUpdate] =newSchedule
                 cal.updateSchedule(newSchedule.id, newSchedule.calendarId,newSchedule);
                 refreshScheduleVisibility();
             }
@@ -258,7 +264,26 @@ let showOtherItems = false;
 
         return html.join('');
     }
-
+    function CheckAllCalendars() {
+        for(let current=0;current<filledInSteps.length;current++){
+            if(filledInSteps[current]!=null){
+                let continuity = checkContinuity(current,filledInSteps[current],document.getElementById("allowOverlap").checked,document.getElementById("withinOfficehoursSingleSuggest").checked,false);
+                if(checkOverlap(filledInSteps[current],document.getElementById("allowOverlap").checked).length>0&&continuity.ok){
+                    filledInSteps[current].bgColor = '#5cb85c';
+                    filledInSteps[current].dragBgColor = '#5cb85c';
+                    filledInSteps[current].borderColor = '#5cb85c';
+                    filledInSteps[current].body="No problems found";
+                    cal.updateSchedule(filledInSteps[current].id, filledInSteps[current].calendarId, filledInSteps[current]);
+                }else{
+                    filledInSteps[current].bgColor = '#d9534f';
+                    filledInSteps[current].dragBgColor = '#d9534f';
+                    filledInSteps[current].borderColor = '#d9534f';
+                    filledInSteps[current].body = continuity.message;
+                    cal.updateSchedule(filledInSteps[current].id, filledInSteps[current].calendarId, filledInSteps[current]);
+                }
+            }
+        }
+    }
     /**
      * A listener for click the menu
      * @param {Event} e - click event
@@ -332,25 +357,40 @@ let showOtherItems = false;
         document.getElementById('startHour' + calendarUpdate.stepIndex + '').value =str;
         var str = ("0" + (newSchedule.end.getHours() )).slice(-2)+ ":" + ("0" + (newSchedule.end.getMinutes() )).slice(-2)  ;
         document.getElementById('endHour' + calendarUpdate.stepIndex + '').value = str;
-
         document.getElementById('selectDevice' + calendarUpdate.stepIndex + '').value =  document.getElementById('deviceTypeDropdown').value;
 
-        var check = checkContinuity(calendarUpdate.stepIndex,newSchedule,false);
-        if(check.ok) {
-            document.getElementById('row' + calendarUpdate.stepIndex + '').setAttribute("style", "background-color:#5cb85c;");
-        }else{
-            document.getElementById('row' + calendarUpdate.stepIndex + '').setAttribute("style", "background-color:#d9534f;");
-        }
-        suggestion=null;
+        // var check = checkContinuity(calendarUpdate.stepIndex,newSchedule,false,false);
+        // if(check.ok) {
+        //     document.getElementById('row' + calendarUpdate.stepIndex + '').setAttribute("style", "background-color:#5cb85c;");
+        // }else{
+        //     document.getElementById('row' + calendarUpdate.stepIndex + '').setAttribute("style", "background-color:#d9534f;");
+        // }
         if(calendarUpdate.stepIndex<allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length-1){
-            calendarUpdate.stepIndex++;
-            let startDate = preCalculatedSuggestions[calendarUpdate.stepIndex].start;
-            let start = new Date(startDate.date.year,startDate.date.month-1,startDate.date.day,startDate.time.hour,startDate.time.minute,0,0);
-            let endDate = preCalculatedSuggestions[calendarUpdate.stepIndex].end;
-            let end = new Date(endDate.date.year,endDate.date.month-1,endDate.date.day,endDate.time.hour,endDate.time.minute,0,0);
-            suggestion = createSuggestionSchedule(start,end,CalendarList[0])
+            console.log("test1")
+
+            if(preCalculatedSuggestions!=null&&preCalculatedSuggestions[calendarUpdate.stepIndex]!=null) {
+                console.log("test")
+                let startDate = preCalculatedSuggestions[calendarUpdate.stepIndex].start;
+                let start = new Date(startDate.date.year, startDate.date.month - 1, startDate.date.day, startDate.time.hour, startDate.time.minute, 0, 0);
+                let endDate = preCalculatedSuggestions[calendarUpdate.stepIndex].end;
+                let end = new Date(endDate.date.year, endDate.date.month - 1, endDate.date.day, endDate.time.hour, endDate.time.minute, 0, 0);
+                calendarUpdate.stepIndex++;
+                if (preCalculatedSuggestions[calendarUpdate.stepIndex]!=null&&start.getTime() === newSchedule.start.getTime() && end.getTime() === newSchedule.end.getTime()) {
+                    startDate = preCalculatedSuggestions[calendarUpdate.stepIndex].start;
+                    start = new Date(startDate.date.year, startDate.date.month - 1, startDate.date.day, startDate.time.hour, startDate.time.minute, 0, 0);
+                    endDate = preCalculatedSuggestions[calendarUpdate.stepIndex].end;
+                    end = new Date(endDate.date.year, endDate.date.month - 1, endDate.date.day, endDate.time.hour, endDate.time.minute, 0, 0);
+                    suggestion = createSuggestionSchedule(start, end, CalendarList[0])
+                } else {
+                    preCalculatedSuggestions = null;
+                    suggestion = null;
+                }
+            }else {
+                calendarUpdate.stepIndex++;
+            }
             setSchedules();
             setUI();
+            refreshScheduleVisibility();
         }
         else{
             $('#extraLargeModal').modal('toggle');
@@ -468,7 +508,7 @@ let showOtherItems = false;
             schedule.bgColor = "#5cb85c";
             schedule.borderColor = "#5cb85c";
         }
-        var check = checkContinuity(calendarUpdate.stepIndex,schedule,false)
+        var check = checkContinuity(calendarUpdate.stepIndex,schedule,false,false)
         if(check.ok) {
             schedule.bgColor = '#5cb85c';
             schedule.dragBgColor = '#5cb85c';
@@ -544,7 +584,7 @@ let showOtherItems = false;
                     currentEndDate.setMinutes(currentEndDate.getMinutes()+30);
                     for(let currentTimeslot=0;currentTimeslot<48;currentTimeslot++){
                         var schedule =  createSuggestionSchedule(currentStartDate,currentEndDate,CalendarList[0]);
-                        if(!checkContinuity(calendarUpdate.stepIndex,schedule,false).ok||checkOverlap(schedule,true).length==0){
+                        if(!checkContinuity(calendarUpdate.stepIndex,schedule,false,true).ok||checkOverlap(schedule,document.getElementById("allowOverlap").checked).length==0){
                                 var iDiv = document.createElement('div');
                                 iDiv.id = 'greyout';
                                 iDiv.className = 'greyout';
@@ -625,6 +665,10 @@ let showOtherItems = false;
         $('.dropdown-menu a[role="menuitem"]').on('click', onClickMenu);
         $('#btn-save-schedule').on('click', onNewSchedule);
         $('#btn-new-schedule').on('click', createNewSchedule);
+        $("#allowOverlap").on('click',function () {
+            // calculateSuggestion(calendarUpdate.stepIndex,true,document.getElementById('withinOfficehoursSingleSuggest').checked);
+            refreshScheduleVisibility()
+        });
         $('#steps-items').on('click', changeviewmode);
         $('#dropdownMenu-calendars-list').on('click', onChangeNewScheduleCalendar);
         $("#extraLargeModal").on('show.bs.modal', setSchedules);
@@ -655,7 +699,6 @@ let showOtherItems = false;
             let newStep = new suggestionObject();
             // newStep.user
             if(filledInSteps[current]) {
-                console.log(filledInSteps[current]['start'])
                 let start = filledInSteps[current]['start'];
                 let end = filledInSteps[current]['end'];
                 start = (new Date(start.getFullYear(),start.getMonth(),start.getDate(),start.getHours(),start.getMinutes(),0,0));
@@ -689,6 +732,8 @@ let showOtherItems = false;
                 suggestPost.dateTime =new Date(newSchedule.end.getFullYear(), newSchedule.end.getMonth(), newSchedule.end.getDate(), newSchedule.end.getHours(), newSchedule.end.getMinutes(),0,0).toISOString();
             }
         }
+        document.getElementById('suggestStep').disabled = true;
+
         $.ajax({
             type: "POST",
             contentType : 'application/json; charset=utf-8',
@@ -697,15 +742,21 @@ let showOtherItems = false;
             url: "calendar/calculateStepSuggestion",
             data: JSON.stringify(suggestPost), // Note it is important
             success :function(result) {
-                preCalculatedSuggestions = result;
-                let startDate = result[calendarUpdate.stepIndex].start;
-                let start = new Date(startDate.date.year,startDate.date.month-1,startDate.date.day,startDate.time.hour,startDate.time.minute,0,0);
-                let endDate = result[calendarUpdate.stepIndex].end;
-                let end = new Date(endDate.date.year,endDate.date.month-1,endDate.date.day,endDate.time.hour,endDate.time.minute,0,0);
-                suggestion = createSuggestionSchedule(start,end,CalendarList[0])
-                cal.setDate(suggestion.start);
-                setSchedules();
-                refreshScheduleVisibility();
+                if(result!=="failed") {
+                    preCalculatedSuggestions = result;
+                    let startDate = result[calendarUpdate.stepIndex].start;
+                    let start = new Date(startDate.date.year, startDate.date.month - 1, startDate.date.day, startDate.time.hour, startDate.time.minute, 0, 0);
+                    let endDate = result[calendarUpdate.stepIndex].end;
+                    let end = new Date(endDate.date.year, endDate.date.month - 1, endDate.date.day, endDate.time.hour, endDate.time.minute, 0, 0);
+                    suggestion = createSuggestionSchedule(start, end, CalendarList[0]);
+                    cal.setDate(suggestion.start);
+                    setSchedules();
+                    refreshScheduleVisibility();
+                    document.getElementById('suggestStep').disabled = false;
+                    $('#toastsuggestionsuccess').toast('show')
+                }else{
+                    $('#toastsuggestionerror').toast('show')
+                }
             },
             error: function(xhr, desc, err) {
                 console.log(xhr);

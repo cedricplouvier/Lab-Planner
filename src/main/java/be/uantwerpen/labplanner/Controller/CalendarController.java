@@ -85,7 +85,11 @@ public class CalendarController {
         ArrayList<SuggestionStep> steps = mapper.readValue(suggestionResponseBody.getSteps(), new TypeReference<ArrayList<SuggestionStep>>() {});
         Boolean success = getSuggestion(steps,suggestionResponseBody.getOverlapAllowed(),suggestionResponseBody.getWithinOfficeHours(),suggestionResponseBody.getDateTime(),suggestionResponseBody.getCurrentStep());
         System.out.println("Suggestion generated : "+success);
-        return new Gson().toJson(steps);
+        if(success){
+            return new Gson().toJson(steps);
+        }else{
+            return "failed";
+        }
     }
 
     private Boolean getSuggestion(ArrayList<SuggestionStep> steps, Boolean overlapAllowed, Boolean withinOfficeHOurs, LocalDateTime start, int index){
@@ -98,6 +102,7 @@ public class CalendarController {
         System.out.println(index);
         //Determine start time
         LocalDateTime currentDateTime = start;
+        if(start==null){
         if(index>0&&previousStep!=null) {
             if(previousStep.getEnd()!=null) {
                 currentDateTime = steps.get(index - 1).getEnd();
@@ -106,7 +111,7 @@ public class CalendarController {
                     currentDateTime = currentDateTime.minusMinutes(previousStep.getContinuity().getMinutes());
                 }
             }
-        }
+        }}
 
         if(currentDateTime==null){
             currentDateTime = LocalDateTime.now();
@@ -254,6 +259,10 @@ public class CalendarController {
         if(previousStep!=null && currentStep.getEnd().isBefore(previousStep.getEnd())){
             return false;
         }
+        //book before today
+        if(currentStep.getStart().isBefore(LocalDateTime.now())){
+            return false;
+        }
 
         //Weekend
 //        //test end
@@ -277,7 +286,7 @@ public class CalendarController {
             if (currentStep.getStart().toLocalTime().isAfter(officeTimeEnd)) {
                 return false;
             }
-            if (currentStep.getEnd().toLocalTime().isBefore(officeTimeStart) || currentStep.getStart().toLocalTime().isBefore(officeTimeStart)) {
+            if (currentStep.getStart().toLocalTime().isBefore(officeTimeStart)) {
                 return false;
             }
         }
@@ -372,27 +381,39 @@ public class CalendarController {
         return true;
     }
     private List<Long> checkOverlap(ArrayList<SuggestionStep> steps, Boolean overlapAllowed, int currentIndex){
+        System.out.println(overlapAllowed);
         User user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         List<Long> idUsed = new ArrayList<>();
         SuggestionStep currentStep = steps.get(currentIndex);
         List<Step> allSteps = this.stepService.findAll();
         for(Step step:allSteps){
-            if(step.getDevice().getDeviceType().getId()==currentStep.getDeviceType().getId()){
-                if(overlapAllowed&&step.getUser().getId()==user.getId()){
-
-                }else if(step.getDevice().getId()==step.getDevice().getId() &&!idUsed.contains(step.getDevice().getId())){ //check if device is already used
+                if(!overlapAllowed&&step.getUser().getId()==user.getId()){
                     //Create datetime object
                     LocalDateTime stepStart = LocalDateTime.of(LocalDate.parse(step.getStart()), LocalTime.parse(step.getStartHour()));
                     LocalDateTime stepEnd = LocalDateTime.of(LocalDate.parse(step.getEnd()), LocalTime.parse(step.getEndHour()));
-
                     //if step starts before previous but ends after start previous
-                    if(currentStep.getStart().isBefore(stepEnd) &&currentStep.getStart().isAfter(stepStart) ){
+
+                    if(currentStep.getStart().isBefore(stepStart)&&currentStep.getEnd().isAfter(stepStart)){
+                        return new ArrayList<>();
+                    }else if(currentStep.getStart().isBefore(stepEnd)&&currentStep.getEnd().isAfter(stepEnd) ){
+                        return new ArrayList<>();
+                    }else if((currentStep.getStart().isAfter(stepStart)||currentStep.getStart().isEqual(stepStart))&&(currentStep.getEnd().isBefore(stepEnd)||currentStep.getEnd().isEqual(stepEnd))){
+                        return new ArrayList<>();
+                    }
+
+                }else if(!idUsed.contains(step.getDevice().getId())){ //check if device is already used
+                    //Create datetime object
+                    LocalDateTime stepStart = LocalDateTime.of(LocalDate.parse(step.getStart()), LocalTime.parse(step.getStartHour()));
+                    LocalDateTime stepEnd = LocalDateTime.of(LocalDate.parse(step.getEnd()), LocalTime.parse(step.getEndHour()));
+                    //if step starts before previous but ends after start previous
+                    if(currentStep.getStart().isBefore(stepStart)&&currentStep.getEnd().isAfter(stepStart)){
                         idUsed.add(step.getDevice().getId());
-                    }else if(currentStep.getEnd().isAfter(stepStart) &&currentStep.getEnd().isBefore(stepEnd) ){
+                    }else if(currentStep.getStart().isBefore(stepEnd)&&currentStep.getEnd().isAfter(stepEnd) ){
+                        idUsed.add(step.getDevice().getId());
+                    }else if((currentStep.getStart().isAfter(stepStart)||currentStep.getStart().isEqual(stepStart))&&(currentStep.getEnd().isBefore(stepEnd)||currentStep.getEnd().isEqual(stepEnd))){
                         idUsed.add(step.getDevice().getId());
                     }
                 }
-            }
         }
         List<Device> allDevices = this.deviceService.findAll();
         List<Long> notUsedIds = new ArrayList<>();
@@ -403,6 +424,7 @@ public class CalendarController {
                 }
             }
         }
+        System.out.println(notUsedIds.size());
         return notUsedIds;
     }
 

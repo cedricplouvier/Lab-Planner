@@ -551,7 +551,6 @@ public class StatisticsController {
     //Schedule for testing
     @Scheduled(cron =  "0 */1 * * * ?")
     public void upDateStockMap(){
-        System.out.println("UPDATED STOCK");
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         List<OwnProduct> products = productService.findAll();

@@ -38,12 +38,6 @@ public class DeviceTypeServiceTests {
         //Set variables
         deviceType.setColor("test");
         deviceType.setOvernightuse(true);
-        deviceType.setDevicePictureName("picturename");
-        DeviceInformation i1 = new DeviceInformation("info1","information");
-        deviceInformationRepository.save(i1);
-        List<DeviceInformation> info = new ArrayList<DeviceInformation>();
-        info.add(i1);
-        deviceType.setDeviceInformation(info);
         deviceTypeRepository.save(deviceType);
         DeviceType fetched = deviceTypeService.findById(deviceType.getId()).orElse(null);
         assertNotNull(fetched);
@@ -56,12 +50,6 @@ public class DeviceTypeServiceTests {
         //Set variables
         deviceType.setColor("test");
         deviceType.setOvernightuse(true);
-        deviceType.setDevicePictureName("picturename");
-        DeviceInformation i1 = new DeviceInformation("info2","information");
-        deviceInformationRepository.save(i1);
-        List<DeviceInformation> info = new ArrayList<DeviceInformation>();
-        info.add(i1);
-        deviceType.setDeviceInformation(info);
         deviceTypeService.saveNewDeviceType(deviceType);
         DeviceType fetched = deviceTypeService.findById(deviceType.getId()).orElse(null);
         assertNotNull(fetched);
@@ -74,12 +62,6 @@ public class DeviceTypeServiceTests {
         //Set variables
         deviceType.setColor("test");
         deviceType.setOvernightuse(true);
-        deviceType.setDevicePictureName("picturename");
-        DeviceInformation i1 = new DeviceInformation("info3","information");
-        deviceInformationRepository.save(i1);
-        List<DeviceInformation> info = new ArrayList<DeviceInformation>();
-        info.add(i1);
-        deviceType.setDeviceInformation(info);
         deviceTypeService.save(deviceType);
         DeviceType fetched = deviceTypeService.findById(deviceType.getId()).orElse(null);
         assertNotNull(fetched);
@@ -98,12 +80,6 @@ public class DeviceTypeServiceTests {
         //Set variables
         deviceType.setColor("test");
         deviceType.setOvernightuse(true);
-        deviceType.setDevicePictureName("picturename");
-        DeviceInformation i1 = new DeviceInformation("info4","information");
-        deviceInformationRepository.save(i1);
-        List<DeviceInformation> info = new ArrayList<DeviceInformation>();
-        info.add(i1);
-        deviceType.setDeviceInformation(info);
         deviceTypeRepository.save(deviceType);
         DeviceType fetched = deviceTypeService.findByDevicetypeName("test4").orElse(null);
         assertNotNull(fetched);
@@ -117,12 +93,7 @@ public class DeviceTypeServiceTests {
         //Set variables
         deviceType.setColor("test");
         deviceType.setOvernightuse(true);
-        deviceType.setDevicePictureName("picturename");
-        DeviceInformation i1 = new DeviceInformation("info5","information");
-        deviceInformationRepository.save(i1);
-        List<DeviceInformation> info = new ArrayList<DeviceInformation>();
-        info.add(i1);
-        deviceType.setDeviceInformation(info);
+
 
         deviceTypeService.save(deviceType);
         List<DeviceType> fetchedList  = deviceTypeService.findAll();
