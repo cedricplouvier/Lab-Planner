@@ -71,13 +71,14 @@
                 }
                 return ok;
             }
-
+            var fileerror= [[#{devicetype.file.error}]];
+            var imageerror = [[#{devicetype.image.error}]];
             $('#inputGroupFile02').on('change',function(){
                 if(this.files[0].size > 2097152*5){
-                    alert("File exceeds 10MB size limit!");
+                    alert(fileerror);
                     this.value = "";
                 }if(!checkFileType(this.files[0].type)){
-                    alert("image type not allowed");
+                    alert(imageerror);
                     this.value = "";
                 }
                 else {
@@ -94,7 +95,7 @@
     <div class="alert alert-info" role="alert" th:if="${deviceTypeObject.id}==null" th:text="#{device.savebeforepicture}"></div>
 
     <hr class="my-4">
-    <div class="card" th:each="deviceInfo : ${deviceTypeObject.getDeviceInformations()}" style="margin-bottom: 15px">
+    <div class="card" th:each="deviceInfo : ${deviceTypeObject.getDeviceInformation()}" style="margin-bottom: 15px">
         <div class="card-body">
             <h5 class="card-title" th:text="${deviceInfo.getInformationName()}"></h5>
             <p class="card-text" th:text="${deviceInfo.getInformation()}"></p>
@@ -112,7 +113,7 @@
 
         </div>
     </div>
-    <div class="alert alert-primary" role="alert" th:if="${deviceTypeObject.getDeviceInformations()}!=null and ${deviceTypeObject.getDeviceInformations().size()}==0" th:text="#{device.noinfo}"></div>
+    <div class="alert alert-primary" role="alert" th:if="${deviceTypeObject.getDeviceInformation()}!=null and ${deviceTypeObject.getDeviceInformation().size()}==0" th:text="#{device.noinfo}"></div>
     <div class="alert alert-info" role="alert" th:if="${deviceTypeObject.id}==null" th:text="#{device.savebeforeinfo}"></div>
     <hr class="my-4">
     <p>
