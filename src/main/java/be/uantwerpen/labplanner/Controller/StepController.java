@@ -1752,7 +1752,8 @@ public class StepController {
 
         //check booking in past
         if (dateIsInPast(currentEndDate)) {
-            return "Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is in past.";
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentEndDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date5");
+
         }
 
 
