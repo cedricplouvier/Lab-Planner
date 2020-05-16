@@ -116,7 +116,7 @@
                 </tbody>
             </table>
             <p>
-                <a th:href="@{/devices/types}" class="btn btn-primary" sec:authorize="hasAuthority('Device - Modify - All')" th:text="#{device.manage.types}"
+                <a th:href="@{/devices/types}" class="btn btn-secondary" sec:authorize="hasAuthority('Device - Modify - All')" th:text="#{device.manage.types}"
                 ></a>
                 <a th:href="@{/devices/put}" class="btn btn-primary" sec:authorize="hasAuthority('Device - Modify - All')" th:text="#{device.add}"
                 ></a>

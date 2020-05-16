@@ -43,7 +43,7 @@
         </tbody>
     </table>
 
-    <a style="margin-right: 10px" th:href="@{/planning/}" class="btn btn-outline-primary" th:text="#{experiments.return}" >Return to schedules</a>
+    <a style="margin-right: 10px" th:href="@{/planning/}" class="btn btn-secondary" th:text="#{experiments.return}" >Return to schedules</a>
     <a style="margin-right: 10px" sec:authorize="hasAuthority('Planning - Make new experiment')" th:href="@{/planning/experiments/put}" type="button" class="btn btn-primary"th:text="#{experiment.type.create}">
         Create new experiment
     </a>
