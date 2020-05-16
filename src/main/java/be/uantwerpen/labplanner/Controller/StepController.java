@@ -1747,6 +1747,13 @@ public class StepController {
                 return "Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is not inside opening hours.";
             }
         }
+
+        //check booking in past
+        if (dateIsInPast(currentEndDate)) {
+            return "Error while trying to save step as a part of experiment. Date " + currentEndDate.toString("yyyy-MM-dd HH:mm") + " is in past.";
+        }
+
+
         //check weekend
         if (isWeekend(currentStartDate)) {
             return "Error while trying to save step as a part of experiment. Date " + currentStartDate.toString("yyyy-MM-dd HH:mm") + " is on weekend.";
@@ -1811,6 +1818,12 @@ public class StepController {
         if (isWeekend(currentEndDate)) {
             return true;
         }
+
+        //check endDate in past
+        if (dateIsInPast(currentEndDate)) {
+            return true;
+        }
+
         //check holidays
         if (isInsideHoliday(currentStartDate)) {
             return true;
@@ -1934,6 +1947,12 @@ public class StepController {
         return ((dateTime.getMinuteOfDay() >= SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getStartHour() * 60 + SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getStartMinute()) &&
                 ((dateTime.getMinuteOfDay() <= SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getEndHour() * 60 + SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getEndMinute())));
     }
+
+    //Check, if dateTime is in past
+    public boolean dateIsInPast(DateTime dateTime) {
+        return (dateTime.getMillis() < DateTime.now().getMillis());
+    }
+
 
     //Check,if it's weekend
     public boolean isWeekend(DateTime dateTime) {
