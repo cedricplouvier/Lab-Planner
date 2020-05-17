@@ -504,11 +504,11 @@ public class StepControllerTests {
         Device d1 = new Device();
         d1.setId((long) 10);
 
-        Step step = new Step(user, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
+        Step step = new Step(user, d1, "2021-03-18", "2021-03-18", "11:00", "12:00", "");
         step.setId((long) 5);
 
-        Step s1 = new Step(user, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
-        Step s2 = new Step(user, d1, "2020-03-17", "2020-03-17", "08:00", "18:00", "");
+        Step s1 = new Step(user, d1, "2021-03-18", "2021-03-18", "11:00", "12:00", "");
+        Step s2 = new Step(user, d1, "2021-03-17", "2021-03-17", "08:00", "18:00", "");
         s1.setId((long) 6);
         s2.setId((long) 7);
         //roles
@@ -561,7 +561,7 @@ public class StepControllerTests {
         Device d1 = new Device();
         d1.setId((long) 10);
 
-        Step step = new Step(user, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
+        Step step = new Step(user, d1, "2021-03-18", "2021-03-18", "11:00", "12:00", "");
         step.setId((long) 5);
 
         //roles
@@ -615,7 +615,7 @@ public class StepControllerTests {
         Device d1 = new Device();
         d1.setId((long) 10);
 
-        Step step = new Step(user, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
+        Step step = new Step(user, d1, "2021-03-18", "2021-03-18", "11:00", "12:00", "");
         step.setId((long) 5);
 
         //roles
@@ -671,7 +671,7 @@ public class StepControllerTests {
         Device d1 = new Device();
         d1.setId((long) 10);
 
-        Step step = new Step(user, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
+        Step step = new Step(user, d1, "2021-03-18", "2021-03-18", "11:00", "12:00", "");
         step.setId((long) 5);
 
         //roles
@@ -726,7 +726,7 @@ public class StepControllerTests {
         Device d1 = new Device();
         d1.setId((long) 10);
 
-        Step step = new Step(user, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
+        Step step = new Step(user, d1, "2021-03-18", "2021-03-18", "11:00", "12:00", "");
         step.setId((long) 5);
 
         //roles
@@ -781,7 +781,7 @@ public class StepControllerTests {
         Device d1 = new Device();
         d1.setId((long) 10);
 
-        Step step = new Step(user, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
+        Step step = new Step(user, d1, "2021-03-18", "2021-03-18", "11:00", "12:00", "");
         step.setId((long) 5);
 
         //roles
@@ -833,7 +833,7 @@ public class StepControllerTests {
         Device d1 = new Device();
         d1.setId((long) 10);
 
-        Step step = new Step(user, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
+        Step step = new Step(user, d1, "2021-03-18", "2021-03-18", "11:00", "12:00", "");
         step.setId((long) 5);
 
         //roles
@@ -885,7 +885,7 @@ public class StepControllerTests {
         Device d1 = new Device();
         d1.setId((long) 10);
 
-        Step step = new Step(user, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
+        Step step = new Step(user, d1, "2021-03-18", "2021-03-18", "11:00", "12:00", "");
         step.setId((long) 5);
 
         //roles
@@ -937,7 +937,7 @@ public class StepControllerTests {
         Device d1 = new Device();
         d1.setId((long) 10);
 
-        Step step = new Step(user, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
+        Step step = new Step(user, d1, "2021-03-18", "2021-03-18", "11:00", "12:00", "");
         step.setId((long) 5);
 
         //roles
@@ -986,7 +986,7 @@ public class StepControllerTests {
         Device d1 = new Device();
         d1.setId((long) 10);
 
-        Step step = new Step(user, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
+        Step step = new Step(user, d1, "2021-03-18", "2021-03-18", "11:00", "12:00", "");
         step.setId((long) 5);
 
         //roles
@@ -1039,7 +1039,7 @@ public class StepControllerTests {
         Device d1 = new Device();
         d1.setId((long) 10);
 
-        Step step = new Step(user, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
+        Step step = new Step(user, d1, "2021-03-18", "2021-03-18", "11:00", "12:00", "");
         step.setId((long) 5);
 
         //roles
@@ -1306,16 +1306,16 @@ public class StepControllerTests {
         device1.setId((long) 62);
         Step step = new Step();
         step.setStepType(stepType);
-        step.setStart("2020-04-20");
+        step.setStart("2021-04-20");
         step.setStartHour("09:30");
-        step.setEnd("2020-04-20");
+        step.setEnd("2021-04-20");
         step.setEndHour("10:00");
         step.setDevice(device);
         Step step1 = new Step();
         step1.setStepType(stepType);
-        step1.setStart("2020-04-20");
+        step1.setStart("2021-04-20");
         step1.setStartHour("14:00");
-        step1.setEnd("2020-04-20");
+        step1.setEnd("2021-04-20");
         step1.setEndHour("15:00");
         step1.setDevice(device1);
         List<Step> steps = new ArrayList<>();
@@ -1324,8 +1324,8 @@ public class StepControllerTests {
 
         Experiment experiment = new Experiment();
         experiment.setExperimentType(experimentType);
-        experiment.setStartDate("2020-04-20");
-        experiment.setEndDate("2020-04-20");
+        experiment.setStartDate("2021-04-20");
+        experiment.setEndDate("2021-04-20");
         experiment.setSteps(steps);
         experiment.setId((long) 63);
         List<Experiment> experiments = new ArrayList<>();
@@ -3656,6 +3656,107 @@ public class StepControllerTests {
         experiment.setExperimentType(experimentType);
         experiment.setStartDate("2020-06-20");
         experiment.setEndDate("2020-06-20");
+        experiment.setSteps(steps);
+        experiment.setUser(user);
+        List<Experiment> experiments = new ArrayList<>();
+        experiments.add(experiment);
+
+        Role researcher = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(researcher));
+        researcher.setId((long) 31);
+
+        Set<User> students = new HashSet<>();
+        students.add(user);
+        //researcher
+        User res = new User("Researcher", "tester");
+        res.setId((long) 42);
+        //relation
+        Relation rel = new Relation();
+        rel.setResearcher(res);
+        rel.setStudents(students);
+
+        List<Relation> rels = new ArrayList<>();
+        rels.add(rel);
+
+        //roles
+        Role role0 = new Role("Masterstudent");
+        when(roleService.findByName("Masterstudent")).thenReturn(java.util.Optional.of(role0));
+        role0.setId((long) 31);
+
+        Role role1 = new Role("Administrator");
+        when(roleService.findByName("Administrator")).thenReturn(java.util.Optional.of(role1));
+        role1.setId((long) 32);
+
+        Role role2 = new Role("Researcher");
+        when(roleService.findByName("Researcher")).thenReturn(java.util.Optional.of(role2));
+        role2.setId((long) 33);
+
+        when(experimentTypeService.findAll()).thenReturn(experimentTypes);
+        when(experimentService.findAll()).thenReturn(experiments);
+        when(stepTypeService.findAll()).thenReturn(stepTypes);
+        when(experimentTypeService.findById((long) 60)).thenReturn(Optional.of(experimentType));
+        when(relationService.findAll()).thenReturn(rels);
+
+        // Test that experiment was not booked
+        mockMvc.perform(post("/planning/experiments/book/").flashAttr("experiment", experiment))
+                .andExpect(status().is(200))
+                .andDo(print())
+                .andExpect(view().name("PlanningTool/planning-exp-book-fixed"));
+    }
+
+    @Test
+    @WithUserDetails(value = "ondrej.bures@student.uantwerpen.be", userDetailsServiceBeanName = "newSecurityService")
+    public void bookExperimentInPastProblem() throws Exception {
+        User user = new User("tester", "tester");
+        user.setId((long) 40);
+        DeviceType deviceType = new DeviceType();
+        deviceType.setDeviceTypeName("TestDeviceType");
+        List<StepType> stepTypes = new ArrayList<>();
+        StepType stepType = new StepType(deviceType, new Continuity(1, 0, "Soft (at least)", "After"), "TestStepType");
+        stepType.setId((long) 58);
+        StepType stepType1 = new StepType(deviceType, new Continuity(0, 0, "No", "After"), "New StepType", true, "Equal", 1, 0);
+        stepType1.setId((long) 59);
+        stepTypes.add(stepType);
+        stepTypes.add(stepType1);
+        ExperimentType experimentType = new ExperimentType("TestExperimentType", stepTypes, true);
+        experimentType.setId((long) 60);
+        List<ExperimentType> experimentTypes = new ArrayList<>();
+        experimentTypes.add(experimentType);
+
+        Device device = new Device();
+        device.setDeviceType(deviceType);
+        device.setDevicename("testdev1");
+        device.setId((long) 61);
+        Device device1 = new Device();
+        device1.setDeviceType(deviceType);
+        device1.setDevicename("testdev2");
+        device1.setId((long) 62);
+        Step step = new Step();
+        step.setStepType(stepType);
+        step.setStart("2020-05-15");
+        step.setStartHour("09:30");
+        step.setEnd("2020-05-15");
+        step.setEndHour("10:00");
+        step.setUser(user);
+        step.setDevice(device);
+        Step step1 = new Step();
+        step1.setStepType(stepType);
+        step1.setStart("2020-05-15");
+        // fixed time is not 1 hour
+        step1.setStartHour("15:00");
+        step1.setEnd("2020-05-15");
+        step1.setEndHour("16:00");
+        step1.setDevice(device1);
+        step1.setUser(user);
+        List<Step> steps = new ArrayList<>();
+        steps.add(step);
+        steps.add(step1);
+
+        Experiment experiment = new Experiment();
+        experiment.setExperimentname("Exp1");
+        experiment.setExperimentType(experimentType);
+        experiment.setStartDate("2020-05-15");
+        experiment.setEndDate("2020-05-15");
         experiment.setSteps(steps);
         experiment.setUser(user);
         List<Experiment> experiments = new ArrayList<>();
