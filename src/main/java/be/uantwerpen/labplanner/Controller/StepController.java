@@ -1416,22 +1416,21 @@ public class StepController {
         model.addAttribute("allTypeOptions", typeOptions);
         model.addAttribute("allFixedTimeTypeOptions", allFixedTimeTypeOptions);
         model.addAttribute("allTypeDirections", directionOptions);
-
-
         HolidayManager manager = HolidayManager.getInstance(HolidayCalendar.BELGIUM);
         Set<Holiday> holidays = manager.getHolidays(Calendar.getInstance().get(Calendar.YEAR));
-        model.addAttribute("holidays", holidays);
+        model.addAttribute("holidays", holidays);//k
         model.addAttribute("errorMsg", errorMessage);
-        model.addAttribute("experiment", experiment);
+        model.addAttribute("experiment", experiment);//k
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allExperiments", experimentService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("allMixtures", mixtureService.findAll());
-        model.addAttribute("userSteps", userSteps);
-        model.addAttribute("otherSteps", otherSteps);
+        model.addAttribute("userSteps", userSteps); //k
+        model.addAttribute("otherSteps", otherSteps);//k
+        model.addAttribute("officeHours", officeHoursService.findAll());//k
         model.addAttribute("allExperimentTypes", allFixedExperimentTypes());
-        model.addAttribute("userAccessRights", accessRights);
+        model.addAttribute("userAccessRights", accessRights);//k
     }
 
     @PreAuthorize("hasAuthority('Planning - Book step/experiment') or hasAuthority('Planning - Adjust step/experiment own') or hasAuthority('Planning - Adjust step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment all') ")

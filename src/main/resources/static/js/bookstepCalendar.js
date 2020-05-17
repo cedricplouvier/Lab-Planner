@@ -411,7 +411,7 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
     let endTime = schedule.end.getMinutes()+schedule.end.getHours()*60;
 
     if(withinOfficehours){
-        if (startTime >= parseInt(officeHours['startHour']) * 60 + parseInt(officeHours['atartMinute'])&& startTime <= parseInt(officeHours['endHour'])  * 60 + parseInt(officeHours['endMinute'])&& schedule.start.getDay() != 6 && schedule.start.getDay() != 0) {
+        if (startTime >= parseInt(officeHours['startHour']) * 60 + parseInt(officeHours['startMinute'])&& startTime <= parseInt(officeHours['endHour'])  * 60 + parseInt(officeHours['endMinute'])&& schedule.start.getDay() != 6 && schedule.start.getDay() != 0) {
 
         } else {
             return {
