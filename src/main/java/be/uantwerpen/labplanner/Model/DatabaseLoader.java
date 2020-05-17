@@ -730,10 +730,6 @@ public class DatabaseLoader {
         stepTypeRepository.save(styp8);
         StepType styp9 = new StepType(t13, cont1, t13.getDeviceTypeName());
         stepTypeRepository.save(styp9);
-        StepType styp10 = new StepType(t14, cont1, t14.getDeviceTypeName());
-        stepTypeRepository.save(styp10);
-        StepType styp11 = new StepType(t8, cont6, t8.getDeviceTypeName());
-        stepTypeRepository.save(styp11);
         List<StepType> ITSRStyps = new ArrayList<StepType>();
         ITSRStyps.add(styp1);
         ITSRStyps.add(styp2);
@@ -745,13 +741,26 @@ public class DatabaseLoader {
         ITSRStyps.add(styp7);
         ITSRStyps.add(styp8);
         ITSRStyps.add(styp9);
+
+
+        StepType styp10 = new StepType(t2, cont1, t2.getDeviceTypeName());
+        stepTypeRepository.save(styp10);
+        StepType styp11 = new StepType(t8, cont2, t8.getDeviceTypeName());
+        stepTypeRepository.save(styp11);
+        StepType styp12 = new StepType(t3, cont1, "Mixer");
+        stepTypeRepository.save(styp12);
+        StepType styp13 = new StepType(t14, cont1, t14.getDeviceTypeName());
+        stepTypeRepository.save(styp13);
+        StepType styp14 = new StepType(t8, cont6, t8.getDeviceTypeName());
+        stepTypeRepository.save(styp14);
+
         List<StepType> WhlTrkTest = new ArrayList<StepType>();
-        WhlTrkTest.add(styp1);
-        WhlTrkTest.add(styp2);
-        WhlTrkTest.add(styp1);
-        WhlTrkTest.add(styp3);
+        WhlTrkTest.add(styp10);
         WhlTrkTest.add(styp11);
         WhlTrkTest.add(styp10);
+        WhlTrkTest.add(styp12);
+        WhlTrkTest.add(styp14);
+        WhlTrkTest.add(styp13);
         ExperimentType experimentType1 = new ExperimentType("ITSR", ITSRStyps,true);
         experimentTypeRepository.save(experimentType1);
         ExperimentType experimentType2 = new ExperimentType("Wheel Tracking Test", WhlTrkTest,true);
