@@ -87,10 +87,13 @@ public class CalendarController {
         ObjectMapper mapper = new ObjectMapper();
         ArrayList<SuggestionStep> steps = mapper.readValue(suggestionResponseBody.getSteps(), new TypeReference<ArrayList<SuggestionStep>>() {});
         Boolean success = getSuggestion(steps,suggestionResponseBody.getOverlapAllowed(),suggestionResponseBody.getWithinOfficeHours(),suggestionResponseBody.getDateTime(),suggestionResponseBody.getCurrentStep());
+        System.out.println("suggestion generated:"+success);
+
         if(success){
             return new Gson().toJson(steps);
         }else{
-            return "failed";
+            String failed = "failed";
+            return new Gson().toJson(failed);
         }
     }
 
@@ -187,6 +190,7 @@ public class CalendarController {
         int defaultStep = 30; //default step between calculations in minutes
         Boolean found = false;
         while (steps.get(index).getStart().isBefore(endDate)) {
+            System.out.println(index);
             steps.get(index).setEnd(steps.get(index).getStart().plusMinutes(length));
             if (checkPossibility(steps, withinOfficeHOurs, index, overlapAllowed)) {
                 found = true;

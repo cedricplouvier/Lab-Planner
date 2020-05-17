@@ -783,6 +783,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
                     document.getElementById('suggestStep').disabled = false;
                     $('#toastsuggestionsuccess').toast('show')
                 }else{
+                    document.getElementById('suggestStep').disabled = false;
                     $('#toastsuggestionerror').toast('show')
                 }
             },
