@@ -591,6 +591,11 @@ function generateSchedule(viewName, renderStart, renderEnd) {
         }else{
             filledInSteps[current] = null;
         }
+
+    }
+    if(filledInSteps[calendarUpdate.stepIndex]!=null){
+
+        addDevices( checkOverlap(filledInSteps[calendarUpdate.stepIndex],document.getElementById("allowOverlap").checked))
     }
     if(suggestion){
         ScheduleList.push(suggestion);

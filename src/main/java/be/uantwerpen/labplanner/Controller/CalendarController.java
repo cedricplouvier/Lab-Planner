@@ -89,12 +89,9 @@ public class CalendarController {
         Boolean success = precheck(steps,suggestionResponseBody.getOverlapAllowed(),suggestionResponseBody.getWithinOfficeHours(),suggestionResponseBody.getDateTime(),suggestionResponseBody.getCurrentStep());
         if(!success){
             String failed = "failed";
-            System.out.println("passed precheck:"+success);
             return new Gson().toJson(failed);
         }
-        System.out.println("passed precheck:"+success);
         success = getSuggestion(steps,suggestionResponseBody.getOverlapAllowed(),suggestionResponseBody.getWithinOfficeHours(),suggestionResponseBody.getDateTime(),suggestionResponseBody.getCurrentStep());
-        System.out.println("suggestion generated:"+success);
         if(success){
             return new Gson().toJson(steps);
         }else{
@@ -118,7 +115,6 @@ public class CalendarController {
                             count = count % minutesInDay;
                         }
                         if (count >= officeTime) {
-                            System.out.println("falsehardafter");
                             return false;
                         }
                         if (steps.get(current).isHasFixedLength()) {
@@ -132,7 +128,6 @@ public class CalendarController {
                             count = count % minutesInDay;
                         }
                         if (count >= officeTime) {
-                            System.out.println("falsesoftatmostafter");
 
                             return false;
                         }
@@ -152,7 +147,6 @@ public class CalendarController {
                                 count = count % minutesInDay;
                             }
                             if (length < continuitylength) {
-                                System.out.println("falsehardbefore");
                                 return false;
                             }
                         }
@@ -164,7 +158,6 @@ public class CalendarController {
                                 count = count % minutesInDay;
                             }
                             if (length < continuitylength) {
-                                System.out.println("falsesoftleastbefore");
                                 return false;
                             }
                         }
@@ -179,7 +172,6 @@ public class CalendarController {
                         count = count % minutesInDay;
                     }
                     if (count >= officeTime) {
-                        System.out.println("error");
                         return false;
                     }
                 }
@@ -196,10 +188,23 @@ public class CalendarController {
                 if(step.isHasFixedLength()){
                     int length = step.getFixedTimeHours() * 60 + step.getFixedTimeMinutes();
                     if(length>officeTime){
-                        System.out.println("overnightuse");
                         return false;
                     }
                 }
+            }
+        }
+
+        // Check if atleast one device exists of the type
+        for(SuggestionStep step: steps){
+            boolean found= false;
+            for(Device device: deviceService.findAll()){
+                if(step.getDeviceType().getDeviceTypeName().equals(device.getDeviceType().getDeviceTypeName())){
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){
+                return false;
             }
         }
         return true;
@@ -212,7 +217,6 @@ public class CalendarController {
         if(index>0){
             previousStep = steps.get(index-1);
         }
-        System.out.println(index);
         //Determine start time
         LocalDateTime currentDateTime = start;
         if(start==null){
@@ -298,7 +302,6 @@ public class CalendarController {
         int defaultStep = 30; //default step between calculations in minutes
         Boolean found = false;
         while (steps.get(index).getStart().isBefore(endDate)) {
-            System.out.println(index);
             steps.get(index).setEnd(steps.get(index).getStart().plusMinutes(length));
             if (checkPossibility(steps, withinOfficeHOurs, index, overlapAllowed)) {
                 found = true;

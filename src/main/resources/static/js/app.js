@@ -388,7 +388,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
         document.getElementById('startHour' + calendarUpdate.stepIndex + '').value =str;
         var str = ("0" + (newSchedule.end.getHours() )).slice(-2)+ ":" + ("0" + (newSchedule.end.getMinutes() )).slice(-2)  ;
         document.getElementById('endHour' + calendarUpdate.stepIndex + '').value = str;
-        document.getElementById('selectDevice' + calendarUpdate.stepIndex + '').value =  document.getElementById('deviceTypeDropdown').value;
+        document.getElementById('selectDevice' + calendarUpdate.stepIndex + '').value = document.getElementById('deviceTypeDropdown').value;
 
         // var check = checkContinuity(calendarUpdate.stepIndex,newSchedule,false,false);
         // if(check.ok) {
@@ -415,6 +415,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
                     suggestion = null;
                 }
             }else {
+                document.getElementById('deviceTypeDropdown').value = ''
                 calendarUpdate.stepIndex++;
             }
             setSchedules();
@@ -422,6 +423,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
             refreshScheduleVisibility();
         }
         else{
+            // document.getElementById('deviceTypeDropdown').value = ''
             $('#extraLargeModal').modal('toggle');
             $('.modal-backdrop').remove();
         }
@@ -699,14 +701,21 @@ var header = $("meta[name='_csrf_header']").attr("content");
         });
         $('#steps-items').on('change', changeviewmode);
         $('#dropdownMenu-calendars-list').on('click', onChangeNewScheduleCalendar);
-        $("#extraLargeModal").on('show.bs.modal', setSchedules);
+        $("#extraLargeModal").on('show.bs.modal', function () {
+            setSchedules()
+            if(newSchedule.start) {
+                cal.setDate(newSchedule.start);
+            }
+        });
         $("#extraLargeModal").on('shown.bs.modal', setSchedules);
         $("#selectStep").on('click',saveScheduleChanges);
         $("#nextstep").on('click',nextStep);
         $("#previousstep").on('click',previousStep);
         $("#suggestStep").on('click',function () {
-            // calculateSuggestion(calendarUpdate.stepIndex,true,document.getElementById('withinOfficehoursSingleSuggest').checked);
             getSuggestionFromServer(calendarUpdate.stepIndex,true,document.getElementById('withinOfficehoursSingleSuggest').checked);
+        });
+        $("#suggestExperiment\n").on('click',function () {
+            getExperimentSuggestion();
         });
         window.addEventListener('resize', resizeThrottled);
     }
@@ -719,6 +728,85 @@ var header = $("meta[name='_csrf_header']").attr("content");
         this.fixedTimeMinutes=  null
         this.fixedTimeType = null
         this.hasFixedLength = false
+    }
+
+    function getExperimentSuggestion() {
+        let steps = []
+        var e = document.getElementById("selectExperimentType");
+        calendarUpdate.experimentIndex = e.selectedIndex-1;
+        for(let current = 0;current< allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length;current++) {
+            let newStep = new suggestionObject();
+            // newStep.user
+            newStep.deviceType = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['deviceType']
+            newStep.continuity = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']
+            newStep.hasFixedLength = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['hasFixedLength']
+            newStep.fixedTimeHours = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['fixedTimeHours']
+            newStep.fixedTimeMinutes = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['fixedTimeMinutes']
+            newStep.fixedTimeType = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['fixedTimeType']
+            delete newStep.deviceType.new ;
+            delete newStep.continuity.new ;
+            steps.push(newStep)
+        }
+        let date = document.getElementById("datePicker").value;
+        date = new Date(date);
+        if(date=="Invalid Date"){
+            date = new Date();
+
+        }
+        date.setSeconds(0);
+        date.setMinutes(0);
+        date.setMilliseconds(0);
+        var suggestPost = {
+            "steps": JSON.stringify(steps),
+            "dateTime":date.toISOString(),
+            "currentStep":0,
+            "overlapAllowed":document.getElementById("defaultUnchecked").checked,
+            "withinOfficeHours":document.getElementById("withinOfficehours").checked,
+        }
+        if(date!=""){
+            suggestPost.dateTime =date.toISOString();
+        }
+        $.ajax({
+            type: "POST",
+            contentType : 'application/json; charset=utf-8',
+            dataType : 'json',
+            accept: 'application/json',
+            url: "calendar/calculateStepSuggestion",
+            data: JSON.stringify(suggestPost), // Note it is important
+            success :function(result) {
+                if(result!=="failed") {
+                    preCalculatedSuggestions = result;
+                    for (let current = 0; current < preCalculatedSuggestions.length; current++) {
+                        let startDate = result[calendarUpdate.stepIndex].start;
+                        let start = new Date(startDate.date.year, startDate.date.month - 1, startDate.date.day, startDate.time.hour, startDate.time.minute, 0, 0);
+                        let endDate = result[calendarUpdate.stepIndex].end;
+                        let end = new Date(endDate.date.year, endDate.date.month - 1, endDate.date.day, endDate.time.hour, endDate.time.minute, 0, 0);
+                        suggestion = createSuggestionSchedule(start, end, CalendarList[0]);
+                        newSchedule = suggestion;
+                        suggestion = null;
+                        addDevices(checkOverlap(newSchedule, document.getElementById("defaultUnchecked").checked));
+                        saveScheduleChanges();
+                        newSchedule = null;
+                    }
+                    preCalculatedSuggestions=[];
+                    setSchedules();
+                    refreshScheduleVisibility();
+                    document.getElementById('suggestStep').disabled = false;
+                    $('#toastsuggestionexperimentsuccess').toast('show')
+                }else{
+                    document.getElementById('suggestStep').disabled = false;
+                    $('#toastsuggestionexperimenterror').toast('show')
+                }
+
+                $('#extraLargeModal').modal('toggle');
+                $('.modal-backdrop').remove();
+            },
+            error: function(xhr, desc, err) {
+                console.log(xhr);
+                console.log("Details0: " + desc + "\nError:" + err);
+
+            },
+        });
     }
     function getSuggestionFromServer(stepIndex, personalAllowed,withinOfficeHours)
     {

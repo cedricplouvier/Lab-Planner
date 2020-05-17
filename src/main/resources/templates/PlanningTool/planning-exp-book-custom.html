@@ -801,8 +801,6 @@
         <strong th:text="${errorMsg}"></strong>
     </div>
 </div>
-
-
 <body>
 <div class="container">
     <div th:replace="navbar :: navbar"></div>
@@ -895,7 +893,6 @@
 
 
         <h3><span th:text="#{step.info}"></span></h3>
-
         <table>
             <tr>
                 <th>
@@ -1269,9 +1266,9 @@
                                 </div>
                             </div>
                             <div style="flex: 1;margin: 10px;">
-                                <select required id="deviceTypeDropdown" class="form-control input-device"
-                                        style="visibility: visible;">
-                                    <option value="none" selected disabled hidden th:text="#{device.notavailable}">No available device</option>
+                                <select id="deviceTypeDropdown"
+                                        style="visibility: visible;" novalidate>
+                                    <option value="1" selected disabled hidden th:text="#{device.notavailable}">No available device</option>
                                 </select>
                             </div>
                             <div style="flex: 1;">
