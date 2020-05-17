@@ -107,14 +107,16 @@ public class CalendarController {
         int minutesInDay = 1440;
         OfficeHours officeHours = systemSettingsService.getSystemSetting().getCurrentOfficeHours();
         int officeTime = (officeHours.getEndHour() * 60 + officeHours.getEndMinute()) - (officeHours.getStartHour() * 60 + officeHours.getStartMinute());
-
         if(withinOfficeHOurs) {
+
             int current = index;
             while (current < steps.size()) {
                 if (current > 0) {
                     if (steps.get(current - 1).getContinuity().getType().equals("Hard") && steps.get(current - 1).getContinuity().getDirectionType().equals("After")) {
                         count += steps.get(current - 1).getContinuity().getHours() * 60 + steps.get(current - 1).getContinuity().getMinutes();
-
+                        if (count >= minutesInDay) {
+                            count = count % minutesInDay;
+                        }
                         if (count >= officeTime) {
                             System.out.println("falsehardafter");
                             return false;
@@ -126,6 +128,9 @@ public class CalendarController {
                         }
                     } else if (steps.get(current - 1).getContinuity().getType().equals("Soft (at most)") && steps.get(current - 1).getContinuity().getDirectionType().equals("After")) {
                         count += steps.get(current - 1).getContinuity().getHours() * 60 + steps.get(current - 1).getContinuity().getMinutes();
+                        if (count >= minutesInDay) {
+                            count = count % minutesInDay;
+                        }
                         if (count >= officeTime) {
                             System.out.println("falsesoftatmostafter");
 
@@ -143,6 +148,9 @@ public class CalendarController {
                         if (steps.get(current).isHasFixedLength()) {
                             int continuitylength = steps.get(current - 1).getContinuity().getHours() * 60 + steps.get(current - 1).getContinuity().getMinutes();
                             int length = steps.get(current).getFixedTimeHours() * 60 + steps.get(current).getFixedTimeMinutes();
+                            if (count >= minutesInDay) {
+                                count = count % minutesInDay;
+                            }
                             if (length < continuitylength) {
                                 System.out.println("falsehardbefore");
                                 return false;
@@ -152,6 +160,9 @@ public class CalendarController {
                         if (steps.get(current).isHasFixedLength()) {
                             int continuitylength = steps.get(current - 1).getContinuity().getHours() * 60 + steps.get(current - 1).getContinuity().getMinutes();
                             int length = steps.get(current).getFixedTimeHours() * 60 + steps.get(current).getFixedTimeMinutes();
+                            if (count >= minutesInDay) {
+                                count = count % minutesInDay;
+                            }
                             if (length < continuitylength) {
                                 System.out.println("falsesoftleastbefore");
                                 return false;
@@ -164,9 +175,11 @@ public class CalendarController {
                     } else {
                         count += 60;
                     }
+                    if (count >= minutesInDay) {
+                        count = count % minutesInDay;
+                    }
                     if (count >= officeTime) {
-                        System.out.println("false");
-
+                        System.out.println("error");
                         return false;
                     }
                 }
@@ -177,14 +190,13 @@ public class CalendarController {
             }
             //check before
         }
-            //Check overnightuse
+        //Check overnightuse
         for(SuggestionStep step: steps){
             if(!step.getDeviceType().getOvernightuse()){
                 if(step.isHasFixedLength()){
                     int length = step.getFixedTimeHours() * 60 + step.getFixedTimeMinutes();
                     if(length>officeTime){
                         System.out.println("overnightuse");
-
                         return false;
                     }
                 }
@@ -233,7 +245,8 @@ public class CalendarController {
             if(steps.get(index).getContinuity().getDirectionType().equals("Before")) {
                 steps.get(index).setStart(previousStep.getEnd().minusHours(previousStep.getFixedTimeHours()));
                 steps.get(index).setStart(steps.get(index).getStart().minusMinutes(previousStep.getFixedTimeMinutes()));
-                LocalDateTime endDate = previousStep.getEnd();
+                LocalDateTime endDate = steps.get(index).getStart().plusDays(7);
+                steps.get(index).setEnd(steps.get(index).getStart().plusMinutes(length));
                 found = loop(steps,withinOfficeHOurs,index,overlapAllowed,endDate,length);
             }else{
                 steps.get(index).setStart(previousStep.getEnd());
@@ -259,14 +272,12 @@ public class CalendarController {
                         LocalDateTime endDate = steps.get(index).getStart().plusMinutes(length%60-previousStep.getContinuity().getMinutes());
                         endDate = endDate.plusHours(length/60-previousStep.getContinuity().getHours());
                         found = loop(steps,withinOfficeHOurs,index,overlapAllowed,endDate,length);
-
                     }else{
                         steps.get(index).setStart(previousStep.getEnd().minusHours(previousStep.getContinuity().getHours()));
                         steps.get(index).setStart(steps.get(index).getStart().minusMinutes(previousStep.getContinuity().getMinutes()));
                         steps.get(index).setEnd(previousStep.getEnd());
                         found = checkPossibility(steps, withinOfficeHOurs, index, overlapAllowed);
                     }
-
                 }else{
                     steps.get(index).setStart(previousStep.getEnd().plusHours(previousStep.getContinuity().getHours()));
                     steps.get(index).setStart(steps.get(index).getStart().plusMinutes(previousStep.getContinuity().getMinutes()));
@@ -451,9 +462,9 @@ public class CalendarController {
                 if (previousStep.getContinuity().getDirectionType().equals("Before")) {
                     //start atleast x time before end of previous step
                     LocalDateTime testTime = previousStep.getEnd();
-                    testTime = testTime.plusHours(previousStep.getContinuity().getHours());
-                    testTime = testTime.plusMinutes(previousStep.getContinuity().getMinutes());
-                    if (!testTime.isBefore(previousStep.getEnd())) {
+                    testTime = testTime.minusHours(previousStep.getContinuity().getHours());
+                    testTime = testTime.minusMinutes(previousStep.getContinuity().getMinutes());
+                    if (!testTime.isBefore(currentStep.getStart())) {
                         return false;
                     }
                 }
@@ -463,7 +474,7 @@ public class CalendarController {
                     LocalDateTime testTime = previousStep.getEnd();
                     testTime = testTime.minusHours(previousStep.getContinuity().getHours());
                     testTime = testTime.minusMinutes(previousStep.getContinuity().getMinutes());
-                    if (!testTime.isAfter(previousStep.getEnd())) {
+                    if (!testTime.isAfter(currentStep.getStart())) {
                         return false;
                     }
                 }
@@ -474,9 +485,9 @@ public class CalendarController {
                 if (previousStep.getContinuity().getDirectionType().equals("Before")) {
                     //start at most x time before end of previous step
                     LocalDateTime testTime = previousStep.getEnd();
-                    testTime = testTime.plusHours(previousStep.getContinuity().getHours());
-                    testTime = testTime.plusMinutes(previousStep.getContinuity().getMinutes());
-                    if (!testTime.isAfter(previousStep.getEnd())) {
+                    testTime = testTime.minusHours(previousStep.getContinuity().getHours());
+                    testTime = testTime.minusMinutes(previousStep.getContinuity().getMinutes());
+                    if (!testTime.isAfter(currentStep.getStart())) {
                         return false;
                     }
                 }
@@ -484,9 +495,9 @@ public class CalendarController {
                 if (previousStep.getContinuity().getDirectionType().equals("After")) {
                     //start at most x time after end of previous step
                     LocalDateTime testTime = previousStep.getEnd();
-                    testTime = testTime.minusHours(previousStep.getContinuity().getHours());
-                    testTime = testTime.minusMinutes(previousStep.getContinuity().getMinutes());
-                    if (!testTime.isBefore(previousStep.getEnd())) {
+                    testTime = testTime.plusHours(previousStep.getContinuity().getHours());
+                    testTime = testTime.plusMinutes(previousStep.getContinuity().getMinutes());
+                    if (!testTime.isBefore(currentStep.getStart())) {
                         return false;
                     }
                 }
