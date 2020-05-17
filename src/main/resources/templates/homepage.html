@@ -3,6 +3,21 @@
 <head th:replace="navbar :: head (title='#{homepage}')"></head>
 <body>
 
+<style>
+    .notfound{
+        display: none;
+    }
+
+    .table-wrapper {
+        max-height: 300px;
+        width: 100%;
+        overflow: auto;
+        display:inline-block;
+    }
+
+
+</style>
+
 <div class ="container" >
     <div th:replace="navbar :: navbar"></div>
 
@@ -12,10 +27,12 @@
     <a  sec:authorize="hasAuthority('Console Access')" th:href="@{/registrations}" th:text="#{registrations} + ' ('+${registrationAmount}+')'" class="btn btn-primary"></a>
     <a class="btn btn-primary" th:href="@{/officeHours}" th:text="#{navbar.officeHours}"></a>
 
-
+    <div>
+        <h2> <span th:text="#{steps}"></span></h2>
+    </div>
+    <div class="table-wrapper">
     <table class="table table-hover">
         <thead>
-        <h2> <span th:text="#{steps}"></span></h2>
         <tr>
             <th th:text="#{step.device.devicename}">Device Name</th>
             <th th:text="#{step.start}">Start Date</th>
@@ -90,10 +107,15 @@
         </tr>
         </tbody>
     </table>
+    </div>
 
+        <div>
+            <h2> <span th:text="#{experiments}"></span></h2>
+
+        </div>
+    <div class="table-wrapper">
     <table class="table table-hover">
         <thead>
-        <h2> <span th:text="#{experiments}"></span></h2>
         <tr >
             <th th:text="#{experiment.name}">Experiment Name</th>
             <th th:text="#{experiment.type}">Experiment Type</th>
@@ -171,7 +193,7 @@
         </tbody>
     </table>
 
-</div>
+        </div>
     <div th:replace="footer :: footer"></div>
 </div>
 </body>
