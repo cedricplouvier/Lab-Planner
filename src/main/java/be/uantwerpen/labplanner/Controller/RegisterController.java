@@ -110,6 +110,7 @@ public class RegisterController {
         //check for standard errors & empty fields
         if ((result.hasErrors()) || (user.getPassword() == null) || (user.getFirstName() == null) || (user.getLastName() == null) || (user.getEmail() == null) || (user.getUaNumber() == null) || (user.getFirstName().trim().equals("")) || (user.getLastName().trim().equals("")) || (user.getPassword().trim().equals("")) || (user.getUaNumber().trim().equals("")) || (user.getEmail().trim().equals(""))) {
             model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.addError"));
+            model.addAttribute("allRoles",roleService.findAll());
 
             return "register-manage";
         }
@@ -126,6 +127,7 @@ public class RegisterController {
         //check for valid UA number
         if ((user.getUaNumber().length()!=8) || (user.getUaNumber().charAt(0)!='2') && (user.getUaNumber().toLowerCase().charAt(0)!='s')){
             model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.UAWrong"));
+            model.addAttribute("allRoles",roleService.findAll());
 
             return "register-manage";
         }
@@ -136,12 +138,14 @@ public class RegisterController {
 
             if ((temp.getUaNumber() != null) && ((temp.getUaNumber().substring(1).equals(user.getUaNumber().substring(1))))) {
                 model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.UAError"));
+                model.addAttribute("allRoles",roleService.findAll());
 
                 return "register-manage";
             }
 
             if ((temp.getEmail() != null) && (temp.getEmail().toLowerCase().equals(user.getEmail().toLowerCase()))) {
                 model.addAttribute("UserInUse", ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString("user.MailError"));
+                model.addAttribute("allRoles",roleService.findAll());
 
                 return "register-manage";
             }
@@ -161,12 +165,15 @@ public class RegisterController {
         //validate Password
         if (!validatePassWord(user.getPassword())){
             model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.passwordError"));
+            model.addAttribute("allRoles",roleService.findAll());
+
             return "register-manage";
         }
 
         //validate Email
         if (!isValidEmailAddress(user.getEmail())){
             model.addAttribute("UserInUse", ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("user.mailError"));
+            model.addAttribute("allRoles",roleService.findAll());
             return "register-manage";
         }
 
