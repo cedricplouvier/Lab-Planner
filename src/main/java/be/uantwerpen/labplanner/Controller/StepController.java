@@ -1727,11 +1727,11 @@ public class StepController {
 
         //check if startDate is before endDate
         if (currentEndDate.isBefore(currentStartDate)) {
-            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.after.enddate");
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") +" "+ ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.after.enddate");
         }
         //check if startDate is not the same as endDate
         if (currentEndDate.equals(currentStartDate)) {
-            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.same.enddate");
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") +" "+ ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.same.enddate");
         }
 
         Role adminole = roleService.findByName("Administrator").get();
@@ -1742,41 +1742,41 @@ public class StepController {
         if (!currentUser.getRoles().contains(adminole) && !currentUser.getRoles().contains(promotorRole) && !currentUser.getRoles().contains(masterstudentRole)) {
             //check opening hours
             if (!isInsideOpeningHours(currentStartDate)) {
-                return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date2");
+                return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") +" "+ ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date2");
             }
             if (!isInsideOpeningHours(currentEndDate)) {
-                return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentEndDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date2");
+                return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentEndDate.toString("yyyy-MM-dd HH:mm") +" " + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date2");
             }
         }
 
         //check booking in past
         if (dateIsInPast(currentEndDate)) {
-            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentEndDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date5");
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentEndDate.toString("yyyy-MM-dd HH:mm") +" "+ ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date5");
 
         }
 
 
         //check weekend
         if (isWeekend(currentStartDate)) {
-            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date3");
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm")+" " + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date3");
         }
         if (isWeekend(currentEndDate)) {
-            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentEndDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date3");
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentEndDate.toString("yyyy-MM-dd HH:mm") +" "+ ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date3");
         }
         //check holidays
         if (isInsideHoliday(currentStartDate)) {
-            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date4");
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") +" "+ ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date4");
 
         }
         if (isInsideHoliday(currentEndDate)) {
-            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentEndDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date4");
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentEndDate.toString("yyyy-MM-dd HH:mm") +" "+ ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date4");
 
         }
 
         //CheckOverNight
         if (currentStartDate.getDayOfYear() < currentEndDate.getDayOfYear()) {
             if (!step.getDevice().getDeviceType().getOvernightuse()) {
-                return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.device") + step.getDevice().getDevicename() + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.device2");
+                return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.device") + step.getDevice().getDevicename() +" "+ ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.device2");
 
             }
         }
