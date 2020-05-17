@@ -743,15 +743,15 @@ public class DatabaseLoader {
         ITSRStyps.add(styp9);
 
 
-        StepType styp10 = new StepType(t2, cont1, t2.getDeviceTypeName());
+        StepType styp10 = new StepType(t2, cont1, t2.getDeviceTypeName() + " ");
         stepTypeRepository.save(styp10);
-        StepType styp11 = new StepType(t8, cont2, t8.getDeviceTypeName());
+        StepType styp11 = new StepType(t8, cont2, t8.getDeviceTypeName() + " ");
         stepTypeRepository.save(styp11);
         StepType styp12 = new StepType(t3, cont1, "Mixer");
         stepTypeRepository.save(styp12);
-        StepType styp13 = new StepType(t14, cont1, t14.getDeviceTypeName());
+        StepType styp13 = new StepType(t14, cont1, t14.getDeviceTypeName() + " ");
         stepTypeRepository.save(styp13);
-        StepType styp14 = new StepType(t8, cont6, t8.getDeviceTypeName());
+        StepType styp14 = new StepType(t8, cont6, t8.getDeviceTypeName() + " ");
         stepTypeRepository.save(styp14);
 
         List<StepType> WhlTrkTest = new ArrayList<StepType>();
