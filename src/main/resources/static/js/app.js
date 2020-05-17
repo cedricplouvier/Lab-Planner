@@ -48,7 +48,9 @@ var header = $("meta[name='_csrf_header']").attr("content");
                 timegridDisplayPrimayTime: function(time) {
                     var hour = time.hour;
                     return hour +':00';
-                }
+                },popupEdit:function(edit) {
+                    return '<span></span>';
+                },
             }
         });
     }else{
@@ -72,7 +74,11 @@ var header = $("meta[name='_csrf_header']").attr("content");
                 timegridDisplayPrimayTime: function(time) {
                     var hour = time.hour;
                     return hour +':00';
-                }
+                },popupEdit:function(edit) {
+                    return '<span></span>';
+                },
+
+
             }
         });
     }
@@ -116,6 +122,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
                     refreshScheduleVisibility();
                 }
             }
+
             console.log('clickSchedule', e);
         },
         'clickDayname': function(date) {
