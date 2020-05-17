@@ -411,7 +411,7 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
     let endTime = schedule.end.getMinutes()+schedule.end.getHours()*60;
 
     if(withinOfficehours){
-        if (startTime >= 9 * 60 && startTime <= 17 * 60 && schedule.start.getDay() != 6 && schedule.start.getDay() != 0) {
+        if (startTime >= parseInt(officeHours['startHour']) * 60 + parseInt(officeHours['atartMinute'])&& startTime <= parseInt(officeHours['endHour'])  * 60 + parseInt(officeHours['endMinute'])&& schedule.start.getDay() != 6 && schedule.start.getDay() != 0) {
 
         } else {
             return {
@@ -424,8 +424,8 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
 
     //OpeningsHours\
     if(userAccessRights.includes("Bachelorstudent")) {
-        if (startTime >= 9 * 60 && startTime <= 17 * 60 && schedule.start.getDay() != 6 && schedule.start.getDay() != 0) {
-            if (endTime >= 9 * 60 && endTime <= 17 * 60 && schedule.end.getDay() != 0 && schedule.end.getDay() != 6) {
+        if (startTime >= parseInt(officeHours['startHour'])  * 60 + parseInt(officeHours['startMinute'])  && startTime <= parseInt(officeHours['endHour'])  * 60 + parseInt(officeHours['endMinute'])  && schedule.start.getDay() != 6 && schedule.start.getDay() != 0) {
+            if (endTime >= parseInt(officeHours['startHour'])  * 60 + parseInt(officeHours['startMinute'])&& endTime <= parseInt(officeHours['endHour'])  * 60+ parseInt(officeHours['endMinute']) && schedule.end.getDay() != 0 && schedule.end.getDay() != 6) {
             } else {
                 return {
                     message: translations.outofofficehours,
@@ -500,7 +500,6 @@ function generateSchedule(viewName, renderStart, renderEnd) {
 
     //Add all other steps of devicetype
     otherSteps.forEach(function (step) {
-        console.log(step);
 
         if(step['device']['deviceType']['id'] === allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['id']) {
             let schedule = new ScheduleInfo();

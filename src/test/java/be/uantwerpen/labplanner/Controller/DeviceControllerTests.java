@@ -390,7 +390,7 @@ public class DeviceControllerTests {
                 .andExpect(status().is(200))
                 .andDo(print())
 
-                .andExpect(view().name("Errors/custom-error"));
+                .andExpect(view().name("Devices/list-device-types"));
 
         //Role is not in Use
         when(deviceTypeService.findById((long) 11)).thenReturn(Optional.of(d2));
