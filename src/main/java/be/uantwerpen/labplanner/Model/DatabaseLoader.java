@@ -124,7 +124,7 @@ public class DatabaseLoader {
         privilegeRepository.save(p15);
         Privilege p16 = new Privilege("Stock - Aggregates + Bitumen Modify - Advanced","Ability to read and edit advanced info of Aggregates & bitumen");
         privilegeRepository.save(p16);
-        Privilege p17 = new Privilege("Stock - Modify - All","Ability to read and edit all info of everything");
+        Privilege p17 = new Privilege("Stock - Modify - All","Ability to read and edit all info of all stock");
         privilegeRepository.save(p17);
         Privilege p18 = new Privilege("Stock - Consumables + Other Read only - Advanced","Ability to read advanced info of Consumables & Other");
         privilegeRepository.save(p18);
