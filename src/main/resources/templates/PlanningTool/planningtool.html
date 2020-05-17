@@ -141,36 +141,36 @@
     </style>
     <div class="container">
         <div th:replace="navbar :: navbar"></div>
-        <h1>Planning Tool
+        <h1>Planning Tool </h1>
+        <p/>
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal"
                     data-target="#staticBackdrop" th:text="#{book.step}">
                 Book new Step
             </button>
-
-            <p/>
-            <a th:href="@{/planning/experiments/book/fixed}">
-                <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal"
+            <a th:href="@{/planning/experiments/book/fixed}" >
+                <button type="button" class="btn btn-primary float-right" style="margin-right: 1%" data-toggle="modal"
                         data-target="#staticBackdropExperiment" th:text="#{book.Experiment.fixed}">
                     Book fixed experiment
                 </button>
             </a>
             <a th:href="@{/planning/experiments/book/custom}">
-                <button type="button" class="btn btn-primary float-right" style="" data-toggle="modal"
+                <button type="button" class="btn btn-primary float-right" style="margin-right: 1%" data-toggle="modal"
                         data-target="#staticBackdropExperiment" th:text="#{book.Experiment.custom}">
                     Book custom experiment
                 </button>
             </a>
+            <a th:href="@{/planning/experiments}" type="button" class="btn btn-secondary float-right" style="margin-right: 1%" th:text="#{experiment.types}">
+                Experiment Types
+            </a>
 
-            <p/>
-
-        </h1>
-
-        <input class="floating" id="search" th:placeholder="#{search.all}" />
+            <input class="floating float-left" id="search" style="height: 38px" th:placeholder="#{search.all}" />
+        <p/>
+        <p></p>
         <p></p>
         <p></p>
         <table class="table table-hover">
-            <h2> <span th:text="#{steps}"></span></h2>
+            <h2 style="margin-top: 5%"> <span th:text="#{steps}"></span></h2>
             <thead>
             <tr>
                 <th th:text="#{step.user.username}">Username</th>
@@ -179,8 +179,7 @@
                 <th th:text="#{step.startHour}">Start Hour</th>
                 <th th:text="#{step.end}">End Date</th>
                 <th th:text="#{step.endHour}">End Hour</th>
-                <th></th>
-                <th></th>
+                <th th:text="#{device.manage}"></th>
             </tr>
             </thead>
             <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -197,18 +196,31 @@
                 <td class="endTime" th:value="${step.getEnd()}" th:text="${step.end}">End Date</td>
                 <td class="endTime" th:value="${step.getEndHour()}" th:text="${step.endHour}">End Hour</td>
                 <td>
-                    <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" th:text="#{device.info}"
-                       class="btn btn-primary"></a>
-                </td>
-
-                <td>
                     <a th:href="@{/planning/{id}/(id=${step.id})}"><span
                             class="fas fa-edit"></span></a>
 
                     <a th:href="@{/planning/{id}/delete(id=${step.id})}"
-                       th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
+                        data-toggle="modal" data-target="#modal-warning-step"  th:attr="data-target='#modal-warning-step'+${step.id}">
                         <span class="fas fa-trash" style="color: red"></span> </a>
+                    <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" >
+                        <span class="fas fa-info" style="color: #3e8e41"></span></a>
                 </td>
+                <div class="modal modal-warning fade" th:id="modal-warning-step+${step.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="exampleModalLabel" th:text="#{step.delete}"></h3>
+                            </div>
+                            <div class="modal-body">
+                                <h5 th:text="#{step.areyousure}+${step.getDevice().getDevicename()}+'?'"></h5>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                                <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/planning/{id}/delete(id=${step.id})}"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </tr>
             <tr class='notfound' th:if="${userSteps.isEmpty()}">
                 <td colspan='4' th:text="#{step.norecord}">No record found</td>
@@ -230,8 +242,7 @@
                 <th th:text="#{step.startHour}">Start Hour</th>
                 <th th:text="#{step.end}">End Date</th>
                 <th th:text="#{step.endHour}">End Hour</th>
-                <th></th>
-                <th></th>
+                <th th:text="#{device.manage}"></th>
             </tr>
             </thead>
             <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -247,18 +258,32 @@
                 <td class="endTime" th:value="${step.getEnd()}" th:text="${step.end}">End Date</td>
                 <td class="endTime" th:value="${step.getEndHour()}" th:text="${step.endHour}">End Hour</td>
                 <td>
-                    <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" th:text="#{device.info}"
-                       class="btn btn-primary"></a>
-                </td>
-                <td>
                     <a th:href="@{/planning/{id}/(id=${step.id})}"><span
                             class="fas fa-edit"></span></a>
 
                     <a th:href="@{/planning/{id}/delete(id=${step.id})}"
-                       th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
+                       data-toggle="modal" th:attr="data-target='#modal-warning-student-step'+${step.id}">
                         <span class="fas fa-trash" style="color: red"></span> </a>
+                    <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}">
+                        <span class="fas fa-info" style="color: #3e8e41"></span></a>
                 </td>
                 </td>
+                <div class="modal modal-warning fade" th:id="modal-warning-student-step+${step.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="exampleModalLabel2" th:text="#{step.delete}"></h3>
+                            </div>
+                            <div class="modal-body">
+                                <h5 th:text="#{step.areyousure}+${step.getDevice().getDevicename()}+'?'"></h5>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                                <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/planning/{id}/delete(id=${step.id})}"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </tr>
             <tr class='notfound' th:if="${studentSteps.isEmpty()}">
@@ -278,8 +303,7 @@
                 <th th:text="#{experiment.type}">Experiment Type</th>
                 <th th:text="#{step.start}">Start Date</th>
                 <th th:text="#{step.end}">End Date</th>
-                <th></th>
-                <th></th>
+                <th th:text="#{device.manage}"></th>
             </tr>
             </thead>
             <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -293,15 +317,30 @@
                 <td class="startTime" th:value="${experiment.getStartDate()}" th:text="${experiment.getStartDate()}"> Start Date</td>
                 <td class="endTime" th:value="${experiment.getEndDate()}" th:text="${experiment.getEndDate()}"> End Date</td>
                 <td>
-                    <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}" th:text="#{experiment.info}" class="btn btn-primary"></a>
-                </td>
-                <td>
                     <a th:href="@{/planning/experiments/book/{id}/(id=${experiment.id})}"><span
                             class="fas fa-edit"></span></a>
 
-                    <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                    <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  data-toggle="modal" th:attr="data-target='#modal-warning-experiment'+${experiment.id}" >
                         <span class="fas fa-trash" style="color: red" ></span> </a>
+                    <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}">
+                        <span class="fas fa-info" style="color: #3e8e41"></span></a>
                 </td>
+                <div class="modal modal-warning fade" th:id="modal-warning-experiment+${experiment.id}" tabindex="-1" role="dialog" aria-labelledby="experimentLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="experimentLabel" th:text="#{experiment.delete}"></h3>
+                            </div>
+                            <div class="modal-body">
+                                <h5 th:text="#{experiment.areyousure}+' '+${experiment.getExperimentname()}+'?'"></h5>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                                <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </tr>
             <tr class='notfound' th:if="${userExperiments.isEmpty()}">
                 <td colspan='4' th:text="#{experiment.norecord}">No record found</td>
@@ -319,8 +358,7 @@
                 <th th:text="#{experiment.type}">Experiment Type</th>
                 <th th:text="#{step.start}">Start Date</th>
                 <th th:text="#{step.end}">End Date</th>
-                <th></th>
-                <th></th>
+                <th th:text="#{device.manage}"></th>
             </tr>
             </thead>
             <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -332,15 +370,30 @@
                 <td class="startTime" th:value="${experiment.getStartDate()}" th:text="${experiment.getStartDate()}"> Start Date</td>
                 <td class="endTime" th:value="${experiment.getEndDate()}" th:text="${experiment.getEndDate()}"> End Date</td>
                 <td>
-                    <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}" th:text="#{experiment.info}" class="btn btn-primary"></a>
-                </td>
-                <td>
                     <a th:href="@{/planning/experiments/book/{id}/(id=${experiment.id})}"><span
                             class="fas fa-edit"></span></a>
 
-                    <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                    <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  data-toggle="modal" th:attr="data-target='#modal-warning-student-experiment'+${experiment.id}" >
                         <span class="fas fa-trash" style="color: red" ></span> </a>
+                    <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}">
+                        <span class="fas fa-info" style="color: #3e8e41"></span></a>
                 </td>
+                <div class="modal modal-warning fade" th:id="modal-warning-student-experiment+${experiment.id}" tabindex="-1" role="dialog" aria-labelledby="experimentLabel2" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="experimentLabel2" th:text="#{experiment.delete}"></h3>
+                            </div>
+                            <div class="modal-body">
+                                <h5 th:text="#{experiment.areyousure}+' '+${experiment.getExperimentname()}+'?'"></h5>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                                <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </tr>
             <tr class='notfound' th:if="${studentExperiments.isEmpty()}" >
@@ -350,9 +403,7 @@
         </table>
 
 
-        <a th:href="@{/planning/experiments}" type="button" class="btn btn-primary" th:text="#{experiment.types}">
-            Experiment Types
-        </a>
+
     </div>
 
     <!-- Modal -->
@@ -421,6 +472,8 @@
             </div>
         </div>
     </div>
+
+
 </div>
 </body>
 </div>

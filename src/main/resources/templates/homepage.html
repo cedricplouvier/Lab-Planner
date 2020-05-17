@@ -21,11 +21,8 @@
             <th th:text="#{step.startHour}">Start Hour</th>
             <th th:text="#{step.end}">End Date</th>
             <th th:text="#{step.endHour}">End Hour</th>
-            <th>
-                <a th:href="@{/calendar/user}" class="btn btn-default btn-block lnb-new-schedule-btn "  id="btn-new-schedule" th:text="#{personal.calendar}" type="button" >
-                    Go to personal calendar
-                </a>
-            </th>
+            <th th:text="#{device.manage}"></th>
+
         </tr>
         </thead>
         <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -37,14 +34,13 @@
             <td class="endTime" th:value="${step.getEnd()}" th:text="${step.end}">End Date</td>
             <td class="endTime" th:value="${step.getEndHour()}" th:text="${step.endHour}">End Hour</td>
             <td>
-                <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" th:text="#{device.info}" class="btn btn-primary"></a>
-            </td>
-            <td>
                 <a th:href="@{/planning/{id}/(id=${step.id})}"><span
                         class="fas fa-edit"></span></a>
 
                 <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
                     <span class="fas fa-trash" style="color: red" ></span> </a>
+                <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}">
+                    <span class="fas fa-info" style="color: #3e8e41"></span></a>
             </td>
 
         </tr>
@@ -63,6 +59,7 @@
             <th th:text="#{step.startHour}">Start Hour</th>
             <th th:text="#{step.end}">End Date</th>
             <th th:text="#{step.endHour}">End Hour</th>
+            <th th:text="#{device.manage}"></th>
         </tr>
         </thead>
         <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -75,14 +72,13 @@
             <td class="endTime" th:value="${step.getEnd()}" th:text="${step.end}">End Date</td>
             <td class="endTime" th:value="${step.getEndHour()}" th:text="${step.endHour}">End Hour</td>
             <td>
-                <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}" th:text="#{device.info}" class="btn btn-primary"></a>
-            </td>
-            <td>
                 <a th:href="@{/planning/{id}/(id=${step.id})}"><span
                         class="fas fa-edit"></span></a>
 
                 <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
                     <span class="fas fa-trash" style="color: red" ></span> </a>
+                <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}">
+                    <span class="fas fa-info" style="color: #3e8e41"></span></a>
 
 
             </td>
@@ -102,6 +98,7 @@
             <th th:text="#{experiment.type}">Experiment Type</th>
             <th th:text="#{step.start}">Start Date</th>
             <th th:text="#{step.end}">End Date</th>
+            <th th:text="#{device.manage}"></th>
         </tr>
         </thead>
         <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -121,6 +118,8 @@
 
                 <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
                     <span class="fas fa-trash" style="color: red" ></span> </a>
+                <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}">
+                    <span class="fas fa-info" style="color: #3e8e41"></span></a>
             </td>
         </tr>
         </tbody>
@@ -141,6 +140,8 @@
             <th th:text="#{experiment.type}">Experiment Type</th>
             <th th:text="#{step.start}">Start Date</th>
             <th th:text="#{step.end}">End Date</th>
+            <th th:text="#{device.manage}"></th>
+            <th></th>
         </tr>
         </thead>
         <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -152,15 +153,15 @@
             <td class="startTime" th:value="${experiment.getStartDate()}" th:text="${experiment.getStartDate()}"> Start Date</td>
             <td class="endTime" th:value="${experiment.getEndDate()}" th:text="${experiment.getEndDate()}"> End Date</td>
             <td>
-                <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}" th:text="#{experiment.info}" class="btn btn-primary"></a>
-            </td>
-            <td>
                 <a th:href="@{/planning/experiments/book/{id}/(id=${experiment.id})}"><span
                         class="fas fa-edit"></span></a>
 
                 <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
                     <span class="fas fa-trash" style="color: red" ></span> </a>
+                <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}">
+                    <span class="fas fa-info" style="color: #3e8e41"></span></a>
             </td>
+            <td></td>
 
         </tr>
         <tr class='notfound' th:if="${studentSteps.isEmpty()}" >

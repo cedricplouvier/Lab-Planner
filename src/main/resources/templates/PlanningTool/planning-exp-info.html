@@ -100,13 +100,13 @@
         </table>
 
 
-        <h3><span th:text="#{mixture.info}"></span></h3>
+        <h3><span th:text="#{mixtures.info}"></span></h3>
         <table class="table table-hover" style="text-align:center; font-size:90%;">
             <thead>
             <tr>
                 <th th:text="#{mixtures}">Mixture</th>
                 <th th:text="#{mixtures.amount}">Amount</th>
-                <th>Comment</th>
+                <th th:text="#{step.comment}">Comment</th>
             </tr>
             </thead>
             <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -219,7 +219,7 @@
                             th:utext="*{experimentType.stepTypes[__${itemStat.index}__].hasFixedLength} ?
                          *{experimentType.stepTypes[__${itemStat.index}__].fixedTimeHours}  +':' +*{experimentType.stepTypes[__${itemStat.index}__].fixedTimeMinutes}+
                         '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].fixedTimeType}
-                         : 'No'">
+                         : #{options.type.no}">
                         </td>
                         <td>
                             <input style="font-size:80%; " type="text" id="comment"
@@ -241,11 +241,11 @@
                         <td></td>
                         <td style=" vertical-align:center; width: 10%; font-size:80%; text-align:center" id="continuity"
                             name="continuity"
-                            th:utext="(*{experimentType.stepTypes[__${itemStat.index}__].continuity.type} != 'No') ?
+                            th:utext="(*{experimentType.stepTypes[__${itemStat.index}__].continuity.type} != #{options.type.no}) ?
                         *{experimentType.stepTypes[__${itemStat.index}__].continuity.hours} + ':' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.minutes}+
                         '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.type}+
                         '<br />' + *{experimentType.stepTypes[__${itemStat.index}__].continuity.directionType}
-                        : 'No'">
+                        : #{options.type.no}">
                         </td>
                         <td></td>
                         <td></td>
