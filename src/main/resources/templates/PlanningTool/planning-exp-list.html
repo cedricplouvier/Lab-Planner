@@ -37,7 +37,7 @@
                 <a  sec:authorize="hasAuthority('Planning - Make new experiment') " th:href="@{/planning/experiments/{id}/(id=${experiment.id})}"><span
                         class="fas fa-edit"></span></a>&nbsp;
                 <a sec:authorize="hasAuthority('Planning - Make new experiment')" th:href="@{/planning/experiments/{id}/delete(id=${experiment.id})}" data-toggle="modal" th:attr="data-target='#modal-warning-experiment'+${experiment.id}">
-                    <span class="fas fa-trash"></span></a>
+                    <span class="fas fa-trash" style="color: red"></span></a>
             </td>
             <div class="modal modal-warning fade" th:id="modal-warning-experiment+${experiment.id}" tabindex="-1" role="dialog" aria-labelledby="experimentLabel" aria-hidden="true">
                 <div class="modal-dialog">

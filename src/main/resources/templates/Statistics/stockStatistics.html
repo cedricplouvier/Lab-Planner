@@ -42,7 +42,7 @@
                 </select>
                 <br><br>
                 <button class="btn btn-primary" type="submit" th:text="#{statistics.addProduct}"></button>
-                <a th:href="@{/statistics/stockStatistics/resetGraphStockHistory}" class="btn btn-primary" th:text="#{statistics.clearProdList}"></a>
+                <a th:href="@{/statistics/stockStatistics/resetGraphStockHistory}" class="btn btn-secondary" th:text="#{statistics.clearProdList}"></a>
                 <br><br>
             </form>
             <div class="alert alert-danger" role="alert" th:if="${ProdStatus}==productLimit" th:text="#{statistics.amountProdErrorMessage}"></div>
