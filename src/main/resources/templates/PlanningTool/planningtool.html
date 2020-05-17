@@ -173,7 +173,115 @@
         <p></p>
         <p></p>
         <table class="table table-hover">
-            <h2 style="margin-top: 5%"> <span th:text="#{steps}"></span></h2>
+            <thead>
+            <h2 style="margin-top: 5%"> <span th:text="#{experiments}"></span></h2>
+            <tr >
+                <th th:text="#{step.user.username}"></th>
+                <th th:text="#{experiment.name}">Experiment Name</th>
+                <th th:text="#{experiment.type}">Experiment Type</th>
+                <th th:text="#{step.start}">Start Date</th>
+                <th th:text="#{step.end}">End Date</th>
+                <th th:text="#{device.manage}"></th>
+            </tr>
+            </thead>
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody class="list" id="Experiment-list-User">
+            <tr th:each="experiment : ${userExperiments}">
+
+                <td class="userName" th:value="${experiment.getUser()}"
+                    th:text="${experiment.getUser().getUsername()}"></td>
+                <td class="experimentName" th:value="${experiment.getExperimentname()}" th:text="${experiment.getExperimentname()}" >Experiment name</td>
+                <td class="experimentType" th:value="${experiment.getExperimentType().getExperimentTypeName()}" th:text="${experiment.getExperimentType().getExperimentTypeName()}">Experiment Type name</td>
+                <td class="startTime" th:value="${experiment.getStartDate()}" th:text="${experiment.getStartDate()}"> Start Date</td>
+                <td class="endTime" th:value="${experiment.getEndDate()}" th:text="${experiment.getEndDate()}"> End Date</td>
+                <td>
+                    <a th:href="@{/planning/experiments/book/{id}/(id=${experiment.id})}"><span
+                            class="fas fa-edit"></span></a>
+
+                    <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  data-toggle="modal" th:attr="data-target='#modal-warning-experiment'+${experiment.id}" >
+                        <span class="fas fa-trash" style="color: red" ></span> </a>
+                    <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}">
+                        <span class="fas fa-info" style="color: #3e8e41"></span></a>
+                </td>
+                <div class="modal modal-warning fade" th:id="modal-warning-experiment+${experiment.id}" tabindex="-1" role="dialog" aria-labelledby="experimentLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="experimentLabel" th:text="#{experiment.delete}"></h3>
+                            </div>
+                            <div class="modal-body">
+                                <h5 th:text="#{experiment.areyousure}+' '+${experiment.getExperimentname()}+'?'"></h5>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                                <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </tr>
+            <tr class='notfound' >
+                <td colspan='4' th:text="#{experiment.norecord}">No record found</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h5 th:if="${!studentExperiments.isEmpty()}" sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')"> <span th:text="#{experiment.student}"></span></h5>
+
+        <table th:if="${!studentExperiments.isEmpty()}" class="table table-hover"  sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')">
+            <thead>
+            <tr>
+                <th th:text="#{step.user.username}"></th>
+                <th th:text="#{experiment.name}">Experiment Name</th>
+                <th th:text="#{experiment.type}">Experiment Type</th>
+                <th th:text="#{step.start}">Start Date</th>
+                <th th:text="#{step.end}">End Date</th>
+                <th th:text="#{device.manage}"></th>
+            </tr>
+            </thead>
+            <!-- IMPORTANT, class="list" have to be at tbody -->
+            <tbody class="list" id="list-students">
+            <tr th:each="experiment : ${studentExperiments}">
+                <td class="user" th:value="${experiment.getUser()}" th:text="${experiment.getUser().getUsername()}"></td>
+                <td class="experimentName" th:value="${experiment.getExperimentname()}" th:text="${experiment.getExperimentname()}" >Experiment name</td>
+                <td class="experimentType" th:value="${experiment.getExperimentType().getExperimentTypeName()}" th:text="${experiment.getExperimentType().getExperimentTypeName()}">Experiment Type name</td>
+                <td class="startTime" th:value="${experiment.getStartDate()}" th:text="${experiment.getStartDate()}"> Start Date</td>
+                <td class="endTime" th:value="${experiment.getEndDate()}" th:text="${experiment.getEndDate()}"> End Date</td>
+                <td>
+                    <a th:href="@{/planning/experiments/book/{id}/(id=${experiment.id})}"><span
+                            class="fas fa-edit"></span></a>
+
+                    <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  data-toggle="modal" th:attr="data-target='#modal-warning-student-experiment'+${experiment.id}" >
+                        <span class="fas fa-trash" style="color: red" ></span> </a>
+                    <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}">
+                        <span class="fas fa-info" style="color: #3e8e41"></span></a>
+                </td>
+                <div class="modal modal-warning fade" th:id="modal-warning-student-experiment+${experiment.id}" tabindex="-1" role="dialog" aria-labelledby="experimentLabel2" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="experimentLabel2" th:text="#{experiment.delete}"></h3>
+                            </div>
+                            <div class="modal-body">
+                                <h5 th:text="#{experiment.areyousure}+' '+${experiment.getExperimentname()}+'?'"></h5>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                                <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </tr>
+            <tr class='notfound' >
+                <td colspan='4' th:text="#{experiment.norecord}">No record found</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table class="table table-hover">
+            <h2> <span th:text="#{steps}"></span></h2>
             <thead>
             <tr>
                 <th th:text="#{step.user.username}">Username</th>
@@ -252,7 +360,7 @@
             <tbody class="list" id="list-students">
             <tr th:each="step : ${studentSteps}">
                 <td class="user" th:value="${step.getUser()}"
-                    th:text="${step.getUser().getFirstName() + ' ' + step.getUser().getLastName()}"></td>
+                    th:text="${step.getUser().getUsername()}"></td>
                 <td class="devicename" th:value="${step.getDevice().getDevicename()}"
                     th:text="${step.device.devicename }">Device name
                 </td>
@@ -297,113 +405,7 @@
 
 
 
-        <table class="table table-hover">
-            <thead>
-            <h2> <span th:text="#{experiments}"></span></h2>
-            <tr >
-                <th th:text="#{step.user.username}"></th>
-                <th th:text="#{experiment.name}">Experiment Name</th>
-                <th th:text="#{experiment.type}">Experiment Type</th>
-                <th th:text="#{step.start}">Start Date</th>
-                <th th:text="#{step.end}">End Date</th>
-                <th th:text="#{device.manage}"></th>
-            </tr>
-            </thead>
-            <!-- IMPORTANT, class="list" have to be at tbody -->
-            <tbody class="list" id="Experiment-list-User">
-            <tr th:each="experiment : ${userExperiments}">
 
-                <td class="userName" th:value="${experiment.getUser()}"
-                    th:text="${experiment.getUser().getFirstName() + ' ' + experiment.getUser().getLastName()}"></td>
-                <td class="experimentName" th:value="${experiment.getExperimentname()}" th:text="${experiment.getExperimentname()}" >Experiment name</td>
-                <td class="experimentType" th:value="${experiment.getExperimentType().getExperimentTypeName()}" th:text="${experiment.getExperimentType().getExperimentTypeName()}">Experiment Type name</td>
-                <td class="startTime" th:value="${experiment.getStartDate()}" th:text="${experiment.getStartDate()}"> Start Date</td>
-                <td class="endTime" th:value="${experiment.getEndDate()}" th:text="${experiment.getEndDate()}"> End Date</td>
-                <td>
-                    <a th:href="@{/planning/experiments/book/{id}/(id=${experiment.id})}"><span
-                            class="fas fa-edit"></span></a>
-
-                    <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  data-toggle="modal" th:attr="data-target='#modal-warning-experiment'+${experiment.id}" >
-                        <span class="fas fa-trash" style="color: red" ></span> </a>
-                    <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}">
-                        <span class="fas fa-info" style="color: #3e8e41"></span></a>
-                </td>
-                <div class="modal modal-warning fade" th:id="modal-warning-experiment+${experiment.id}" tabindex="-1" role="dialog" aria-labelledby="experimentLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3 class="modal-title" id="experimentLabel" th:text="#{experiment.delete}"></h3>
-                            </div>
-                            <div class="modal-body">
-                                <h5 th:text="#{experiment.areyousure}+' '+${experiment.getExperimentname()}+'?'"></h5>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
-                                <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </tr>
-            <tr class='notfound' >
-                <td colspan='4' th:text="#{experiment.norecord}">No record found</td>
-            </tr>
-            </tbody>
-        </table>
-
-        <h5 th:if="${!studentExperiments.isEmpty()}" sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')"> <span th:text="#{experiment.student}"></span></h5>
-
-        <table th:if="${!studentExperiments.isEmpty()}" class="table table-hover"  sec:authorize="hasAuthority('Planning - Delete step/experiment own/promotor') or hasAuthority('Planning - Adjust step/experiment own/promotor')">
-            <thead>
-            <tr>
-                <th th:text="#{step.user.username}"></th>
-                <th th:text="#{experiment.name}">Experiment Name</th>
-                <th th:text="#{experiment.type}">Experiment Type</th>
-                <th th:text="#{step.start}">Start Date</th>
-                <th th:text="#{step.end}">End Date</th>
-                <th th:text="#{device.manage}"></th>
-            </tr>
-            </thead>
-            <!-- IMPORTANT, class="list" have to be at tbody -->
-            <tbody class="list" id="list-students">
-            <tr th:each="experiment : ${studentExperiments}">
-                <td class="user" th:value="${experiment.getUser()}" th:text="${experiment.getUser().getFirstName() + ' ' + experiment.getUser().getLastName()}"></td>
-                <td class="experimentName" th:value="${experiment.getExperimentname()}" th:text="${experiment.getExperimentname()}" >Experiment name</td>
-                <td class="experimentType" th:value="${experiment.getExperimentType().getExperimentTypeName()}" th:text="${experiment.getExperimentType().getExperimentTypeName()}">Experiment Type name</td>
-                <td class="startTime" th:value="${experiment.getStartDate()}" th:text="${experiment.getStartDate()}"> Start Date</td>
-                <td class="endTime" th:value="${experiment.getEndDate()}" th:text="${experiment.getEndDate()}"> End Date</td>
-                <td>
-                    <a th:href="@{/planning/experiments/book/{id}/(id=${experiment.id})}"><span
-                            class="fas fa-edit"></span></a>
-
-                    <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  data-toggle="modal" th:attr="data-target='#modal-warning-student-experiment'+${experiment.id}" >
-                        <span class="fas fa-trash" style="color: red" ></span> </a>
-                    <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}">
-                        <span class="fas fa-info" style="color: #3e8e41"></span></a>
-                </td>
-                <div class="modal modal-warning fade" th:id="modal-warning-student-experiment+${experiment.id}" tabindex="-1" role="dialog" aria-labelledby="experimentLabel2" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3 class="modal-title" id="experimentLabel2" th:text="#{experiment.delete}"></h3>
-                            </div>
-                            <div class="modal-body">
-                                <h5 th:text="#{experiment.areyousure}+' '+${experiment.getExperimentname()}+'?'"></h5>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
-                                <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </tr>
-            <tr class='notfound' >
-                <td colspan='4' th:text="#{experiment.norecord}">No record found</td>
-            </tr>
-            </tbody>
-        </table>
 
 
 

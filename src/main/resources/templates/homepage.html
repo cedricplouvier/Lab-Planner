@@ -37,11 +37,27 @@
                 <a th:href="@{/planning/{id}/(id=${step.id})}"><span
                         class="fas fa-edit"></span></a>
 
-                <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                <a th:href="@{/planning/{id}/delete(id=${step.id})}"  data-toggle="modal" th:attr="data-target='#modal-warning-step'+${step.id}" >
                     <span class="fas fa-trash" style="color: red" ></span> </a>
                 <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}">
                     <span class="fas fa-info" style="color: #3e8e41"></span></a>
             </td>
+            <div class="modal modal-warning fade" th:id="modal-warning-step+${step.id}" tabindex="-1" role="dialog" aria-labelledby="stepLabel1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="stepLabel1" th:text="#{step.delete}"></h3>
+                        </div>
+                        <div class="modal-body">
+                            <h5 th:text="#{step.areyousure}+' '+${step.getDevice().getDevicename()}+'?'"></h5>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                            <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/planning/{id}/delete(id=${step.id})}"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </tr>
     </table>
@@ -75,13 +91,29 @@
                 <a th:href="@{/planning/{id}/(id=${step.id})}"><span
                         class="fas fa-edit"></span></a>
 
-                <a th:href="@{/planning/{id}/delete(id=${step.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                <a th:href="@{/planning/{id}/delete(id=${step.id})}"  data-toggle="modal" th:attr="data-target='#modal-warning-student-step'+${step.id}" >
                     <span class="fas fa-trash" style="color: red" ></span> </a>
                 <a th:href="@{/device/info/{id}/(id=${step.getDevice().getId()})}">
                     <span class="fas fa-info" style="color: #3e8e41"></span></a>
 
 
             </td>
+            <div class="modal modal-warning fade" th:id="modal-warning-student-step+${step.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="exampleModalLabel2" th:text="#{step.delete}"></h3>
+                        </div>
+                        <div class="modal-body">
+                            <h5 th:text="#{step.areyousure}+${step.getDevice().getDevicename()}+'?'"></h5>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                            <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/planning/{id}/delete(id=${step.id})}"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </tr>
         <tr class='notfound' th:if="${studentSteps.isEmpty()}" >
@@ -116,11 +148,27 @@
                 <a th:href="@{/planning/experiments/book/{id}/(id=${experiment.id})}"><span
                         class="fas fa-edit"></span></a>
 
-                <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  data-toggle="modal" th:attr="data-target='#modal-warning-experiment'+${experiment.id}" >
                     <span class="fas fa-trash" style="color: red" ></span> </a>
                 <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}">
                     <span class="fas fa-info" style="color: #3e8e41"></span></a>
             </td>
+            <div class="modal modal-warning fade" th:id="modal-warning-experiment+${experiment.id}" tabindex="-1" role="dialog" aria-labelledby="experimentLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="experimentLabel" th:text="#{experiment.delete}"></h3>
+                        </div>
+                        <div class="modal-body">
+                            <h5 th:text="#{experiment.areyousure}+' '+${experiment.getExperimentname()}+'?'"></h5>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                            <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </tr>
         </tbody>
     </table>
@@ -147,7 +195,7 @@
         <!-- IMPORTANT, class="list" have to be at tbody -->
         <tbody class="list" id="list-students">
         <tr th:each="experiment : ${studentExperiments}">
-            <td class="user" th:value="${experiment.getUser()}" th:text="${experiment.getUser().getFirstName() + ' ' + experiment.getUser().getLastName()}"></td>
+            <td class="user" th:value="${experiment.getUser()}" th:text="${experiment.getUser().getUsername()}"></td>
             <td class="experimentName" th:value="${experiment.getExperimentname()}" th:text="${experiment.getExperimentname()}" >Experiment name</td>
             <td class="experimentType" th:value="${experiment.getExperimentType().getExperimentTypeName()}" th:text="${experiment.getExperimentType().getExperimentTypeName()}">Experiment Type name</td>
             <td class="startTime" th:value="${experiment.getStartDate()}" th:text="${experiment.getStartDate()}"> Start Date</td>
@@ -156,12 +204,28 @@
                 <a th:href="@{/planning/experiments/book/{id}/(id=${experiment.id})}"><span
                         class="fas fa-edit"></span></a>
 
-                <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                <a th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"  data-toggle="modal" th:attr="data-target='#modal-warning-student-experiment'+${experiment.id}" >
                     <span class="fas fa-trash" style="color: red" ></span> </a>
                 <a th:href="@{/planning/experiments/book/info/{id}/(id=${experiment.id})}">
                     <span class="fas fa-info" style="color: #3e8e41"></span></a>
             </td>
             <td></td>
+            <div class="modal modal-warning fade" th:id="modal-warning-student-experiment+${experiment.id}" tabindex="-1" role="dialog" aria-labelledby="experimentLabel2" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="experimentLabel2" th:text="#{experiment.delete}"></h3>
+                        </div>
+                        <div class="modal-body">
+                            <h5 th:text="#{experiment.areyousure}+' '+${experiment.getExperimentname()}+'?'"></h5>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                            <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/planning/experiments/book/{id}/delete(id=${experiment.id})}"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </tr>
         <tr class='notfound' th:if="${studentSteps.isEmpty()}" >
