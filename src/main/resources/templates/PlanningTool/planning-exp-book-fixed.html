@@ -24,7 +24,6 @@
 
 <script th:inline="javascript">
     let errorMsg = [[${errorMsg}]]
-    console.log(errorMsg)
     $(document).ready(function () {
         if (errorMsg) {
             $("#myToast").toast('show');
@@ -132,8 +131,6 @@
         endHour: 0,
     }
     let experiment =[[${experiment}]];
-
-
 
     function addMixtureRow(mixtures) {
         var i = $('#mixtureList tr').length;

@@ -95,7 +95,6 @@ public class CalendarController {
         System.out.println("passed precheck:"+success);
         success = getSuggestion(steps,suggestionResponseBody.getOverlapAllowed(),suggestionResponseBody.getWithinOfficeHours(),suggestionResponseBody.getDateTime(),suggestionResponseBody.getCurrentStep());
         System.out.println("suggestion generated:"+success);
-
         if(success){
             return new Gson().toJson(steps);
         }else{
@@ -105,35 +104,90 @@ public class CalendarController {
     }
     private Boolean precheck(ArrayList<SuggestionStep> steps, Boolean overlapAllowed, Boolean withinOfficeHOurs, LocalDateTime start, int index){
         int count = 0;
-        if(withinOfficeHOurs) {
-            OfficeHours officeHours = systemSettingsService.getSystemSetting().getCurrentOfficeHours();
-            int officeTime = (officeHours.getEndHour() * 60 + officeHours.getEndMinute()) - (officeHours.getStartHour() * 60 + officeHours.getStartMinute());
-            int current = index;
+        int minutesInDay = 1440;
+        OfficeHours officeHours = systemSettingsService.getSystemSetting().getCurrentOfficeHours();
+        int officeTime = (officeHours.getEndHour() * 60 + officeHours.getEndMinute()) - (officeHours.getStartHour() * 60 + officeHours.getStartMinute());
 
-            while (current < steps.size() ){
-                if(current>0) {
-                    if (steps.get(current-1).getContinuity().getType().equals("Hard") && steps.get(current-1).getContinuity().getDirectionType().equals("After")) {
-                        count += steps.get(current - 1).getContinuity().getHours() + steps.get(current - 1).getContinuity().getMinutes();
+        if(withinOfficeHOurs) {
+            int current = index;
+            while (current < steps.size()) {
+                if (current > 0) {
+                    if (steps.get(current - 1).getContinuity().getType().equals("Hard") && steps.get(current - 1).getContinuity().getDirectionType().equals("After")) {
+                        count += steps.get(current - 1).getContinuity().getHours() * 60 + steps.get(current - 1).getContinuity().getMinutes();
+
                         if (count >= officeTime) {
+                            System.out.println("falsehardafter");
                             return false;
                         }
-                        count += steps.get(current).getFixedTimeHours() * 60 + steps.get(current).getFixedTimeMinutes();
-                    }else if (steps.get(current-1).getContinuity().getType().equals("Soft (at most)") && steps.get(current-1).getContinuity().getDirectionType().equals("After")) {
-                        count += steps.get(current - 1).getContinuity().getHours() + steps.get(current - 1).getContinuity().getMinutes();
+                        if (steps.get(current).isHasFixedLength()) {
+                            count += steps.get(current).getFixedTimeHours() * 60 + steps.get(current).getFixedTimeMinutes();
+                        } else {
+                            count += 60;
+                        }
+                    } else if (steps.get(current - 1).getContinuity().getType().equals("Soft (at most)") && steps.get(current - 1).getContinuity().getDirectionType().equals("After")) {
+                        count += steps.get(current - 1).getContinuity().getHours() * 60 + steps.get(current - 1).getContinuity().getMinutes();
                         if (count >= officeTime) {
+                            System.out.println("falsesoftatmostafter");
+
                             return false;
                         }
-                        count += steps.get(current).getFixedTimeHours() * 60 + steps.get(current).getFixedTimeMinutes();
-                    }else {
+                        if (steps.get(current).isHasFixedLength()) {
+                            count += steps.get(current).getFixedTimeHours() * 60 + steps.get(current).getFixedTimeMinutes();
+                        } else {
+                            count += 60;
+                        }
+                    } else {
                         count = 0;
                     }
-                    if(count >=24){
-                        count=0;
+                    if (steps.get(current - 1).getContinuity().getType().equals("Hard") && steps.get(current - 1).getContinuity().getDirectionType().equals("Before")) {
+                        if (steps.get(current).isHasFixedLength()) {
+                            int continuitylength = steps.get(current - 1).getContinuity().getHours() * 60 + steps.get(current - 1).getContinuity().getMinutes();
+                            int length = steps.get(current).getFixedTimeHours() * 60 + steps.get(current).getFixedTimeMinutes();
+                            if (length < continuitylength) {
+                                System.out.println("falsehardbefore");
+                                return false;
+                            }
+                        }
+                    }else if (steps.get(current - 1).getContinuity().getType().equals("Soft (at least)") && steps.get(current - 1).getContinuity().getDirectionType().equals("Before")) {
+                        if (steps.get(current).isHasFixedLength()) {
+                            int continuitylength = steps.get(current - 1).getContinuity().getHours() * 60 + steps.get(current - 1).getContinuity().getMinutes();
+                            int length = steps.get(current).getFixedTimeHours() * 60 + steps.get(current).getFixedTimeMinutes();
+                            if (length < continuitylength) {
+                                System.out.println("falsesoftleastbefore");
+                                return false;
+                            }
+                        }
                     }
-                }else{
-                    count += steps.get(current).getFixedTimeHours() * 60 + steps.get(current).getFixedTimeMinutes();
+                } else {
+                    if (steps.get(current).isHasFixedLength()) {
+                        count += steps.get(current).getFixedTimeHours() * 60 + steps.get(current).getFixedTimeMinutes();
+                    } else {
+                        count += 60;
+                    }
+                    if (count >= officeTime) {
+                        System.out.println("false");
+
+                        return false;
+                    }
+                }
+                if (count >= minutesInDay) {
+                    count = count % minutesInDay;
                 }
                 current++;
+            }
+            //check before
+        }
+            //Check overnightuse
+        for(SuggestionStep step: steps){
+            if(!step.getDeviceType().getOvernightuse()){
+                if(step.isHasFixedLength()){
+                    int length = step.getFixedTimeHours() * 60 + step.getFixedTimeMinutes();
+                    if(length>officeTime){
+                        System.out.println("overnightuse");
+
+                        return false;
+                    }
+                }
             }
         }
         return true;
@@ -159,7 +213,9 @@ public class CalendarController {
                 }
             }
         }}
-
+        if(previousStep!=null&&previousStep.getEnd()==null){
+            previousStep = null;
+        }
         if(currentDateTime==null){
             currentDateTime = LocalDateTime.now();
         }
@@ -184,7 +240,6 @@ public class CalendarController {
                 LocalDateTime endDate = steps.get(index).getStart().plusMinutes(previousStep.getContinuity().getMinutes());
                 endDate = endDate.plusHours(previousStep.getContinuity().getHours());
                 found = loop(steps,withinOfficeHOurs,index,overlapAllowed,endDate,length);
-
             }
         }else if(previousStep!=null&&previousStep.getContinuity().getType().equals("Hard")) {
             if (previousStep.getContinuity().getDirectionType().equals("Before")) {
@@ -303,6 +358,9 @@ public class CalendarController {
         if(currentIndex>0){
             previousStep = steps.get(currentIndex-1);
         }
+        if(previousStep!=null&&previousStep.getEnd()==null){
+            previousStep=null;
+        }
         //end Before previous type
         if(previousStep!=null && currentStep.getEnd().isBefore(previousStep.getEnd())){
             return false;
@@ -322,7 +380,6 @@ public class CalendarController {
         if(currentStep.getStart().getDayOfWeek()== DayOfWeek.SATURDAY || currentStep.getStart().getDayOfWeek()==DayOfWeek.SUNDAY){
             return false;
         }
-
         //Officehours
         if(withinOfficeHOurs) {
 
@@ -340,10 +397,18 @@ public class CalendarController {
             if (currentStep.getStart().toLocalTime().isBefore(officeTimeStart)) {
                 return false;
             }
+            if (currentStep.getEnd().toLocalTime().isAfter(officeTimeEnd)) {
+                return false;
+            }
+            if(currentStep.getEnd().toLocalTime().equals(officeTimeStart)){
+                return false;
+            }
+            if (currentStep.getEnd().toLocalTime().isBefore(officeTimeStart)) {
+                return false;
+            }
         }
-
         //overnightuse
-        if(currentStep.getStart().getDayOfYear()!=currentStep.getEnd().getDayOfYear()){
+        if(withinOfficeHOurs&&!currentStep.getDeviceType().getOvernightuse()&&currentStep.getStart().getDayOfYear()!=currentStep.getEnd().getDayOfYear()){
             return false;
         }
         //hollidays
@@ -355,7 +420,6 @@ public class CalendarController {
                 return false;
             }
         }
-
         //continuity type
         if(previousStep!=null) {
             //Hard
@@ -381,7 +445,6 @@ public class CalendarController {
                     }
                 }
             }
-
             //Soft(atleast)
             if (previousStep.getContinuity().getType().equals("Soft at least")) {
                 //Before
@@ -432,7 +495,6 @@ public class CalendarController {
         return true;
     }
     private List<Long> checkOverlap(ArrayList<SuggestionStep> steps, Boolean overlapAllowed, int currentIndex){
-
         User user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         List<Long> idUsed = new ArrayList<>();
         SuggestionStep currentStep = steps.get(currentIndex);
@@ -443,7 +505,6 @@ public class CalendarController {
                     LocalDateTime stepStart = LocalDateTime.of(LocalDate.parse(step.getStart()), LocalTime.parse(step.getStartHour()));
                     LocalDateTime stepEnd = LocalDateTime.of(LocalDate.parse(step.getEnd()), LocalTime.parse(step.getEndHour()));
                     //if step starts before previous but ends after start previous
-
                     if(currentStep.getStart().isBefore(stepStart)&&currentStep.getEnd().isAfter(stepStart)){
                         return new ArrayList<>();
                     }else if(currentStep.getStart().isBefore(stepEnd)&&currentStep.getEnd().isAfter(stepEnd) ){
@@ -451,7 +512,6 @@ public class CalendarController {
                     }else if((currentStep.getStart().isAfter(stepStart)||currentStep.getStart().isEqual(stepStart))&&(currentStep.getEnd().isBefore(stepEnd)||currentStep.getEnd().isEqual(stepEnd))){
                         return new ArrayList<>();
                     }
-
                 }else if(!idUsed.contains(step.getDevice().getId())){ //check if device is already used
                     //Create datetime object
                     LocalDateTime stepStart = LocalDateTime.of(LocalDate.parse(step.getStart()), LocalTime.parse(step.getStartHour()));
