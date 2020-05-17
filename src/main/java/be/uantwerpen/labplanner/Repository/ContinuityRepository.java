@@ -14,4 +14,5 @@ public interface ContinuityRepository extends CrudRepository<Continuity, Long> {
     List<Continuity> findAll();
 
     Optional<Continuity> findById(Long aLong);
+
 }

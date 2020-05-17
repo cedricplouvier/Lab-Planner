@@ -34,12 +34,6 @@ public class DeviceTypeRepositoryTests {
         //Set variables
         deviceType.setColor("test");
         deviceType.setOvernightuse(true);
-        deviceType.setDevicePictureName("picturename");
-        DeviceInformation i1 = new DeviceInformation("info","information");
-        deviceInformationRepository.save(i1);
-        List<DeviceInformation> info = new ArrayList<DeviceInformation>();
-        info.add(i1);
-        deviceType.setDeviceInformation(info);
 
         long precount = deviceTypeRepository.count();
 
@@ -55,9 +49,7 @@ public class DeviceTypeRepositoryTests {
         //and the fetched Role should equal the real Role
         assertEquals(fetchedDevice.getDeviceTypeName(),deviceType.getDeviceTypeName());
         assertEquals(fetchedDevice.getId(),deviceType.getId());
-        assertEquals(fetchedDevice.getDeviceInformation().size(),info.size());
         assertEquals(fetchedDevice.getColor(),deviceType.getColor());
-        assertEquals(fetchedDevice.getDevicePictureName(),deviceType.getDevicePictureName());
         assertEquals(fetchedDevice.getOvernightuse(),deviceType.getOvernightuse());
 
         //update name & desciption
@@ -66,9 +58,7 @@ public class DeviceTypeRepositoryTests {
         deviceInformationRepository.save(i2);
         List<DeviceInformation> info2 = new ArrayList<DeviceInformation>();
         info2.add(i2);
-        fetchedDevice.setDeviceInformation(info2);
         fetchedDevice.setColor("#123456");
-        fetchedDevice.setDevicePictureName("newpicturename");
         deviceTypeRepository.save(fetchedDevice);
 
         DeviceType fetchedUpdated = deviceTypeRepository.findById(fetchedDevice.getId()).orElse(null);
@@ -76,9 +66,7 @@ public class DeviceTypeRepositoryTests {
 
         assertEquals(fetchedUpdated.getDeviceTypeName(),fetchedDevice.getDeviceTypeName());
         assertEquals(fetchedUpdated.getId(),fetchedDevice.getId());
-        assertEquals(fetchedUpdated.getDeviceInformation().size(),fetchedDevice.getDeviceInformation().size());
         assertEquals(fetchedUpdated.getColor(),fetchedDevice.getColor());
-        assertEquals(fetchedUpdated.getDevicePictureName(),fetchedDevice.getDevicePictureName());
         assertEquals(fetchedUpdated.getOvernightuse(),fetchedDevice.getOvernightuse());
 
         assertEquals(deviceTypeRepository.count(),precount+1);

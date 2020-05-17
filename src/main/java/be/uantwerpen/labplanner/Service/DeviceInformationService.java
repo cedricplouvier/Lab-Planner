@@ -4,6 +4,7 @@ import be.uantwerpen.labplanner.Model.Device;
 import be.uantwerpen.labplanner.Model.DeviceInformation;
 import be.uantwerpen.labplanner.Model.DeviceType;
 import be.uantwerpen.labplanner.Repository.DeviceInformationRepository;
+import be.uantwerpen.labplanner.Repository.DeviceRepository;
 import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
 import be.uantwerpen.labplanner.common.model.users.Privilege;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class DeviceInformationService {
     @Autowired
     private DeviceInformationRepository deviceInformationRepository;
     @Autowired
-    private DeviceTypeRepository deviceTypeRepository;
+    private DeviceRepository deviceRepository;
     public DeviceInformationService() {
     }
 
@@ -62,7 +63,7 @@ public class DeviceInformationService {
             deviceInformationRepository.save(tempDeviceInformation);
         }
     }
-    public void saveNewDeviceInformation(DeviceInformation deviceInformation, Long deviceTypeId) {
+    public void saveNewDeviceInformation(DeviceInformation deviceInformation, Long deviceId) {
         DeviceInformation tempDeviceInformation = deviceInformation.getId() == null?null: deviceInformationRepository.findById( deviceInformation.getId()).orElse(null);
         if (tempDeviceInformation != null){
             tempDeviceInformation.setInformationName(deviceInformation.getInformationName());
@@ -73,11 +74,11 @@ public class DeviceInformationService {
             deviceInformationRepository.save(tempDeviceInformation);
         }
         else{
-            DeviceType tempDeviceType = deviceTypeRepository.findById( deviceTypeId).orElse(null);
-            List<DeviceInformation> info = tempDeviceType.getDeviceInformation();
+            Device tempDevice = deviceRepository.findById( deviceId).orElse(null);
+            List<DeviceInformation> info = tempDevice.getDeviceInformation();
             info.add(deviceInformation);
             deviceInformationRepository.save(deviceInformation);
-            deviceTypeRepository.save(tempDeviceType);
+            deviceRepository.save(tempDevice);
         }
     }
     private boolean exists(Long id) {

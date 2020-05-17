@@ -88,23 +88,46 @@ function calculateGradient(colorHex,gradientNumber,gradientPercentage) {
 function generateSchedule(viewName, renderStart, renderEnd) {
     ScheduleList = [];
     if (showOwnItems) {
-        showItems(userSteps);
+        console.log(userSteps)
+        showItems(userSteps,false);
     }
     if (showOtherItems) {
-        showItems(otherSteps);
+        showItems(otherSteps,true);
     }
 }
-function showItems(array){
-    array.forEach(function (step) {
+function showItems(array,showusername){
+    array.forEach(function (step,index) {
         let schedule = new ScheduleInfo();
         let calendar = findCalendar(String(step['device']['deviceType']['id']));
         schedule.id = chance.guid();
         schedule.calendarId = calendar.id;
-        schedule.title = 'schedule ' + step['id'];
-        schedule.body = 'name:    ' + step['device']['devicename'] + "<br>"
-            + 'type:    ' + step['device']['deviceType']['deviceTypeName'] + "<br>"
-            + 'comment: ' + step['device']['comment'] + "<br>";
+        let comment = "";
+        if(step['device']['comment']==null){
+            comment = translations.comment +':  '+translations.none
+        }else{
+            comment = translations.comment +':  '+step['device']['comment']
+        }
+        let username;
+        if(showusername){
+            username = translations.user+':  ' + usernames[index]+ "<br>";
+        }else{
+            username = ''
+        }
+        let title;
+        if(step['stepType']==null||step['stepType']['name']==null){
+            title = step['device']['devicename'];
+        }else{
+            title = step['stepType']['name'];
+            console.log(step['stepType'])
+        }
+        schedule.title = title;
+
+        schedule.body = username
+        + translations.name+':  ' + step['device']['devicename'] + "<br>"
+        +translations.type+':  ' + step['device']['deviceType']['deviceTypeName'] + "<br>"
+        +comment+ "<br>";
         ;
+
         schedule.isReadOnly = false;
         schedule.start = new Date(step['start'] + 'T' + step['startHour']);
         schedule.end = new Date(step['end'] + 'T' + step['endHour']);

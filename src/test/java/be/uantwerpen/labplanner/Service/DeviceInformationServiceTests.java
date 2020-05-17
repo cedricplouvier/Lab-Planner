@@ -2,11 +2,13 @@ package be.uantwerpen.labplanner.Service;
 
 
 import be.uantwerpen.labplanner.LabplannerApplication;
+import be.uantwerpen.labplanner.Model.Device;
 import be.uantwerpen.labplanner.Model.DeviceInformation;
 import be.uantwerpen.labplanner.Model.DeviceInformation;
 import be.uantwerpen.labplanner.Model.DeviceType;
 import be.uantwerpen.labplanner.Repository.DeviceInformationRepository;
 import be.uantwerpen.labplanner.Repository.DeviceInformationRepository;
+import be.uantwerpen.labplanner.Repository.DeviceRepository;
 import be.uantwerpen.labplanner.Repository.DeviceTypeRepository;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
@@ -31,23 +33,17 @@ public class DeviceInformationServiceTests {
     DeviceInformationRepository deviceInformationRepository;
 
     @Autowired
-    DeviceTypeRepository deviceTypeRepository;
+    DeviceRepository deviceRepository;
 
     @Before
     public void init() {
         //create Device
-        DeviceType deviceType = new DeviceType();
-        deviceType.setDeviceTypeName("devicetype");
+        Device device = new Device();
+        device.setDevicename("device");
         //Set variables
-        deviceType.setColor("test");
-        deviceType.setOvernightuse(true);
-        deviceType.setDevicePictureName("picturename");
-        DeviceInformation i1 = new DeviceInformation("info","information");
-        deviceInformationRepository.save(i1);
-        List<DeviceInformation> info = new ArrayList<DeviceInformation>();
-        info.add(i1);
-        deviceType.setDeviceInformation(info);
-        deviceTypeRepository.save(deviceType);
+        device.setDevicePictureName("test");
+        device.setComment("comment");
+        deviceRepository.save(device);
     }
 
     @Test
@@ -81,7 +77,7 @@ public class DeviceInformationServiceTests {
         files.add("2");
         deviceInformation.setFiles(files);
 
-        deviceInformationService.saveNewDeviceInformation(deviceInformation,deviceTypeRepository.findAll().get(0).getId());
+        deviceInformationService.saveNewDeviceInformation(deviceInformation,deviceRepository.findAll().get(0).getId());
         DeviceInformation fetched = deviceInformationService.findById(deviceInformation.getId()).orElse(null);
         assertNotNull(fetched);
     }
@@ -101,7 +97,7 @@ public class DeviceInformationServiceTests {
         assertNotNull(fetched);
 
         deviceInformation.setInformation("changed");
-        deviceInformationService.saveNewDeviceInformation(fetched,deviceTypeRepository.findAll().get(0).getId());
+        deviceInformationService.saveNewDeviceInformation(fetched,deviceRepository.findAll().get(0).getId());
         DeviceInformation updateFetch = deviceInformationService.findById(deviceInformation.getId()).orElse(null);
 
         assertEquals(updateFetch.getId(),fetched.getId());
