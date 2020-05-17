@@ -1746,6 +1746,14 @@ public class StepController {
                 return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentEndDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date2");
             }
         }
+
+        //check booking in past
+        if (dateIsInPast(currentEndDate)) {
+            return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentEndDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date5");
+
+        }
+
+
         //check weekend
         if (isWeekend(currentStartDate)) {
             return ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date") + currentStartDate.toString("yyyy-MM-dd HH:mm") + ResourceBundle.getBundle("messages",LocaleContextHolder.getLocale()).getString("experiment.type.error.save.date3");
@@ -1810,6 +1818,12 @@ public class StepController {
         if (isWeekend(currentEndDate)) {
             return true;
         }
+
+        //check endDate in past
+        if (dateIsInPast(currentEndDate)) {
+            return true;
+        }
+
         //check holidays
         if (isInsideHoliday(currentStartDate)) {
             return true;
@@ -1938,6 +1952,12 @@ public class StepController {
         return ((dateTime.getMinuteOfDay() >= SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getStartHour() * 60 + SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getStartMinute()) &&
                 ((dateTime.getMinuteOfDay() <= SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getEndHour() * 60 + SystemSettings.getCurrentSystemSettings().getCurrentOfficeHours().getEndMinute())));
     }
+
+    //Check, if dateTime is in past
+    public boolean dateIsInPast(DateTime dateTime) {
+        return (dateTime.getMillis() < DateTime.now().getMillis());
+    }
+
 
     //Check,if it's weekend
     public boolean isWeekend(DateTime dateTime) {
