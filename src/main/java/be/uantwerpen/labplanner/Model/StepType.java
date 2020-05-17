@@ -17,7 +17,6 @@ public class StepType extends AbstractPersistable<Long> {
     @OneToOne
     @JoinColumn(name = "continuity")
     private Continuity continuity;
-
     @Column(name = "hasFixedLength")
     private boolean hasFixedLength;
     @Column(name = "fixedTimeType")

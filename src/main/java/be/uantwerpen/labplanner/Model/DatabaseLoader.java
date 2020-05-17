@@ -385,43 +385,6 @@ public class DatabaseLoader {
         t14.setColor("#C0C0C0");
         deviceTypes.add(t14);
 
-        //Add random information for default information types
-        //Lorem ipsum generator for random information blocks
-        Lorem lorem = LoremIpsum.getInstance();
-
-        for (DeviceType devicetype : deviceTypes) {
-            List<DeviceInformation> deviceinformations = new ArrayList<DeviceInformation>();
-
-            //Add a new block for each default information type (Maintenance , Calibration ...)
-            for (int current = 0; current < DeviceType.getDefaultInformationtypes().size(); current++) {
-                //Add new device information block
-                DeviceInformation i = new DeviceInformation(DeviceType.getDefaultInformationtypes().get(current), lorem.getWords(20));
-
-                //Adding some files for Oven type , files were already loaded into the correct directory
-                if (devicetype.getDeviceTypeName().equals("Oven")) {
-                    if (current == 0) {
-                        i.addFile("placeholder.pdf");
-                    } else if (current == 2) {
-                        i.addFile("placeholder.xlsx");
-                        i.addFile("placeholder.jpg");
-                    }
-                }
-                deviceinformations.add(i);
-                deviceInformationRepository.save(i);
-            }
-
-            //Add an extra block of info for oven to show full possibilities
-            if (devicetype.getDeviceTypeName().equals("Oven")) {
-                DeviceInformation i = new DeviceInformation("Other", lorem.getWords(10));
-                deviceinformations.add(i);
-                deviceInformationRepository.save(i);
-            }
-            devicetype.setDeviceInformation(deviceinformations);
-        }
-
-        //Set the oven profile pic , the picture is already placed in the root directory /upload-dir/images where all device pictures are kept
-        t7.setDevicePictureName("Oven.jpg");
-
         //Save all devicetypes
         deviceTypeRepository.save(t1);
         deviceTypeRepository.save(t2);
@@ -437,41 +400,92 @@ public class DatabaseLoader {
         deviceTypeRepository.save(t12);
         deviceTypeRepository.save(t13);
         deviceTypeRepository.save(t14);
+
+
+        List<Device> devices = new ArrayList<>();
         //Add devices for some device types
         Device d1 = new Device("Autosaw 1", t1);
-        deviceRepository.save(d1);
+        devices.add(d1);
         Device d2 = new Device("Autosaw 2", t1);
-        deviceRepository.save(d2);
+        devices.add(d2);
         Device d3 = new Device("Uniframe 1", t11);
-        deviceRepository.save(d3);
+        devices.add(d3);
         Device d4 = new Device("Vacuum Setup 1", t12);
-        deviceRepository.save(d4);
+        devices.add(d4);
         Device d5 = new Device("Water Bath 1", t13);
-        deviceRepository.save(d5);
+        devices.add(d5);
         Device d6 = new Device("Wheel Tracking Test 1", t14);
-        deviceRepository.save(d6);
+        devices.add(d6);
         Device d7 = new Device("Oven 1", t7);
         d7.setComment("Perfect oven to bake a pizza in your spare times");
-        deviceRepository.save(d7);
+        d7.setDevicePictureName("Oven.png");
+        devices.add(d7);
         Device d8 = new Device("Oven 2", t7);
-        deviceRepository.save(d8);
+        devices.add(d8);
         Device d9 = new Device("Oven 3", t7);
-        deviceRepository.save(d9);
+        devices.add(d9);
         Device d10 = new Device("Gyratory 1", t6);
-        deviceRepository.save(d10);
+        devices.add(d10);
         Device d11 = new Device("Caliper 1", t4);
-        deviceRepository.save(d11);
+        devices.add(d11);
         Device d12 = new Device("SVM Setup 1", t10);
-        deviceRepository.save(d12);
-
+        devices.add(d12);
         Device d13 = new Device("Big mixer 1", t3);
-        deviceRepository.save(d13);
+        devices.add(d13);
         Device d14 = new Device("Cooling chamber 1", t5);
-        deviceRepository.save(d14);
+        devices.add(d14);
         Device d15 = new Device("Balance 1", t2);
+        devices.add(d15);
+
+        //Add random information for default information types
+        //Lorem ipsum generator for random information blocks
+        Lorem lorem = LoremIpsum.getInstance();
+
+        for (Device device : devices) {
+            List<DeviceInformation> deviceinformations = new ArrayList<DeviceInformation>();
+
+            //Add a new block for each default information type (Maintenance , Calibration ...)
+            for (int current = 0; current < Device.getDefaultInformationtypes().size(); current++) {
+                //Add new device information block
+                DeviceInformation i = new DeviceInformation(Device.getDefaultInformationtypes().get(current), lorem.getWords(20));
+
+                //Adding some files for Oven 1type , files were already loaded into the correct directory
+                if (device.getDevicename().equals("Oven 1")) {
+                    if (current == 0) {
+                        i.addFile("placeholder.pdf");
+                    } else if (current == 2) {
+                        i.addFile("placeholder.xlsx");
+                        i.addFile("placeholder.jpg");
+                    }
+                }
+                deviceinformations.add(i);
+                deviceInformationRepository.save(i);
+            }
+
+            //Add an extra block of info for oven to show full possibilities
+            if (device.getDevicename().equals("Oven 1")) {
+                DeviceInformation i = new DeviceInformation("Other", lorem.getWords(10));
+                deviceinformations.add(i);
+                deviceInformationRepository.save(i);
+            }
+            device.setDeviceInformation(deviceinformations);
+        }
+
+        deviceRepository.save(d1);
+        deviceRepository.save(d2);
+        deviceRepository.save(d3);
+        deviceRepository.save(d4);
+        deviceRepository.save(d5);
+        deviceRepository.save(d6);
+        deviceRepository.save(d7);
+        deviceRepository.save(d8);
+        deviceRepository.save(d9);
+        deviceRepository.save(d10);
+        deviceRepository.save(d11);
+        deviceRepository.save(d12);
+        deviceRepository.save(d13);
+        deviceRepository.save(d14);
         deviceRepository.save(d15);
-
-
         //create some products
         OwnTag tag1 = new OwnTag("Aggregates");
         List<OwnTag> tags1 = new ArrayList<>();
@@ -530,6 +544,7 @@ public class DatabaseLoader {
         OwnProduct pr8 = new OwnProduct("placeholder8", lorem.getWords(20), 1.0, 90.0, 1.0, 1.0, Unit.UNIT, null, lorem.getWords(8), 5L, 5L, LocalDateTime.now(), LocalDateTime.now(), tags4, null,null, new HashMap<>());
         pr8.setProductStockHistory(stockHis1);
         productRepository.save(pr8);
+
 
         Step s1 = new Step(u1, d1, "2020-03-18", "2020-03-18", "11:00", "12:00", "");
         stepRepository.save(s1);
@@ -680,7 +695,7 @@ public class DatabaseLoader {
         //default continuity for custom experiment
         Continuity defaultContForCustomExp = new Continuity(0, 0, "No", "After");
         continuityRepository.save(defaultContForCustomExp);
-       long id =  defaultContForCustomExp.getId();
+        long id =  defaultContForCustomExp.getId();
 
         //Continuities
         Continuity cont1 = new Continuity(0, 0, "No", "After");
@@ -762,7 +777,7 @@ public class DatabaseLoader {
         StepType stepType4 = new StepType(t2, continuity4, "Step" + t2.getDeviceTypeName(), true, "Equal", 4, 0);
 
         //Step 5 - Continuity: Hard 24h after, DeviceType: Gyrator, FixedTime: 4h
-        Continuity continuity5 = new Continuity(24, 0, "Hard", "After");
+        Continuity continuity5 = new Continuity(20, 0, "Soft (at least)", "After");
         StepType stepType5 = new StepType(t6, continuity5, "Step" + t6.getDeviceTypeName(), true, "Equal", 4, 0);
 
         //Step 6 - Continuity: At least 12h after, DeviceType: Autosaw, FixedTime: 2h
@@ -783,14 +798,14 @@ public class DatabaseLoader {
 
         //Step 10 - Continuity: Hard, 0h, DeviceType: Water bath, FixedTime: 70h
         Continuity continuity10 = new Continuity(0, 0, "Hard", "After");
-        StepType stepType10 = new StepType(t13, continuity10, "Step" + t13.getDeviceTypeName(), true, "Equal", 70, 0);
+        StepType stepType10 = new StepType(t13, continuity10, "Step" + t13.getDeviceTypeName(), true, "Equal", 3, 0);
 
         //Step 11 - Continuity: Hard, 0h, DeviceType: Cooling chamber, FixedTime: 4h
-        Continuity continuity11 = new Continuity(0, 0, "Hard", "After");
+        Continuity continuity11 = new Continuity(0, 0, "Soft (at least)", "After");
         StepType stepType11 = new StepType(t5, continuity11, "Step" + t5.getDeviceTypeName(), true, "Equal", 4, 0);
 
         //Step 12 - Continuity: Hard, 0h, DeviceType: Uniframe, FixedTime: 1h
-        Continuity continuity12 = new Continuity(0, 0, "Hard", "After");
+        Continuity continuity12 = new Continuity(0, 0, "Soft (at least)", "After");
         StepType stepType12 = new StepType(t11, continuity12, "Step" + t11.getDeviceTypeName(), true, "Equal", 1, 0);
 
         //save into database
@@ -882,43 +897,10 @@ public class DatabaseLoader {
         Step step7d = new Step(u7, d11, "2020-05-14", "2020-05-14", "10:00", "11:00", "");
         Step step8d = new Step(u7, d12, "2020-05-14", "2020-05-14", "11:00", "12:00", "");
         Step step9d = new Step(u7, d4, "2020-05-15", "2020-05-15", "12:00", "13:00", "");
-        Step step10d = new Step(u7, d5, "2020-05-15", "2020-05-18", "13:00", "11:00", "");
+        Step step10d = new Step(u7, d5, "2020-05-15", "2020-05-15", "13:00", "17:00", "");
         Step step11d = new Step(u7, d14, "2020-05-18", "2020-05-18", "11:00", "15:00", "");
         Step step12d = new Step(u7, d3, "2020-05-18", "2020-05-18", "15:00", "16:00", "");
 
-        stepRepository.save(step1a);
-        stepRepository.save(step2a);
-        stepRepository.save(step3a);
-        stepRepository.save(step4a);
-        stepRepository.save(step5a);
-        stepRepository.save(step6a);
-
-        stepRepository.save(step1b);
-        stepRepository.save(step2b);
-        stepRepository.save(step3b);
-        stepRepository.save(step4b);
-        stepRepository.save(step5b);
-        stepRepository.save(step6b);
-
-        stepRepository.save(step1c);
-        stepRepository.save(step2c);
-        stepRepository.save(step3c);
-        stepRepository.save(step4c);
-        stepRepository.save(step5c);
-        stepRepository.save(step6c);
-
-        stepRepository.save(step1d);
-        stepRepository.save(step2d);
-        stepRepository.save(step3d);
-        stepRepository.save(step4d);
-        stepRepository.save(step5d);
-        stepRepository.save(step6d);
-        stepRepository.save(step7d);
-        stepRepository.save(step8d);
-        stepRepository.save(step9d);
-        stepRepository.save(step10d);
-        stepRepository.save(step11d);
-        stepRepository.save(step12d);
 
         List<Step> stepList1 = new ArrayList<Step>();
         stepList1.add(step1a);
@@ -969,8 +951,43 @@ public class DatabaseLoader {
         }
 
         for (int i = 0; i < stepList4.size(); i++) {
+
             stepList4.get(i).setStepType(experimentType3.getStepTypes().get(i));
+
         }
+        stepRepository.save(step1a);
+        stepRepository.save(step2a);
+        stepRepository.save(step3a);
+        stepRepository.save(step4a);
+        stepRepository.save(step5a);
+        stepRepository.save(step6a);
+
+        stepRepository.save(step1b);
+        stepRepository.save(step2b);
+        stepRepository.save(step3b);
+        stepRepository.save(step4b);
+        stepRepository.save(step5b);
+        stepRepository.save(step6b);
+
+        stepRepository.save(step1c);
+        stepRepository.save(step2c);
+        stepRepository.save(step3c);
+        stepRepository.save(step4c);
+        stepRepository.save(step5c);
+        stepRepository.save(step6c);
+
+        stepRepository.save(step1d);
+        stepRepository.save(step2d);
+        stepRepository.save(step3d);
+        stepRepository.save(step4d);
+        stepRepository.save(step5d);
+        stepRepository.save(step6d);
+        stepRepository.save(step7d);
+        stepRepository.save(step8d);
+        stepRepository.save(step9d);
+        stepRepository.save(step10d);
+        stepRepository.save(step11d);
+        stepRepository.save(step12d);
 
         PieceOfMixture pom1 = new PieceOfMixture(m1, "comment 1", 6.6);
         pieceOfMixtureRepository.save(pom1);
@@ -999,7 +1016,6 @@ public class DatabaseLoader {
         experimentRepository.save(ex2);
         experimentRepository.save(ex3);
         experimentRepository.save(ex4);
-
         OfficeHours oh = new OfficeHours();
         officeHoursRepository.save(oh);
         SystemSettings systemSettings = new SystemSettings(oh);

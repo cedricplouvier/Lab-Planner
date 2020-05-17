@@ -33,18 +33,10 @@ public class DeviceTypeTests {
         assertNull(deviceType.getColor());
         assertNull(deviceType.getId());
         assertFalse(deviceType.getOvernightuse());
-        assertNull(deviceType.getDevicePictureName());
-        assertNull(deviceType.getDeviceInformation());
-
-
 
         String name = "name";
         deviceType.setDeviceTypeName(name);
         assertEquals(deviceType.getDeviceTypeName(), name);
-
-        String imagename = "image";
-        deviceType.setDevicePictureName(imagename);
-        assertEquals(deviceType.getDevicePictureName(), imagename);
 
         deviceType.setOvernightuse(true);
         assertEquals(deviceType.getOvernightuse(),true);
@@ -67,7 +59,6 @@ public class DeviceTypeTests {
         // act
         new DeviceType();
 
-        deviceType.setDevicePictureName("test");
         deviceType.setDeviceTypeName("newname");
         assertEquals(deviceType.getDeviceTypeName(),"newname");
 

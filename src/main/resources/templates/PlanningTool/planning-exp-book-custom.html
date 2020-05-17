@@ -5,6 +5,7 @@
 
 <head>
     <div th:insert="navbar :: head"></div>
+
     <script src="/webjars/jquery/2.1.4/jquery.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -16,9 +17,10 @@
     <meta http-equiv="content-type" content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <link rel='stylesheet' href='https://uicdn.toast.com/tui-calendar/latest/tui-calendar.css'>
     <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css"/>
-    <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css"/>
     <link rel="stylesheet" type="text/css" th:href="@{/css/default.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/icons.css}">
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 
 <script th:inline="javascript">
@@ -32,6 +34,62 @@
         document.getElementById("checkboxIsFixedType").checked = false;
         stepTypeRowIndexWithRemovedItems = $('#list tr').length / 2;
     });
+    let translations = {
+        problem: [[#{calendar.summary.problem}]],
+        success: [[#{calendar.summary.suggestion}]],
+        othersteps: [[#{calendar.summary.other.items}]],
+        personalsteps: [[#{calendar.summary,personal.items}]],
+        outofofficehours: [[#{calendar.error.outofofficehours}]],
+        suggestion: [[#{calendar.summary.suggestion}]],
+        cantbookpast: [[#{calendar.error.cantbookpast}]],
+        holiday: [[#{calendar.error.holiday}]],
+        weekend: [[#{calendar.error.weekend}]],
+        overnight: [[#{calendar.error.overnight}]],
+        atmostbeforeone: [[#{calendar.error.atmost.before.one}]],
+        atmostbeforetwo: [[#{calendar.error.atmost.before.two}]],
+        atmostafterone: [[#{calendar.error.atmost.after.one}]],
+        atmostaftertwo: [[#{calendar.error.atmost.after.two}]],
+        atleastbeforeone: [[#{calendar.error.atleast.before.one}]],
+        atleastbeforetwo: [[#{calendar.error.atleast.before.two}]],
+        atleastafterone: [[#{calendar.error.atleast.after.one}]],
+        atleastaftertwo: [[#{calendar.error.atleast.after.two}]],
+        hardbeforeone: [[#{calendar.error.hard.before.one}]],
+        hardbeforetwo: [[#{calendar.error.hard.before.two}]],
+        hardafterone: [[#{calendar.error.hard.after.one}]],
+        hardaftertwo: [[#{calendar.error.hard.after.two}]],
+        beforeprevious: [[#{calendar.error.before.previous}]],
+        lengthequal: [[#{calendar.error.length.equal}]],
+        lengthatmost: [[#{calendar.error.length.atmost}]],
+        lengthatleast: [[#{calendar.error.length.atleast}]],
+        long: [[#{calendar.error.long}]],
+        bodysuggestion: [[#{calendar.body.suggestion}]],
+        user: [[#{calendar.body.user}]],
+        name: [[#{calendar.body.name}]],
+        type: [[#{calendar.body.type}]],
+        comment: [[#{calendar.body.comment}]],
+        noavailable: [[#{calendar.body.noavailable}]],
+        noproblems: [[#{calendar.body.noproblems}]],
+        align: [[#{calendar.ui.align}]],
+        time: [[#{calendar.ui.time }]],
+        continuity: [[#{calendar.ui.continuity}]],
+        length: [[#{calendar.ui.length}]],
+        none: [[#{calendar.ui.none}]],
+        finish: [[#{calendar.ui.finish}]],
+        device: [[#{calendar.body.device}]],
+        step: [[#{calendar.body.step}]],
+        after: [[#{calendar.step.after}]],
+        before: [[#{calendar.step.before}]],
+        atleast: [[#{calendar.step.atleast}]],
+        atmost: [[#{calendar.step.atmost}]],
+        hard: [[#{calendar.step.hard}]],
+        mon: [[#{calendar.week.mon}]],
+        tue: [[#{calendar.week.tue}]],
+        wed: [[#{calendar.week.wed}]],
+        thu: [[#{calendar.week.thu}]],
+        fri: [[#{calendar.week.fri}]],
+        sat: [[#{calendar.week.sat}]],
+        sun: [[#{calendar.week.sun}]],
+    }
     var translationStart = [[#{start}]];
     var translationEnd = [[#{end}]];
     var translationNo = [[#{options.type.no}]];
@@ -64,7 +122,15 @@
     let userSteps = [[${userSteps}]];
     let otherSteps = [[${otherSteps}]];
     let holidays = [[${holidays}]];
+    let userAccessRights =[[${userAccessRights}]];
+    let experiment =[[${experiment}]];
 
+
+    tempExp = allExperiments.slice(0);
+    tempExp.push(JSON.parse(JSON.stringify(allExperiments[0])));
+    tempExp[tempExp.length-1]['stepTypes'] = [];
+    allExperiments = tempExp;
+    // allExperiments.push(tempExp);
     let calendarUpdate = {
         experimentIndex: 0,
         stepIndex: 0,
@@ -141,6 +207,9 @@
     }
 
     function addStepRow() {
+        suggestion = null;
+        filledInSteps = [];
+        newSchedule = null;
         //reference table
         var i = stepTypeRowIndexWithRemovedItems;
         stepTypeRowIndexWithRemovedItems++;
@@ -346,8 +415,7 @@
         //only if experiment type is selected
         if (a) {
             for (let i = 0; i < a.stepTypes.length; i++) {
-                //tempStepIndex = i;
-                stepTypeRowIndexWithRemovedItems += i;
+                stepTypeRowIndexWithRemovedItems++;
                 var deviceOprions = '';
                 for (let j = 0; j < devices.length; j++) {
                     if (devices[j].deviceType.id == a.stepTypes[i].deviceType.id) {
@@ -422,7 +490,7 @@
                         '    <p>'+devicedef+'</p>' +
                         '</td>' +
                         '   <td style="vertical-align:center; text-align:center;">' +
-                        '       <select required style="font-size:80%;" class="form-control input-device" onchange="refreshDevices(this)" id="selectDeviceType" name="experimentType.stepTypes[' + index + '].deviceType">' +
+                        '       <select required style="font-size:80%;" class="form-control input-device" onchange="refreshDevices(this)" id="selectDeviceType' + index + '" name="experimentType.stepTypes[' + index + '].deviceType">' +
                         '           <option hidden="" value="">Select</option>' +
                         deviceTypeOprions +
                         '       </select>' +
@@ -556,14 +624,81 @@
         $(r).closest('tr').next().remove();
         $(r).closest('tr').remove();
     }
+    function loadInExperiment() {
 
+    }
     function openCalendar(expInd, stepInd) {
-        calendarUpdate.experimentIndex = expInd;
+
+        calendarUpdate.experimentIndex = allExperiments.length-1;
+        allExperiments[calendarUpdate.experimentIndex]['stepTypes'] = [];
+        for(let current = 0; current <document.getElementById('list').children.length/2;current++){
+            allExperiments[calendarUpdate.experimentIndex]['stepTypes'].push(JSON.parse(JSON.stringify(allExperiments[0]['stepTypes'][0])));
+            //Set deviceType
+            var e = document.getElementById('selectDeviceType' + current + '');
+
+            var strUser = e.options[e.selectedIndex].value;
+            for(var currentDeviceType =0;currentDeviceType<deviceTypes.length;currentDeviceType++){
+                if(deviceTypes[currentDeviceType]['id']==strUser){
+                    allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['deviceType'] = JSON.parse(JSON.stringify(deviceTypes[currentDeviceType]));
+                }
+            }
+            // //Fixed length
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['hasFixedLength'] = (document.getElementById('hasFixedLength'+current).value=='true');
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['fixedTimeType'] = document.getElementById('fixedTimeType'+current).value;
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['fixedTimeHours'] = document.getElementById('fixedTimeHours'+current).value;
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['fixedTimeMinutes'] = document.getElementById('fixedTimeMinutes'+current).value;
+            //
+            // //Continuity
+            if(document.getElementById('continuityType'+current).innerText=="No"){
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['directionType'] = "After";
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['hours'] = 0;
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['minutes'] = 0;
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['type'] = "No";
+             }
+            else {
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['directionType'] = document.getElementById('continuityDirectionType'+current).value;
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['hours'] = document.getElementById('continuityHours' + current + '').value;
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['minutes'] = document.getElementById('continuityMinutes'+current).value;
+                allExperiments[calendarUpdate.experimentIndex]['stepTypes'][current]['continuity']['type'] = document.getElementById('continuityType'+current).value;
+            }
+            }
         calendarUpdate.stepIndex = stepInd;
+
+        document.getElementById('steptitle').innerText = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['deviceTypeName'];
+        document.getElementById('length').innerText = translations.length+':'+translations.none;
+        if (stepInd > 0) {
+            if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type']=="Hard"){
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.hard;
+            }else if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type']=="Soft (at most)"){
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.atmost;
+            }else if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type']=="Soft (at least)"){
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.atleast;
+            }else{
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.none;
+            }
+
+            if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['directionType']=="After"){
+                document.getElementById('align').innerText = translations.align+':'+translations.after;
+            }else if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['directionType']=="Before"){
+                document.getElementById('align').innerText = translations.align+':'+translations.before;
+            }else{
+                document.getElementById('align').innerText = translations.align+':'+translations.none;
+            }
+            document.getElementById('time').innerText = translations.time + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['hours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['minutes'] + "m";
+        } else {
+            document.getElementById('continuity2').innerText = translations.continuity+': '+translations.none;
+            document.getElementById('align').innerText = translations.align+': '+translations.none;
+            document.getElementById('time').innerText = translations.time+': '+translations.none;
+        }
+
         calendarUpdate.start = document.getElementById('startDate' + stepInd + '').value
         calendarUpdate.end = document.getElementById('endDate' + stepInd + '').value
         calendarUpdate.startHour = document.getElementById('startHour' + stepInd + '').value
         calendarUpdate.endHour = document.getElementById('endHour' + stepInd + '').value
+
+        document.getElementById('selectStep').disabled = false;
+        document.getElementById('suggestStep').disabled = false;
+
     }
 </script>
 <style>
@@ -629,23 +764,32 @@
     !important;
         margin-top: 0px;
         margin-bottom: 0px;
+        max-width: 100%;
+    }
+    .modal {
+        padding: 10px !important;
     }
 
     .modal-dialog,
     .modal-content {
         /* 80% of window height */
-        height: 100%;
-    !important;
-
+        height: 100% !important;
     }
 
     .modal-body {
-        /* 100% = dialog height, 120px = header + footer */
-        /*overflow-y: scroll;*/
         height: 100%;
     !important;
 
     }
+
+    body {
+        padding-right: 0 !important
+    }
+
+    #calendar {
+        overflow-y: auto;
+    }
+
 </style>
 
 
@@ -659,6 +803,8 @@
 <body>
 <div class="container">
     <div th:replace="navbar :: navbar"></div>
+    <input id="contextpath" th:value="@{/}" th:type="hidden"/>
+
     <form id="MyForm" action="#" th:action="@{/planning/experiments/book/{id}  (id=${{experiment}})}"
           th:object="${experiment}" method="post">
         <input th:field="*{id}" th:type="hidden"/>
@@ -988,24 +1134,12 @@
                 </div>
             </div>
             <div id="extraLargeModal" class="modal" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-xl">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Schedule picker</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div id="menu">
-                        <span class="dropdown">
-                        <button id="dropdownMenu-calendarType" class="btn btn-default btn-sm dropdown-toggle"
-                                type="button" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="true">
-                            <i id="calendarTypeIcon" class="calendar-icon ic_view_month" style="margin-right: 4px;"></i>
-                            <span id="calendarTypeName" th:text="#{calendar.view}">Dropdown</span>&nbsp;
-                            <i class="calendar-icon tui-full-calendar-dropdown-arrow"></i>
-                        </button>
-                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu-calendarType">
+                <div class="modal-dialog modal-xl" style="overflow-y: hidden; height:100%;">
+                    <div class="modal-content" style="display: flex;flex-direction: row">
+                        <div id="leftSide" style="display:flex;flex-direction:column;flex: 3;">
+                            <div id="menu" style="flex:1;">
+                                <span class="dropdown">
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu-calendarType">
                             <li role="presentation">
                                 <a class="dropdown-menu-title" role="menuitem" data-action="toggle-daily" th:text="#{calendar.daily}">
                                     <i class="calendar-icon ic_view_day"></i>Daily
@@ -1067,24 +1201,114 @@
                     </span>
                                 <span id="renderRange" class="render-range"></span>
                             </div>
-                            <div id="calendar" style="overflow-y: auto"></div>
+                            <div id="calendar"></div>
                         </div>
-                        <div class="modal-footer" style="flex-direction: column;display: flex;">
-                            <div id="legend" style="display: flex; flex-direction: row;">
-                                <div class="alert alert-info" id="help" role="alert" th:text="#{dragandrelease}">
-                                    Drag and release to create a schedule.
+                        <div id="rightSide" style="flex: 1;display: flex;flex-direction: column;overflow-y: auto;">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                                    style="flex: 1;padding-right: 30px;width:10%;align-self:flex-end;">&times;
+                            </button>
+
+                            <div style="flex: 1;display: flex;flex-direction: row">
+                                <button type="button" id="previousstep" class="btn btn-primary"
+                                        style="padding: 5px;flex: 1;  margin:auto;display:block;width: 90%;" th:text="#{previous}">
+                                    previous
+                                </button>
+                                <h6 id="steptitle" data-dismiss="modal"
+                                    style="padding: 5px;flex: 3;   margin: auto; text-align:center;vertical-align: center"
+                                    disabled th:text="#{step.name}">Step name</h6>
+                                <button type="button" id="nextstep" class="btn btn-primary"
+                                        style="padding: 5px;flex: 1;  margin:auto;display:block;width: 90%;" th:text="#{next}"> next
+                                </button>
+                            </div>
+                            <div style="flex: 4;display: flex;flex-direction: column">
+                                <h6 data-dismiss="modal"
+                                    style="flex:1;padding: 5px;   margin: auto; text-align:center;vertical-align: center" th:text="#{requirements}">
+                                    Requirements</h6>
+                                <ul class="list-group" style="flex:4;margin: 10px;">
+                                    <li class="list-group-item" style="padding-bottom: 0px;" id="length" th:text="#{cal.book.length}">Length:
+                                        5h
+                                    </li>
+                                    <li class="list-group-item" style="padding-bottom: 0px;" id="continuity2">
+                                        Continuity:
+                                        Hard
+                                    </li>
+                                    <li class="list-group-item" style="padding-bottom: 0px;" id="align" th:text="#{cal.book.align}">Align: After
+                                    </li>
+                                    <li class="list-group-item" style="padding-bottom: 0px;" id="time" th:text="#{cal.book.time}">Time
+                                        difference:
+                                        After
+                                    </li>
+                                </ul>
+                            </div>
+                            <div style="flex: 4;display: flex;flex-direction: column">
+                                <h6 data-dismiss="modal"
+                                    style="flex:1;padding: 5px;   margin: auto; text-align:center;vertical-align: center" th:text="#{legend}">
+                                    Legend</h6>
+                                <div id="legend" style="display: flex;flex:1; flex-direction: column;margin: 10px;">
+                                    <div class="alert alert-info" id="help" role="alert" th:text="#{dragandrelease}">
+                                        Drag and release to create a schedule.
+                                    </div>
                                 </div>
                             </div>
+                            <div style="flex: 1;margin: 10px;">
+                                <div class="custom-control custom-checkbox" style="display:flex;flex-direction:row;flex: 1">
+                                    <input style="flex:1;" type="checkbox" class="custom-control-input" id="withinOfficehoursSingleSuggest" checked>
+                                    <label style="flex:1;" class="custom-control-label" for="withinOfficehoursSingleSuggest"th:text="#{calendar.ui.suggestofficehours}">Suggest within officehours</label>
+                                </div>
 
-                            <div style="display: flex;
-  flex-direction: row;">
+                            </div>
+                            <div style="flex: 1;margin: 10px;">
+                                <div class="custom-control custom-checkbox" style="display:flex;flex-direction:row;flex: 1">
+                                    <input style="flex:1;" type="checkbox" class="custom-control-input" id="allowOverlap" checked>
+                                    <label style="flex:1;" class="custom-control-label" for="allowOverlap" th:text="#{calendar.ui.personal}">Allow personal overlap</label>
+                                </div>
+                            </div>
+                            <div style="flex: 1;margin: 10px;">
                                 <select required id="deviceTypeDropdown" class="form-control input-device"
                                         style="visibility: visible;">
                                     <option value="none" selected disabled hidden th:text="#{device.notavailable}">No available device</option>
                                 </select>
-                                <button type="button" id="selectStep" data-dismiss="modal" class="btn btn-primary"
-                                        disabled>Select
+                            </div>
+                            <div style="flex: 1;">
+                                <button type="button" id="suggestStep" class="btn btn-warning"
+                                        style="width: 90%;  margin:auto;display:block;" data-placement="top"
+                                        data-toggle="popover" title="Success"
+                                        data-content="suggestion succesfully generated" th:text="#{suggest.step}">Suggest a step
                                 </button>
+                            </div>
+                            <div style="flex: 1;">
+                                <button type="button" id="selectStep" class="btn btn-success"
+                                        style="width: 90%;  margin:auto;display:block;" disabled th:text="#{step.save}">Save step
+                                </button>
+                            </div>
+                            <div class="toast" id="toastsuggestionsuccess" data-delay="5000"
+                                 style=" position: absolute; top: 100px; right: 0;">
+                                <div class="toast-header">
+                                    <svg class="bd-placeholder-img rounded mr-2" width="20" height="20"
+                                         xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"
+                                         focusable="false" dirole="img">
+                                        <rect width="100%" height="100%" fill="#5cb85c"></rect>
+                                    </svg>
+                                    <strong class="mr-auto">Success</strong>
+                                </div>
+                                <div class="toast-body" th:text="#{suggestion.success}">
+                                    A suggestion has successfully been generated
+                                </div>
+                            </div>
+                            <div class="toast" id="toastsuggestionerror" data-delay="5000"
+                                 style=" position: absolute; top: 100px; right: 0;">
+                                <div class="toast-header">
+                                    <svg class="bd-placeholder-img rounded mr-2" width="20" height="20"
+                                         xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"
+                                         focusable="false" role="img">
+                                        <rect width="100%" height="100%" fill="#d9534f"></rect>
+                                    </svg>
+                                    <strong class="mr-auto" th:text="#{problem}">Problem</strong>
+                                </div>
+                                <div class="toast-body" th:text="#{problemcontent}">
+                                    A suggestion cant be generated within the next 14 days, try changing the
+                                    requirements or changing the previous steps.
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1112,8 +1336,9 @@
 
 
 <!-- Add all extra library script-->
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+<script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
         crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popp
 er.js@1.16.0/dist/umd/popper.min.js"

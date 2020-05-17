@@ -202,8 +202,9 @@ public class RoleControllerTests {
                 .andExpect(view().name("Roles/role-manage"))
                 .andExpect(model().attribute("roleInUse",notNullValue()))
                 .andDo(print());
-
     }
+
+
 
     @Test
     // edit existing role with same name & existing id.
@@ -225,18 +226,14 @@ public class RoleControllerTests {
         Role role = new Role("testrole");
         long id = 10;
         role.setId((long) 10);
-
         Role role2 = new Role(("testrole2"));
-
         when(roleService.findById(id)).thenReturn(Optional.of(role2));
         when(roleService.findByName("testrole")).thenReturn(Optional.of(role));
-
         mockMvc.perform(post("/usermanagement/roles/{id}","10").flashAttr("role",role))
                 .andExpect(status().is(200))
                 .andExpect(model().attribute("roleInUse",notNullValue()))
                 .andExpect(view().name("Roles/role-manage"))
                 .andDo(print());
-
     }
 
     @Test
@@ -255,7 +252,6 @@ public class RoleControllerTests {
                 .andExpect(status().is(302))
                 .andExpect(view().name("redirect:/usermanagement/roles"))
                 .andDo(print());
-
     }
 
     @Test

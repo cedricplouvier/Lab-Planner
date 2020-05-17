@@ -4,14 +4,7 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
 <head th:replace="navbar :: head (title='#{devices}')"></head>
-<body onload="initPage()">
-<script type="text/javascript">
-    function initPage(){
-        var options = {
-            valueNames: [ 'deviceName', 'deviceType']
-        };
-        var deviceList = new List('devices', options);
-    }
+<script th:inline="javascript">
 </script>
 <script>
     $(document).ready(function(){
@@ -79,15 +72,14 @@
                     <div class="col" >
                     </div>
                     <div class="col" style=" display: block;margin-left: auto;margin-right: auto;" >
-                        <img class="img-fluid" th:src="@{${(device.getDeviceType().getDevicePictureName() != null && !#strings.isEmpty(device.getDeviceType().getDevicePictureName())) ? '/files/images/'+device.getDeviceType().getDevicePictureName() : '/images/placeholder.jpg'}}" />
+                        <img class="img-fluid" th:src="@{${(device.getDevicePictureName() != null && !#strings.isEmpty(device.getDevicePictureName())) ? '/files/images/'+device.getDevicePictureName() : '/images/placeholder.jpg'}}" />
                     </div>
                 </div>
             </div>
             <h5 th:text="#{device.other}">Other Information</h5>
             <hr class="my-4">
-            <div class="alert alert-info" role="alert" th:if="${device.getDeviceType().getDeviceInformation().size()}==0" th:text="#{device.noinfo}"></div>
-
-            <div class="container" th:each="deviceInfo : ${device.getDeviceType().getDeviceInformation()}">
+            <div class="alert alert-info" role="alert" th:if="${device.getDeviceInformations().size()}==0" th:text="#{device.noinfo}"></div>
+            <div class="container" th:each="deviceInfo : ${device.getDeviceInformation()}">
                 <div class="card" style="margin: 10px">
                     <div class="card-body">
                         <h5 class="card-title" th:text="${deviceInfo.getInformationName()}"></h5>
@@ -95,7 +87,7 @@
                         <div>
                             <ul>
                                 <div th:if="${files}!= null  or ${deviceInfo.getFiles().size()==0}"th:each="file : ${files}">
-                                    <li  th:if="${#strings.contains(file, filename)}" th:each="filename : ${deviceInfo.getFiles()}">
+                                    <li  th:if="${#strings.contains(file, filename.replaceAll(' ','%20'))}" th:each="filename : ${deviceInfo.getFiles()}">
                                         <a   th:href="${file}" th:text="${filename}"></a>
                                     </li>
                                 </div>

@@ -357,7 +357,6 @@ public class StockControllerTests {
 
         when(tagService.findAll()).thenReturn(taglist);
 
-        System.out.println(t1.getName());
 
         mockMvc.perform(post("/tags/").flashAttr("ownTag",t1))
                 .andExpect(view().name("Stock/overview-stock"))

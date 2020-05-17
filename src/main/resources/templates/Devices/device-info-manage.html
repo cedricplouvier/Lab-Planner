@@ -5,15 +5,13 @@
 <body>
 
 <script th:inline="javascript">
-    console.log( [[${files}]][0].replace("%20", " "));
-    console.log([[${deviceInfoObject}]])
 </script>
 <div class="container">
     <!-- Import menu bar -->
     <div th:replace="navbar :: navbar"></div>
     <div class="alert alert-danger" role="alert" th:if="${errormessage}!=null" th:text="${errormessage}"></div>
 
-    <form action="#" th:action="@{/devices/info/{id}/{typeid}(id=${deviceInfoObject},typeid=${deviceTypeObject.id})}" th:object="${deviceInfoObject}" method="post">
+    <form action="#" th:action="@{/devices/info/{deviceid}/{id}(id=${deviceInfoObject.id},deviceid=${deviceObject.id})}" th:object="${deviceInfoObject}" method="post">
         <input th:type="hidden" th:field="*{id}"/>
         <div class="form-group"
              th:classappend="${#fields.hasErrors('informationName')}?'has-error': ''">
@@ -30,7 +28,7 @@
             <textarea rows="5" class="form-control" type="text" th:field="*{information}"/>
         </div>
         <p>
-            <a type="button" th:href="@{'/devices/types/'+${deviceTypeObject.id}}" class="btn btn-primary"  id="btn-new-schedule"th:text="#{close}" >
+            <a type="button" th:href="@{'/devices/'+${deviceObject.id}}" class="btn btn-primary"  id="btn-new-schedule"th:text="#{close}" >
             </a>
 
             <button type="submit"  class="btn btn-primary" th:text="#{save}"></button>
@@ -38,7 +36,7 @@
     </form>
 
 
-    <form th:if="${deviceInfoObject.id}!=null" method="POST" enctype="multipart/form-data"  th:action="@{/upload/file/{typeid}/{id}(id=${deviceInfoObject.id},typeid=${deviceTypeObject.id})}">
+    <form th:if="${deviceInfoObject.id}!=null" method="POST" enctype="multipart/form-data"  th:action="@{/upload/file/{typeid}/{id}(id=${deviceInfoObject.id},typeid=${deviceObject.id})}">
         <div class="input-group mb-3">
             <div class="custom-file">
                 <input type="file" class="custom-file-input" name="file" id="inputGroupFile02"/>
@@ -64,16 +62,16 @@
         </script>
     </form>
 
-    </form>
 
     <h5 th:text="#{device.uploaded}"></h5>
         <div style="display: flex;margin-bottom: 5px"  th:if="(${files}!= null  or ${deviceInfoObject.files.size()==0}) and ${deviceInfoObject.id}!=null"th:each="file : ${files}">
             <div style="flex: 1;display: flex" th:if="${#strings.contains(file, filename.replaceAll(' ','%20'))}" th:each="filename : ${deviceInfoObject.getFiles()}" >
-                <form style="flex: 1;display: flex" method="Get" enctype="text/plain"  th:action="@{/file/delete/{typeid}/{infoid}/{file}(typeid=${deviceTypeObject.id},infoid=${deviceInfoObject.id},file=${filename})}">
+                <form style="flex: 1;display: flex" method="Get" enctype="text/plain"  th:action="@{/file/delete/{typeid}/{infoid}/{file}(typeid=${deviceObject.id},infoid=${deviceInfoObject.id},file=${filename})}">
                     <div style="display: flex;flex: 1" class="btn-group" >
                 <a style="flex: 5"  role="button" class="btn btn-outline-primary btn-xs" id="label-btn" th:href="${file}" th:text="${filename}"  aria-disabled="true">T</a>
                 <button type="submit" style="flex: 1"  class="btn btn-danger btn-xs" aria-label="Import" data-toggle="tooltip" title="Import" th:text="#{delete}">
-                </button></div></form>
+                </button></div>
+                </form>
     </div>
         </div>
     <div class="alert alert-info" role="alert" th:if="${deviceInfoObject.id}==null" th:text="#{device.savebeforeupload}"></div>

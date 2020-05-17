@@ -99,7 +99,6 @@ public class DeviceControllerTests {
         //Set variables
         deviceType.setColor("test");
         deviceType.setOvernightuse(true);
-        deviceType.setDevicePictureName("picturename");
         List<DeviceType> devicetypes = new ArrayList<DeviceType>();
         devicetypes.add(deviceType);
 
@@ -125,13 +124,10 @@ public class DeviceControllerTests {
         deviceInformation.setFiles(files);
         DeviceType deviceType = new DeviceType();
         deviceType.setDeviceTypeName("devicetype2");
-        List deviceinformations = new ArrayList();
-        deviceinformations.add(deviceInformation);
-        deviceType.setDeviceInformation(deviceinformations);
+
         //Set variables
         deviceType.setColor("test");
         deviceType.setOvernightuse(true);
-        deviceType.setDevicePictureName("picturename");
         Device device = new Device();
         device.setDevicename("device2");
         //Set variables
@@ -157,7 +153,6 @@ public class DeviceControllerTests {
         //Set variables
         deviceType.setColor("test");
         deviceType.setOvernightuse(true);
-        deviceType.setDevicePictureName("picturename");
         List<DeviceType> devicetypes = new ArrayList<DeviceType>();
         devicetypes.add(deviceType);
 
@@ -178,7 +173,6 @@ public class DeviceControllerTests {
         //Set variables
         deviceType.setColor("test");
         deviceType.setOvernightuse(true);
-        deviceType.setDevicePictureName("picturename");
         List<DeviceType> devicetypes = new ArrayList<DeviceType>();
         devicetypes.add(deviceType);
 
@@ -198,19 +192,17 @@ public class DeviceControllerTests {
     // Show device information creation page test
     public void ViewCreateDeviceInformationTest() throws Exception{
         //create Device
-        DeviceType deviceType = new DeviceType();
-        deviceType.setDeviceTypeName("devicetype4");
+        Device device = new Device();
+        device.setDevicename("device4");
         //Set variables
-        deviceType.setColor("test");
-        deviceType.setOvernightuse(true);
-        deviceType.setDevicePictureName("picturename");
-        deviceType.setId((long) 10);
-        List<DeviceType> devicetypes = new ArrayList<DeviceType>();
-        when(deviceTypeService.findById(deviceType.getId())).thenReturn(Optional.of(deviceType));
+        device.setDevicePictureName("test");
+        device.setId((long)10);
+        List<Device> devices = new ArrayList<Device>();
+        when(deviceService.findById(device.getId())).thenReturn(Optional.of(device));
         mockMvc.perform(get("/devices/info/put/{id}",10))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("deviceInfoObject", instanceOf(DeviceInformation.class)))
-                .andExpect(model().attribute("deviceTypeObject",deviceType))
+                .andExpect(model().attribute("deviceObject",device))
                 .andExpect(view().name("Devices/device-info-manage"));
 
     }
@@ -265,7 +257,6 @@ public class DeviceControllerTests {
         //Set variables
         deviceType.setColor("test");
         deviceType.setOvernightuse(true);
-        deviceType.setDevicePictureName("picturename");
         deviceType.setId((long) 10);
         List<DeviceType> devicetypes = new ArrayList<DeviceType>();
         devicetypes.add(deviceType);
@@ -300,13 +291,9 @@ public class DeviceControllerTests {
         deviceInformation.setFiles(files);
         DeviceType deviceType = new DeviceType();
         deviceType.setDeviceTypeName("devicetype2");
-        List deviceinformations = new ArrayList();
-        deviceinformations.add(deviceInformation);
-        deviceType.setDeviceInformation(deviceinformations);
         //Set variables
         deviceType.setColor("test");
         deviceType.setOvernightuse(true);
-        deviceType.setDevicePictureName("picturename");
         Device device = new Device();
         device.setDevicename("device2");
         //Set variables
@@ -318,14 +305,14 @@ public class DeviceControllerTests {
         List<Device> devices = new ArrayList<Device>();
         devices.add(device);
 
-        when(deviceTypeService.findById((long) 10)).thenReturn(Optional.of(deviceType));
+        when(deviceService.findById((long) 10)).thenReturn(Optional.of(device));
         when(deviceInformationService.findById((long) 10)).thenReturn(Optional.of(deviceInformation));
 
         //editing with existing id as input
         mockMvc.perform(get("/devices/info/{id}/{typeid}",10,10))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("deviceInfoObject",deviceInformation))
-                .andExpect(model().attribute("deviceTypeObject",deviceType))
+                .andExpect(model().attribute("deviceObject",device))
                 .andExpect(view().name("Devices/device-info-manage"))
                 .andDo(print());
 
@@ -370,14 +357,6 @@ public class DeviceControllerTests {
                 .andExpect(status().is(302))
                 .andDo(print())
                 .andExpect(view().name("redirect:/devices"));
-
-        //wrong url input
-        mockMvc.perform(get("/usermanagement/roles/{id}/delete","ff"))
-                .andExpect(status().is4xxClientError())
-                .andDo(print());
-
-
-
 
     }
 
@@ -430,9 +409,6 @@ public class DeviceControllerTests {
     @RequestMapping(value="/devices/info/{id}/{typeid}/delete")
     public String deleteDeviceInfo(@PathVariable Long id, final ModelMap model, @PathVariable Long typeid){
         DeviceType deviceType = deviceTypeService.findById(typeid).get();
-        List<DeviceInformation> informations = deviceType.getDeviceInformation();
-        informations.remove(deviceInformationService.findById(id).get());
-        deviceType.setDeviceInformation(informations);
         deviceTypeService.saveNewDeviceType(deviceType);
         deviceInformationService.deleteById(id);
         model.clear();
@@ -463,20 +439,20 @@ public class DeviceControllerTests {
         DeviceInformation i1 = new DeviceInformation("info","information");
         List<DeviceInformation> deviceInformation = new ArrayList<DeviceInformation>();
         deviceInformation.add(i1);
-        d1.setDeviceInformation(deviceInformation);
         i1.setId((long) 10);
+        device.setDeviceInformation(deviceInformation);
 
 
         //Role is not in Use
-        when(deviceTypeService.findAll()).thenReturn(deviceTypes);
+        when(deviceService.findAll()).thenReturn(devices);
         when(deviceInformationService.findById((long) 10)).thenReturn(Optional.of(i1));
-        when(deviceTypeService.findById((long) 10)).thenReturn(Optional.of(d1));
+        when(deviceService.findById((long) 10)).thenReturn(Optional.of(device));
 
         mockMvc.perform(get("/devices/info/{id}/{typeid}/delete",10,10))
                 .andExpect(status().is(302))
                 .andDo(print())
                 .andExpect(model().attributeDoesNotExist())
-                .andExpect(view().name("redirect:/devices/types/10"));
+                .andExpect(view().name("redirect:/devices/10"));
 
         //wrong url input
         mockMvc.perform(get("/usermanagement/roles/{id}/delete","ff"))
@@ -495,7 +471,7 @@ public class DeviceControllerTests {
         device.setDevicename("addDevice1");
         //Set variables
         device.setComment("devicecomment");
-
+        device.setId((long)10);
         DeviceType d1 = new DeviceType("addDeviceType1",false);
         device.setDeviceType(d1);
         d1.setId((long) 13);
@@ -506,7 +482,7 @@ public class DeviceControllerTests {
         when(deviceTypeService.findAll()).thenReturn(deviceTypes);
         mockMvc.perform(post("/devices/").flashAttr("device",device))
                 .andExpect(status().is(302))
-                .andExpect(view().name("redirect:/devices"))
+                .andExpect(view().name("redirect:/devices/10"))
                 .andDo(print());
 
         //When device already exists changes
@@ -515,7 +491,7 @@ public class DeviceControllerTests {
         when(deviceTypeService.findAll()).thenReturn(deviceTypes);
         mockMvc.perform(post("/devices/").flashAttr("device",device))
                 .andExpect(status().is(302))
-                .andExpect(view().name("redirect:/devices"))
+                .andExpect(view().name("redirect:/devices/10"))
                 .andDo(print());
 
     }
@@ -544,27 +520,20 @@ public class DeviceControllerTests {
         device.setDevicename("addDevice1");
         //Set variables
         device.setComment("devicecomment");
-
+        device.setId((long) 10);
         DeviceType d1 = new DeviceType("addDeviceType1",false);
         device.setDeviceType(d1);
         d1.setId((long) 13);
         List<DeviceType> deviceTypes = new ArrayList<DeviceType>();
         deviceTypes.add(d1);
 
-        when(deviceService.findByDevicename("addDevice1")).thenReturn(Optional.empty());
-        when(deviceTypeService.findAll()).thenReturn(deviceTypes);
-        mockMvc.perform(post("/devices/").flashAttr("device",device))
-                .andExpect(status().is(302))
-                .andExpect(view().name("redirect:/devices"))
-                .andDo(print());
-
         //When device already exists changes
         device.setId((long) 10);
-        when(deviceService.findByDevicename("addDevice1")).thenReturn(Optional.of(device));
+        when(deviceTypeService.findByDevicetypeName("addDeviceType1")).thenReturn(Optional.of(d1));
         when(deviceTypeService.findAll()).thenReturn(deviceTypes);
-        mockMvc.perform(post("/devices/").flashAttr("device",device))
+        mockMvc.perform(post("/devices/types").flashAttr("deviceType",d1))
                 .andExpect(status().is(302))
-                .andExpect(view().name("redirect:/devices"))
+                .andExpect(view().name("redirect:/devices/types/13"))
                 .andDo(print());
 
     }
@@ -584,7 +553,6 @@ public class DeviceControllerTests {
         DeviceInformation i1 = new DeviceInformation("info","information");
         List<DeviceInformation> deviceInformation = new ArrayList<DeviceInformation>();
         deviceInformation.add(i1);
-        d1.setDeviceInformation(deviceInformation);
         i1.setId((long) 10);
 
 
