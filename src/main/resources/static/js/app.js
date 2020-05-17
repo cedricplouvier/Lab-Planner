@@ -44,6 +44,10 @@ var header = $("meta[name='_csrf_header']").attr("content");
             template: {
                 time: function(schedule) {
                     return getTimeTemplate(schedule, false);
+                },
+                timegridDisplayPrimayTime: function(time) {
+                    var hour = time.hour;
+                    return hour +':00';
                 }
             }
         });
@@ -64,6 +68,10 @@ var header = $("meta[name='_csrf_header']").attr("content");
             template: {
                 time: function(schedule) {
                     return getTimeTemplate(schedule, false);
+                },
+                timegridDisplayPrimayTime: function(time) {
+                    var hour = time.hour;
+                    return hour +':00';
                 }
             }
         });
