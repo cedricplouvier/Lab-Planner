@@ -219,6 +219,7 @@
                 <filtering>true</filtering>
                 <excludes>
                     <exclude>static/fonts/**</exclude>
+                    <exclude>static/dist/**</exclude>
                 </excludes>
             </resource>
 
@@ -227,6 +228,7 @@
                 <filtering>false</filtering>
                 <includes>
                     <include>static/fonts/**</include>
+                    <include>static/dist/**</include>
                 </includes>
             </resource>
         </resources>
