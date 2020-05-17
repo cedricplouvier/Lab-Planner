@@ -10,6 +10,7 @@
     <a  sec:authorize="hasAuthority('Console Access')" th:href="@{/reports/list}" th:text="#{report.list} + ' ('+${reportAmount}+')'" class="btn btn-primary"></a>
     <a  th:href="@{/reports/put}" th:text="#{report.problem}" class="btn btn-primary"></a>
     <a  sec:authorize="hasAuthority('Console Access')" th:href="@{/registrations}" th:text="#{registrations} + ' ('+${registrationAmount}+')'" class="btn btn-primary"></a>
+    <a class="btn btn-primary" th:href="@{/officeHours}" th:text="#{navbar.officeHours}"></a>
 
 
     <table class="table table-hover">
