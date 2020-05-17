@@ -697,7 +697,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
             // calculateSuggestion(calendarUpdate.stepIndex,true,document.getElementById('withinOfficehoursSingleSuggest').checked);
             refreshScheduleVisibility()
         });
-        $('#steps-items').on('click', changeviewmode);
+        $('#steps-items').on('change', changeviewmode);
         $('#dropdownMenu-calendars-list').on('click', onChangeNewScheduleCalendar);
         $("#extraLargeModal").on('show.bs.modal', setSchedules);
         $("#extraLargeModal").on('shown.bs.modal', setSchedules);
@@ -783,6 +783,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
                     document.getElementById('suggestStep').disabled = false;
                     $('#toastsuggestionsuccess').toast('show')
                 }else{
+                    document.getElementById('suggestStep').disabled = false;
                     $('#toastsuggestionerror').toast('show')
                 }
             },
