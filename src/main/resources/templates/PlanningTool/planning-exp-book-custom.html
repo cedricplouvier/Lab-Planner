@@ -292,8 +292,8 @@
                 '   </td>' +
                 '   <td style="vertical-align:center; text-align:center;">' +
                 '       <div class="input-group">' +
-                '           <input required style="width: 90%; font-size:80%;" id="startDate' + i + '" type="date"  class="form-control input-date" placeholder="Start date" name="steps[' + i + '].start">' +
-                '           <input required style="width: 90%; font-size:80%; " id="endDate' + i + '" type="date"  class="form-control input-date" placeholder="End date" name="steps[' + i + '].end">' +
+                '           <input required style="width: 105px ; font-size:80%;" id="startDate' + i + '" type="date"  class="form-control input-date" placeholder="Start date" name="steps[' + i + '].start">' +
+                '           <input required style="width: 105px ; font-size:80%; " id="endDate' + i + '" type="date"  class="form-control input-date" placeholder="End date" name="steps[' + i + '].end">' +
                 '       </div>' +
                 '   </td>' +
                 '   <td style="vertical-align:center; text-align:center;">' +
@@ -504,10 +504,10 @@
                         '       <p>'+translationStart+'</p>' +
                         '       <p>'+translationEnd+'</p>' +
                         '   </td>' +
-                        '   <td style="vertical-align:center; text-align:center;">' +
+                        '   <td style="vertical-align:center; text-align:center; width: 100px">' +
                         '       <div class="input-group">' +
-                        '           <input required style="width: 90%; font-size:80%;" id="startDate' + index + '" type="date"  class="form-control input-date" placeholder="Start date" name="steps[' + index + '].start">' +
-                        '           <input required style="width: 90%; font-size:80%; " id="endDate' + index + '" type="date"  class="form-control input-date" placeholder="End date" name="steps[' + index + '].end">' +
+                        '           <input required style="width: 105px ; font-size:80%;" id="startDate' + index + '" type="date"  class="form-control input-date" placeholder="Start date" name="steps[' + index + '].start">' +
+                        '           <input required style="width: 105px ; font-size:80%; " id="endDate' + index + '" type="date"  class="form-control input-date" placeholder="End date" name="steps[' + index + '].end">' +
                         '       </div>' +
                         '   </td>' +
                         '   <td style="vertical-align:center; text-align:center;">' +
@@ -1001,15 +1001,15 @@
                         </td>
                         <td style="vertical-align:center; ">
                             <div class="input-group">
-                                <input required style="width: 90%; font-size:80%;"
-                                       id="startDate" type="date"
+                                <input required style="width: 105px ; font-size:80%;"
+                                       th:id="'startDate'+${itemStat.index}" type="date"
                                        th:value="*{steps[__${itemStat.index}__].start}"
                                        th:field="*{steps[__${itemStat.index}__].start}"
                                        class="form-control input-date"
                                        placeholder="Start date"/>
 
-                                <input required style="width: 90%; font-size:80%;"
-                                       id="endDate" type="date"
+                                <input required style="width: 105px ; font-size:80%;"
+                                       th:id="'endDate'+${itemStat.index}" type="date"
                                        th:value="*{steps[__${itemStat.index}__].end}"
                                        th:field="*{steps[__${itemStat.index}__].end}"
                                        class="form-control input-date"
@@ -1023,11 +1023,13 @@
                         </td>
                         <td style="vertical-align:center; ">
 
-                            <input required style="width: 100%; font-size:80%;" type="time" id="startHour"
+                            <input required style="width: 100%; font-size:80%;" type="time"
+                                   th:id="'startHour'+${itemStat.index}"
                                    class="form-control float-right input-hour"
                                    th:value="*{steps[__${itemStat.index}__].startHour}"
                                    th:field="*{steps[__${itemStat.index}__].startHour}" placeholder="Start hour">
-                            <input required style="width: 100%; font-size:80%; " type="time" id="endHour"
+                            <input required style="width: 100%; font-size:80%; " type="time"
+                                   th:id="'endHour'+${itemStat.index}"
                                    class="form-control float-right input-hour"
                                    th:value="*{steps[__${itemStat.index}__].endHour}"
                                    th:field="*{steps[__${itemStat.index}__].endHour}" placeholder="End hour">
