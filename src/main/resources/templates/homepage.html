@@ -196,7 +196,7 @@
         <!-- IMPORTANT, class="list" have to be at tbody -->
         <tbody class="list" id="list-students">
         <tr th:each="experiment : ${studentExperiments}">
-            <td class="user" th:value="${experiment.getUser()}" th:text="${experiment.getUser().getUsername()}"></td>
+            <td class="user" th:value="${experiment.getUser()}" th:text="${experiment.getUser().getFirstName()+ ' '+experiment.getUser().getLastName()}"></td>
             <td class="experimentName" th:value="${experiment.getExperimentname()}" th:text="${experiment.getExperimentname()}" >Experiment name</td>
             <td class="experimentType" th:value="${experiment.getExperimentType().getExperimentTypeName()}" th:text="${experiment.getExperimentType().getExperimentTypeName()}">Experiment Type name</td>
             <td class="startTime" th:value="${experiment.getStartDate()}" th:text="${experiment.getStartDate()}"> Start Date</td>
