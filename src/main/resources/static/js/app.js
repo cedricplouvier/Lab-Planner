@@ -378,10 +378,8 @@ var header = $("meta[name='_csrf_header']").attr("content");
         //     document.getElementById('row' + calendarUpdate.stepIndex + '').setAttribute("style", "background-color:#d9534f;");
         // }
         if(calendarUpdate.stepIndex<allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length-1){
-            console.log("test1")
 
             if(preCalculatedSuggestions!=null&&preCalculatedSuggestions[calendarUpdate.stepIndex]!=null) {
-                console.log("test")
                 let startDate = preCalculatedSuggestions[calendarUpdate.stepIndex].start;
                 let start = new Date(startDate.date.year, startDate.date.month - 1, startDate.date.day, startDate.time.hour, startDate.time.minute, 0, 0);
                 let endDate = preCalculatedSuggestions[calendarUpdate.stepIndex].end;

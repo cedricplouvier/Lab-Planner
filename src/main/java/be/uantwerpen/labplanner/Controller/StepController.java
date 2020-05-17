@@ -799,6 +799,7 @@ public class StepController {
         model.addAttribute("allDevices", deviceService.findAll());
         model.addAttribute("allDeviceTypes", deviceTypeService.findAll());
         model.addAttribute("allMixtures", mixtureService.findAll());
+        model.addAttribute("officeHours", officeHoursService.findAll());
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("allExperimentTypes", allFixedExperimentTypes());
         model.addAttribute("userAccessRights", accessRights);
@@ -857,6 +858,7 @@ public class StepController {
         model.addAttribute("allStepTypes", stepTypeService.findAll());
         model.addAttribute("allExperimentTypes", allFixedExperimentTypes());
         model.addAttribute("userAccessRights", accessRights);
+        model.addAttribute("officeHours", officeHoursService.findAll());
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("otherSteps", otherSteps);
         model.addAttribute("experiment", new Experiment());
