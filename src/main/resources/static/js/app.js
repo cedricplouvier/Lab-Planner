@@ -44,7 +44,13 @@ var header = $("meta[name='_csrf_header']").attr("content");
             template: {
                 time: function(schedule) {
                     return getTimeTemplate(schedule, false);
-                }
+                },
+                timegridDisplayPrimayTime: function(time) {
+                    var hour = time.hour;
+                    return hour +':00';
+                },popupEdit:function(edit) {
+                    return '<span></span>';
+                },
             }
         });
     }else{
@@ -64,7 +70,27 @@ var header = $("meta[name='_csrf_header']").attr("content");
             template: {
                 time: function(schedule) {
                     return getTimeTemplate(schedule, false);
-                }
+                },
+                timegridDisplayPrimayTime: function(time) {
+                    var hour = time.hour;
+                    return hour +':00';
+                },popupEdit:function(edit) {
+                    return '<span></span>';
+                },popupDetailDate: function(isAllDay, start, end) {
+                    var isSameDate = moment(start).isSame(end);
+                    var endFormat = (isSameDate ? '' : 'DD.MM.YYYY ') + 'HH:mm';
+                    moment.locale('nl-be')
+                    var startDate = new Date(start.getFullYear(), start.getMonth(),start.getDate(), start.getHours(),start.getMinutes(),0,0);
+                    var endDate = new Date(end.getFullYear(), end.getMonth(),end.getDate(), end.getHours(),end.getMinutes(),0,0);
+
+                    if (isAllDay) {
+                        return moment(startDate).format('DD.MM.YYYY') + (isSameDate ? '' : ' - ' + moment(endDate).format('DD.MM.YYYY'));
+                    }
+
+                    return (moment(startDate).format('DD.MM.YYYY HH:mm') + ' - ' + moment(endDate).format(endFormat));
+                },
+
+
             }
         });
     }
@@ -108,6 +134,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
                     refreshScheduleVisibility();
                 }
             }
+
             console.log('clickSchedule', e);
         },
         'clickDayname': function(date) {
@@ -370,10 +397,8 @@ var header = $("meta[name='_csrf_header']").attr("content");
         //     document.getElementById('row' + calendarUpdate.stepIndex + '').setAttribute("style", "background-color:#d9534f;");
         // }
         if(calendarUpdate.stepIndex<allExperiments[calendarUpdate.experimentIndex]['stepTypes'].length-1){
-            console.log("test1")
 
             if(preCalculatedSuggestions!=null&&preCalculatedSuggestions[calendarUpdate.stepIndex]!=null) {
-                console.log("test")
                 let startDate = preCalculatedSuggestions[calendarUpdate.stepIndex].start;
                 let start = new Date(startDate.date.year, startDate.date.month - 1, startDate.date.day, startDate.time.hour, startDate.time.minute, 0, 0);
                 let endDate = preCalculatedSuggestions[calendarUpdate.stepIndex].end;

@@ -87,7 +87,6 @@ public class CalendarController {
         ObjectMapper mapper = new ObjectMapper();
         ArrayList<SuggestionStep> steps = mapper.readValue(suggestionResponseBody.getSteps(), new TypeReference<ArrayList<SuggestionStep>>() {});
         Boolean success = getSuggestion(steps,suggestionResponseBody.getOverlapAllowed(),suggestionResponseBody.getWithinOfficeHours(),suggestionResponseBody.getDateTime(),suggestionResponseBody.getCurrentStep());
-        System.out.println("Suggestion generated : "+success);
         if(success){
             return new Gson().toJson(steps);
         }else{
@@ -384,7 +383,7 @@ public class CalendarController {
         return true;
     }
     private List<Long> checkOverlap(ArrayList<SuggestionStep> steps, Boolean overlapAllowed, int currentIndex){
-        System.out.println(overlapAllowed);
+
         User user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         List<Long> idUsed = new ArrayList<>();
         SuggestionStep currentStep = steps.get(currentIndex);
@@ -427,7 +426,6 @@ public class CalendarController {
                 }
             }
         }
-        System.out.println(notUsedIds.size());
         return notUsedIds;
     }
 

@@ -88,7 +88,6 @@ function calculateGradient(colorHex,gradientNumber,gradientPercentage) {
 function generateSchedule(viewName, renderStart, renderEnd) {
     ScheduleList = [];
     if (showOwnItems) {
-        console.log(userSteps)
         showItems(userSteps,false);
     }
     if (showOtherItems) {
@@ -118,7 +117,6 @@ function showItems(array,showusername){
             title = step['device']['devicename'];
         }else{
             title = step['stepType']['name'];
-            console.log(step['stepType'])
         }
         schedule.title = title;
 
