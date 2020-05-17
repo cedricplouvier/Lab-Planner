@@ -76,6 +76,18 @@ var header = $("meta[name='_csrf_header']").attr("content");
                     return hour +':00';
                 },popupEdit:function(edit) {
                     return '<span></span>';
+                },popupDetailDate: function(isAllDay, start, end) {
+                    var isSameDate = moment(start).isSame(end);
+                    var endFormat = (isSameDate ? '' : 'DD.MM.YYYY ') + 'HH:mm';
+                    moment.locale('nl-be')
+                    var startDate = new Date(start.getFullYear(), start.getMonth(),start.getDate(), start.getHours(),start.getMinutes(),0,0);
+                    var endDate = new Date(end.getFullYear(), end.getMonth(),end.getDate(), end.getHours(),end.getMinutes(),0,0);
+
+                    if (isAllDay) {
+                        return moment(startDate).format('DD.MM.YYYY') + (isSameDate ? '' : ' - ' + moment(endDate).format('DD.MM.YYYY'));
+                    }
+
+                    return (moment(startDate).format('DD.MM.YYYY HH:mm') + ' - ' + moment(endDate).format(endFormat));
                 },
 
 
