@@ -24,6 +24,7 @@
 
 <script th:inline="javascript">
     let errorMsg = [[${errorMsg}]]
+
     $(document).ready(function () {
         if (errorMsg) {
             $("#myToast").toast('show');
@@ -426,7 +427,35 @@
         <strong th:text="${errorMsg}"></strong>
     </div>
 </div>
-
+<div class="toast" id="toastsuggestionexperimentsuccess" data-delay="5000"
+     style=" position: absolute; top: 100px; right: 0;">
+    <div class="toast-header">
+        <svg class="bd-placeholder-img rounded mr-2" width="20" height="20"
+             xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"
+             focusable="false" dirole="img">
+            <rect width="100%" height="100%" fill="#5cb85c"></rect>
+        </svg>
+        <strong class="mr-auto">Success</strong>
+    </div>
+    <div class="toast-body" th:text="#{suggestion.success}">
+        A suggestion has successfully been generated
+    </div>
+</div>
+<div class="toast" id="toastsuggestionexperimenterror" data-delay="5000"
+     style=" position: absolute; top: 100px; right: 0;">
+    <div class="toast-header">
+        <svg class="bd-placeholder-img rounded mr-2" width="20" height="20"
+             xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"
+             focusable="false" role="img">
+            <rect width="100%" height="100%" fill="#d9534f"></rect>
+        </svg>
+        <strong class="mr-auto" th:text="#{problem}">Problem</strong>
+    </div>
+    <div class="toast-body" th:text="#{problemcontent}">
+        A suggestion cant be generated within the next 14 days, try changing the
+        requirements or changing the previous steps.
+    </div>
+</div>
 <body>
 <div class="container">
     <div th:replace="navbar :: navbar"></div>
@@ -528,6 +557,21 @@
         </button>
 
         <h3><span th:text="#{step.info}"></span></h3>
+        <div style="display: flex;flex-direction: row">
+            <button type="button" id="suggestExperiment" class="btn btn-warning" style="flex: 1">Suggest Entire Experiment</button>
+            <div class="custom-control custom-checkbox" style="display:flex;flex-direction:row;flex: 1">
+                <input style="flex:1;" type="checkbox" class="custom-control-input" id="defaultUnchecked" checked>
+                <label style="flex:1;" class="custom-control-label" for="defaultUnchecked">Allow personal overlap</label>
+            </div>
+            <div class="custom-control custom-checkbox" style="display:flex;flex-direction:row;flex: 1">
+                <input style="flex:1;" type="checkbox" class="custom-control-input" id="withinOfficehours" checked>
+                <label style="flex:1;" class="custom-control-label" for="withinOfficehours">Within officehours</label>
+            </div>
+            <div style="display:flex;flex-direction:row;flex: 1">
+                <input id="datePicker" style="flex:1;" type="date">
+                <label style="flex:1;">Starting Date</label>
+            </div>
+        </div>
         <table class="table table-hover" style=" font-size:100%; text-align:center;">
             <thead>
             <tr>
@@ -786,7 +830,7 @@
                                 </div>
                             </div>
                             <div style="flex: 1;margin: 10px;">
-                                <select required id="deviceTypeDropdown" class="form-control input-device"
+                                <select  id="deviceTypeDropdown" class="input-device"
                                         style="visibility: visible;">
                                     <option value="none" selected disabled hidden th:text="#{device.notavailable}">No available device</option>
                                 </select>

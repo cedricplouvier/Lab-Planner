@@ -202,6 +202,21 @@ public class CalendarController {
                 }
             }
         }
+
+        // Check if atleast one device exists of the type
+        for(SuggestionStep step: steps){
+            boolean found= false;
+            for(Device device: deviceService.findAll()){
+                if(step.getDeviceType().getDeviceTypeName().equals(device.getDeviceType().getDeviceTypeName())){
+                    found = true;
+                    System.out.println(step.getDeviceType().getDeviceTypeName());
+                    break;
+                }
+            }
+            if(!found){
+                return false;
+            }
+        }
         return true;
     }
 
