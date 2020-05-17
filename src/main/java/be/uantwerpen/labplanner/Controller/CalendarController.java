@@ -60,16 +60,19 @@ public class CalendarController {
         User user = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         List<Step> userSteps = new ArrayList<Step>();
         List<Step> otherSteps = new ArrayList<Step>();
+        List<String> usernames = new ArrayList<String>();
         for (Step step : stepService.findAll()) {
             if (step.getUser().getId() == user.getId()) {
                 userSteps.add(step);
             } else {
                 otherSteps.add(step);
+                usernames.add(step.getUser().getUsername());
             }
         }
         Role admin = roleService.findByName("Administrator").get();
         if(user.getRoles().contains(admin)) {
             model.addAttribute("otherSteps", otherSteps);
+            model.addAttribute("otherStepsUsernames", usernames);
         }
         model.addAttribute("userSteps", userSteps);
         model.addAttribute("allDevices", deviceService.findAll());

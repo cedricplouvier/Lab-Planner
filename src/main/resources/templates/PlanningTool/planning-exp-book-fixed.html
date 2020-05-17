@@ -32,6 +32,62 @@
         document.getElementById("checkboxIsFixedType").checked = true;
 
     });
+    let translations = {
+        problem: [[#{calendar.summary.problem}]],
+        success: [[#{calendar.summary.suggestion}]],
+        othersteps: [[#{calendar.summary.other.items}]],
+        personalsteps: [[#{calendar.summary,personal.items}]],
+        outofofficehours: [[#{calendar.error.outofofficehours}]],
+        suggestion: [[#{calendar.summary.suggestion}]],
+        cantbookpast: [[#{calendar.error.cantbookpast}]],
+        holiday: [[#{calendar.error.holiday}]],
+        weekend: [[#{calendar.error.weekend}]],
+        overnight: [[#{calendar.error.overnight}]],
+        atmostbeforeone: [[#{calendar.error.atmost.before.one}]],
+        atmostbeforetwo: [[#{calendar.error.atmost.before.two}]],
+        atmostafterone: [[#{calendar.error.atmost.after.one}]],
+        atmostaftertwo: [[#{calendar.error.atmost.after.two}]],
+        atleastbeforeone: [[#{calendar.error.atleast.before.one}]],
+        atleastbeforetwo: [[#{calendar.error.atleast.before.two}]],
+        atleastafterone: [[#{calendar.error.atleast.after.one}]],
+        atleastaftertwo: [[#{calendar.error.atleast.after.two}]],
+        hardbeforeone: [[#{calendar.error.hard.before.one}]],
+        hardbeforetwo: [[#{calendar.error.hard.before.two}]],
+        hardafterone: [[#{calendar.error.hard.after.one}]],
+        hardaftertwo: [[#{calendar.error.hard.after.two}]],
+        beforeprevious: [[#{calendar.error.before.previous}]],
+        lengthequal: [[#{calendar.error.length.equal}]],
+        lengthatmost: [[#{calendar.error.length.atmost}]],
+        lengthatleast: [[#{calendar.error.length.atleast}]],
+        long: [[#{calendar.error.long}]],
+        bodysuggestion: [[#{calendar.body.suggestion}]],
+        user: [[#{calendar.body.user}]],
+        name: [[#{calendar.body.name}]],
+        type: [[#{calendar.body.type}]],
+        comment: [[#{calendar.body.comment}]],
+        noavailable: [[#{calendar.body.noavailable}]],
+        noproblems: [[#{calendar.body.noproblems}]],
+        align: [[#{calendar.ui.align}]],
+        time: [[#{calendar.ui.time }]],
+        continuity: [[#{calendar.ui.continuity}]],
+        length: [[#{calendar.ui.length}]],
+        none: [[#{calendar.ui.none}]],
+        finish: [[#{calendar.ui.finish}]],
+        device: [[#{calendar.body.device}]],
+        step: [[#{calendar.body.step}]],
+        after: [[#{calendar.step.after}]],
+        before: [[#{calendar.step.before}]],
+        atleast: [[#{calendar.step.atleast}]],
+        atmost: [[#{calendar.step.atmost}]],
+        hard: [[#{calendar.step.hard}]],
+        mon: [[#{calendar.week.mon}]],
+        tue: [[#{calendar.week.tue}]],
+        wed: [[#{calendar.week.wed}]],
+        thu: [[#{calendar.week.thu}]],
+        fri: [[#{calendar.week.fri}]],
+        sat: [[#{calendar.week.sat}]],
+        sun: [[#{calendar.week.sun}]],
+    }
     var translationStart = [[#{start}]];
     var translationEnd = [[#{end}]];
     var translationNo = [[#{options.type.no}]];
@@ -239,14 +295,28 @@
         document.getElementById('steptitle').innerText = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['deviceTypeName'];
         document.getElementById('length').innerText = steplength+" " +unimplem;
         if (stepInd > 0) {
-            document.getElementById('continuity2').innerText = "Continuity: " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['type'];
-            document.getElementById('align').innerText = "Alignment: After";
-            document.getElementById('time').innerText = "Time: " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['hours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['minutes'] + "m";
+            if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type']=="Hard"){
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.hard;
+            }else if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type']=="Soft (at most)"){
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.atmost;
+            }else if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type']=="Soft (at least)"){
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.atleast;
+            }else{
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.none;
+            }
 
+            if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['directionType']=="After"){
+                document.getElementById('align').innerText = translations.align+':'+translations.after;
+            }else if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['directionType']=="Before"){
+                document.getElementById('align').innerText = translations.align+':'+translations.before;
+            }else{
+                document.getElementById('align').innerText = translations.align+':'+translations.none;
+            }
+            document.getElementById('time').innerText = translations.time + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['hours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['minutes'] + "m";
         } else {
-            document.getElementById('continuity2').innerText = "Continuity: None";
-            document.getElementById('align').innerText = "Alignment: None";
-            document.getElementById('time').innerText = "Time: None";
+            document.getElementById('continuity2').innerText = translations.continuity+': '+translations.none;
+            document.getElementById('align').innerText = translations.align+': '+translations.none;
+            document.getElementById('time').innerText = translations.time+': '+translations.none;
         }
         calendarUpdate.start = document.getElementById('startDate' + stepInd + '').value
         calendarUpdate.end = document.getElementById('endDate' + stepInd + '').value
@@ -703,14 +773,14 @@
 
                             <div class="custom-control custom-checkbox" style="display:flex;flex-direction:row;flex: 1">
                                 <input style="flex:1;" type="checkbox" class="custom-control-input" id="withinOfficehoursSingleSuggest" checked>
-                                <label style="flex:1;" class="custom-control-label" for="withinOfficehoursSingleSuggest">Suggest within officehours</label>
+                                <label style="flex:1;" class="custom-control-label" for="withinOfficehoursSingleSuggest"th:text="#{calendar.ui.suggestofficehours}">Suggest within officehours</label>
                             </div>
 
                             </div>
                             <div style="flex: 1;margin: 10px;">
                                 <div class="custom-control custom-checkbox" style="display:flex;flex-direction:row;flex: 1">
                                     <input style="flex:1;" type="checkbox" class="custom-control-input" id="allowOverlap" checked>
-                                    <label style="flex:1;" class="custom-control-label" for="allowOverlap">Allow personal overlap</label>
+                                    <label style="flex:1;" class="custom-control-label" for="allowOverlap" th:text="#{calendar.ui.personal}">Allow personal overlap</label>
                                 </div>
                             </div>
                             <div style="flex: 1;margin: 10px;">
@@ -809,7 +879,7 @@ er.js@1.16.0/dist/umd/popper.min.js"
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.13/chance.min.js"></script>
 <!--Add the necessary custom scripts for the calendar -->
 
-<script th:src="@{/js/bookstepCalendar.js}" type="text/javascript"></script>
+<script th:inline="javascript" th:src="@{/js/bookstepCalendar.js}" type="text/javascript"></script>
 <script class="reloadMe" th:src="@{/js/app.js}" type="text/javascript"></script>
 
 </body>

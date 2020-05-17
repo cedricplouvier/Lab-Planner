@@ -37,6 +37,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
             disableClick: false,
             isReadOnly:false,
             week: {
+                daynames: [translations.sun, translations.mon,translations.tue,translations.wed,translations.thu,translations.fri,translations.sat],
                 startDayOfWeek: 1 // monday
             },
             scheduleView: ['time'],
@@ -56,6 +57,9 @@ var header = $("meta[name='_csrf_header']").attr("content");
             disableDblClick: true,
             disableClick: true,
             isReadOnly:true,
+            week: {
+                daynames: [translations.sun, translations.mon,translations.tue,translations.wed,translations.thu,translations.fri,translations.sat],
+            },
             scheduleView: ['time'],
             template: {
                 time: function(schedule) {
@@ -87,7 +91,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
                     newSchedule.bgColor = '#5cb85c';
                     newSchedule.dragBgColor = '#5cb85c';
                     newSchedule.borderColor = '#5cb85c';
-                    newSchedule.body="No problems found";
+                    newSchedule.body=translations.noproblems;
                     newSchedule.isReadOnly = false;
                     suggestion = null;
 
@@ -98,7 +102,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
                         newSchedule.bgColor = '#d9534f';
                         newSchedule.dragBgColor = '#d9534f';
                         newSchedule.borderColor = '#d9534f';
-                        newSchedule.body = "No available devices";
+                        newSchedule.body = translations.noavailable;
                         cal.updateSchedule(newSchedule.id, newSchedule.calendarId,newSchedule);
                     }
                     refreshScheduleVisibility();
@@ -157,7 +161,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
                     newSchedule.bgColor = '#d9534f';
                     newSchedule.dragBgColor = '#d9534f';
                     newSchedule.borderColor = '#d9534f';
-                    newSchedule.body = "No available devices";
+                    newSchedule.body = translations.noavailable;
                     cal.updateSchedule(newSchedule.id, newSchedule.calendarId,newSchedule);
                 }
                 CheckAllCalendars();
@@ -202,7 +206,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
                     newSchedule.bgColor = '#d9534f';
                     newSchedule.dragBgColor = '#d9534f';
                     newSchedule.borderColor = '#d9534f';
-                    newSchedule.body = "No available devices";
+                    newSchedule.body = translations.noavailable;
                 }
                 filledInSteps[calendarUpdate] =newSchedule
                 cal.updateSchedule(newSchedule.id, newSchedule.calendarId,newSchedule);
@@ -272,7 +276,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
                     filledInSteps[current].bgColor = '#5cb85c';
                     filledInSteps[current].dragBgColor = '#5cb85c';
                     filledInSteps[current].borderColor = '#5cb85c';
-                    filledInSteps[current].body="No problems found";
+                    filledInSteps[current].body=translations.noproblems;
                     cal.updateSchedule(filledInSteps[current].id, filledInSteps[current].calendarId, filledInSteps[current]);
                 }else{
                     filledInSteps[current].bgColor = '#d9534f';
@@ -489,8 +493,7 @@ var header = $("meta[name='_csrf_header']").attr("content");
         var calendar = scheduleData.calendar || findCalendar(scheduleData.calendarId);
         var schedule = {
             id: String(chance.guid()),
-            title: 'Step '+(calendarUpdate.stepIndex+1)+' of Experiment '+allExperiments[calendarUpdate.experimentIndex]['experimentTypeName']+', \nDevice = '+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['deviceTypeName'],
-            start: scheduleData.start,
+            title: translations.step + (calendarUpdate.stepIndex+1)+': Experiment '+allExperiments[calendarUpdate.experimentIndex]['experimentTypeName']+', \n'+translations.device+' : '+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['deviceTypeName'],            start: scheduleData.start,
             end: scheduleData.end,
             category: 'time',
             dueDateClass: '',
@@ -640,14 +643,14 @@ var header = $("meta[name='_csrf_header']").attr("content");
         var viewName = cal.getViewName();
         var html = [];
         if (viewName === 'day') {
-            html.push(moment(cal.getDate().getTime()).format('YYYY.MM.DD'));
+            html.push(moment(cal.getDate().getTime()).format('DD.MM.YYYY'));
         } else if (viewName === 'month' &&
             (!options.month.visibleWeeksCount || options.month.visibleWeeksCount > 4)) {
-            html.push(moment(cal.getDate().getTime()).format('YYYY.MM'));
+            html.push(moment(cal.getDate().getTime()).format('MM.YYYY'));
         } else {
-            html.push(moment(cal.getDateRangeStart().getTime()).format('YYYY.MM.DD'));
+            html.push(moment(cal.getDateRangeStart().getTime()).format('DD.MM.YYYY'));
             html.push(' ~ ');
-            html.push(moment(cal.getDateRangeEnd().getTime()).format(' MM.DD'));
+            html.push(moment(cal.getDateRangeEnd().getTime()).format(' DD.MM'));
         }
         renderRange.innerHTML = html.join('');
     }
@@ -795,18 +798,34 @@ var header = $("meta[name='_csrf_header']").attr("content");
     function setUI(){
 
         if(calendarUpdate.stepIndex==allExperiments[calendarUpdate.experimentIndex].length-1){
-            document.getElementById('selectStep').innerHTML = "Finish experiment";
+            document.getElementById('selectStep').innerHTML = translations.finish;
         }
         document.getElementById('steptitle').innerText = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['deviceTypeName'];
-        document.getElementById('length').innerText = "Length: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['fixedTimeHours']+"h"+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['fixedTimeMinutes'];
+        document.getElementById('length').innerText = translations.length+':'+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['fixedTimeHours']+"h"+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['fixedTimeMinutes'];
         if(calendarUpdate.stepIndex>0){
-            document.getElementById('continuity2').innerText = "Continuity: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type'];
-            document.getElementById('align').innerText = "Alignment: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['directionType'];
-            document.getElementById('time').innerText = "Time: "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['hours']+"h "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['minutes']+"m";
+
+            if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type']=="Hard"){
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.hard;
+            }else if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type']=="Soft (at most)"){
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.atmost;
+            }else if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type']=="Soft (at least)"){
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.atleast;
+            }else{
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.none;
+            }
+
+            if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['directionType']=="After"){
+                document.getElementById('align').innerText = translations.align+':'+translations.after;
+            }else if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['directionType']=="Before"){
+                document.getElementById('align').innerText = translations.align+':'+translations.before;
+            }else{
+                document.getElementById('align').innerText = translations.align+':'+translations.none;
+            }
+            document.getElementById('time').innerText = translations.time+':'+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['hours']+"h "+allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['minutes']+"m";
         }else{
-            document.getElementById('continuity2').innerText = "Continuity: None";
-            document.getElementById('align').innerText = "Alignment: None";
-            document.getElementById('time').innerText = "Time: None";
+            document.getElementById('continuity2').innerText = translations.continuity+':'+translations.none;
+            document.getElementById('align').innerText = translations.align+':'+translations.none;
+            document.getElementById('time').innerText = translations.time+':'+translations.none;
         }
         calendarUpdate.start = document.getElementById('startDate' + calendarUpdate.stepIndex + '').value
         calendarUpdate.end = document.getElementById('endDate' + calendarUpdate.stepIndex + '').value

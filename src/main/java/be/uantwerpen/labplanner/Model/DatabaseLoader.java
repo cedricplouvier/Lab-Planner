@@ -897,43 +897,10 @@ public class DatabaseLoader {
         Step step7d = new Step(u7, d11, "2020-05-14", "2020-05-14", "10:00", "11:00", "");
         Step step8d = new Step(u7, d12, "2020-05-14", "2020-05-14", "11:00", "12:00", "");
         Step step9d = new Step(u7, d4, "2020-05-15", "2020-05-15", "12:00", "13:00", "");
-        Step step10d = new Step(u7, d5, "2020-05-15", "2020-05-18", "13:00", "11:00", "");
+        Step step10d = new Step(u7, d5, "2020-05-15", "2020-05-15", "13:00", "17:00", "");
         Step step11d = new Step(u7, d14, "2020-05-18", "2020-05-18", "11:00", "15:00", "");
         Step step12d = new Step(u7, d3, "2020-05-18", "2020-05-18", "15:00", "16:00", "");
 
-        stepRepository.save(step1a);
-        stepRepository.save(step2a);
-        stepRepository.save(step3a);
-        stepRepository.save(step4a);
-        stepRepository.save(step5a);
-        stepRepository.save(step6a);
-
-        stepRepository.save(step1b);
-        stepRepository.save(step2b);
-        stepRepository.save(step3b);
-        stepRepository.save(step4b);
-        stepRepository.save(step5b);
-        stepRepository.save(step6b);
-
-        stepRepository.save(step1c);
-        stepRepository.save(step2c);
-        stepRepository.save(step3c);
-        stepRepository.save(step4c);
-        stepRepository.save(step5c);
-        stepRepository.save(step6c);
-
-        stepRepository.save(step1d);
-        stepRepository.save(step2d);
-        stepRepository.save(step3d);
-        stepRepository.save(step4d);
-        stepRepository.save(step5d);
-        stepRepository.save(step6d);
-        stepRepository.save(step7d);
-        stepRepository.save(step8d);
-        stepRepository.save(step9d);
-        stepRepository.save(step10d);
-        stepRepository.save(step11d);
-        stepRepository.save(step12d);
 
         List<Step> stepList1 = new ArrayList<Step>();
         stepList1.add(step1a);
@@ -984,8 +951,43 @@ public class DatabaseLoader {
         }
 
         for (int i = 0; i < stepList4.size(); i++) {
+
             stepList4.get(i).setStepType(experimentType3.getStepTypes().get(i));
+
         }
+        stepRepository.save(step1a);
+        stepRepository.save(step2a);
+        stepRepository.save(step3a);
+        stepRepository.save(step4a);
+        stepRepository.save(step5a);
+        stepRepository.save(step6a);
+
+        stepRepository.save(step1b);
+        stepRepository.save(step2b);
+        stepRepository.save(step3b);
+        stepRepository.save(step4b);
+        stepRepository.save(step5b);
+        stepRepository.save(step6b);
+
+        stepRepository.save(step1c);
+        stepRepository.save(step2c);
+        stepRepository.save(step3c);
+        stepRepository.save(step4c);
+        stepRepository.save(step5c);
+        stepRepository.save(step6c);
+
+        stepRepository.save(step1d);
+        stepRepository.save(step2d);
+        stepRepository.save(step3d);
+        stepRepository.save(step4d);
+        stepRepository.save(step5d);
+        stepRepository.save(step6d);
+        stepRepository.save(step7d);
+        stepRepository.save(step8d);
+        stepRepository.save(step9d);
+        stepRepository.save(step10d);
+        stepRepository.save(step11d);
+        stepRepository.save(step12d);
 
         PieceOfMixture pom1 = new PieceOfMixture(m1, "comment 1", 6.6);
         pieceOfMixtureRepository.save(pom1);

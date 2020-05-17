@@ -34,6 +34,62 @@
         document.getElementById("checkboxIsFixedType").checked = false;
         stepTypeRowIndexWithRemovedItems = $('#list tr').length / 2;
     });
+    let translations = {
+        problem: [[#{calendar.summary.problem}]],
+        success: [[#{calendar.summary.suggestion}]],
+        othersteps: [[#{calendar.summary.other.items}]],
+        personalsteps: [[#{calendar.summary,personal.items}]],
+        outofofficehours: [[#{calendar.error.outofofficehours}]],
+        suggestion: [[#{calendar.summary.suggestion}]],
+        cantbookpast: [[#{calendar.error.cantbookpast}]],
+        holiday: [[#{calendar.error.holiday}]],
+        weekend: [[#{calendar.error.weekend}]],
+        overnight: [[#{calendar.error.overnight}]],
+        atmostbeforeone: [[#{calendar.error.atmost.before.one}]],
+        atmostbeforetwo: [[#{calendar.error.atmost.before.two}]],
+        atmostafterone: [[#{calendar.error.atmost.after.one}]],
+        atmostaftertwo: [[#{calendar.error.atmost.after.two}]],
+        atleastbeforeone: [[#{calendar.error.atleast.before.one}]],
+        atleastbeforetwo: [[#{calendar.error.atleast.before.two}]],
+        atleastafterone: [[#{calendar.error.atleast.after.one}]],
+        atleastaftertwo: [[#{calendar.error.atleast.after.two}]],
+        hardbeforeone: [[#{calendar.error.hard.before.one}]],
+        hardbeforetwo: [[#{calendar.error.hard.before.two}]],
+        hardafterone: [[#{calendar.error.hard.after.one}]],
+        hardaftertwo: [[#{calendar.error.hard.after.two}]],
+        beforeprevious: [[#{calendar.error.before.previous}]],
+        lengthequal: [[#{calendar.error.length.equal}]],
+        lengthatmost: [[#{calendar.error.length.atmost}]],
+        lengthatleast: [[#{calendar.error.length.atleast}]],
+        long: [[#{calendar.error.long}]],
+        bodysuggestion: [[#{calendar.body.suggestion}]],
+        user: [[#{calendar.body.user}]],
+        name: [[#{calendar.body.name}]],
+        type: [[#{calendar.body.type}]],
+        comment: [[#{calendar.body.comment}]],
+        noavailable: [[#{calendar.body.noavailable}]],
+        noproblems: [[#{calendar.body.noproblems}]],
+        align: [[#{calendar.ui.align}]],
+        time: [[#{calendar.ui.time }]],
+        continuity: [[#{calendar.ui.continuity}]],
+        length: [[#{calendar.ui.length}]],
+        none: [[#{calendar.ui.none}]],
+        finish: [[#{calendar.ui.finish}]],
+        device: [[#{calendar.body.device}]],
+        step: [[#{calendar.body.step}]],
+        after: [[#{calendar.step.after}]],
+        before: [[#{calendar.step.before}]],
+        atleast: [[#{calendar.step.atleast}]],
+        atmost: [[#{calendar.step.atmost}]],
+        hard: [[#{calendar.step.hard}]],
+        mon: [[#{calendar.week.mon}]],
+        tue: [[#{calendar.week.tue}]],
+        wed: [[#{calendar.week.wed}]],
+        thu: [[#{calendar.week.thu}]],
+        fri: [[#{calendar.week.fri}]],
+        sat: [[#{calendar.week.sat}]],
+        sun: [[#{calendar.week.sun}]],
+    }
     var translationStart = [[#{start}]];
     var translationEnd = [[#{end}]];
     var translationNo = [[#{options.type.no}]];
@@ -151,6 +207,9 @@
     }
 
     function addStepRow() {
+        suggestion = null;
+        filledInSteps = [];
+        newSchedule = null;
         //reference table
         var i = stepTypeRowIndexWithRemovedItems;
         stepTypeRowIndexWithRemovedItems++;
@@ -606,15 +665,30 @@
         calendarUpdate.stepIndex = stepInd;
 
         document.getElementById('steptitle').innerText = allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['deviceTypeName'];
-        document.getElementById('length').innerText = "Length: unimplemented";
+        document.getElementById('length').innerText = translations.length+':'+translations.none;
         if (stepInd > 0) {
-            document.getElementById('continuity2').innerText = "Continuity: " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['type'];
-            document.getElementById('align').innerText = "Alignment: After";
-            document.getElementById('time').innerText = "Time: " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['hours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['minutes'] + "m";
+            if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type']=="Hard"){
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.hard;
+            }else if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type']=="Soft (at most)"){
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.atmost;
+            }else if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['type']=="Soft (at least)"){
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.atleast;
+            }else{
+                document.getElementById('continuity2').innerText = translations.continuity+':'+translations.none;
+            }
+
+            if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['directionType']=="After"){
+                document.getElementById('align').innerText = translations.align+':'+translations.after;
+            }else if(allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex-1]['continuity']['directionType']=="Before"){
+                document.getElementById('align').innerText = translations.align+':'+translations.before;
+            }else{
+                document.getElementById('align').innerText = translations.align+':'+translations.none;
+            }
+            document.getElementById('time').innerText = translations.time + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['hours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex - 1]['continuity']['minutes'] + "m";
         } else {
-            document.getElementById('continuity2').innerText = "Continuity: None";
-            document.getElementById('align').innerText = "Alignment: None";
-            document.getElementById('time').innerText = "Time: None";
+            document.getElementById('continuity2').innerText = translations.continuity+': '+translations.none;
+            document.getElementById('align').innerText = translations.align+': '+translations.none;
+            document.getElementById('time').innerText = translations.time+': '+translations.none;
         }
 
         calendarUpdate.start = document.getElementById('startDate' + stepInd + '').value
@@ -1136,31 +1210,31 @@
 
                             <div style="flex: 1;display: flex;flex-direction: row">
                                 <button type="button" id="previousstep" class="btn btn-primary"
-                                        style="padding: 5px;flex: 1;  margin:auto;display:block;width: 90%;">
+                                        style="padding: 5px;flex: 1;  margin:auto;display:block;width: 90%;" th:text="#{previous}">
                                     previous
                                 </button>
                                 <h6 id="steptitle" data-dismiss="modal"
                                     style="padding: 5px;flex: 3;   margin: auto; text-align:center;vertical-align: center"
-                                    disabled>Step name</h6>
+                                    disabled th:text="#{step.name}">Step name</h6>
                                 <button type="button" id="nextstep" class="btn btn-primary"
-                                        style="padding: 5px;flex: 1;  margin:auto;display:block;width: 90%;"> next
+                                        style="padding: 5px;flex: 1;  margin:auto;display:block;width: 90%;" th:text="#{next}"> next
                                 </button>
                             </div>
                             <div style="flex: 4;display: flex;flex-direction: column">
                                 <h6 data-dismiss="modal"
-                                    style="flex:1;padding: 5px;   margin: auto; text-align:center;vertical-align: center">
+                                    style="flex:1;padding: 5px;   margin: auto; text-align:center;vertical-align: center" th:text="#{requirements}">
                                     Requirements</h6>
                                 <ul class="list-group" style="flex:4;margin: 10px;">
-                                    <li class="list-group-item" style="padding-bottom: 0px;" id="length">Length:
+                                    <li class="list-group-item" style="padding-bottom: 0px;" id="length" th:text="#{cal.book.length}">Length:
                                         5h
                                     </li>
                                     <li class="list-group-item" style="padding-bottom: 0px;" id="continuity2">
                                         Continuity:
                                         Hard
                                     </li>
-                                    <li class="list-group-item" style="padding-bottom: 0px;" id="align">Align: After
+                                    <li class="list-group-item" style="padding-bottom: 0px;" id="align" th:text="#{cal.book.align}">Align: After
                                     </li>
-                                    <li class="list-group-item" style="padding-bottom: 0px;" id="time">Time
+                                    <li class="list-group-item" style="padding-bottom: 0px;" id="time" th:text="#{cal.book.time}">Time
                                         difference:
                                         After
                                     </li>
@@ -1168,10 +1242,10 @@
                             </div>
                             <div style="flex: 4;display: flex;flex-direction: column">
                                 <h6 data-dismiss="modal"
-                                    style="flex:1;padding: 5px;   margin: auto; text-align:center;vertical-align: center">
+                                    style="flex:1;padding: 5px;   margin: auto; text-align:center;vertical-align: center" th:text="#{legend}">
                                     Legend</h6>
                                 <div id="legend" style="display: flex;flex:1; flex-direction: column;margin: 10px;">
-                                    <div class="alert alert-info" id="help" role="alert">
+                                    <div class="alert alert-info" id="help" role="alert" th:text="#{dragandrelease}">
                                         Drag and release to create a schedule.
                                     </div>
                                 </div>
@@ -1179,13 +1253,14 @@
                             <div style="flex: 1;margin: 10px;">
                                 <div class="custom-control custom-checkbox" style="display:flex;flex-direction:row;flex: 1">
                                     <input style="flex:1;" type="checkbox" class="custom-control-input" id="withinOfficehoursSingleSuggest" checked>
-                                    <label style="flex:1;" class="custom-control-label" for="withinOfficehoursSingleSuggest">Suggest within officehours</label>
+                                    <label style="flex:1;" class="custom-control-label" for="withinOfficehoursSingleSuggest"th:text="#{calendar.ui.suggestofficehours}">Suggest within officehours</label>
                                 </div>
+
                             </div>
                             <div style="flex: 1;margin: 10px;">
                                 <div class="custom-control custom-checkbox" style="display:flex;flex-direction:row;flex: 1">
                                     <input style="flex:1;" type="checkbox" class="custom-control-input" id="allowOverlap" checked>
-                                    <label style="flex:1;" class="custom-control-label" for="allowOverlap">Allow personal overlap</label>
+                                    <label style="flex:1;" class="custom-control-label" for="allowOverlap" th:text="#{calendar.ui.personal}">Allow personal overlap</label>
                                 </div>
                             </div>
                             <div style="flex: 1;margin: 10px;">
@@ -1198,12 +1273,12 @@
                                 <button type="button" id="suggestStep" class="btn btn-warning"
                                         style="width: 90%;  margin:auto;display:block;" data-placement="top"
                                         data-toggle="popover" title="Success"
-                                        data-content="suggestion succesfully generated">Suggest a step
+                                        data-content="suggestion succesfully generated" th:text="#{suggest.step}">Suggest a step
                                 </button>
                             </div>
                             <div style="flex: 1;">
                                 <button type="button" id="selectStep" class="btn btn-success"
-                                        style="width: 90%;  margin:auto;display:block;" disabled>Save step
+                                        style="width: 90%;  margin:auto;display:block;" disabled th:text="#{step.save}">Save step
                                 </button>
                             </div>
                             <div class="toast" id="toastsuggestionsuccess" data-delay="5000"
@@ -1211,12 +1286,12 @@
                                 <div class="toast-header">
                                     <svg class="bd-placeholder-img rounded mr-2" width="20" height="20"
                                          xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"
-                                         focusable="false" role="img">
+                                         focusable="false" dirole="img">
                                         <rect width="100%" height="100%" fill="#5cb85c"></rect>
                                     </svg>
                                     <strong class="mr-auto">Success</strong>
                                 </div>
-                                <div class="toast-body">
+                                <div class="toast-body" th:text="#{suggestion.success}">
                                     A suggestion has successfully been generated
                                 </div>
                             </div>
@@ -1228,9 +1303,9 @@
                                          focusable="false" role="img">
                                         <rect width="100%" height="100%" fill="#d9534f"></rect>
                                     </svg>
-                                    <strong class="mr-auto">Problem</strong>
+                                    <strong class="mr-auto" th:text="#{problem}">Problem</strong>
                                 </div>
-                                <div class="toast-body">
+                                <div class="toast-body" th:text="#{problemcontent}">
                                     A suggestion cant be generated within the next 14 days, try changing the
                                     requirements or changing the previous steps.
                                 </div>

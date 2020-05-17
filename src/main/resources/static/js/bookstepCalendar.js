@@ -64,7 +64,7 @@ function hexToRGBA(hex) {
     //User steps
     let calendar = new CalendarInfo();
     calendar.id = 1;
-    calendar.name = "Personal calendar items";
+    calendar.name = translations.personalsteps;
     calendar.color = '#ffffff';
     calendar.bgColor = '#0275d8';
     calendar.dragBgColor = '#0275d8';
@@ -74,7 +74,7 @@ function hexToRGBA(hex) {
     //other steps
     calendar = new CalendarInfo();
     calendar.id = 2;
-    calendar.name = "Other devices used";
+    calendar.name = translations.othersteps ;
     calendar.color = '#ffffff';
     calendar.bgColor = '#292b2c';
     calendar.dragBgColor = '#292b2c';
@@ -83,7 +83,7 @@ function hexToRGBA(hex) {
     //succes
     calendar = new CalendarInfo();
     calendar.id = 3;
-    calendar.name = "Success";
+    calendar.name = translations.success;
     calendar.color = '#ffffff';
     calendar.bgColor = '#5cb85c';
     calendar.dragBgColor = '#5cb85c';
@@ -92,7 +92,7 @@ function hexToRGBA(hex) {
     //Error
     calendar = new CalendarInfo();
     calendar.id = 4;
-    calendar.name = "Problem";
+    calendar.name = translations.problem;
     calendar.color = '#ffffff';
     calendar.bgColor = '#d9534f';
     calendar.dragBgColor = '#d9534f';
@@ -101,7 +101,7 @@ function hexToRGBA(hex) {
     //suggestion
     calendar = new CalendarInfo();
     calendar.id = 5;
-    calendar.name = "suggestion";
+    calendar.name = translations.suggestion;
     calendar.color = '#ffffff';
     calendar.bgColor = '#f0ad4e';
     calendar.dragBgColor = '#f0ad4e';
@@ -242,21 +242,21 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
             if (allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeType'] === "Equal") {
                 if (lengthMinutes != requiredLength) {
                     return {
-                        message: "This step has to be exactly " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeHours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeMinutes'] + "m long",
+                        message: translations.lengthequal + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeHours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeMinutes'] + "m"+translations.long,
                         ok: false,
                     }
                 }
             } else if (allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeType'] === "At least") {
                 if (lengthMinutes < requiredLength) {
                     return {
-                        message: "This step has to be at least " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeHours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeMinutes'] + "m long",
+                        message: translations.lengthatleast + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeHours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeMinutes'] + "m"+translations.long,
                         ok: false,
                     }
                 }
             } else if (allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeType'] === "At most") {
                 if (lengthMinutes > requiredLength) {
                     return {
-                        message: "This step has to be at most " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeHours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeMinutes'] + "m long",
+                        message: translations.lengthatmost + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeHours'] + "h " + allExperiments[calendarUpdate.experimentIndex]['stepTypes'][stepindex]['fixedTimeMinutes']+ "m"+translations.long,
                         ok: false,
                     }
                 }
@@ -276,7 +276,7 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
         var secondDate = new Date(schedule.end.getFullYear(), schedule.end.getMonth(), schedule.end.getDate(), schedule.end.getHours(), schedule.end.getMinutes());
         if(secondDate.getTime()<firstDate.getTime()){
             return {
-                message: "This step cant end before the previous step ends.",
+                message: translations.beforeprevious,
                 ok:false,
             }
         }
@@ -299,7 +299,7 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
 
                 if(firstDate.getTime()!=secondDate.getTime()){
                 return {
-                    message: "This device requires a hard continuity, This step should be exactly "+previousStepType['continuity']['hours']+" hours after the previous step in the experiment.",
+                    message: translations.hardafterone+' '+previousStepType['continuity']['hours']+"h"+previousStepType['continuity']['minutes']+"m"+' '+translations.hardaftertwo,
                     ok:false,
                     }
                 }
@@ -310,7 +310,7 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
                 firstDate.setMinutes(firstDate.getMinutes()-parseInt(previousStepType['continuity']['minutes']));
                 if(firstDate.getTime()!=secondDate.getTime()){
                     return {
-                        message: "This device requires a hard continuity, This step should be exactly "+previousStepType['continuity']['hours']+" hours after the previous step in the experiment.",
+                        message:translations.hardbeforeone+' '+previousStepType['continuity']['hours']+"h"+previousStepType['continuity']['minutes']+"m"+' '+translations.hardbeforetwo,
                         ok:false,
                     }
                 }
@@ -324,7 +324,7 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
             firstDate.setMinutes(firstDate.getMinutes()+parseInt(previousStepType['continuity']['minutes']));
             if(!(secondDate.getTime()>firstDate.getTime())) {
                 return {
-                    message: "This device requires a soft (at least) continuity, This step should be at least more then " + previousStepType['continuity']['hours'] + " hours after the previous step in the experiment.",
+                    message: translations.atleastafterone+' ' + previousStepType['continuity']['hours']+"h"+previousStepType['continuity']['minutes']+"m"+' ' +translations.atleastaftertwo,
                     ok: false,
                 }
             }
@@ -336,7 +336,7 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
             firstDate.setMinutes(firstDate.getMinutes()-parseInt(previousStepType['continuity']['minutes']));
             if(!(secondDate.getTime()>=firstDate.getTime())) {
                 return {
-                    message: "This device requires a soft (at least) continuity, This step should be at least more then " + previousStepType['continuity']['hours'] + " hours after the previous step in the experiment.",
+                    message: translations.atleastbeforeone +' '+ previousStepType['continuity']['hours'] +"h"+previousStepType['continuity']['minutes']+"m"+' '+ translations.atleastbeforetwo,
                     ok: false,
                 }
             }
@@ -349,7 +349,7 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
         if(previousStepType['continuity']['directionType']=="After"){
             if(!(secondDate.getTime()<=firstDate.getTime())) {
                 return {
-                    message: "This device requires a hard continuity, This step should be at most mort then " + previousStepType['continuity']['hours'] + " hours after the previous step in the experiment.",
+                    message: translations.atmostafterone +' '+ previousStepType['continuity']['hours'] +"h"+previousStepType['continuity']['minutes']+"m"+' '+ translations.atmostaftertwo,
                     ok: false,
                 }
             }
@@ -359,7 +359,7 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
             firstDate.setMinutes(firstDate.getMinutes()-parseInt(previousStepType['continuity']['minutes']));
             if(!(secondDate.getTime()<=firstDate.getTime())) {
                 return {
-                    message: "This device requires a hard continuity, This step should be at most mort then " + previousStepType['continuity']['hours'] + " hours after the previous step in the experiment.",
+                    message: translations.atmostbeforeone +' ' +previousStepType['continuity']['hours']+"h"+previousStepType['continuity']['minutes']+"m"+' '  + translations.atmostbeforetwo,
                     ok: false,
                 }
             }
@@ -372,7 +372,7 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
         if(schedule.start.getDate()!=schedule.end.getDate())
             if(schedule.end.getHours()!=0&&schedule.end.getMinutes()!=0){
                 return {
-                    message: "This device cant be used overnight",
+                    message: translations.overnight,
                     ok:false,
                 }
             }
@@ -385,14 +385,14 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
         }else{
             if(schedule.end.getDay()==6&&schedule.end.getHours()!=0&&schedule.end.getMinutes()!=0){
                 return {
-                    message: "This device cant be used overnight",
+                    message: translations.overnight,
                     ok:false,
                 }
             }
         }
     }else{
         return {
-            message: "This device cant be used in weekends",
+            message: translations.weekend,
             ok:false,
         }
     }
@@ -401,7 +401,7 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
     for (let current = 0; current < holidays.length; current++) {
         if (holidays[current]['date'] == str) {
             return {
-                message: "This device cant be used on a holiday",
+                message: translations.holiday,
                 ok: false,
             }
         }
@@ -415,7 +415,7 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
 
         } else {
             return {
-                message: "This device cant be used out of office hours",
+                message:translations.outofofficehours,
                 ok: false,
             }
         }
@@ -428,13 +428,13 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
             if (endTime >= 9 * 60 && endTime <= 17 * 60 && schedule.end.getDay() != 0 && schedule.end.getDay() != 6) {
             } else {
                 return {
-                    message: "This device cant be used out of office hours",
+                    message: translations.outofofficehours,
                     ok: false,
                 }
             }
         } else {
             return {
-                message: "This device cant be used out of office hours",
+                message: translations.outofofficehours,
                 ok: false,
             }
         }
@@ -443,12 +443,12 @@ function checkContinuity(stepindex,schedule,withinOfficehours,isGrayout) {
     let today = new Date();
     if(schedule.start.getTime()<today.getTime()){
         return {
-            message: "Cant book in the past",
+            message: translations.cantbookpast,
             ok:false,
         }
     }
     return {
-        message: "No problems found",
+        message: translations.noproblems,
     ok:true,
 }}
 
@@ -457,8 +457,8 @@ function createSuggestionSchedule(start,end,calendar) {
     let schedule = new ScheduleInfo();
     schedule.id = chance.guid();
     schedule.calendarId = calendar.id;
-    schedule.title = 'Suggestion: click to select'
-    schedule.body = 'Step '+(calendarUpdate.stepIndex+1)+' of Experiment '+allExperiments[calendarUpdate.experimentIndex]['experimentTypeName']+', \nDevice = '+step['deviceType']['deviceTypeName'];
+    schedule.title = translations.bodysuggestion
+    schedule.body = translations.step+' '+(calendarUpdate.stepIndex+1)+': Experiment '+allExperiments[calendarUpdate.experimentIndex]['experimentTypeName']+', \nDevice = '+step['deviceType']['deviceTypeName'];
     schedule.isReadOnly = false;
     schedule.start = start;
     schedule.end = end;
@@ -474,16 +474,18 @@ function generateSchedule(viewName, renderStart, renderEnd) {
     ScheduleList = [];
     //Add all users steps
     userSteps.forEach(function (step) {
-            let schedule = new ScheduleInfo();
+        let schedule = new ScheduleInfo();
             let calendar = findCalendar(String(step['device']['deviceType']['id']));
             schedule.id = chance.guid();
             schedule.calendarId = calendar.id;
             schedule.title = step['device']['deviceType']['deviceTypeName'];
-            schedule.body = 'name:    ' + step['device']['devicename'] + "<br>"
-                + 'type:    ' + step['device']['deviceType']['deviceTypeName'] + "<br>"
-                + 'comment: ' + step['device']['comment'] + "<br>";
+            schedule.body = translations.name +': ' + step['device']['devicename'] + "<br>"
+                + translations.type+':  ' + step['device']['deviceType']['deviceTypeName'] + "<br>"
+                + translations.comment+':  ' + step['device']['comment'] + "<br>";
             ;
-            schedule.isReadOnly = true;
+        // translations.user +': ' + step['user']['username'] + "<br>"
+
+        schedule.isReadOnly = true;
             schedule.start = new Date(step['start'] + 'T' + step['startHour']);
             schedule.end = new Date(step['end'] + 'T' + step['endHour']);
             schedule.isReadOnly = true;
@@ -498,15 +500,17 @@ function generateSchedule(viewName, renderStart, renderEnd) {
 
     //Add all other steps of devicetype
     otherSteps.forEach(function (step) {
+        console.log(step);
+
         if(step['device']['deviceType']['id'] === allExperiments[calendarUpdate.experimentIndex]['stepTypes'][calendarUpdate.stepIndex]['deviceType']['id']) {
             let schedule = new ScheduleInfo();
             let calendar = findCalendar(String(step['device']['deviceType']['id']));
             schedule.id = chance.guid();
             schedule.calendarId = calendar.id;
             schedule.title = step['device']['deviceType']['deviceTypeName'];
-            schedule.body = 'name:    ' + step['device']['devicename'] + "<br>"
-                + 'type:    ' + step['device']['deviceType']['deviceTypeName'] + "<br>"
-                + 'comment: ' + step['device']['comment'] + "<br>";
+            schedule.body =  translations.name +': ' + step['device']['devicename'] + "<br>"
+                + translations.type+':  ' + step['device']['deviceType']['deviceTypeName'] + "<br>"
+                + translations.comment+':  ' + step['device']['comment'] + "<br>";
             ;
             schedule.isReadOnly = true;
             schedule.start = new Date(step['start'] + 'T' + step['startHour']);
@@ -529,7 +533,7 @@ function generateSchedule(viewName, renderStart, renderEnd) {
         let calendar = findCalendar(String(step['deviceType']['id']));
         schedule.id = chance.guid();
         schedule.calendarId = calendar.id;
-        schedule.title = 'Step '+(current+1)+' of Experiment '+allExperiments[calendarUpdate.experimentIndex]['experimentTypeName']+', \nDevice = '+step['deviceType']['deviceTypeName'];
+        schedule.title = translations.step+(current+1)+': Experiment '+allExperiments[calendarUpdate.experimentIndex]['experimentTypeName']+', \nDevice = '+step['deviceType']['deviceTypeName'];
         if(calendarUpdate.stepIndex==current){
             schedule.isReadOnly = false;
         }else{
