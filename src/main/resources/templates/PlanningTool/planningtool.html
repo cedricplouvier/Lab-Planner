@@ -296,7 +296,7 @@
             <!-- IMPORTANT, class="list" have to be at tbody -->
             <tbody class="list" id="list">
             <tr th:each="step : ${userSteps}">
-                <td class='username' th:value="${step.getUser().getFirstName()+' '+step.getUser().getLastName() }" th:text="${step.user.username}">
+                <td class='username' th:value="${step.getUser() }" th:text="${step.getUser().getFirstName()+' '+step.getUser().getLastName()}">
                     Username
                 </td>
                 <td class="devicename" th:value="${step.getDevice().getDevicename()}"
