@@ -86,7 +86,14 @@ public class CalendarController {
     public String calculateStepSuggestion(@RequestBody SuggestionResponseBody suggestionResponseBody) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         ArrayList<SuggestionStep> steps = mapper.readValue(suggestionResponseBody.getSteps(), new TypeReference<ArrayList<SuggestionStep>>() {});
-        Boolean success = getSuggestion(steps,suggestionResponseBody.getOverlapAllowed(),suggestionResponseBody.getWithinOfficeHours(),suggestionResponseBody.getDateTime(),suggestionResponseBody.getCurrentStep());
+        Boolean success = precheck(steps,suggestionResponseBody.getOverlapAllowed(),suggestionResponseBody.getWithinOfficeHours(),suggestionResponseBody.getDateTime(),suggestionResponseBody.getCurrentStep());
+        if(!success){
+            String failed = "failed";
+            System.out.println("passed precheck:"+success);
+            return new Gson().toJson(failed);
+        }
+        System.out.println("passed precheck:"+success);
+        success = getSuggestion(steps,suggestionResponseBody.getOverlapAllowed(),suggestionResponseBody.getWithinOfficeHours(),suggestionResponseBody.getDateTime(),suggestionResponseBody.getCurrentStep());
         System.out.println("suggestion generated:"+success);
 
         if(success){
@@ -95,6 +102,41 @@ public class CalendarController {
             String failed = "failed";
             return new Gson().toJson(failed);
         }
+    }
+    private Boolean precheck(ArrayList<SuggestionStep> steps, Boolean overlapAllowed, Boolean withinOfficeHOurs, LocalDateTime start, int index){
+        int count = 0;
+        if(withinOfficeHOurs) {
+            OfficeHours officeHours = systemSettingsService.getSystemSetting().getCurrentOfficeHours();
+            int officeTime = (officeHours.getEndHour() * 60 + officeHours.getEndMinute()) - (officeHours.getStartHour() * 60 + officeHours.getStartMinute());
+            int current = index;
+
+            while (current < steps.size() ){
+                if(current>0) {
+                    if (steps.get(current-1).getContinuity().getType().equals("Hard") && steps.get(current-1).getContinuity().getDirectionType().equals("After")) {
+                        count += steps.get(current - 1).getContinuity().getHours() + steps.get(current - 1).getContinuity().getMinutes();
+                        if (count >= officeTime) {
+                            return false;
+                        }
+                        count += steps.get(current).getFixedTimeHours() * 60 + steps.get(current).getFixedTimeMinutes();
+                    }else if (steps.get(current-1).getContinuity().getType().equals("Soft (at most)") && steps.get(current-1).getContinuity().getDirectionType().equals("After")) {
+                        count += steps.get(current - 1).getContinuity().getHours() + steps.get(current - 1).getContinuity().getMinutes();
+                        if (count >= officeTime) {
+                            return false;
+                        }
+                        count += steps.get(current).getFixedTimeHours() * 60 + steps.get(current).getFixedTimeMinutes();
+                    }else {
+                        count = 0;
+                    }
+                    if(count >=24){
+                        count=0;
+                    }
+                }else{
+                    count += steps.get(current).getFixedTimeHours() * 60 + steps.get(current).getFixedTimeMinutes();
+                }
+                current++;
+            }
+        }
+        return true;
     }
 
     private Boolean getSuggestion(ArrayList<SuggestionStep> steps, Boolean overlapAllowed, Boolean withinOfficeHOurs, LocalDateTime start, int index){
@@ -290,6 +332,9 @@ public class CalendarController {
             LocalTime officeTimeEnd = LocalTime.of(officeHours.getEndHour(), officeHours.getEndMinute());
 
             if (currentStep.getStart().toLocalTime().isAfter(officeTimeEnd)) {
+                return false;
+            }
+            if(currentStep.getStart().toLocalTime().equals(officeTimeEnd)){
                 return false;
             }
             if (currentStep.getStart().toLocalTime().isBefore(officeTimeStart)) {

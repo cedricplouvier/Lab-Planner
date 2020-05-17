@@ -765,7 +765,7 @@ public class DatabaseLoader {
 
         //Step2 - Continuity 4h before end, Device: Oven, Fixed time At least 12h
         Continuity continuity2 = new Continuity(4, 0, "Hard", "Before");
-        StepType stepType2 = new StepType(t7, continuity2, "Step" + t7.getDeviceTypeName(), true, "At least", 12, 0);
+        StepType stepType2 = new StepType(t7, continuity2, "Step" + t7.getDeviceTypeName(), true, "At least", 6, 0);
 
         //Step3,4,5 should be 4 hours before end of oven
         //Step 3 - Continuity: Hard 4h before, DeviceType: Mixer, FixedTime: 4h

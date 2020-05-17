@@ -24,6 +24,7 @@
 
 <script th:inline="javascript">
     let errorMsg = [[${errorMsg}]]
+    console.log(errorMsg)
     $(document).ready(function () {
         if (errorMsg) {
             $("#myToast").toast('show');
