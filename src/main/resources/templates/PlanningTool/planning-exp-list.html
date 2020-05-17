@@ -36,9 +36,25 @@
             <td>
                 <a  sec:authorize="hasAuthority('Planning - Make new experiment') " th:href="@{/planning/experiments/{id}/(id=${experiment.id})}"><span
                         class="fas fa-edit"></span></a>&nbsp;
-                <a sec:authorize="hasAuthority('Planning - Make new experiment')" th:href="@{/planning/experiments/{id}/delete(id=${experiment.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
+                <a sec:authorize="hasAuthority('Planning - Make new experiment')" th:href="@{/planning/experiments/{id}/delete(id=${experiment.id})}" data-toggle="modal" th:attr="data-target='#modal-warning-experiment'+${experiment.id}">
                     <span class="fas fa-trash"></span></a>
             </td>
+            <div class="modal modal-warning fade" th:id="modal-warning-experiment+${experiment.id}" tabindex="-1" role="dialog" aria-labelledby="experimentLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="experimentLabel" th:text="#{experiment.type.delete}"></h3>
+                        </div>
+                        <div class="modal-body">
+                            <h5 th:text="#{experiment.type.areyousure}+' '+${experiment.getExperimentTypeName()}+'?'"></h5>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                            <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/planning/experiments/{id}/delete(id=${experiment.id})}"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </tr>
         </tbody>
     </table>
