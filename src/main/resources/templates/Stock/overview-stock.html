@@ -95,6 +95,7 @@
                                 <th th:text="#{product}">Product Name</th>
                                 <th th:text="#{product.virtual}">Amount left</th>
                                 <th th:text="#{product.tag}">Tag Name</th>
+                                <th th:text="#{device.manage}"></th>
 
                             </tr>
                             </thead>
@@ -118,11 +119,27 @@
 
                                     <a sec:authorize="hasAuthority('Stock - Aggregates + Bitumen Modify - Advanced') or hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/(id=${product.id})}">
                                         <span class="fas fa-edit"></span></a>&nbsp;
-                                    <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/delete(id=${product.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
-                                        <span class="fas fa-trash"></span></a>
+                                    <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/delete(id=${product.id})}" data-toggle="modal" th:attr="data-target='#modal-warning-product'+${product.id}">
+                                        <span class="fas fa-trash" style="color: red"></span></a>
                                     <a th:href="@{/products/info/{id}/(id=${product.id})}">
-                                        <span class="fas fa-info"></span></a>
+                                        <span class="fas fa-info" style="color: #3e8e41"></span></a>
                                 </td>
+                                <div class="modal modal-warning fade" th:id="modal-warning-product+${product.id}" tabindex="-1" role="dialog" aria-labelledby="productLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h3 class="modal-title" id="productLabel" th:text="#{product.delete}"></h3>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h5 th:text="#{product.areyousure}+' '+${product.getName()}+'?'"></h5>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                                                <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/products/{id}/delete(id=${product.id})}"></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
 
                             </tr>
@@ -144,10 +161,11 @@
                                     <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/(id=${product.id})}">
                                         <span class="fas fa-edit"></span></a>&nbsp;
                                     <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/{id}/delete(id=${product.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
-                                        <span class="fas fa-trash"></span></a>
+                                        <span class="fas fa-trash" style="color: red;"></span></a>
                                     <a th:href="@{/products/info/{id}/(id=${product.id})}">
-                                        <span class="fas fa-info"></span></a>
+                                        <span class="fas fa-info" style="color: #3e8e41;"></span></a>
                                 </td>
+
 
 
                             </tr>
@@ -160,7 +178,7 @@
                         </table></div>
 
 
-                        <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/put}" class="btn btn-outline-primary" th:text="#{product.new}"
+                        <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/products/put}" class="btn btn-primary" th:text="#{product.new}"
                         >New product</a>
 
 
@@ -198,6 +216,7 @@
                                     <th th:text="#{mixtures.name}">Mixture Name</th>
                                     <th style="width: 50%"  th:text="#{product.description}">Mixture Description</th>
                                     <th th:text="#{mixtures.tag}">Mixture Tags</th>
+                                    <th th:text="#{device.manage}"></th>
 
                                 </tr>
                                 </thead>
@@ -220,11 +239,27 @@
                                     <td>
                                         <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  th:href="@{/mixtures/{id}/(id=${mixture.id})}"><span
                                                 class="fas fa-edit"></span></a>&nbsp;
-                                        <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/mixtures/{id}/delete(id=${mixture.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
-                                            <span class="fas fa-trash"></span></a>
+                                        <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/mixtures/{id}/delete(id=${mixture.id})}"  data-toggle="modal" th:attr="data-target='#modal-warning-mixture'+${mixture.id}">
+                                            <span class="fas fa-trash" style="color: red"></span></a>
                                         <a th:href="@{/mixtures/info/{id}/(id=${mixture.id})}">
-                                            <span class="fas fa-info"></span></a>
+                                            <span class="fas fa-info" style="color: #3e8e41"></span></a>
                                     </td>
+                                    <div class="modal modal-warning fade" th:id="modal-warning-mixture+${mixture.id}" tabindex="-1" role="dialog" aria-labelledby="mixtureLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h3 class="modal-title" id="mixtureLabel" th:text="#{mixture.delete}"></h3>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h5 th:text="#{mixture.areyousure}+' '+${mixture.getName()}+'?'"></h5>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                                                    <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/mixtures/{id}/delete(id=${mixture.id})}"></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </tr>
                                 <tr class='notfound'>
                                     <td colspan='4' th:text="#{tag.norecord}">No record found</td>
@@ -233,7 +268,7 @@
                                 </tbody>
                             </table>
                             </div>
-                            <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  th:href="@{/mixtures/put}" type="button" class="btn btn-outline-primary"th:text="#{mixture.create}">
+                            <a sec:authorize="hasAuthority('Stock - Consumables + Other Read only - Advanced') or hasAuthority('Stock - Modify - All')"  th:href="@{/mixtures/put}" type="button" class="btn btn-primary"th:text="#{mixture.create}">
                                 Create new mixture
                             </a>
 
@@ -271,6 +306,7 @@
                                 <thead>
                                 <tr>
                                     <th th:text="#{tag.name}">Tag Name</th>
+                                    <th th:text="#{device.manage}"></th>
                                 </tr>
                                 </thead>
                                 <!-- IMPORTANT, class="list" have to be at tbody -->
@@ -281,9 +317,25 @@
                                     <td>
                                         <a th:href="@{/tags/{id}/(id=${tag.id})}"><span
                                                 class="fas fa-edit"></span></a>&nbsp;
-                                        <a th:href="@{/tags/{id}/delete(id=${tag.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
-                                            <span class="fas fa-trash"></span></a>
+                                        <a th:href="@{/tags/{id}/delete(id=${tag.id})}"  data-toggle="modal" th:attr="data-target='#modal-warning-tag'+${tag.id}">
+                                            <span class="fas fa-trash" style="color: red"></span></a>
                                     </td>
+                                    <div class="modal modal-warning fade" th:id="modal-warning-tag+${tag.id}" tabindex="-1" role="dialog" aria-labelledby="tagLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h3 class="modal-title" id="tagLabel" th:text="#{tag.delete}"></h3>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h5 th:text="#{tag.areyousure}+' '+${tag.getName()}+'?'"></h5>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                                                    <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/tags/{id}/delete(id=${tag.id})}"></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </tr>
                                 <tr class='notfound'>
                                     <td colspan='4' th:text="#{tag.norecord}">No record found</td>
@@ -292,7 +344,7 @@
                                 </tbody>
                             </table>
                             </div>
-                            <a th:href="@{/tags/put}" type="button" class="btn btn-outline-primary"th:text="#{tag.create}">
+                            <a th:href="@{/tags/put}" type="button" class="btn btn-primary"th:text="#{tag.create}">
                                 Create new tag
                             </a>
 

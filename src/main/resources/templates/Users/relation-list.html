@@ -46,7 +46,6 @@
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th th:text="#{users.id}"></th>
                     <th th:text="#{relation.description}"></th>
                     <th th:text="#{relation.researcher}"></th>
                     <th th:text="#{relation.students}"></th>
@@ -60,7 +59,7 @@
 
                 <tbody class="list" id="RelationTable">
                 <tr th:each="relation : ${allRelations}">
-                    <td class="ID" th:value="${relation.id}" th:text="${relation.id }"></td>
+                    <td hidden class="ID" th:value="${relation.id}" th:text="${relation.id }"></td>
                     <td class="Description" th:value="${relation.description}" th:text="${relation.description }"></td>
                     <td class="Researcher" th:value="${relation.researcher}" th:text="${relation.researcher.firstName
                     +  ' ' + relation.researcher.lastName}"></td>
@@ -74,9 +73,25 @@
                     <td>
                         <a th:href="@{/usermanagement/users/relations/{id}/(id=${relation.id})}"><span
                                 class="fas fa-edit"></span></a>&nbsp;
-                        <a th:href="@{/usermanagement/users/relations/{id}/delete(id=${relation.id})}"  th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'" >
+                        <a th:href="@{/usermanagement/users/relations/{id}/delete(id=${relation.id})}"  data-toggle="modal" th:attr="data-target='#modal-warning'+${relation.id}" >
                             <span class="fas fa-trash" style="color: red" ></span> </a>
                     </td>
+                    <div class="modal modal-warning fade" th:id="modal-warning+${relation.id}" tabindex="-1" role="dialog" aria-labelledby="relationLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3 class="modal-title" id="relationLabel" th:text="#{relation.delete}"></h3>
+                                </div>
+                                <div class="modal-body">
+                                    <h5 th:text="#{relation.areyousure}+' '+${relation.getResearcher().getUsername()}+'?'"></h5>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                                    <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/usermanagement/users/relations/{id}/delete(id=${relation.id})}"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </tr>
                 </tbody>
             </table>

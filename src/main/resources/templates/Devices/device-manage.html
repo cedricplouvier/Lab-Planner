@@ -46,7 +46,7 @@
             </div>
         </div>
         <p>
-            <a th:href="@{/devices}"  class="btn btn-primary" th:text="#{close}">Close</a>
+            <a th:href="@{/devices}"  class="btn btn-secondary" th:text="#{close}">Close</a>
             <button type="submit"  class="btn btn-primary" th:text="#{save}">Save</button>
         </p>
     </form>
@@ -116,7 +116,7 @@
                     </ul>
                 </div>
                 <a type="button" class="btn btn-primary" th:href="@{/devices/info/{id}/{typeid}(id=${deviceInfo.getId()},typeid=${device.getId()})}" th:text="#{edit}"></a>
-                <a type="button" class="btn btn-primary" th:href="@{/devices/info/{id}/{typeid}/delete(id=${deviceInfo.getId()},typeid=${device.getId()})}" th:text="#{delete}"></a>
+                <a type="button" class="btn btn-secondary" th:href="@{/devices/info/{id}/{typeid}/delete(id=${deviceInfo.getId()},typeid=${device.getId()})}" th:text="#{delete}"></a>
             </div>
         </div>
         <div class="alert alert-primary" role="alert" th:if="${device.getDeviceInformations()}!=null and ${device.getDeviceInformations().size()}==0" th:text="#{device.noinfo}"></div>
@@ -124,9 +124,9 @@
         <hr class="my-4">
         </form>
 
-    <p>
-        <a th:href="@{/devices}"  class="btn btn-primary" th:text="#{close}"></a>
-    </p>
+<!--    <p>-->
+<!--        <a th:href="@{/devices}"  class="btn btn-secondary" th:text="#{close}"></a>-->
+<!--    </p>-->
 </div>
 </body>
 </html>
