@@ -34,7 +34,7 @@ import static java.lang.Math.round;
                     "occupancyDevicesHoursPast", "occupancyDevicesHoursFuture", "occupancyDevicesDays", "occupancyDevicesDaysPast",
                     "occupancyDevicesDaysFuture","totalHours", "totalHoursPast", "totalHoursFuture", "highestAbsoluteValueHours",
                      "selectedStartMonthStockHistory","selectedMonthStock", "selectedProducts",
-                    "stockLevelStartMonthHistory"}) //"selectedTypeOfGraph", "selectedTimePeriod",
+                    "stockLevelStartMonthHistory","selectedTypeOfGraph", "selectedTimePeriod"})
 public class StatisticsController {
 
     @Autowired
