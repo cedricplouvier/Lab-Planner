@@ -44,9 +44,25 @@
                             <a
                                     th:utext="${report.creator.getFirstName()}+ ' ' +${report.creator.getLastName()}+ '   '">
                             </a>
-                            <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/reports/{id}/delete(id=${report.id})}" th:attr="onclick='return confirm(\'' + #{delete.confirm} + '\')'">
-                                <span class="fas fa-trash"></span></a>
+                            <a sec:authorize="hasAuthority('Stock - Modify - All')" th:href="@{/reports/{id}/delete(id=${report.id})}" data-toggle="modal" th:attr="data-target='#modal-warning'+${report.id}">
+                                <span class="fas fa-trash" style="color: red"></span></a>
 
+                        </div>
+                    </div>
+                    <div class="modal modal-warning fade" th:id="modal-warning+${report.id}" tabindex="-1" role="dialog" aria-labelledby="reportLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3 class="modal-title" id="reportLabel" th:text="#{report.delete}"></h3>
+                                </div>
+                                <div class="modal-body">
+                                    <h5 th:text="#{report.areyousure}+' '+${report.getTitle()}+'?'"></h5>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                                    <a type="button" class="btn btn-danger" th:text="#{delete}" th:href="@{/reports/{id}/delete(id=${report.id})}"></a>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
